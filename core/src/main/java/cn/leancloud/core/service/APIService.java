@@ -31,4 +31,7 @@ public interface APIService {
 
   @GET("/1.1/date")
   Observable<AVDate> currentTimeMillis();
+
+  @POST("/1.1/batchSave")
+  Observable<Void> batchSave(@Body JSONObject object);
 }

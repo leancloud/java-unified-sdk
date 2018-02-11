@@ -1,6 +1,7 @@
 package cn.leancloud.network;
 
 import cn.leancloud.core.service.APIService;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.fastjson.*;
@@ -12,7 +13,13 @@ import java.util.concurrent.TimeUnit;
 public class PaasClient {
   private static APIService apiService = null;
   private static StorageClient storageClient = null;
-  private static interface SchedulerCreator{
+  static SchedulerCreator defaultScheduler = new SchedulerCreator() {
+    public Scheduler create() {
+      return Schedulers.single();
+    }
+  };
+
+  public static interface SchedulerCreator{
     Scheduler create();
   }
 
@@ -39,4 +46,7 @@ public class PaasClient {
   }
 
 
+  public static void setSchedulerCreator(SchedulerCreator creator) {
+    defaultScheduler = creator;
+  }
 }

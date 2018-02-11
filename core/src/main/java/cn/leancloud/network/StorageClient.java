@@ -4,6 +4,7 @@ import cn.leancloud.core.AVObject;
 import cn.leancloud.core.service.APIService;
 import cn.leancloud.core.types.AVDate;
 import cn.leancloud.internal.FileUploadToken;
+import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -16,14 +17,24 @@ public class StorageClient {
   }
 
   public Observable<AVDate> getServerTime() {
-    return apiService.currentTimeMillis().observeOn(Schedulers.single());
+    return apiService.currentTimeMillis().observeOn(PaasClient.defaultScheduler.create());
   }
 
   public Observable<AVObject> fetchObject(String className, String objectId) {
-    return apiService.fetchObject(className, objectId).subscribeOn(Schedulers.io()).observeOn(Schedulers.single());
+    return apiService.fetchObject(className, objectId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(PaasClient.defaultScheduler.create());
   }
 
   public Observable<FileUploadToken> newUploadToken() {
-    return apiService.createUploadToken().subscribeOn(Schedulers.io()).observeOn(Schedulers.single());
+    return apiService.createUploadToken()
+            .subscribeOn(Schedulers.io())
+            .observeOn(PaasClient.defaultScheduler.create());
+  }
+
+  public Observable<Void> batchSave(JSONObject parameter) {
+    return apiService.batchSave(parameter)
+            .subscribeOn(Schedulers.io())
+            .observeOn(PaasClient.defaultScheduler.create());
   }
 }

@@ -12,6 +12,15 @@
   <version>1.0-SNAPSHOT</version>
   <name>core-sdk</name>
   <url>http://maven.apache.org</url>
+
+  <properties>
+    <!-- dependencies -->
+    <okhttp.version>3.9.1</okhttp.version>
+    <retrofit.version>2.3.0</retrofit.version>
+    <rxjava2.version>2.1.9</rxjava2.version>
+
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.squareup.retrofit2</groupId>

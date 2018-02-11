@@ -10,7 +10,7 @@
   <modules>
     <module>core</module>
     <module>realtime</module>
-    <!--<module>android-sdk</module>-->
+    <module>android-sdk</module>
     <!--<module>android-push</module>-->
   </modules>
 
@@ -21,11 +21,6 @@
     <!-- Compilation -->
     <java.version>1.7</java.version>
 
-    <!-- dependencies -->
-    <okhttp.version>3.9.1</okhttp.version>
-    <retrofit.version>2.3.0</retrofit.version>
-    <rxjava2.version>2.1.9</rxjava2.version>
-
   </properties>
-  
+
 </project>

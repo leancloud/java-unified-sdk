@@ -12,6 +12,39 @@
   <version>1.0-SNAPSHOT</version>
   <name>android-sdk</name>
   <url>http://maven.apache.org</url>
+
+  <repositories>
+    <repository>
+      <id>mvnrepository</id>
+      <name>maven central repository</name>
+      <url>https://mvnrepository.com/repos/central/</url>
+    </repository>
+    <repository>
+      <id>central</id>
+      <name>central maven repository</name>
+      <url>http://central.maven.org/maven2/</url>
+    </repository>
+    <repository>
+      <id>jcenter</id>
+      <name>jcenter</name>
+      <url>http://repo1.maven.org/maven2/</url>
+    </repository>
+  </repositories>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.sourceEncoding>UTF-8</project.reporting.sourceEncoding>
+
+    <!-- Compilation -->
+    <java.version>1.7</java.version>
+
+    <!-- dependencies -->
+    <okhttp.version>3.9.1</okhttp.version>
+    <retrofit.version>2.3.0</retrofit.version>
+    <rxjava2.version>2.1.9</rxjava2.version>
+
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.google.android</groupId>
@@ -24,11 +57,15 @@
       <artifactId>core-sdk</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
-    <!--<dependency>-->
-      <!--<groupId>io.reactivex.rxjava2</groupId>-->
-      <!--<artifactId>rxandroid</artifactId>-->
-      <!--<version>2.0.1</version>-->
-    <!--</dependency>-->
+
+    <!-- https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxandroid -->
+    <dependency>
+      <groupId>io.reactivex.rxjava2</groupId>
+      <artifactId>rxandroid</artifactId>
+      <version>2.0.1</version>
+      <type>aar</type>
+    </dependency>
+
     <!--<dependency>-->
       <!--<groupId>com.android.support</groupId>-->
       <!--<artifactId>support-v4</artifactId>-->
@@ -53,7 +90,7 @@
           <sdk>
             <platform>19</platform>
           </sdk>
-          <deleteConflictingFiles>true</deleteConflictingFiles>
+          <!--<deleteConflictingFiles>true</deleteConflictingFiles>-->
           <undeployBeforeDeploy>true</undeployBeforeDeploy>
         </configuration>
         <extensions>true</extensions>
@@ -62,8 +99,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
     </plugins>
