@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/core/core-sdk.iml" filepath="$PROJECT_DIR$/core/core-sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/java-sdk.iml" filepath="$PROJECT_DIR$/java-sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/realtime/realtime-sdk.iml" filepath="$PROJECT_DIR$/realtime/realtime-sdk.iml" />
+    </modules>
+  </component>
+</project>
