@@ -7,10 +7,10 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.leancloud</groupId>
-  <artifactId>android-sdk</artifactId>
+  <artifactId>android-push</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>realtime-sdk</name>
+  <name>android-push-sdk</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>

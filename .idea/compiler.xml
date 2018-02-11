@@ -11,6 +11,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="android-push" target="1.5" />
+      <module name="android-sdk" target="1.5" />
       <module name="core-sdk" target="1.5" />
       <module name="java-sdk" target="1.5" />
       <module name="realtime-sdk" target="1.5" />
