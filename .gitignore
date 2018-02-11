@@ -1,6 +1,6 @@
 */.DS_Store
 **/**.iml
-.idea/*
+.idea/
 *.class
 **/target/**
 
