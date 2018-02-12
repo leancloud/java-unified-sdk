@@ -20,7 +20,7 @@ public class DeleteOp extends BaseOp {
   @Override
   public AVOp merge(AVOp other) {
     assertKeyEquals(other);
-    switch (other.type()) {
+    switch (other.getType()) {
       case Compound:
         other.cast(CompoundOp.class).addFirst(this);
         return other;
@@ -36,7 +36,7 @@ public class DeleteOp extends BaseOp {
       case Delete:
         return this;
       default:
-        throw new IllegalStateException("Unknow op type " + other.type());
+        throw new IllegalStateException("Unknow op type " + other.getType());
     }
   }
 

@@ -13,14 +13,15 @@ import java.util.concurrent.TimeUnit;
 public class PaasClient {
   private static APIService apiService = null;
   private static StorageClient storageClient = null;
-  static SchedulerCreator defaultScheduler = new SchedulerCreator() {
-    public Scheduler create() {
-      return Schedulers.single();
-    }
-  };
-
+  static SchedulerCreator defaultScheduler = null;
+  static boolean asynchronized = false;
   public static interface SchedulerCreator{
     Scheduler create();
+  }
+
+  public static void config(boolean asyncRequest, SchedulerCreator observerSchedulerCreator) {
+    asynchronized = asyncRequest;
+    defaultScheduler = observerSchedulerCreator;
   }
 
   public static StorageClient getStorageClient () {
@@ -40,7 +41,7 @@ public class PaasClient {
               .client(okHttpClient)
               .build();
       apiService = retrofit.create(APIService.class);
-      storageClient = new StorageClient(apiService);
+      storageClient = new StorageClient(apiService, asynchronized, defaultScheduler);
     }
     return storageClient;
   }

@@ -6,8 +6,9 @@ import java.util.List;
 
 import cn.leancloud.core.AVFile;
 import cn.leancloud.core.AVObject;
-import cn.leancloud.utils.AVUtils;
+import com.alibaba.fastjson.annotation.JSONType;
 
+@JSONType(ignores = {"parsedValues"})
 public abstract class CollectionOp extends BaseOp {
   public CollectionOp() {
     super();

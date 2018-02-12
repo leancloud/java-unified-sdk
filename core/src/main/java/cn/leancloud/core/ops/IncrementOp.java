@@ -1,8 +1,11 @@
 package cn.leancloud.core.ops;
 
+import com.alibaba.fastjson.annotation.JSONType;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@JSONType(ignores = {"amount"})
 public class IncrementOp extends BaseOp implements SingleValueOp {
 
   protected Number amount;
@@ -40,7 +43,7 @@ public class IncrementOp extends BaseOp implements SingleValueOp {
   @Override
   public AVOp merge(AVOp other) {
     assertKeyEquals(other);
-    switch (other.type()) {
+    switch (other.getType()) {
       case Set:
       case Delete:
         return other;
@@ -61,7 +64,7 @@ public class IncrementOp extends BaseOp implements SingleValueOp {
       case Null:
         return this;
       default:
-        throw new IllegalStateException("Unknow op type " + other.type());
+        throw new IllegalStateException("Unknow op type " + other.getType());
     }
   }
 

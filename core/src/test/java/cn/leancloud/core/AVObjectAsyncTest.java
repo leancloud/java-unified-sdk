@@ -1,20 +1,28 @@
 package cn.leancloud.core;
 
 import cn.leancloud.Configure;
+import cn.leancloud.network.PaasClient;
 import io.reactivex.Observer;
+import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class AVObjectTest extends TestCase {
-  public AVObjectTest(String testName) {
+public class AVObjectAsyncTest extends TestCase {
+  public AVObjectAsyncTest(String testName) {
     super(testName);
+    PaasClient.config(true, new PaasClient.SchedulerCreator() {
+      public Scheduler create() {
+        return Schedulers.newThread();
+      }
+    });
     AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
     AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
   }
   public static Test suite() {
-    return new TestSuite(AVObjectTest.class);
+    return new TestSuite(AVObjectAsyncTest.class);
   }
 
   @Override
@@ -42,6 +50,12 @@ public class AVObjectTest extends TestCase {
         System.out.println("subscribe completed.");
       }
     });
+    System.out.println("wait response...");
+    try {
+      Thread.sleep(2000);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
     System.out.println("test completed.");
   }
 }

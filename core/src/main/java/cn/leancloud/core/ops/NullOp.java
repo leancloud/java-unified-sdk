@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
-public class NullOp implements AVOp {
+public final class NullOp implements AVOp {
   public static NullOp INSTANCE = new NullOp();
 
   public NullOp() {
@@ -19,11 +19,11 @@ public class NullOp implements AVOp {
     throw new UnsupportedOperationException();
   }
 
-  public String key() {
+  public String getKey() {
     return "__ALL_POSSIABLE_KEYS";
   }
 
-  public OpType type() {
+  public OpType getType() {
     return OpType.Null;
   }
 
@@ -40,17 +40,14 @@ public class NullOp implements AVOp {
   }
 
   public int size() {
-    // TODO Auto-generated method stub
     return 0;
   }
 
   public AVOp get(int idx) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   public AVOp remove(int idx) {
-    // TODO Auto-generated method stub
     return null;
   }
 

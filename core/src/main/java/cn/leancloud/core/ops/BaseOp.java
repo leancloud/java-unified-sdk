@@ -11,9 +11,8 @@ public abstract class BaseOp implements AVOp {
   protected LinkedList<AVOp> ops = null;
 
   public OpType getType() {
-    return type;
+    return this.type;
   }
-
   public void setType(OpType type) {
     this.type = type;
   }
@@ -21,39 +20,29 @@ public abstract class BaseOp implements AVOp {
   public List<AVOp> getOps() {
     return ops;
   }
-
   public void setOps(LinkedList<AVOp> ops) {
     this.ops = ops;
   }
 
   public String getKey() {
-    return key;
+    return this.key;
+  }
+  public void setKey(String key) {
+    this.key = key;
   }
 
   public BaseOp() {
     super();
-    // TODO Auto-generated constructor stub
   }
+
   public BaseOp(String key, OpType type) {
     super();
     this.key = key;
     this.type = type;
   }
 
-  public String key() {
-    return key;
-  }
-
-  public OpType type() {
-    return this.type;
-  }
-
   public <T extends AVOp> T cast(Class<T> clazz) {
     return clazz.cast(this);
-  }
-
-  public void setKey(String key) {
-    this.key = key;
   }
 
   public AVOp merge(AVOp other) {
@@ -61,7 +50,7 @@ public abstract class BaseOp implements AVOp {
     if (this.ops == null) {
       this.ops = new LinkedList<AVOp>();
     }
-    if (other.type() == OpType.Compound) {
+    if (other.getType() == OpType.Compound) {
       this.ops.addAll(other.cast(CompoundOp.class).ops);
     } else {
       this.ops.add(other);
@@ -74,13 +63,16 @@ public abstract class BaseOp implements AVOp {
   }
 
   public AVOp remove(int idx) {
-    if (this.ops != null && this.ops.size() > idx) {
+    if (0 <= idx && this.ops != null && this.ops.size() > idx) {
       return this.ops.remove(idx);
     } else
       return NullOp.INSTANCE;
   }
 
   public Object apply(Object obj) {
+    if (null == obj) {
+      return null;
+    }
     if (this.ops != null) {
       for (AVOp op : this.ops) {
         obj = op.apply(obj);
@@ -90,8 +82,8 @@ public abstract class BaseOp implements AVOp {
 
   }
 
-  public void assertKeyEquals(AVOp other) {
-    if (other != NullOp.INSTANCE && !other.key().equals(this.key)) {
+  protected void assertKeyEquals(AVOp other) {
+    if (other != NullOp.INSTANCE && !other.getKey().equals(this.key)) {
       throw new IllegalArgumentException("invalid key");
     }
   }

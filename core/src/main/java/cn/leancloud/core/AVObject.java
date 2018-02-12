@@ -49,7 +49,7 @@ public class AVObject {
     return this.className;
   }
   public String internalClassName() {
-    return "";
+    return this.getClassName();
   }
   public void setClassName(String name) {this.className = name;}
 

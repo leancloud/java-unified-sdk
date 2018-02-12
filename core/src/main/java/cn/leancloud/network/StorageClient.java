@@ -13,19 +13,35 @@ import java.io.IOException;
 
 public class StorageClient {
   private APIService apiService = null;
-  public StorageClient(APIService apiService) {
+  private boolean asynchronized = false;
+  private PaasClient.SchedulerCreator defaultCreator = null;
+  public StorageClient(APIService apiService, boolean asyncRequest, PaasClient.SchedulerCreator observerSchedulerCreator) {
     this.apiService = apiService;
+    this.asynchronized = asyncRequest;
+    this.defaultCreator = observerSchedulerCreator;
+  }
+
+  private Observable wrappObservable(Observable observable) {
+    if (null == observable) {
+      return null;
+    }
+    if (asynchronized) {
+      observable = observable.subscribeOn(Schedulers.io());
+    }
+    if (null != defaultCreator) {
+      observable = observable.observeOn(defaultCreator.create());
+    }
+    return observable;
   }
 
   public Observable<AVDate> getServerTime() {
-    return apiService.currentTimeMillis().observeOn(PaasClient.defaultScheduler.create());
+    Observable<AVDate> date = wrappObservable(apiService.currentTimeMillis());
+    return date;
   }
 
   public Observable<AVObject> fetchObject(final String className, String objectId) {
-    return apiService.fetchObject(className, objectId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(PaasClient.defaultScheduler.create())
-            .map(new Function<AVObject, AVObject>() {
+    Observable<AVObject> object = wrappObservable(apiService.fetchObject(className, objectId));
+    return object.map(new Function<AVObject, AVObject>() {
               public AVObject apply(AVObject avObject) throws Exception {
                 avObject.setClassName(className);
                 return avObject;
@@ -34,14 +50,12 @@ public class StorageClient {
   }
 
   public Observable<FileUploadToken> newUploadToken() {
-    return apiService.createUploadToken()
-            .subscribeOn(Schedulers.io())
-            .observeOn(PaasClient.defaultScheduler.create());
+    Observable<FileUploadToken> token = wrappObservable(apiService.createUploadToken());
+    return token;
   }
 
   public Observable<Void> batchSave(JSONObject parameter) {
-    return apiService.batchSave(parameter)
-            .subscribeOn(Schedulers.io())
-            .observeOn(PaasClient.defaultScheduler.create());
+    Observable<Void> result = wrappObservable(apiService.batchSave(parameter));
+    return result;
   }
 }

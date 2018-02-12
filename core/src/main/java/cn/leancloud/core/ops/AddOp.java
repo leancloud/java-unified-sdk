@@ -36,7 +36,7 @@ public class AddOp extends CollectionAddOp {
   @Override
   public AVOp merge(AVOp other) {
     assertKeyEquals(other);
-    switch (other.type()) {
+    switch (other.getType()) {
       case Null:
         return this;
       case Set:
@@ -57,7 +57,7 @@ public class AddOp extends CollectionAddOp {
         other.cast(CompoundOp.class).addFirst(this);
         return other;
       default:
-        throw new IllegalStateException("Unknow op type " + other.type());
+        throw new IllegalStateException("Unknow op type " + other.getType());
     }
   }
 }
