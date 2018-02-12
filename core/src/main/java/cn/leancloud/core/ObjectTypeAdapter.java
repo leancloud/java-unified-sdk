@@ -1,6 +1,7 @@
 package cn.leancloud.core;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.JSONToken;
 import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
@@ -16,12 +17,27 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
                     int features) throws IOException {
     AVObject avObject = (AVObject)object;
     SerializeWriter writer = serializer.getWriter();
-    writer.writeFieldNameDirect(JSON.toJSONString(avObject.serverData));
+    writer.write('{');
+    writer.writeFieldValue(' ', AVObject.KEY_CLASSNAME, avObject.getClassName());
+    writer.writeFieldValue(',', "serverData", JSON.toJSONString(avObject.serverData));
+    writer.write('}');
   }
 
   public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
     AVObject obj = new AVObject("");
-    obj.serverData = parser.parseObject();
+    JSONObject jsonObject = parser.parseObject();
+    if (jsonObject.containsKey(AVObject.KEY_CLASSNAME)) {
+      String className = (String)jsonObject.get(AVObject.KEY_CLASSNAME);
+      obj.className = className;
+      if (jsonObject.containsKey("serverData")) {
+        obj.serverData = jsonObject.getJSONObject("serverData");
+      } else {
+        obj.serverData = jsonObject;
+      }
+    } else {
+      // server response.
+      obj.serverData = jsonObject;
+    }
     return (T) obj;
   }
 

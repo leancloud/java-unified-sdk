@@ -1,6 +1,7 @@
 package cn.leancloud.core;
 
 import cn.leancloud.AVException;
+import cn.leancloud.core.annotation.AVClassName;
 import cn.leancloud.core.types.AVGeoPoint;
 import cn.leancloud.network.PaasClient;
 import com.alibaba.fastjson.JSON;
@@ -9,22 +10,36 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONType;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
+import com.alibaba.fastjson.parser.ParserConfig;
+import com.alibaba.fastjson.serializer.SerializeConfig;
 import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVObject {
   public static final String KEY_CREATED_AT = "createdAt";
   public static final String KEY_UPDATED_AT = "updatedAt";
   public static final String KEY_OBJECT_ID = "objectId";
+  static final String KEY_CLASSNAME = "className";
 
   private static final Set<String> RESERVED_ATTRS = new HashSet<String>(
           Arrays.asList(KEY_CREATED_AT, KEY_UPDATED_AT, KEY_OBJECT_ID));
+  private final static Map<String, Class<? extends AVObject>> SUB_CLASSES_MAP =
+          new HashMap<String, Class<? extends AVObject>>();
+  private final static Map<Class<? extends AVObject>, String> SUB_CLASSES_REVERSE_MAP =
+          new HashMap<Class<? extends AVObject>, String>();
 
-  private String className;
+  protected String className;
 
-  protected Map<String, Object> serverData = new HashMap<String, Object>();
-  protected Map<String, Object> localData = new HashMap<String, Object>();
+  protected String objectId = "";
+  protected Map<String, Object> serverData = new ConcurrentHashMap<String, Object>();
+  protected Map<String, Object> localData = new ConcurrentHashMap<String, Object>();
 
   public AVObject(String className) {
     this.className = className;
@@ -33,6 +48,10 @@ public class AVObject {
   public String getClassName() {
     return this.className;
   }
+  public String internalClassName() {
+    return "";
+  }
+  public void setClassName(String name) {this.className = name;}
 
   public String getCreatedAt() {
     return (String) this.serverData.get(KEY_CREATED_AT);
@@ -43,27 +62,25 @@ public class AVObject {
   }
 
   public String getObjectId() {
-    return (String) this.serverData.get(KEY_OBJECT_ID);
+    if (this.serverData.containsKey(KEY_OBJECT_ID)) {
+      return (String) this.serverData.get(KEY_OBJECT_ID);
+    } else {
+      return this.objectId;
+    }
   }
 
-  public void add(String key, Object value) {
-    ;
+  public void setObjectId(String objectId) {
+    this.objectId = objectId;
   }
-
-  public void addUnique(String key, Object value) {
-    ;
-  }
-
+  /**
+   * getter
+   */
   public boolean containsKey(String key) {
     return serverData.containsKey(key);
   }
 
   public Object get(String key) {
     return serverData.get(key);
-  }
-
-  public void put(String key, Object value) {
-    this.serverData.put(key, value);
   }
 
   public boolean getBoolean(String key) {
@@ -151,12 +168,100 @@ public class AVObject {
     return (T) get(key);
   }
 
+  /**
+   * changable operations.
+   */
+  public void add(String key, Object value) {
+    ;
+  }
+
+  public void addUnique(String key, Object value) {
+    ;
+  }
+
+  public void put(String key, Object value) {
+    this.serverData.put(key, value);
+  }
+
+  public Map<String, Object> getServerData() {
+    return this.serverData;
+  }
+
+  /**
+   * save/update with server.
+   */
+
   public Observable<Void> saveInBackground() {
     return PaasClient.getStorageClient().batchSave(null);
   }
 
   public Observable<AVObject> refreshInBackground() {
-    return PaasClient.getStorageClient().fetchObject(this.className, getObjectId());
+    Observable<AVObject> result = PaasClient.getStorageClient().fetchObject(this.className, getObjectId());
+    return result.map(new Function<AVObject, AVObject>() {
+      public AVObject apply(@NonNull AVObject avObject) throws Exception {
+        System.out.println("update self.");
+        AVObject.this.resetByServerData(avObject);
+        return avObject;
+      }
+    });
+  }
+
+  private void resetAll() {
+    this.serverData.clear();
+  }
+  void resetByServerData(AVObject avObject) {
+    if (null == avObject) {
+      return;
+    }
+    resetAll();
+    this.serverData.putAll(avObject.serverData);
+  }
+
+  /**
+   * subclass
+   */
+  static Class<? extends AVObject> getSubClass(String className) {
+    return SUB_CLASSES_MAP.get(className);
+  }
+
+  static String getSubClassName(Class<? extends AVObject> clazz) {
+    if (AVUser.class.isAssignableFrom(clazz)) {
+      return "_User";
+    } else if (AVRole.class.isAssignableFrom(clazz)) {
+      return "_Role";
+    } else if (AVStatus.class.isAssignableFrom(clazz)) {
+      return "_Status";
+    } else {
+      return SUB_CLASSES_REVERSE_MAP.get(clazz);
+    }
+  }
+
+  /**
+   * Register subclass to AVOSCloud SDK.It must be invocated before AVOSCloud.initialize.
+   *
+   * @param clazz The subclass.
+   * @since 1.3.6
+   */
+  public static <T extends AVObject> void registerSubclass(Class<T> clazz) {
+    AVClassName avClassName = clazz.getAnnotation(AVClassName.class);
+    if (avClassName == null) {
+      throw new IllegalArgumentException("The class is not annotated by @AVClassName");
+    }
+    String className = avClassName.value();
+    SUB_CLASSES_MAP.put(className, clazz);
+    SUB_CLASSES_REVERSE_MAP.put(clazz, className);
+    // register object serializer/deserializer.
+    ParserConfig.getGlobalInstance().putDeserializer(clazz, new ObjectTypeAdapter());
+    SerializeConfig.getGlobalInstance().put(clazz, new ObjectTypeAdapter());
+  }
+
+  /**
+   * common methods.
+   */
+
+  public JSONObject toJSONObject() {
+    // TODO
+    return null;
   }
 
   @Override

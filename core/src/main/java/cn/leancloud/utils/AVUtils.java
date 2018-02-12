@@ -1,11 +1,10 @@
 package cn.leancloud.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class AVUtils {
   public static double EARTH_MEAN_RADIUS_KM = 6378.140;
-
-  public static boolean isMainThread() {
-    return true;
-  }
 
   public static double distance(double lat1, double lat2, double lon1,
                                 double lon2, double el1, double el2) {
@@ -24,5 +23,17 @@ public class AVUtils {
     distance = Math.pow(distance, 2) + Math.pow(height, 2);
 
     return Math.sqrt(distance);
+  }
+
+  public static Map<String, Object> createDeleteOpMap(String key) {
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("__op", "Delete");
+    Map<String, Object> result = new HashMap<String, Object>();
+    result.put(key, map);
+    return result;
+  }
+
+  public static Object getParsedObject(Object object) {
+    return null;
   }
 }
