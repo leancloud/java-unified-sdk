@@ -49,6 +49,29 @@ public class StorageClient {
             });
   }
 
+  public Observable<Void> deleteObject(final String className, String objectId) {
+    return wrappObservable(apiService.deleteObject(className, objectId));
+  }
+  public Observable<AVObject> createObject(final String className, JSONObject data) {
+    Observable<AVObject> object = wrappObservable(apiService.createObject(className, data));
+    return object.map(new Function<AVObject, AVObject>() {
+      public AVObject apply(AVObject avObject) {
+        avObject.setClassName(className);
+        return avObject;
+      }
+    });
+  }
+
+  public Observable<AVObject> saveObject(final String className, String objectId, JSONObject data) {
+    Observable<AVObject> object = wrappObservable(apiService.updateObject(className, objectId, data));
+    return object.map(new Function<AVObject, AVObject>() {
+      public AVObject apply(AVObject avObject) {
+        avObject.setClassName(className);
+        return avObject;
+      }
+    });
+  }
+
   public Observable<FileUploadToken> newUploadToken() {
     Observable<FileUploadToken> token = wrappObservable(apiService.createUploadToken());
     return token;

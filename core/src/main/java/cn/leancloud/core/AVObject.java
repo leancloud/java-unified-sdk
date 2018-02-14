@@ -2,8 +2,11 @@ package cn.leancloud.core;
 
 import cn.leancloud.AVException;
 import cn.leancloud.core.annotation.AVClassName;
+import cn.leancloud.core.ops.ObjectFieldOperation;
+import cn.leancloud.core.ops.OperationBuilder;
 import cn.leancloud.core.types.AVGeoPoint;
 import cn.leancloud.network.PaasClient;
+import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -13,12 +16,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alibaba.fastjson.parser.ParserConfig;
+import com.alibaba.fastjson.serializer.PascalNameFilter;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
@@ -39,7 +40,7 @@ public class AVObject {
 
   protected String objectId = "";
   protected Map<String, Object> serverData = new ConcurrentHashMap<String, Object>();
-  protected Map<String, Object> localData = new ConcurrentHashMap<String, Object>();
+  protected Map<String, ObjectFieldOperation> operations = new ConcurrentHashMap<String, ObjectFieldOperation>();
 
   public AVObject(String className) {
     this.className = className;
@@ -72,6 +73,7 @@ public class AVObject {
   public void setObjectId(String objectId) {
     this.objectId = objectId;
   }
+
   /**
    * getter
    */
@@ -80,7 +82,12 @@ public class AVObject {
   }
 
   public Object get(String key) {
-    return serverData.get(key);
+    Object value = serverData.get(key);
+    ObjectFieldOperation op = operations.get(key);
+    if (null != op) {
+      value = op.apply(value);
+    }
+    return value;
   }
 
   public boolean getBoolean(String key) {
@@ -168,6 +175,10 @@ public class AVObject {
     return (T) get(key);
   }
 
+  public Map<String, Object> getServerData() {
+    return this.serverData;
+  }
+
   /**
    * changable operations.
    */
@@ -180,19 +191,55 @@ public class AVObject {
   }
 
   public void put(String key, Object value) {
-    this.serverData.put(key, value);
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Set, key, value);
+    addNewOperation(op);
   }
 
-  public Map<String, Object> getServerData() {
-    return this.serverData;
+  public void remove(String key) {
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Delete, key, null);
+    addNewOperation(op);
+  }
+
+  public void increment(String key) {
+    this.increment(key, 1);
+  }
+  public void increment(String key, Number value) {
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Increment, key, value);
+    addNewOperation(op);
+  }
+
+  private void addNewOperation(ObjectFieldOperation op) {
+    if (null == op) {
+      return;
+    }
+    ObjectFieldOperation previous = null;
+    if (this.operations.containsKey(op.getField())) {
+      previous = this.operations.get(op.getField());
+    }
+    this.operations.put(op.getField(), op.merge(previous));
   }
 
   /**
    * save/update with server.
    */
 
-  public Observable<Void> saveInBackground() {
-    return PaasClient.getStorageClient().batchSave(null);
+  public Observable<AVObject> saveInBackground() {
+    Map<String, Object> params = new HashMap<String, Object>();
+    Set<Map.Entry<String, ObjectFieldOperation>> entries = operations.entrySet();
+    for (Map.Entry<String, ObjectFieldOperation> entry: entries) {
+      Map<String, Object> oneOp = entry.getValue().encode();
+      params.putAll(oneOp);
+    }
+    JSONObject paramData = new JSONObject(params);
+    if (StringUtil.isEmpty(getObjectId())) {
+      return PaasClient.getStorageClient().createObject(this.className, paramData);
+    } else {
+      return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData);
+    }
+  }
+
+  public Observable<Void> deleteInBackground() {
+    return PaasClient.getStorageClient().deleteObject(this.className, getObjectId());
   }
 
   public Observable<AVObject> refreshInBackground() {
@@ -206,10 +253,11 @@ public class AVObject {
     });
   }
 
-  private void resetAll() {
+  protected void resetAll() {
     this.serverData.clear();
   }
-  void resetByServerData(AVObject avObject) {
+
+  protected void resetByServerData(AVObject avObject) {
     if (null == avObject) {
       return;
     }
@@ -270,7 +318,6 @@ public class AVObject {
     return "AVObject{" +
             "className='" + className + '\'' +
             ", serverData=" + serverDataStr +
-            ", localData=" + localData +
             '}';
   }
 }

@@ -21,6 +21,45 @@ public class AVObjectTest extends TestCase {
   protected void setUp() throws Exception {
   }
 
+  public void testCreateObject() {
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 17);
+    object.saveInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+      }
+
+      public void onNext(AVObject avObject) {
+        System.out.println("create object finished. objectId=" + avObject.getObjectId() + ", className=" + avObject.getClassName());
+//        avObject.deleteInBackground().subscribe(new Observer<Void>() {
+//          public void onSubscribe(Disposable disposable) {
+//            ;
+//          }
+//
+//          public void onNext(Void aVoid) {
+//            System.out.println("delete object finished.");
+//          }
+//
+//          public void onError(Throwable throwable) {
+//            System.out.println("delete object failed.");
+//          }
+//
+//          public void onComplete() {
+//          }
+//        });
+
+      }
+
+      public void onError(Throwable throwable) {
+        System.out.println("create object failed.");
+
+      }
+
+      public void onComplete() {
+      }
+    });
+  }
+
   public void testObjectRefresh() {
     AVObject object = new AVObject("Student");
     object.setObjectId("5a7a4ac8128fe1003768d2b1");
