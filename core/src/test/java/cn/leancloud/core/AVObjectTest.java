@@ -3,6 +3,7 @@ package cn.leancloud.core;
 import cn.leancloud.Configure;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -21,6 +22,48 @@ public class AVObjectTest extends TestCase {
   protected void setUp() throws Exception {
   }
 
+  public void testDeleteField() {
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 18);
+    object.put("grade", 9);
+    object.saveInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVObject avObject) {
+        System.out.println("try to remove grade field.");
+        avObject.remove("grade");
+        avObject.saveInBackground().subscribe(new Observer<AVObject>() {
+          public void onSubscribe(Disposable disposable) {
+          }
+
+          public void onNext(AVObject avObject) {
+            System.out.println("remove field finished.");
+            avObject.deleteInBackground().subscribe();
+          }
+
+          public void onError(Throwable throwable) {
+            fail();
+          }
+
+          public void onComplete() {
+          }
+        });
+
+      }
+
+      public void onError(Throwable throwable) {
+
+      }
+
+      public void onComplete() {
+
+      }
+    });
+  }
+
   public void testCreateObject() {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
@@ -31,22 +74,22 @@ public class AVObjectTest extends TestCase {
 
       public void onNext(AVObject avObject) {
         System.out.println("create object finished. objectId=" + avObject.getObjectId() + ", className=" + avObject.getClassName());
-//        avObject.deleteInBackground().subscribe(new Observer<Void>() {
-//          public void onSubscribe(Disposable disposable) {
-//            ;
-//          }
-//
-//          public void onNext(Void aVoid) {
-//            System.out.println("delete object finished.");
-//          }
-//
-//          public void onError(Throwable throwable) {
-//            System.out.println("delete object failed.");
-//          }
-//
-//          public void onComplete() {
-//          }
-//        });
+        avObject.deleteInBackground().subscribe(new Observer<Void>() {
+          public void onSubscribe(Disposable disposable) {
+            ;
+          }
+
+          public void onNext(Void aVoid) {
+            System.out.println("delete object finished.");
+          }
+
+          public void onError(Throwable throwable) {
+            System.out.println("delete object failed.");
+          }
+
+          public void onComplete() {
+          }
+        });
 
       }
 

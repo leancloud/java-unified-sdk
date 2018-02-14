@@ -11,8 +11,9 @@ public class LoggingInterceptor implements Interceptor {
     Request request = chain.request();
 
     long t1 = System.nanoTime();
-    System.out.println(String.format("Sending request %s %n%s",
-                request.url(), request.headers()));
+
+    System.out.println(String.format("Sending request(%s) %s %n%s%n",
+                request.method(), request.url(), request.headers()));
 
     Response response = chain.proceed(request);
 
