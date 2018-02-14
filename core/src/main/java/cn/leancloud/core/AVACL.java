@@ -1,10 +1,12 @@
 package cn.leancloud.core;
 
 import cn.leancloud.utils.StringUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class AVACL {
   private static final String PUBLIC_KEY = "*";
@@ -12,9 +14,9 @@ public class AVACL {
 
   private static class Permissions {
     @JSONField(name = "read")
-    private final boolean readPermission;
+    private boolean readPermission = false;
     @JSONField(name = "write")
-    private final boolean writePermission;
+    private boolean writePermission = false;
     Permissions(boolean read, boolean write) {
       readPermission = read;
       writePermission = write;
@@ -35,6 +37,14 @@ public class AVACL {
   private final Map<String, Permissions> permissionsById = new HashMap<String, Permissions>();
 
   public AVACL() {
+  }
+  public AVACL(JSONObject json) {
+    if (null != json) {
+      Set<Map.Entry<String, Object>> entries = json.entrySet();
+      for (Map.Entry<String, Object> entry : entries) {
+        permissionsById.put(entry.getKey(), (Permissions) entry.getValue());
+      }
+    }
   }
   public AVACL(AVACL other) {
     permissionsById.putAll(other.permissionsById);

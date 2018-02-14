@@ -27,6 +27,8 @@ public class AVObject {
   public static final String KEY_CREATED_AT = "createdAt";
   public static final String KEY_UPDATED_AT = "updatedAt";
   public static final String KEY_OBJECT_ID = "objectId";
+  public static final String KEY_ACL = "acl";
+
   static final String KEY_CLASSNAME = "className";
 
   private static final Set<String> RESERVED_ATTRS = new HashSet<String>(
@@ -41,6 +43,7 @@ public class AVObject {
   protected String objectId = "";
   protected Map<String, Object> serverData = new ConcurrentHashMap<String, Object>();
   protected Map<String, ObjectFieldOperation> operations = new ConcurrentHashMap<String, ObjectFieldOperation>();
+  protected AVACL acl = null;
 
   public AVObject(String className) {
     this.className = className;
@@ -301,6 +304,33 @@ public class AVObject {
     // register object serializer/deserializer.
     ParserConfig.getGlobalInstance().putDeserializer(clazz, new ObjectTypeAdapter());
     SerializeConfig.getGlobalInstance().put(clazz, new ObjectTypeAdapter());
+  }
+
+  /**
+   * ACL
+   */
+  public AVACL getACL() {
+    if (null == this.acl) {
+      synchronized (this) {
+        if (null == this.acl) {
+          this.acl = generateACLFromServerData();
+        }
+      }
+    }
+    return this.acl;
+  }
+
+  public void setACL(AVACL acl) {
+    this.acl = acl;
+  }
+
+  private AVACL generateACLFromServerData() {
+    if (!this.serverData.containsKey(KEY_ACL)) {
+      return new AVACL();
+    } else {
+      JSONObject obj = (JSONObject) this.serverData.get(KEY_ACL);
+      return new AVACL(obj);
+    }
   }
 
   /**
