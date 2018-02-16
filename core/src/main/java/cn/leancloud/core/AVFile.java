@@ -8,10 +8,10 @@ public final class AVFile {
   private Map<String, Object> metaData = new ConcurrentHashMap<String, Object>();
 
   public AVFile() {
-
   }
+
   public static String getClassName() {
-    return "";
+    return "_File";
   }
 
   public String getName() {

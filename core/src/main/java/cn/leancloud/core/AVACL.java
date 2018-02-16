@@ -54,6 +54,10 @@ public class AVACL {
     setWriteAccess(owner, true);
   }
 
+  public Map<String, Permissions> getPermissionsById() {
+    return permissionsById;
+  }
+
   private void setPermissionsIfNonEmpty(String userId, boolean readPermission, boolean writePermission) {
     if (!(readPermission || writePermission)) {
       permissionsById.remove(userId);
