@@ -27,12 +27,12 @@ public class AVObject {
   public static final String KEY_CREATED_AT = "createdAt";
   public static final String KEY_UPDATED_AT = "updatedAt";
   public static final String KEY_OBJECT_ID = "objectId";
-  public static final String KEY_ACL = "acl";
+  public static final String KEY_ACL = "ACL";
 
   static final String KEY_CLASSNAME = "className";
 
   private static final Set<String> RESERVED_ATTRS = new HashSet<String>(
-          Arrays.asList(KEY_CREATED_AT, KEY_UPDATED_AT, KEY_OBJECT_ID));
+          Arrays.asList(KEY_CREATED_AT, KEY_UPDATED_AT, KEY_OBJECT_ID, KEY_ACL));
   private final static Map<String, Class<? extends AVObject>> SUB_CLASSES_MAP =
           new HashMap<String, Class<? extends AVObject>>();
   private final static Map<Class<? extends AVObject>, String> SUB_CLASSES_REVERSE_MAP =
@@ -232,6 +232,11 @@ public class AVObject {
     for (Map.Entry<String, ObjectFieldOperation> entry: entries) {
       Map<String, Object> oneOp = entry.getValue().encode();
       params.putAll(oneOp);
+    }
+    if (null != this.acl) {
+      // TODO: need to check whether acl is changed or not.
+      ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Set, KEY_ACL, acl);
+      params.putAll(op.encode());
     }
     JSONObject paramData = new JSONObject(params);
     if (StringUtil.isEmpty(getObjectId())) {

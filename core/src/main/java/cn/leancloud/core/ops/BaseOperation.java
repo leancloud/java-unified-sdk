@@ -62,7 +62,7 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     } else if (o instanceof AVGeoPoint) {
       return encodeGeoPointer((AVGeoPoint) o);
     }else if (o instanceof AVACL) {
-      ;
+      return ((AVACL) o).toJSONObject();
     } else if (o instanceof AVFile) {
       return encodeAVFile((AVFile) o);
     } else if (o instanceof Date) {

@@ -1,8 +1,11 @@
 package cn.leancloud.core;
 
 import cn.leancloud.utils.StringUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.sun.xml.internal.xsom.impl.scd.Iterators;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,26 +14,40 @@ import java.util.Set;
 public class AVACL {
   private static final String PUBLIC_KEY = "*";
   private static final String ROLE_PREFIX = "role:";
+  private static final String KEY_READ_PERMISSION = "read";
+  private static final String KEY_WRITE_PERMISSION = "write";
 
-  private static class Permissions {
-    @JSONField(name = "read")
-    private boolean readPermission = false;
-    @JSONField(name = "write")
-    private boolean writePermission = false;
+  private static class Permissions extends HashMap<String, Boolean> {
+
     Permissions(boolean read, boolean write) {
-      readPermission = read;
-      writePermission = write;
+      super();
+      if (read) {
+        put(KEY_READ_PERMISSION, read);
+      }
+      if (write) {
+        put(KEY_WRITE_PERMISSION, write);
+      }
     }
+
     Permissions(Permissions permissions) {
-      this.readPermission = permissions.readPermission;
-      this.writePermission = permissions.writePermission;
+      super();
+      if (null == permissions) {
+        return;
+      }
+      if (permissions.getReadPermission()) {
+        put(KEY_READ_PERMISSION, true);
+      }
+      if (permissions.getWritePermission()) {
+        put(KEY_WRITE_PERMISSION, true);
+      }
     }
+
     boolean getReadPermission() {
-      return readPermission;
+      return get(KEY_READ_PERMISSION);
     }
 
     boolean getWritePermission() {
-      return writePermission;
+      return get(KEY_WRITE_PERMISSION);
     }
   }
 
@@ -46,6 +63,7 @@ public class AVACL {
       }
     }
   }
+
   public AVACL(AVACL other) {
     permissionsById.putAll(other.permissionsById);
   }
@@ -58,11 +76,17 @@ public class AVACL {
     return permissionsById;
   }
 
+  public JSONObject toJSONObject() {
+    String jsonStr = JSON.toJSONString(this.permissionsById, SerializerFeature.WriteMapNullValue,
+            SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero);
+    return JSON.parseObject(jsonStr);
+  }
+
   private void setPermissionsIfNonEmpty(String userId, boolean readPermission, boolean writePermission) {
     if (!(readPermission || writePermission)) {
+      System.out.println("remove permission for userId:" + userId);
       permissionsById.remove(userId);
-    }
-    else {
+    } else {
       permissionsById.put(userId, new Permissions(readPermission, writePermission));
     }
   }

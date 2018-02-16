@@ -36,7 +36,7 @@ public class SetOperation extends BaseOperation {
 
   public Map<String, Object> encode() {
     Map<String, Object> result = new HashMap<String, Object>();
-    result.put(getField(), getValue());
+    result.put(getField(), encodeObject(getValue()));
     return result;
   }
 }

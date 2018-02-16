@@ -64,6 +64,34 @@ public class AVObjectTest extends TestCase {
     });
   }
 
+  public void testCreateObjectWithACL() {
+    AVACL acl = new AVACL();
+    acl.setPublicWriteAccess(false);
+    acl.setPublicReadAccess(true);
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 19);
+    object.setACL(acl);
+    object.saveInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVObject avObject) {
+        System.out.println("create object finished. objectId=" + avObject.getObjectId() + ", className=" + avObject.getClassName());
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+
+  }
+
   public void testCreateObject() {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
