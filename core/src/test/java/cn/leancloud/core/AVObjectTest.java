@@ -79,6 +79,25 @@ public class AVObjectTest extends TestCase {
 
       public void onNext(AVObject avObject) {
         System.out.println("create object finished. objectId=" + avObject.getObjectId() + ", className=" + avObject.getClassName());
+        avObject.deleteInBackground().subscribe(new Observer<Void>() {
+          public void onSubscribe(Disposable disposable) {
+            ;
+          }
+
+          public void onNext(Void aVoid) {
+            System.out.println("delete object finished.");
+            fail();
+          }
+
+          public void onError(Throwable throwable) {
+            System.out.println("delete object failed.");
+            throwable.printStackTrace();
+            assertNotNull(throwable);
+          }
+
+          public void onComplete() {
+          }
+        });
       }
 
       public void onError(Throwable throwable) {

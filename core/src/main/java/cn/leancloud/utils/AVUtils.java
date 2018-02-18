@@ -1,5 +1,7 @@
 package cn.leancloud.utils;
 
+import com.alibaba.fastjson.JSON;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,15 +27,7 @@ public class AVUtils {
     return Math.sqrt(distance);
   }
 
-  public static Map<String, Object> createDeleteOpMap(String key) {
-    Map<String, Object> map = new HashMap<String, Object>();
-    map.put("__op", "Delete");
-    Map<String, Object> result = new HashMap<String, Object>();
-    result.put(key, map);
-    return result;
-  }
-
-  public static Object getParsedObject(Object object) {
-    return null;
+  public static String getJSONString(Map<String, Object> parameters) {
+    return JSON.toJSONString(parameters);
   }
 }

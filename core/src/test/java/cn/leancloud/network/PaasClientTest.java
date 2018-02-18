@@ -7,14 +7,13 @@ import cn.leancloud.core.convertor.ObserverBuilder;
 import cn.leancloud.core.types.AVDate;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AVObject;
-import cn.leancloud.internal.FileUploadToken;
+import cn.leancloud.upload.FileUploadToken;
 import com.alibaba.fastjson.JSON;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import io.reactivex.Observer;
-import io.reactivex.functions.Action;
 
 public class PaasClientTest extends TestCase {
   public PaasClientTest(String testName) {

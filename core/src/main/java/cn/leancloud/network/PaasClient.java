@@ -1,5 +1,6 @@
 package cn.leancloud.network;
 
+import cn.leancloud.core.AVACL;
 import cn.leancloud.core.service.APIService;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
@@ -15,6 +16,7 @@ public class PaasClient {
   private static StorageClient storageClient = null;
   static SchedulerCreator defaultScheduler = null;
   static boolean asynchronized = false;
+  private static AVACL defaultACL;
   public static interface SchedulerCreator{
     Scheduler create();
   }
@@ -22,6 +24,10 @@ public class PaasClient {
   public static void config(boolean asyncRequest, SchedulerCreator observerSchedulerCreator) {
     asynchronized = asyncRequest;
     defaultScheduler = observerSchedulerCreator;
+  }
+
+  public static AVACL getDefaultACL() {
+    return defaultACL;
   }
 
   public static StorageClient getStorageClient () {

@@ -1,4 +1,4 @@
-package cn.leancloud.internal;
+package cn.leancloud.upload;
 
 public class FileUploadToken {
 }

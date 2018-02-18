@@ -3,13 +3,11 @@ package cn.leancloud.network;
 import cn.leancloud.core.AVObject;
 import cn.leancloud.core.service.APIService;
 import cn.leancloud.core.types.AVDate;
-import cn.leancloud.internal.FileUploadToken;
+import cn.leancloud.upload.FileUploadToken;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-
-import java.io.IOException;
 
 public class StorageClient {
   private APIService apiService = null;
@@ -72,9 +70,12 @@ public class StorageClient {
     });
   }
 
-  public Observable<FileUploadToken> newUploadToken() {
-    Observable<FileUploadToken> token = wrappObservable(apiService.createUploadToken());
-    return token;
+  public Observable<FileUploadToken> newUploadToken(String fileData) {
+    return apiService.createUploadToken(fileData).subscribeOn(Schedulers.io()).observeOn(Schedulers.newThread());
+  }
+
+  public Observable<Void> fileCallback(String result) {
+    return apiService.fileCallback(result).subscribeOn(Schedulers.io()).observeOn(Schedulers.newThread());
   }
 
   public Observable<Void> batchSave(JSONObject parameter) {

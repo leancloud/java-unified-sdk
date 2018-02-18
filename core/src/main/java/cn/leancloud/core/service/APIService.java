@@ -4,7 +4,7 @@ import cn.leancloud.core.AVObject;
 import cn.leancloud.core.AVRole;
 import cn.leancloud.core.AVUser;
 import cn.leancloud.core.types.AVDate;
-import cn.leancloud.internal.FileUploadToken;
+import cn.leancloud.upload.FileUploadToken;
 import io.reactivex.Observable;
 import retrofit2.http.*;
 
@@ -34,7 +34,10 @@ public interface APIService {
   Observable<Void> deleteObject(@Path("className") String className, @Path("objectId") String objectId);
 
   @POST("/1.1/filetokens")
-  Observable<FileUploadToken> createUploadToken();
+  Observable<FileUploadToken> createUploadToken(@Body String fileData);
+
+  @POST("/1.1/fileCallback")
+  Observable<Void> fileCallback(@Body String result);
 
   @GET("/1.1/date")
   Observable<AVDate> currentTimeMillis();
