@@ -125,7 +125,7 @@ public abstract class BaseOperation implements ObjectFieldOperation {
 
   protected Object encodeAVFile(AVFile o) {
     Map<String, Object> result = new HashMap<String, Object>();
-    result.put("__type", AVFile.getClassName());
+    result.put("__type", "_File");
     result.put("metaData", o.getMetaData());
     result.put("id", o.getName());
     return result;

@@ -4,6 +4,7 @@ import cn.leancloud.AVException;
 import cn.leancloud.ProgressCallback;
 import cn.leancloud.codec.MD5;
 import cn.leancloud.core.cache.FileCache;
+import cn.leancloud.core.cache.PersistenceUtil;
 import cn.leancloud.core.ops.ObjectFieldOperation;
 import cn.leancloud.core.ops.OperationBuilder;
 import cn.leancloud.network.PaasClient;
@@ -49,6 +50,7 @@ public final class AVFile extends AVObject {
   }
 
   private String localPath = "";
+  private String cachePath = "";
 
   public AVFile() {
     super(CLASS_NAME);
@@ -59,24 +61,16 @@ public final class AVFile extends AVObject {
 
   public AVFile(String name, byte[] data) {
     this();
+    if (null == data) {
+      throw new IllegalArgumentException("data is illegal(null)");
+    }
     internalPut(KEY_FILE_NAME, name);
     addMetaData(FILE_NAME_KEY, name);
-    if (null != data) {
-      String md5 = MD5.computeMD5(data);
-      localPath = FileCache.getIntance().saveData(md5, data);
-      addMetaData(FILE_SUM_KEY, md5);
-      addMetaData(FILE_LENGTH_KEY, data.length);
-    } else {
-      addMetaData(FILE_LENGTH_KEY, 0);
-    }
-  }
-
-  public AVFile(String name, String url) {
-    this(name, url, null);
-  }
-
-  public AVFile(String name, String url, Map<String, Object> metaData) {
-    this(name, url, metaData, true);
+    String md5 = MD5.computeMD5(data);
+    localPath = FileCache.getIntance().saveData(md5, data);
+    addMetaData(FILE_SUM_KEY, md5);
+    addMetaData(FILE_LENGTH_KEY, data.length);
+    internalPut(KEY_MIME_TYPE, FileUtil.getMimeTypeFromLocalFile(name));
   }
 
   public AVFile(String name, File localFile) {
@@ -87,9 +81,18 @@ public final class AVFile extends AVObject {
     internalPut(KEY_FILE_NAME, name);
     addMetaData(FILE_NAME_KEY, name);
     String md5 = MD5.computeFileMD5(localFile);
-    FileCache.getIntance().saveLocalFile(md5, localFile);
+    localPath = localFile.getAbsolutePath();
     addMetaData(FILE_SUM_KEY, md5);
     addMetaData(FILE_LENGTH_KEY, localFile.length());
+    internalPut(KEY_MIME_TYPE, FileUtil.getMimeTypeFromLocalFile(localPath));
+  }
+
+  public AVFile(String name, String url) {
+    this(name, url, null);
+  }
+
+  public AVFile(String name, String url, Map<String, Object> metaData) {
+    this(name, url, metaData, true);
   }
 
   protected AVFile(String name, String url, Map<String, Object> metaData, boolean external) {
@@ -105,6 +108,7 @@ public final class AVFile extends AVObject {
       meta.put(FILE_SOURCE_KEY, FILE_SOURCE_EXTERNAL);
     }
     internalPut(KEY_METADATA, meta);
+    internalPut(KEY_MIME_TYPE, FileUtil.getMimeTypeFromUrl(url));
   }
 
   private Object internalGet(String key) {
@@ -173,7 +177,7 @@ public final class AVFile extends AVObject {
   }
 
   public int getSize() {
-    Number size = (Number) getMetaData("size");
+    Number size = (Number) getMetaData(FILE_LENGTH_KEY);
     if (size != null)
       return size.intValue();
     else
@@ -322,10 +326,35 @@ public final class AVFile extends AVObject {
   }
 
   @JSONField(serialize = false)
-  public InputStream getDataStream() throws AVException {
+  public byte[] getData() throws AVException {
+    // FIXME: need to push background.
     String filePath = "";
     if(!StringUtil.isEmpty(localPath)) {
       filePath = localPath;
+    } else if (!StringUtil.isEmpty(cachePath)) {
+      filePath = cachePath;
+    } else if (!StringUtil.isEmpty(getUrl())) {
+      File cacheFile = FileCache.getIntance().getCacheFile(getUrl());
+      if (null == cacheFile || !cacheFile.exists()) {
+        FileDownloader downloader = new FileDownloader();
+        downloader.execute(getUrl());
+      }
+      filePath = cacheFile.getAbsolutePath();
+    }
+    if(!StringUtil.isEmpty(filePath)) {
+      return PersistenceUtil.sharedInstance().readContentBytesFromFile(new File(filePath));
+    }
+    return null;
+  }
+
+  @JSONField(serialize = false)
+  public InputStream getDataStream() throws AVException {
+    // FIXME: need to push background.
+    String filePath = "";
+    if(!StringUtil.isEmpty(localPath)) {
+      filePath = localPath;
+    } else if (!StringUtil.isEmpty(cachePath)) {
+      filePath = cachePath;
     } else if (!StringUtil.isEmpty(getUrl())) {
       File cacheFile = FileCache.getIntance().getCacheFile(getUrl());
       if (null == cacheFile || !cacheFile.exists()) {

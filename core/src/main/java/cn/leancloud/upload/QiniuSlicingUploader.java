@@ -31,7 +31,6 @@ class QiniuSlicingUploader extends HttpClientUploader {
     this.qiniuAccessor = new QiniuAccessor(getOKHttpClient(), token, avFile.getKey());
   }
 
-  @Override
   public AVException execute() {
     boolean isWifi = true;
     if (!isWifi) {
@@ -95,7 +94,7 @@ class QiniuSlicingUploader extends HttpClientUploader {
       }
       QiniuAccessor.QiniuMKFileResponseData finalResponse = this.qiniuAccessor.makeFile(fileSize, uploadFileCtxs, DEFAULT_RETRY_TIMES);
       if (finalResponse == null || !finalResponse.key.equals(fileKey)) {
-        return AVErrorUtils.createException(AVException.OTHER_CAUSE, "upload file failure");
+        return new AVException(AVException.OTHER_CAUSE, "upload file failure");
       }
     } catch (Exception ex) {
       return new AVException(ex);

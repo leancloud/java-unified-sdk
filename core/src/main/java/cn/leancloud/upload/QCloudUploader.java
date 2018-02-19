@@ -2,15 +2,13 @@ package cn.leancloud.upload;
 
 import cn.leancloud.AVException;
 import cn.leancloud.ProgressCallback;
-import cn.leancloud.SaveCallback;
+import cn.leancloud.codec.SHA1;
 import cn.leancloud.core.AVFile;
-import cn.leancloud.core.cache.FileCache;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
 
-import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 
@@ -52,6 +50,7 @@ public class QCloudUploader extends HttpClientUploader {
       byte[] bytes = avFile.getData();
       int sliceCount =
               (bytes.length / DEFAULT_SLICE_LEN) + (bytes.length % DEFAULT_SLICE_LEN == 0 ? 0 : 1);
+
       // 如果文件太小就没必要分片了
       if (sliceCount > 1) {
         JSONObject result = uploadControlSlice(token, uploadUrl, bytes);
@@ -70,13 +69,14 @@ public class QCloudUploader extends HttpClientUploader {
                     publishProgress(progress);
                   }
                 });
-        for (int sliceOffset = 0; sliceOffset < sliceCount && !AVExceptionHolder.exists(); sliceOffset++) {
-          new SliceUploadTask(this, fileKey, token, uploadUrl, bytes,
-                  sliceOffset,
-                  sessionId, progressCalculator, null).upload();
+        String sliceUploadResult = "";
+        int sliceOffset = 0;
+        for (; sliceOffset < sliceCount && null != sliceUploadResult; sliceOffset++) {
+          sliceUploadResult = new SliceUploadTask(this, fileKey, token, uploadUrl,
+                  bytes, sliceOffset, sessionId, progressCalculator, null).upload();
         }
-        if (AVExceptionHolder.exists()) {
-          throw AVExceptionHolder.remove();
+        if (sliceOffset < sliceCount) {
+          return new AVException(AVException.OTHER_CAUSE, "failed to upload slice.");
         }
       } else {
         uploadFile();
@@ -91,8 +91,8 @@ public class QCloudUploader extends HttpClientUploader {
   private void uploadFile() throws AVException {
 
     try {
-      byte[] bytes = FileCache.getIntance().readData(avFile.getName());// TODO: fix me!
-      fileSha = AVUtils.SHA1(bytes);
+      byte[] bytes = avFile.getData();// TODO: fix me!
+      fileSha = SHA1.compute(bytes);
       MultipartBody.Builder builder = new MultipartBody.Builder();
       RequestBody fileBody =
               RequestBody.create(MediaType.parse(APPLICATION_OCTET_STREAM), bytes, 0,
@@ -120,12 +120,12 @@ public class QCloudUploader extends HttpClientUploader {
       Request request = requestBuilder.build();
       Response response = executeWithRetry(request, RETRY_TIMES);
       if (response.code() != 200) {
-        throw AVErrorUtils.createException(AVException.OTHER_CAUSE,
-                AVUtils.stringFromBytes(response.body().bytes()));
+        throw new AVException(AVException.OTHER_CAUSE,
+                StringUtil.stringFromBytes(response.body().bytes()));
       }
     } catch (Exception e) {
 
-      throw AVErrorUtils.createException(e, "Exception during file upload");
+      throw new AVException("Exception during file upload", e);
     }
   }
 
@@ -151,7 +151,7 @@ public class QCloudUploader extends HttpClientUploader {
           throws AVException {
     MultipartBody.Builder builder = new MultipartBody.Builder();
     try {
-      String fileSha = AVUtils.SHA1(wholeFile);
+      String fileSha = SHA1.compute(wholeFile);
       builder.addFormDataPart(PARAM_SHA, fileSha);
       builder.addFormDataPart(PARAM_OP, OP_UPLOAD_SLICE);
       builder.addFormDataPart(PARAM_FILE_SIZE, String.valueOf(wholeFile.length));
@@ -242,7 +242,6 @@ public class QCloudUploader extends HttpClientUploader {
           return StringUtil.stringFromBytes(responseBody);
         }
       } catch (Exception e) {
-        AVExceptionHolder.add(new AVException(e));
         if (latch != null) {
           long count = latch.getCount();
           for (; count > 0; count--) {

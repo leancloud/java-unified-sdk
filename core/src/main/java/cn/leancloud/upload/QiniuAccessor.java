@@ -88,7 +88,7 @@ class QiniuAccessor {
     if (code == 401) {
       throw new Exception("unauthorized to create Qiniu Block");
     }
-    String responseData = AVUtils.stringFromBytes(resp.body().bytes());
+    String responseData = StringUtil.stringFromBytes(resp.body().bytes());
     try {
       if (code / 100 == 2) {
         T data = JSON.parseObject(responseData, clazz);
@@ -204,7 +204,6 @@ class QiniuAccessor {
       validateCrc32Value(respData, currentChunkData, 0, currentChunkSize);
       return respData;
     } catch (Exception e) {
-      LogUtil.log.e("encounter exception during file uploading(bput). retry=" + retry, e);
       if (retry-- > 0) {
         return putFileBlocksToQiniu(lastChunk, blockOffset, currentChunkData, currentChunkSize, retry);
       }
@@ -254,7 +253,7 @@ class QiniuAccessor {
     try {
       String endPoint = String.format(QINIU_MKFILE_EP, fileTotalSize,
               Base64.encode(this.fileKey.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP));
-      final String joinedFileCtx = AVUtils.joinCollection(uploadFileCtxs, ",");
+      final String joinedFileCtx = StringUtil.join(",", uploadFileCtxs);
       Request.Builder builder = new Request.Builder();
       builder.url(endPoint);
       builder.addHeader(HEAD_CONTENT_TYPE, TEXT_CONTENT_TYPE);

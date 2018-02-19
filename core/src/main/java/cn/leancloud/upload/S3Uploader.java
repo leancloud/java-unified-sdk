@@ -2,8 +2,9 @@ package cn.leancloud.upload;
 
 import cn.leancloud.AVException;
 import cn.leancloud.ProgressCallback;
-import cn.leancloud.SaveCallback;
 import cn.leancloud.core.AVFile;
+import cn.leancloud.utils.FileUtil;
+import cn.leancloud.utils.StringUtil;
 import okhttp3.*;
 
 import java.io.IOException;
@@ -43,7 +44,6 @@ class S3Uploader extends HttpClientUploader {
     this.uploadUrl = uploadUrl;
   }
 
-  @Override
   public AVException execute() {
     try {
       byte[] bytes = avFile.getData();
@@ -67,7 +67,7 @@ class S3Uploader extends HttpClientUploader {
       String serverResponse = null;
       try{
         // decide file mimetype.
-        String mimeType = AVFileUtil.getFileMimeType(avFile);
+        String mimeType = FileUtil.getFileMimeType(avFile);
 
         // upload to s3
         Request.Builder builder = new Request.Builder();
@@ -96,12 +96,12 @@ class S3Uploader extends HttpClientUploader {
         response = call.execute();
         // The 204 status code implies no response is needed
         if (2 != (response.code() / 100)) {
-          serverResponse = AVUtils.stringFromBytes(response.body().bytes());
+          serverResponse = StringUtil.stringFromBytes(response.body().bytes());
           if(retryTimes>0){
             retryTimes -- ;
             executeWithRetry(data);
           }else {
-            return AVErrorUtils.createException(AVException.OTHER_CAUSE, "upload file failure:" + response.code());
+            return new AVException(AVException.OTHER_CAUSE, "upload file failure:" + response.code());
           }
         }
       }catch (IOException exception){

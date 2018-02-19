@@ -1,5 +1,6 @@
 package cn.leancloud.core.cache;
 
+import cn.leancloud.codec.MD5;
 import cn.leancloud.utils.StringUtil;
 
 import java.io.File;
@@ -40,7 +41,12 @@ public class FileCache {
   }
 
   public File getCacheFile(String url) {
-    return null;
+    try {
+      String urlMd5 = MD5.computeMD5(url.getBytes("UTF-8"));
+      return new File(PersistenceUtil.sharedInstance().getFileCacheDir(), urlMd5);
+    } catch (Exception ex) {
+      return null;
+    }
   }
 
   public InputStream getInputStreamFromFile(File file) {

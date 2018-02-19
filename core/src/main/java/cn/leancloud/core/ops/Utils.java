@@ -55,7 +55,7 @@ public class Utils {
 
   public static Map<String, Object> mapFromFile(AVFile file) {
     Map<String, Object> result = new HashMap<String, Object>();
-    result.put("__type", AVFile.getClassName());
+    result.put("__type", "_File");
     result.put("metaData", file.getMetaData());
     result.put("id", file.getName());
     return result;

@@ -23,6 +23,33 @@ public class StringUtil {
     return isoDate;
   }
 
+  public static String stringFromBytes(byte[] data) {
+    try {
+      return new String(data, "UTF-8");
+    } catch (Exception e) {
+      // e.printStackTrace();
+    }
+    return null;
+  }
+
+  public static String join(CharSequence delimiter,
+                            Iterable<? extends CharSequence> elements) {
+    if (null == delimiter || null == elements) {
+      return "";
+    }
+    StringBuilder sb = new StringBuilder();
+    boolean isFirstElem = true;
+    for (CharSequence cs: elements) {
+      if (!isFirstElem) {
+        sb.append(delimiter);
+      } else {
+        isFirstElem = false;
+      }
+      sb.append(cs);
+    }
+    return sb.toString();
+  }
+
   static Random random = new Random(System.currentTimeMillis());
 
   public static String getRandomString(int length) {
