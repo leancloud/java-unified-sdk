@@ -337,7 +337,7 @@ public final class AVFile extends AVObject {
       File cacheFile = FileCache.getIntance().getCacheFile(getUrl());
       if (null == cacheFile || !cacheFile.exists()) {
         FileDownloader downloader = new FileDownloader();
-        downloader.execute(getUrl());
+        downloader.execute(getUrl(), cacheFile);
       }
       filePath = cacheFile.getAbsolutePath();
     }
@@ -359,7 +359,7 @@ public final class AVFile extends AVObject {
       File cacheFile = FileCache.getIntance().getCacheFile(getUrl());
       if (null == cacheFile || !cacheFile.exists()) {
         FileDownloader downloader = new FileDownloader();
-        downloader.execute(getUrl());
+        downloader.execute(getUrl(), cacheFile);
       }
       filePath = cacheFile.getAbsolutePath();
     }

@@ -59,7 +59,7 @@ public class PersistenceUtil {
     return analyticsCacheDir;
   }
 
-  ReentrantReadWriteLock getLock(String path) {
+  public ReentrantReadWriteLock getLock(String path) {
     ReentrantReadWriteLock lock = fileLocks.get(path);
     if (lock == null) {
       lock = new ReentrantReadWriteLock();
