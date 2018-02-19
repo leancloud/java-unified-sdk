@@ -18,6 +18,11 @@ public class FileCache {
     return path;
   }
 
+  public byte[] readData(String fileName) {
+    String path = PersistenceUtil.sharedInstance().getFileCacheDir() + fileName;
+    return PersistenceUtil.sharedInstance().readContentBytesFromFile(new File(path));
+  }
+
   public String saveLocalFile(String name, File localFile) {
     if (StringUtil.isEmpty(name)) {
       return null;

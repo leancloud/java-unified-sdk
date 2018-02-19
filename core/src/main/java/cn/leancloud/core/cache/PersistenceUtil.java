@@ -109,6 +109,38 @@ public class PersistenceUtil {
     return succeed;
   }
 
+  public byte[] readContentBytesFromFile(File fileForRead) {
+    if (fileForRead == null) {
+      return null;
+    };
+    if (!fileForRead.exists() || !fileForRead.isFile()) {
+      return null;
+    }
+    Lock readLock = getLock(fileForRead.getAbsolutePath()).readLock();
+    readLock.lock();
+    byte[] data = null;
+    InputStream input = null;
+    try {
+      data = new byte[(int) fileForRead.length()];
+      int totalBytesRead = 0;
+      input = new BufferedInputStream(new FileInputStream(fileForRead), 8192);
+      while (totalBytesRead < data.length) {
+        int bytesRemaining = data.length - totalBytesRead;
+        int bytesRead = input.read(data, totalBytesRead, bytesRemaining);
+        if (bytesRead > 0) {
+          totalBytesRead = totalBytesRead + bytesRead;
+        }
+      }
+      return data;
+    } catch (IOException e) {
+      ;
+    } finally {
+      closeQuietly(input);
+      readLock.unlock();
+    }
+    return null;
+  }
+
   public boolean deleteFile(String localPath) {
     return deleteFile(new File(localPath));
   }

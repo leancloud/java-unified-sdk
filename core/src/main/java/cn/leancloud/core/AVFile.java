@@ -2,7 +2,6 @@ package cn.leancloud.core;
 
 import cn.leancloud.AVException;
 import cn.leancloud.ProgressCallback;
-import cn.leancloud.SaveCallback;
 import cn.leancloud.codec.MD5;
 import cn.leancloud.core.cache.FileCache;
 import cn.leancloud.core.ops.ObjectFieldOperation;
@@ -13,10 +12,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import cn.leancloud.upload.FileDownloader;
-import cn.leancloud.upload.FileUploader;
-import cn.leancloud.upload.Uploader;
-import cn.leancloud.upload.UrlDirectlyUploader;
+
+import cn.leancloud.upload.*;
 import cn.leancloud.utils.AVLogger;
 import cn.leancloud.utils.FileUtil;
 import cn.leancloud.utils.LogUtil;
@@ -24,6 +21,7 @@ import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 
 public final class AVFile extends AVObject {
   private static AVLogger logger = LogUtil.getLogger(AVFile.class);
@@ -182,8 +180,20 @@ public final class AVFile extends AVObject {
       return -1;
   }
 
+  public String getMimeType() {
+    return (String) internalGet(KEY_MIME_TYPE);
+  }
+
+  public void setMimeType(String mimeType) {
+    internalPut(KEY_MIME_TYPE, mimeType);
+  }
+
   public static String getMimeType(String url) {
     return FileUtil.getMimeTypeFromUrl(url);
+  }
+
+  public String getKey() {
+    return (String) internalGet(KEY_FILE_KEY);
   }
 
   public String getBucket() {
@@ -263,15 +273,11 @@ public final class AVFile extends AVObject {
     this.acl = acl;
   }
 
-  public synchronized void saveInBackground(final SaveCallback saveCallback,
-                                            final ProgressCallback progressCallback) {
+  public synchronized void saveInBackground(final ProgressCallback progressCallback) {
     if (StringUtil.isEmpty(objectId)) {
-      Uploader uploader = getUploader(saveCallback, progressCallback);
+      Uploader uploader = getUploader(progressCallback);
       uploader.execute();
     } else {
-      if (null != saveCallback) {
-        saveCallback.internalDone(null);
-      }
       if (null != progressCallback) {
         progressCallback.internalDone(100, null);
       }
@@ -282,22 +288,36 @@ public final class AVFile extends AVObject {
   public Observable<AVObject> saveInBackground() {
     JSONObject paramData = generateChangedParam();
     if (StringUtil.isEmpty(getObjectId())) {
-      return PaasClient.getStorageClient().createObject(this.className, paramData);
+      PaasClient.getStorageClient().newUploadToken(paramData.toJSONString())
+              .subscribe(new Consumer<FileUploadToken>() {
+                public void accept(FileUploadToken fileUploadToken) throws Exception {
+                  AVFile.this.setObjectId(fileUploadToken.getObjectId());
+                  AVFile.this.internalPutDirectly(KEY_URL, fileUploadToken.getUrl());
+                  AVFile.this.internalPutDirectly(KEY_OBJECT_ID, fileUploadToken.getObjectId());
+                  AVFile.this.internalPutDirectly(KEY_BUCKET, fileUploadToken.getBucket());
+                  AVFile.this.internalPutDirectly(KEY_PROVIDER, fileUploadToken.getProvider());
+                  Uploader uploader = getUploader(null);
+                  AVException exception = uploader.execute();
+                  if (null != exception) {
+
+                  }
+                }
+              }, new Consumer<Throwable>() {
+                public void accept(Throwable throwable) throws Exception {
+                }
+              });
+      return null;
     } else {
-      return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData);
+      return Observable.just((AVObject) this);
     }
   }
 
-  private Uploader getUploader(SaveCallback saveCallback, ProgressCallback progressCallback) {
-    Uploader.UploadCallback callback = new Uploader.UploadCallback() {
-      public void finishedWithResults(String finalObjectId, String finalUrl) {
-        // handleUploadedResponse(finalObjectId, finalObjectId, finalUrl);
-      }
-    };
+  private Uploader getUploader(ProgressCallback progressCallback) {
+
     if (StringUtil.isEmpty(getUrl())) {
-      return new FileUploader(this, saveCallback, progressCallback, callback);
+      return new FileUploader(this, progressCallback);
     } else {
-      return new UrlDirectlyUploader(this, saveCallback, progressCallback, callback);
+      return new UrlDirectlyUploader(this, progressCallback);
     }
   }
 
@@ -310,7 +330,7 @@ public final class AVFile extends AVObject {
       File cacheFile = FileCache.getIntance().getCacheFile(getUrl());
       if (null == cacheFile || !cacheFile.exists()) {
         FileDownloader downloader = new FileDownloader();
-        downloader.doWork(getUrl());
+        downloader.execute(getUrl());
       }
       filePath = cacheFile.getAbsolutePath();
     }

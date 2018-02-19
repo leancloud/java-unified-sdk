@@ -38,13 +38,13 @@ class S3Uploader extends HttpClientUploader {
    */
   private static int writeTimeout = 0;
 
-  S3Uploader(AVFile avFile, String uploadUrl, SaveCallback saveCallback, ProgressCallback progressCallback) {
-    super(avFile, saveCallback, progressCallback);
+  S3Uploader(AVFile avFile, String uploadUrl, ProgressCallback progressCallback) {
+    super(avFile, progressCallback);
     this.uploadUrl = uploadUrl;
   }
 
   @Override
-  public AVException doWork() {
+  public AVException execute() {
     try {
       byte[] bytes = avFile.getData();
 
@@ -97,7 +97,6 @@ class S3Uploader extends HttpClientUploader {
         // The 204 status code implies no response is needed
         if (2 != (response.code() / 100)) {
           serverResponse = AVUtils.stringFromBytes(response.body().bytes());
-          LogUtil.avlog.e(serverResponse);
           if(retryTimes>0){
             retryTimes -- ;
             executeWithRetry(data);

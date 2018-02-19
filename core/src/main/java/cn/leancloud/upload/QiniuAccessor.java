@@ -265,7 +265,6 @@ class QiniuAccessor {
       Response response = this.client.newCall(builder.build()).execute();
       return parseQiniuResponse(response, QiniuMKFileResponseData.class);
     } catch (Exception e) {
-      LogUtil.log.e("encounter exception during file uploading(mkfile). retry=" + retry, e);
       if (retry-- > 0) {
         return makeFile(fileTotalSize, uploadFileCtxs, retry);
       }

@@ -16,27 +16,25 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public abstract class HttpClientUploader implements Uploader {
-  SaveCallback saveCallback;
   ProgressCallback progressCallback;
   private static OkHttpClient client;
 
   private volatile boolean cancelled = false;
-  private volatile Future future;
-  static ThreadPoolExecutor executor;
+//  static ThreadPoolExecutor executor;
 
-  private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
-  private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
-  private static final int MAX_POOL_SIZE = CPU_COUNT * 2 + 1;
-  private static final long KEEP_ALIVE_TIME = 1L;
+//  private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+//  private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
+//  private static final int MAX_POOL_SIZE = CPU_COUNT * 2 + 1;
+//  private static final long KEEP_ALIVE_TIME = 1L;
   protected static final int DEFAULT_RETRY_TIMES = 6;
 
-  static {
-    executor = new ThreadPoolExecutor(
-            CORE_POOL_SIZE,
-            MAX_POOL_SIZE,
-            KEEP_ALIVE_TIME, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<Runnable>());
-  }
+//  static {
+//    executor = new ThreadPoolExecutor(
+//            CORE_POOL_SIZE,
+//            MAX_POOL_SIZE,
+//            KEEP_ALIVE_TIME, TimeUnit.SECONDS,
+//            new LinkedBlockingQueue<Runnable>());
+//  }
 
   protected static synchronized OkHttpClient getOKHttpClient() {
     if (null == client) {
@@ -47,14 +45,10 @@ public abstract class HttpClientUploader implements Uploader {
     }
     return client;
   }
-
-  protected String finalUrl = "";
-  protected String finalObjectId = "";
   protected AVFile avFile = null;
 
-  public HttpClientUploader(AVFile file, SaveCallback saveCallback, ProgressCallback progressCallback) {
+  public HttpClientUploader(AVFile file, ProgressCallback progressCallback) {
     this.avFile = file;
-    this.saveCallback = saveCallback;
     this.progressCallback = progressCallback;
     cancelled = false;
   }
@@ -77,40 +71,7 @@ public abstract class HttpClientUploader implements Uploader {
   }
 
   public void publishProgress(int progress) {
-//    if (progressCallback != null) progressCallback.internalDone(progress, null);
-  }
-
-  public void execute() {
-    Runnable task = new Runnable() {
-      public void run() {
-        AVException exception = doWork();
-        if (!cancelled) {
-          if (saveCallback != null) {
-            saveCallback.internalDone(exception);
-          }
-        } else {
-          if (saveCallback != null) {
-            saveCallback.internalDone(new AVException(AVException.UNKNOWN,
-                    "Uploading file task is canceled."));
-          }
-        }
-      }
-    };
-
-    future = executor.submit(task);
-  }
-
-  public String getFinalUrl() {
-    return this.finalUrl;
-  }
-  public void setFinalUrl(String url) {
-    this.finalUrl = url;
-  }
-  public String getFinalObjectId() {
-    return this.finalObjectId;
-  }
-  public void setFinalObjectId(String objectId) {
-    this.finalObjectId = objectId;
+    if (progressCallback != null) progressCallback.internalDone(progress, null);
   }
 
   // ignore interrupt so far.
@@ -121,23 +82,14 @@ public abstract class HttpClientUploader implements Uploader {
     cancelled = true;
     if (interrupt) {
       interruptImmediately();
-    } else {
-      if (future != null) {
-        future.cancel(false);
-      }
     }
     return true;
   }
 
   public void interruptImmediately() {
-    if (future != null) {
-      // Interrupts worker thread.
-      future.cancel(true);
-    }
   }
 
   public boolean isCancelled() {
     return cancelled;
   }
-
 }

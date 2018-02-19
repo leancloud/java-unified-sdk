@@ -19,21 +19,21 @@ import java.util.ArrayList;
 
 class QiniuSlicingUploader extends HttpClientUploader {
   private final String token;
-  private final String fileKey;
   private FileUploader.ProgressCalculator progressCalculator;
   private int uploadChunkSize = QiniuAccessor.WIFI_CHUNK_SIZE;
+  private String fileKey = null;
   private QiniuAccessor qiniuAccessor;
 
-  QiniuSlicingUploader(AVFile avFile, String token, String fileKey, SaveCallback saveCallback, ProgressCallback progressCallback) {
-    super(avFile, saveCallback, progressCallback);
+  QiniuSlicingUploader(AVFile avFile, String token, ProgressCallback progressCallback) {
+    super(avFile, progressCallback);
     this.token = token;
-    this.fileKey = fileKey;
-    this.qiniuAccessor = new QiniuAccessor(getOKHttpClient(), token, fileKey);
+    this.fileKey = avFile.getKey();
+    this.qiniuAccessor = new QiniuAccessor(getOKHttpClient(), token, avFile.getKey());
   }
 
   @Override
-  public AVException doWork() {
-    boolean isWifi = AVUtils.isWifi(AVOSCloud.applicationContext);
+  public AVException execute() {
+    boolean isWifi = true;
     if (!isWifi) {
       // 从七牛的接口来看block size为4M不可变，但是chunkSize是可以调整的
       uploadChunkSize = QiniuAccessor.NONWIFI_CHUNK_SIZE;

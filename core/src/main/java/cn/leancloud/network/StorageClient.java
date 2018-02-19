@@ -83,7 +83,7 @@ public class StorageClient {
   }
 
   public Observable<FileUploadToken> newUploadToken(String fileData) {
-    return apiService.createUploadToken(fileData).subscribeOn(Schedulers.io()).observeOn(Schedulers.newThread());
+    return apiService.createUploadToken(fileData).subscribeOn(Schedulers.io()).observeOn(Schedulers.io());
   }
 
   public Observable<Void> fileCallback(String result) {
