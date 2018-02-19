@@ -1,5 +1,6 @@
 package cn.leancloud.core.service;
 
+import cn.leancloud.core.AVFile;
 import cn.leancloud.core.AVObject;
 import cn.leancloud.core.AVRole;
 import cn.leancloud.core.AVUser;
@@ -33,17 +34,24 @@ public interface APIService {
   @DELETE("/1.1/classes/{className}/{objectId}")
   Observable<Void> deleteObject(@Path("className") String className, @Path("objectId") String objectId);
 
+  @POST("/1.1/batch")
+  Observable<Void> batchSave(@Body JSONObject object);
+
+  /**
+   * File Operations.
+   */
+
   @POST("/1.1/filetokens")
   Observable<FileUploadToken> createUploadToken(@Body String fileData);
 
   @POST("/1.1/fileCallback")
   Observable<Void> fileCallback(@Body String result);
 
+  @GET("/1.1/files/{objectId}")
+  Observable<AVFile> fetchFile(@Path("objectId") String objectId);
+
   @GET("/1.1/date")
   Observable<AVDate> currentTimeMillis();
-
-  @POST("/1.1/batch")
-  Observable<Void> batchSave(@Body JSONObject object);
 
   /**
    * Role Operations.

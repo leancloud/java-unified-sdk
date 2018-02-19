@@ -1,45 +1,76 @@
 package cn.leancloud.core;
 
+import cn.leancloud.AVException;
+import cn.leancloud.ProgressCallback;
+import cn.leancloud.SaveCallback;
+import cn.leancloud.codec.MD5;
+import cn.leancloud.core.cache.FileCache;
+import cn.leancloud.core.ops.ObjectFieldOperation;
+import cn.leancloud.core.ops.OperationBuilder;
 import cn.leancloud.network.PaasClient;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import cn.leancloud.upload.FileDownloader;
+import cn.leancloud.upload.FileUploader;
+import cn.leancloud.upload.Uploader;
+import cn.leancloud.upload.UrlDirectlyUploader;
+import cn.leancloud.utils.AVLogger;
+import cn.leancloud.utils.FileUtil;
+import cn.leancloud.utils.LogUtil;
+import cn.leancloud.utils.StringUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import io.reactivex.Observable;
 
-public final class AVFile {
-  private static long MAX_FILE_BUF_SIZE = 1024 * 2014 * 4;
-  public static final String DEFAULTMIMETYPE = "application/octet-stream";
+public final class AVFile extends AVObject {
+  private static AVLogger logger = LogUtil.getLogger(AVFile.class);
+  public static final String CLASS_NAME = "_File";
+
   private static final String FILE_SUM_KEY = "_checksum";
   private static final String FILE_NAME_KEY = "_name";
+  private static final String FILE_LENGTH_KEY = "size";
   private static final String FILE_SOURCE_KEY = "__source";
   private static final String FILE_SOURCE_EXTERNAL = "external";
   private static final String ELDERMETADATAKEYFORIOSFIX = "metadata";
+
   private static final String THUMBNAIL_FMT = "?imageView/%d/w/%d/h/%d/q/%d/format/%s";
-  public static final String AVFILE_ENDPOINT = "files";
 
-  private String name = "";
-  private Map<String, Object> metaData = new ConcurrentHashMap<String, Object>();
-  private String url = null;
-  private String localPath = null;
-  private String objectId = null;
-  private String updatedAt = null;
-  private String createdAt = null;
-  private String bucket = null;
-  private AVACL acl = null;
+  private static final String KEY_FILE_NAME = "name";
+  private static final String KEY_METADATA = "metaData";
+  private static final String KEY_URL = "url";
+  private static final String KEY_BUCKET = "bucket";
+  private static final String KEY_PROVIDER = "provider";
+  private static final String KEY_MIME_TYPE = "mime_type";
+  private static final String KEY_FILE_KEY = "key";
 
+  public static void setUploadHeader(String key, String value) {
+    FileUploader.setUploadHeader(key, value);
+  }
+
+  private String localPath = "";
 
   public AVFile() {
+    super(CLASS_NAME);
     if (PaasClient.getDefaultACL() != null) {
       this.acl = new AVACL(PaasClient.getDefaultACL());
     }
   }
 
   public AVFile(String name, byte[] data) {
+    this();
+    internalPut(KEY_FILE_NAME, name);
+    addMetaData(FILE_NAME_KEY, name);
+    if (null != data) {
+      String md5 = MD5.computeMD5(data);
+      localPath = FileCache.getIntance().saveData(md5, data);
+      addMetaData(FILE_SUM_KEY, md5);
+      addMetaData(FILE_LENGTH_KEY, data.length);
+    } else {
+      addMetaData(FILE_LENGTH_KEY, 0);
+    }
   }
 
   public AVFile(String name, String url) {
@@ -50,48 +81,79 @@ public final class AVFile {
     this(name, url, metaData, true);
   }
 
+  public AVFile(String name, File localFile) {
+    this();
+    if (null == localFile || !localFile.exists() || !localFile.isFile()) {
+      throw new IllegalArgumentException("local file is illegal.");
+    }
+    internalPut(KEY_FILE_NAME, name);
+    addMetaData(FILE_NAME_KEY, name);
+    String md5 = MD5.computeFileMD5(localFile);
+    FileCache.getIntance().saveLocalFile(md5, localFile);
+    addMetaData(FILE_SUM_KEY, md5);
+    addMetaData(FILE_LENGTH_KEY, localFile.length());
+  }
+
   protected AVFile(String name, String url, Map<String, Object> metaData, boolean external) {
     this();
-    this.name = name;
-    this.url = url;
-    if (metaData != null) {
-      this.metaData.putAll(metaData);
+    internalPut(KEY_FILE_NAME, name);
+    addMetaData(FILE_NAME_KEY, name);
+    internalPut(KEY_URL, url);
+    Map<String, Object> meta = new HashMap<String, Object>();
+    if (null != metaData) {
+      meta.putAll(metaData);
     }
     if (external) {
-      this.metaData.put(FILE_SOURCE_KEY, FILE_SOURCE_EXTERNAL);
+      meta.put(FILE_SOURCE_KEY, FILE_SOURCE_EXTERNAL);
     }
+    internalPut(KEY_METADATA, meta);
+  }
+
+  private Object internalGet(String key) {
+    Object value = serverData.get(key);
+    ObjectFieldOperation op = operations.get(key);
+    if (null != op) {
+      value = op.apply(value);
+    }
+    return value;
+  }
+
+  private void internalPut(String key, Object value) {
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Set, key, value);
+    addNewOperation(op);
+  }
+
+  private void internalPutDirectly(String key, Object value) {
+    this.serverData.put(key, value);
   }
 
   public static Observable<AVFile> withObjectIdInBackground(final String objectId) {
-    return null;
-  }
-
-  public static String getClassName() {
-    return "_File";
+    return PaasClient.getStorageClient().fetchFile(objectId);
   }
 
   public String getName() {
-    return name;
+    return (String) internalGet(KEY_FILE_NAME);
   }
 
   public void setName(String name) {
-    this.name = name;
+    internalPut(KEY_FILE_NAME, name);
   }
 
   public Map<String, Object> getMetaData() {
-    return metaData;
+    return (Map<String, Object>) internalGet(KEY_METADATA);
   }
 
   public void setMetaData(Map<String, Object> metaData) {
-    this.metaData = metaData;
+    internalPut(KEY_METADATA, metaData);
   }
 
-  public Object addMetaData(String key, Object val) {
-    return metaData.put(key, val);
+  public void addMetaData(String key, Object val) {
+    Map<String, Object> metaData = getMetaData();
+    metaData.put(key, val);
   }
 
   public Object getMetaData(String key) {
-    return this.metaData.get(key);
+    return getMetaData().get(key);
   }
 
   /**
@@ -102,14 +164,14 @@ public final class AVFile {
    * @since 1.3.4
    */
   public Object removeMetaData(String key) {
-    return metaData.remove(key);
+    return getMetaData().remove(key);
   }
 
   /**
    * Clear file metadata.
    */
   public void clearMetaData() {
-    this.metaData.clear();
+    getMetaData().clear();
   }
 
   public int getSize() {
@@ -121,28 +183,44 @@ public final class AVFile {
   }
 
   public static String getMimeType(String url) {
-    String type = DEFAULTMIMETYPE;
-//    String extension = MimeTypeMap.getFileExtensionFromUrl(url);
-//    if (extension != null) {
-//      MimeTypeMap mime = MimeTypeMap.getSingleton();
-//      type = mime.getMimeTypeFromExtension(extension);
-//    }
-//    if (type == null) {
-//      type = DEFAULTMIMETYPE;
-//    }
-    return type;
+    return FileUtil.getMimeTypeFromUrl(url);
   }
 
   public String getBucket() {
-    return this.bucket;
+    return (String) internalGet(KEY_BUCKET);
   }
 
   public void setBucket(String bucket) {
-    this.bucket = bucket;
+    internalPut(KEY_BUCKET, bucket);
   }
 
   public String getUrl() {
-    return url;
+    return (String) internalGet(KEY_URL);
+  }
+
+  @Override
+  public void put(String key, Object value) {
+    throw new UnsupportedOperationException("cannot invoke put method in AVFile");
+  }
+
+  @Override
+  public Object get(String key) {
+    throw new UnsupportedOperationException("cannot invoke get method in AVFile");
+  }
+
+  @Override
+  public void remove(String key) {
+    throw new UnsupportedOperationException("cannot invoke get method in AVFile");
+  }
+
+  @Override
+  public void increment(String key) {
+    throw new UnsupportedOperationException("cannot invoke get method in AVFile");
+  }
+
+  @Override
+  public void increment(String key, Number value) {
+    throw new UnsupportedOperationException("cannot invoke get method in AVFile");
   }
 
   /**
@@ -155,11 +233,11 @@ public final class AVFile {
    * @see #getThumbnailUrl(boolean, int, int, int, String)
    */
   public String getThumbnailUrl(boolean scaleToFit, int width, int height) {
-    return this.getThumbnailUrl(scaleToFit, width, height, 100, "png");
+    return getThumbnailUrl(scaleToFit, width, height, 100, "png");
   }
 
   public String getThumbnailUrl(boolean scaleToFit, int width, int height, int quality, String fmt) {
-    if (!AVOSCloud.isCN() || AppRouterManager.isQCloudApp(AVOSCloud.applicationId)) {
+    if (AVOSCloud.getRegion() != AVOSCloud.REGION.NorthChina) {
       throw new UnsupportedOperationException("We only support this method for qiniu storage.");
     }
     if (width < 0 || height < 0) {
@@ -168,7 +246,7 @@ public final class AVFile {
     if (quality < 1 || quality > 100) {
       throw new IllegalArgumentException("Invalid quality,valid range is 0-100.");
     }
-    if (fmt == null || AVUtils.isBlankString(fmt.trim())) {
+    if (fmt == null || StringUtil.isEmpty(fmt.trim())) {
       fmt = "png";
     }
     int mode = scaleToFit ? 2 : 1;
@@ -187,9 +265,8 @@ public final class AVFile {
 
   public synchronized void saveInBackground(final SaveCallback saveCallback,
                                             final ProgressCallback progressCallback) {
-    if (AVUtils.isBlankString(objectId)) {
-      cancelUploadIfNeed();
-      uploader = getUploader(saveCallback, progressCallback);
+    if (StringUtil.isEmpty(objectId)) {
+      Uploader uploader = getUploader(saveCallback, progressCallback);
       uploader.execute();
     } else {
       if (null != saveCallback) {
@@ -201,55 +278,44 @@ public final class AVFile {
     }
   }
 
-  /**
-   * Saves the file to the AVOSCloud cloud in a background thread.
-   *
-   * @param callback A SaveCallback that gets called when the save completes.
-   */
-  public void saveInBackground(SaveCallback callback) {
-    saveInBackground(callback, null);
+  @Override
+  public Observable<AVObject> saveInBackground() {
+    JSONObject paramData = generateChangedParam();
+    if (StringUtil.isEmpty(getObjectId())) {
+      return PaasClient.getStorageClient().createObject(this.className, paramData);
+    } else {
+      return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData);
+    }
   }
 
-  /**
-   * Saves the file to the AVOSCloud cloud in a background thread.
-   */
-  public void saveInBackground() {
-    saveInBackground(null);
-  }
-
-  public void deleteInBackground() {
-    ;
+  private Uploader getUploader(SaveCallback saveCallback, ProgressCallback progressCallback) {
+    Uploader.UploadCallback callback = new Uploader.UploadCallback() {
+      public void finishedWithResults(String finalObjectId, String finalUrl) {
+        // handleUploadedResponse(finalObjectId, finalObjectId, finalUrl);
+      }
+    };
+    if (StringUtil.isEmpty(getUrl())) {
+      return new FileUploader(this, saveCallback, progressCallback, callback);
+    } else {
+      return new UrlDirectlyUploader(this, saveCallback, progressCallback, callback);
+    }
   }
 
   @JSONField(serialize = false)
   public InputStream getDataStream() throws AVException {
     String filePath = "";
-    if(!AVUtils.isBlankString(localPath)) {
+    if(!StringUtil.isEmpty(localPath)) {
       filePath = localPath;
-    } else if (!AVUtils.isBlankString(localTmpFilePath)) {
-      filePath = localTmpFilePath;
-    } else if (!AVUtils.isBlankString(url)) {
-      File cacheFile = AVFileDownloader.getCacheFile(url);
+    } else if (!StringUtil.isEmpty(getUrl())) {
+      File cacheFile = FileCache.getIntance().getCacheFile(getUrl());
       if (null == cacheFile || !cacheFile.exists()) {
-        if (!AVUtils.isConnected(AVOSCloud.applicationContext)) {
-          throw new AVException(AVException.CONNECTION_FAILED, "Connection lost");
-        } else {
-          cancelDownloadIfNeed();
-          downloader = new AVFileDownloader();
-          AVException exception = downloader.doWork(getUrl());
-          if (exception != null) {
-            throw exception;
-          }
-        }
+        FileDownloader downloader = new FileDownloader();
+        downloader.doWork(getUrl());
       }
       filePath = cacheFile.getAbsolutePath();
     }
-    if(!AVUtils.isBlankString(filePath)) {
-      try {
-        return AVPersistenceUtils.getInputStreamFromFile(new File(filePath));
-      } catch (IOException e){
-        throw new AVException(e);
-      }
+    if(!StringUtil.isEmpty(filePath)) {
+      return FileCache.getIntance().getInputStreamFromFile(new File(filePath));
     }
     return null;
   }

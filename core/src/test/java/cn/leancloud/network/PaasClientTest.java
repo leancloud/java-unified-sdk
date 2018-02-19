@@ -85,7 +85,7 @@ public class PaasClientTest extends TestCase {
   public void testCreateUploadToken() {
     try {
       StorageClient storageClient = PaasClient.getStorageClient();
-      storageClient.newUploadToken().subscribe(new Observer<FileUploadToken>() {
+      storageClient.newUploadToken("").subscribe(new Observer<FileUploadToken>() {
         public void onComplete() {
 
         }

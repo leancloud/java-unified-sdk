@@ -211,7 +211,7 @@ public class AVObject {
     addNewOperation(op);
   }
 
-  private void addNewOperation(ObjectFieldOperation op) {
+  protected void addNewOperation(ObjectFieldOperation op) {
     if (null == op) {
       return;
     }
@@ -225,8 +225,7 @@ public class AVObject {
   /**
    * save/update with server.
    */
-
-  public Observable<AVObject> saveInBackground() {
+  protected JSONObject generateChangedParam() {
     Map<String, Object> params = new HashMap<String, Object>();
     Set<Map.Entry<String, ObjectFieldOperation>> entries = operations.entrySet();
     for (Map.Entry<String, ObjectFieldOperation> entry: entries) {
@@ -238,7 +237,11 @@ public class AVObject {
       ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Set, KEY_ACL, acl);
       params.putAll(op.encode());
     }
-    JSONObject paramData = new JSONObject(params);
+    return new JSONObject(params);
+  }
+
+  public Observable<AVObject> saveInBackground() {
+    JSONObject paramData = generateChangedParam();
     if (StringUtil.isEmpty(getObjectId())) {
       return PaasClient.getStorageClient().createObject(this.className, paramData);
     } else {

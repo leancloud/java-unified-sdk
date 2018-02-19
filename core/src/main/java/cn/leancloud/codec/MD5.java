@@ -1,9 +1,15 @@
 package cn.leancloud.codec;
 
+import cn.leancloud.core.cache.PersistenceUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class MD5 {
+  private static final int MAX_FILE_BUF_SIZE = 1024*1024*2;
   public static String computeMD5(byte[] data) {
     if (null == data) {
       return null;
@@ -19,6 +25,32 @@ public class MD5 {
     }
   }
 
+  public static String computeFileMD5(File localFile) {
+    if (null == localFile || !localFile.exists() || !localFile.isFile()) {
+      return null;
+    }
+    try {
+      String result = null;
+      MessageDigest md5 = MessageDigest.getInstance("MD5");
+      InputStream is = PersistenceUtil.getInputStreamFromFile(localFile);
+      if (null != is) {
+        byte buf[] = new byte[MAX_FILE_BUF_SIZE];
+        int len  = 0;
+        while((len = is.read(buf)) != -1) {
+          md5.update(buf, 0, len);
+        }
+        byte[] md5bytes = md5.digest();
+        result = MD5.hexEncodeBytes(md5bytes);
+        is.close();
+      }
+      return result;
+    } catch (IOException ex) {
+      return null;
+    } catch (NoSuchAlgorithmException ex) {
+      return null;
+    }
+  }
+
   public static String hexEncodeBytes(byte[] md5bytes) {
     if (null == md5bytes) {
       return "";
@@ -30,5 +62,38 @@ public class MD5 {
       hexString.append(hex);
     }
     return hexString.toString();
+  }
+
+  public static MD5 getInstance() {
+    return new MD5();
+  }
+
+  private MessageDigest mdInstance = null;
+  private MD5() {
+    try {
+      mdInstance = MessageDigest.getInstance("MD5");
+    } catch (NoSuchAlgorithmException ex) {
+    }
+  }
+
+  public boolean prepare() {
+    if (null != mdInstance) {
+      mdInstance.reset();
+      return true;
+    }
+    return false;
+  }
+
+  public void update(byte[] input, int offset, int len) {
+    if (null != mdInstance) {
+      mdInstance.update(input, offset, len);
+    }
+  }
+
+  public byte[] digest() {
+    if (null != mdInstance) {
+      return mdInstance.digest();
+    }
+    return null;
   }
 }

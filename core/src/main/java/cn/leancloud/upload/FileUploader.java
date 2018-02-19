@@ -16,8 +16,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static cn.leancloud.utils.FileUtil.generateFileKey;
 
@@ -171,7 +170,7 @@ public class FileUploader extends HttpClientUploader {
   }
 
   protected static class ProgressCalculator {
-    SparseArray<Integer> blockProgress = new SparseArray<Integer>();
+    Map<Integer, Integer> blockProgress = new HashMap<Integer, Integer>();
     FileUploadProgressCallback callback;
     int fileBlockCount = 0;
 
@@ -184,8 +183,9 @@ public class FileUploader extends HttpClientUploader {
       blockProgress.put(offset, progress);
       if (callback != null) {
         int progressSum = 0;
-        for (int index = 0; index < blockProgress.size(); index++) {
-          progressSum += blockProgress.valueAt(index);
+        Set<Integer> keySet = blockProgress.keySet();
+        for (Integer index: keySet) {
+          progressSum += blockProgress.get(index);
         }
         callback.onProgress(PROGRESS_GET_TOKEN + (PROGRESS_UPLOAD_FILE - PROGRESS_GET_TOKEN)
                 * progressSum / (100 * fileBlockCount));
@@ -200,5 +200,5 @@ public class FileUploader extends HttpClientUploader {
   public static interface FileUploadProgressCallback {
     void onProgress(int progress);
   }
-  static HashMap<String, String> UPLOAD_HEADERS = new HashMap<>();
+  static HashMap<String, String> UPLOAD_HEADERS = new HashMap<String, String>();
 }

@@ -8,6 +8,9 @@ public class AVOSCloud {
   public static void setRegion(REGION region) {
     defaultRegion = region;
   }
+  public static REGION getRegion() {
+    return defaultRegion;
+  }
 
   public static void initialize(String appId, String appKey) {
     applicationId = appId;

@@ -1,5 +1,6 @@
 package cn.leancloud.network;
 
+import cn.leancloud.core.AVFile;
 import cn.leancloud.core.AVObject;
 import cn.leancloud.core.service.APIService;
 import cn.leancloud.core.types.AVDate;
@@ -50,6 +51,7 @@ public class StorageClient {
   public Observable<Void> deleteObject(final String className, String objectId) {
     return wrappObservable(apiService.deleteObject(className, objectId));
   }
+
   public Observable<AVObject> createObject(final String className, JSONObject data) {
     Observable<AVObject> object = wrappObservable(apiService.createObject(className, data));
     return object.map(new Function<AVObject, AVObject>() {
@@ -66,6 +68,16 @@ public class StorageClient {
       public AVObject apply(AVObject avObject) {
         avObject.setClassName(className);
         return avObject;
+      }
+    });
+  }
+
+  public Observable<AVFile> fetchFile(String objectId) {
+    Observable<AVFile> object = wrappObservable(apiService.fetchFile(objectId));
+    return object.map(new Function<AVFile, AVFile>() {
+      public AVFile apply(AVFile avFile) throws Exception {
+        avFile.setClassName(AVFile.CLASS_NAME);
+        return avFile;
       }
     });
   }
