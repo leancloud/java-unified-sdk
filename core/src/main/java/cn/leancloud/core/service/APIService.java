@@ -7,6 +7,7 @@ import cn.leancloud.core.AVUser;
 import cn.leancloud.core.types.AVDate;
 import cn.leancloud.upload.FileUploadToken;
 import io.reactivex.Observable;
+import retrofit2.Call;
 import retrofit2.http.*;
 
 import java.util.List;
@@ -45,7 +46,7 @@ public interface APIService {
   Observable<FileUploadToken> createUploadToken(@Body String fileData);
 
   @POST("/1.1/fileCallback")
-  Observable<Void> fileCallback(@Body String result);
+  Call<Void> fileCallback(@Body String result);
 
   @GET("/1.1/files/{objectId}")
   Observable<AVFile> fetchFile(@Path("objectId") String objectId);

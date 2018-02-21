@@ -10,6 +10,8 @@ import io.reactivex.Observable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
+import java.io.IOException;
+
 public class StorageClient {
   private APIService apiService = null;
   private boolean asynchronized = false;
@@ -86,8 +88,9 @@ public class StorageClient {
     return apiService.createUploadToken(fileData).subscribeOn(Schedulers.io()).observeOn(Schedulers.io());
   }
 
-  public Observable<Void> fileCallback(String result) {
-    return apiService.fileCallback(result).subscribeOn(Schedulers.io()).observeOn(Schedulers.newThread());
+  public void fileCallback(String result) throws IOException {
+    apiService.fileCallback(result).execute();
+    return;
   }
 
   public Observable<Void> batchSave(JSONObject parameter) {

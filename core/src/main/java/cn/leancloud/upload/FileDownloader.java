@@ -2,6 +2,7 @@ package cn.leancloud.upload;
 
 import cn.leancloud.AVException;
 import cn.leancloud.core.cache.PersistenceUtil;
+import cn.leancloud.network.PaasClient;
 import cn.leancloud.utils.StringUtil;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
@@ -33,7 +34,7 @@ public class FileDownloader {
     Request.Builder requestBuilder = new Request.Builder();
     requestBuilder.url(url);
 
-    OkHttpClient client = new OkHttpClient.Builder().build();
+    OkHttpClient client = PaasClient.getGlobalOkHttpClient();
     try {
       Response response = client.newCall(requestBuilder.build()).execute();
       int statusCode = response.code();

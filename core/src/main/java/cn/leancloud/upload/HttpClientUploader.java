@@ -1,23 +1,17 @@
 package cn.leancloud.upload;
 
 import cn.leancloud.AVException;
-import cn.leancloud.SaveCallback;
 import cn.leancloud.ProgressCallback;
 import cn.leancloud.core.AVFile;
-import cn.leancloud.utils.StringUtil;
+import cn.leancloud.network.PaasClient;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 public abstract class HttpClientUploader implements Uploader {
   ProgressCallback progressCallback;
-  private static OkHttpClient client;
 
   private volatile boolean cancelled = false;
 //  static ThreadPoolExecutor executor;
@@ -37,14 +31,9 @@ public abstract class HttpClientUploader implements Uploader {
 //  }
 
   protected static synchronized OkHttpClient getOKHttpClient() {
-    if (null == client) {
-      OkHttpClient.Builder builder = new OkHttpClient.Builder();
-      builder.readTimeout(30, TimeUnit.SECONDS);
-      builder.retryOnConnectionFailure(true);
-      client = builder.build();
-    }
-    return client;
+    return PaasClient.getGlobalOkHttpClient();
   }
+
   protected AVFile avFile = null;
 
   public HttpClientUploader(AVFile file, ProgressCallback progressCallback) {

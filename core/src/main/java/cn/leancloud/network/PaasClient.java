@@ -2,7 +2,6 @@ package cn.leancloud.network;
 
 import cn.leancloud.core.AVACL;
 import cn.leancloud.core.service.APIService;
-import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.fastjson.*;
@@ -14,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class PaasClient {
   private static APIService apiService = null;
   private static StorageClient storageClient = null;
+  private static OkHttpClient globalHttpClient = null;
   static SchedulerCreator defaultScheduler = null;
   static boolean asynchronized = false;
   private static AVACL defaultACL;
@@ -30,9 +30,9 @@ public class PaasClient {
     return defaultACL;
   }
 
-  public static StorageClient getStorageClient () {
-    if (null == apiService) {
-      OkHttpClient okHttpClient = new OkHttpClient.Builder()
+  public static OkHttpClient getGlobalOkHttpClient() {
+    if (null == globalHttpClient) {
+      globalHttpClient = new OkHttpClient.Builder()
               .connectTimeout(15, TimeUnit.SECONDS)
               .readTimeout(10, TimeUnit.SECONDS)
               .writeTimeout(10, TimeUnit.SECONDS)
@@ -40,6 +40,13 @@ public class PaasClient {
               .addInterceptor(new LoggingInterceptor())
               .dns(new DNSDetoxicant())
               .build();
+    }
+    return globalHttpClient;
+  }
+
+  public static StorageClient getStorageClient () {
+    if (null == apiService) {
+      OkHttpClient okHttpClient = getGlobalOkHttpClient();
       Retrofit retrofit = new Retrofit.Builder()
               .baseUrl("https://api.leancloud.cn")
               .addConverterFactory(FastJsonConverterFactory.create())

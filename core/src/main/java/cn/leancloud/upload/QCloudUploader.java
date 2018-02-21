@@ -38,7 +38,7 @@ public class QCloudUploader extends HttpClientUploader {
   QCloudUploader(AVFile avFile, String token, String uploadUrl, ProgressCallback progressCallback) {
     super(avFile, progressCallback);
 
-    this.fileKey = "";
+    this.fileKey = avFile.getKey();
     this.uploadUrl = uploadUrl;
     this.token = token;
   }
@@ -79,7 +79,7 @@ public class QCloudUploader extends HttpClientUploader {
           return new AVException(AVException.OTHER_CAUSE, "failed to upload slice.");
         }
       } else {
-        uploadFile();
+        uploadFile(bytes);
       }
     } catch (Exception e) {
       return new AVException(e);
@@ -88,10 +88,9 @@ public class QCloudUploader extends HttpClientUploader {
     return null;
   }
 
-  private void uploadFile() throws AVException {
+  private void uploadFile(byte[] bytes) throws AVException {
 
     try {
-      byte[] bytes = avFile.getData();// TODO: fix me!
       fileSha = SHA1.compute(bytes);
       MultipartBody.Builder builder = new MultipartBody.Builder();
       RequestBody fileBody =

@@ -10,6 +10,7 @@ import cn.leancloud.core.ops.OperationBuilder;
 import cn.leancloud.network.PaasClient;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,9 @@ import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import io.reactivex.Observable;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 public final class AVFile extends AVObject {
   private static AVLogger logger = LogUtil.getLogger(AVFile.class);
@@ -49,8 +52,11 @@ public final class AVFile extends AVObject {
     FileUploader.setUploadHeader(key, value);
   }
 
-  private String localPath = "";
-  private String cachePath = "";
+  @JSONField(serialize = false)
+  private String localPath = ""; // local file used by AVFile(name, file) constructor.
+
+  @JSONField(serialize = false)
+  private String cachePath = ""; // file cache path
 
   public AVFile() {
     super(CLASS_NAME);
@@ -158,20 +164,10 @@ public final class AVFile extends AVObject {
     return getMetaData().get(key);
   }
 
-  /**
-   * Remove file meta data.
-   *
-   * @param key The meta data's key
-   * @return The metadata value.
-   * @since 1.3.4
-   */
   public Object removeMetaData(String key) {
     return getMetaData().remove(key);
   }
 
-  /**
-   * Clear file metadata.
-   */
   public void clearMetaData() {
     getMetaData().clear();
   }
@@ -192,10 +188,6 @@ public final class AVFile extends AVObject {
     internalPut(KEY_MIME_TYPE, mimeType);
   }
 
-  public static String getMimeType(String url) {
-    return FileUtil.getMimeTypeFromUrl(url);
-  }
-
   public String getKey() {
     return (String) internalGet(KEY_FILE_KEY);
   }
@@ -204,12 +196,24 @@ public final class AVFile extends AVObject {
     return (String) internalGet(KEY_BUCKET);
   }
 
-  public void setBucket(String bucket) {
-    internalPut(KEY_BUCKET, bucket);
-  }
+//  public void setBucket(String bucket) {
+//    internalPut(KEY_BUCKET, bucket);
+//  }
 
   public String getUrl() {
     return (String) internalGet(KEY_URL);
+  }
+
+  public String getProvider() {
+    return (String) internalGet(KEY_PROVIDER);
+  }
+
+  public AVACL getACL() {
+    return acl;
+  }
+
+  public void setACL(AVACL acl) {
+    this.acl = acl;
   }
 
   @Override
@@ -269,14 +273,6 @@ public final class AVFile extends AVObject {
     return resultUrl;
   }
 
-  public AVACL getACL() {
-    return acl;
-  }
-
-  public void setACL(AVACL acl) {
-    this.acl = acl;
-  }
-
   public synchronized void saveInBackground(final ProgressCallback progressCallback) {
     if (StringUtil.isEmpty(objectId)) {
       Uploader uploader = getUploader(progressCallback);
@@ -289,31 +285,46 @@ public final class AVFile extends AVObject {
   }
 
   @Override
-  public Observable<AVObject> saveInBackground() {
+  public Observable<AVFile> saveInBackground() {
     JSONObject paramData = generateChangedParam();
     if (StringUtil.isEmpty(getObjectId())) {
       PaasClient.getStorageClient().newUploadToken(paramData.toJSONString())
-              .subscribe(new Consumer<FileUploadToken>() {
-                public void accept(FileUploadToken fileUploadToken) throws Exception {
+              .map(new Function<FileUploadToken, AVFile>() {
+                public AVFile apply(@NonNull FileUploadToken fileUploadToken) throws Exception {
                   AVFile.this.setObjectId(fileUploadToken.getObjectId());
                   AVFile.this.internalPutDirectly(KEY_URL, fileUploadToken.getUrl());
                   AVFile.this.internalPutDirectly(KEY_OBJECT_ID, fileUploadToken.getObjectId());
                   AVFile.this.internalPutDirectly(KEY_BUCKET, fileUploadToken.getBucket());
                   AVFile.this.internalPutDirectly(KEY_PROVIDER, fileUploadToken.getProvider());
+                  AVFile.this.internalPutDirectly(KEY_FILE_KEY, FileUtil.generateFileKey(AVFile.this.getName()));
                   Uploader uploader = getUploader(null);
                   AVException exception = uploader.execute();
-                  if (null != exception) {
 
+                  JSONObject completeResult = new JSONObject();
+                  completeResult.put("result", null == exception);
+                  completeResult.put("token",fileUploadToken.getToken());
+                  String finalResult = completeResult.toJSONString();
+                  try {
+                    PaasClient.getStorageClient().fileCallback(finalResult);
+                    if (null != exception) {
+                      throw exception;
+                    } else {
+                      return AVFile.this;
+                    }
+                  } catch (IOException ex) {
+                    throw ex;
                   }
-                }
-              }, new Consumer<Throwable>() {
-                public void accept(Throwable throwable) throws Exception {
                 }
               });
       return null;
     } else {
-      return Observable.just((AVObject) this);
+      return Observable.just((AVFile) this);
     }
+  }
+
+  @Override
+  public Observable<Void> deleteInBackground() {
+    return super.deleteInBackground();
   }
 
   private Uploader getUploader(ProgressCallback progressCallback) {

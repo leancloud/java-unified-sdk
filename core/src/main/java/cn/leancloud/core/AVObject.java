@@ -240,7 +240,7 @@ public class AVObject {
     return new JSONObject(params);
   }
 
-  public Observable<AVObject> saveInBackground() {
+  public Observable<? extends AVObject> saveInBackground() {
     JSONObject paramData = generateChangedParam();
     if (StringUtil.isEmpty(getObjectId())) {
       return PaasClient.getStorageClient().createObject(this.className, paramData);
