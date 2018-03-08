@@ -1,5 +1,6 @@
 package cn.leancloud.core;
 
+import cn.leancloud.AVLogger;
 import cn.leancloud.Configure;
 import cn.leancloud.network.PaasClient;
 import io.reactivex.Observer;
@@ -19,6 +20,7 @@ public class AVObjectAsyncTest extends TestCase {
       }
     });
     AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
+    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
     AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
   }
   public static Test suite() {

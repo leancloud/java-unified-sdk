@@ -68,6 +68,18 @@ public class FileUploadToken {
     this.url = url;
   }
 
+  @java.lang.Override
+  public java.lang.String toString() {
+    return "FileUploadToken{" +
+            "bucket='" + bucket + '\'' +
+            ", objectId='" + objectId + '\'' +
+            ", uploadUrl='" + uploadUrl + '\'' +
+            ", provider='" + provider + '\'' +
+            ", token='" + token + '\'' +
+            ", url='" + url + '\'' +
+            '}';
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

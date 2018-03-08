@@ -1,5 +1,6 @@
 package cn.leancloud.core;
 
+import cn.leancloud.AVLogger;
 import cn.leancloud.Configure;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -12,6 +13,7 @@ public class AVObjectTest extends TestCase {
   public AVObjectTest(String testName) {
     super(testName);
     AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
+    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
     AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
   }
   public static Test suite() {

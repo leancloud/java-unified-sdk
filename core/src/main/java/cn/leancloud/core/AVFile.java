@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.leancloud.upload.*;
-import cn.leancloud.utils.AVLogger;
+import cn.leancloud.AVLogger;
 import cn.leancloud.utils.FileUtil;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -24,7 +24,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
 public final class AVFile extends AVObject {
@@ -148,7 +147,12 @@ public final class AVFile extends AVObject {
   }
 
   public Map<String, Object> getMetaData() {
-    return (Map<String, Object>) internalGet(KEY_METADATA);
+    Map<String, Object> result = (Map<String, Object>)internalGet(KEY_METADATA);
+    if (null == result) {
+      result = new HashMap<String, Object>();
+      internalPut(KEY_METADATA, result);
+    }
+    return result;
   }
 
   public void setMetaData(Map<String, Object> metaData) {
@@ -288,9 +292,11 @@ public final class AVFile extends AVObject {
   public Observable<AVFile> saveInBackground() {
     JSONObject paramData = generateChangedParam();
     if (StringUtil.isEmpty(getObjectId())) {
-      PaasClient.getStorageClient().newUploadToken(paramData.toJSONString())
+      return PaasClient.getStorageClient().newUploadToken(paramData.toJSONString())
               .map(new Function<FileUploadToken, AVFile>() {
                 public AVFile apply(@NonNull FileUploadToken fileUploadToken) throws Exception {
+                  logger.d(fileUploadToken.toString());
+                  System.out.println(fileUploadToken.toString());
                   AVFile.this.setObjectId(fileUploadToken.getObjectId());
                   AVFile.this.internalPutDirectly(KEY_URL, fileUploadToken.getUrl());
                   AVFile.this.internalPutDirectly(KEY_OBJECT_ID, fileUploadToken.getObjectId());
@@ -307,17 +313,19 @@ public final class AVFile extends AVObject {
                   try {
                     PaasClient.getStorageClient().fileCallback(finalResult);
                     if (null != exception) {
+                      logger.w("failed to invoke fileCallback. cause:", exception);
                       throw exception;
                     } else {
                       return AVFile.this;
                     }
                   } catch (IOException ex) {
+                    logger.w(ex);
                     throw ex;
                   }
                 }
               });
-      return null;
     } else {
+      logger.d("file has been upload to cloud, ignore request.");
       return Observable.just((AVFile) this);
     }
   }

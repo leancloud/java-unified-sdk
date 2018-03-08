@@ -2,15 +2,15 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>cn.leancloud</groupId>
-    <artifactId>java-sdk</artifactId>
+    <artifactId>leancloud-sdk</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.leancloud</groupId>
-  <artifactId>core-sdk</artifactId>
+  <artifactId>storage-core</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>core-sdk</name>
+  <name>storage-core</name>
   <url>http://maven.apache.org</url>
 
   <properties>

@@ -8,9 +8,10 @@ import java.io.InputStream;
 
 public class FileCache {
   private static final int MAX_FILE_BUF_SIZE = 4 * 1024 * 1024;
+  private static FileCache INSTANCE = new FileCache();
 
   public static FileCache getIntance() {
-    return null;
+    return INSTANCE;
   }
 
   public String saveData(String name, byte[] content) {

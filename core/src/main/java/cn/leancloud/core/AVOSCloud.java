@@ -1,5 +1,9 @@
 package cn.leancloud.core;
 
+import cn.leancloud.AVLogAdapter;
+import cn.leancloud.AVLogger;
+import cn.leancloud.logging.SimpleLoggerAdapter;
+
 public class AVOSCloud {
   public static enum REGION {
     EastChina, NorthChina, NorthAmerica
@@ -10,6 +14,20 @@ public class AVOSCloud {
   }
   public static REGION getRegion() {
     return defaultRegion;
+  }
+
+  public static void setLogAdapter(AVLogAdapter adapter) {
+    logAdapter = adapter;
+    logAdapter.setLevel(logLevel);
+  }
+  public static AVLogAdapter getLogAdapter() {
+    return logAdapter;
+  }
+  public static void setLogLevel(AVLogger.Level level) {
+    logLevel = level;
+    if (null != logAdapter) {
+      logAdapter.setLevel(level);
+    }
   }
 
   public static void initialize(String appId, String appKey) {
@@ -27,4 +45,6 @@ public class AVOSCloud {
   private static REGION defaultRegion = REGION.NorthChina;
   private static String applicationId = "";
   private static String applicationKey = "";
+  private static AVLogAdapter logAdapter = new SimpleLoggerAdapter();
+  private static AVLogger.Level logLevel = AVLogger.Level.INFO;
 }
