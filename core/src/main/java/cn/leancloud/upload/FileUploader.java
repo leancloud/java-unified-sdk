@@ -1,15 +1,13 @@
 package cn.leancloud.upload;
 
-import cn.leancloud.AVCallback;
-import cn.leancloud.AVException;
-import cn.leancloud.ProgressCallback;
-import cn.leancloud.SaveCallback;
+import cn.leancloud.*;
 import cn.leancloud.core.AVFile;
 import cn.leancloud.core.ops.ObjectFieldOperation;
 import cn.leancloud.core.ops.OperationBuilder;
 import cn.leancloud.network.PaasClient;
 import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.FileUtil;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
@@ -18,6 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 import java.util.*;
 
 public class FileUploader extends HttpClientUploader {
+  private static AVLogger LOGGER = LogUtil.getLogger(FileUploader.class);
   static final int PROGRESS_GET_TOKEN = 10;
   static final int PROGRESS_UPLOAD_FILE = 90;
   static final int PROGRESS_COMPLETE = 100;
@@ -29,8 +28,12 @@ public class FileUploader extends HttpClientUploader {
   private String uploadUrl;
   private String provider;
 
-  public FileUploader(AVFile avFile, ProgressCallback progressCallback) {
+  public FileUploader(AVFile avFile, FileUploadToken uploadToken, ProgressCallback progressCallback) {
     super(avFile, progressCallback);
+    this.token = uploadToken.getToken();
+    this.bucket = uploadToken.getBucket();
+    this.uploadUrl = uploadToken.getUploadUrl();
+    this.provider = uploadToken.getProvider();
   }
 
   public AVException execute() {
@@ -61,6 +64,7 @@ public class FileUploader extends HttpClientUploader {
         return new QiniuSlicingUploader(avFile, token, progressCallback);
       }
     } else {
+      LOGGER.w("provider doesnot exist, cannot upload any file.");
       return null;
     }
   }
@@ -71,7 +75,7 @@ public class FileUploader extends HttpClientUploader {
         JSONObject completeResult = new JSONObject();
         completeResult.put("result",success);
         completeResult.put("token",this.token);
-        PaasClient.getStorageClient().fileCallback (completeResult.toJSONString());
+        PaasClient.getStorageClient().fileCallback (completeResult);
       } catch (Exception e) {
         // ignore
       }

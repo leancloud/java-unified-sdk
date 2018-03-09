@@ -4,9 +4,15 @@ import cn.leancloud.AVLogAdapter;
 import cn.leancloud.AVLogger;
 import cn.leancloud.utils.StringUtil;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.ConsoleHandler;
 
 public class SimpleLoggerAdapter extends AVLogAdapter {
+  private static ConsoleHandler consoleHandler = new ConsoleHandler();
+  static {
+    consoleHandler.setLevel(Level.ALL);
+  }
 
   public AVLogger getLogger(String tag) {
     Logger logger = null;
@@ -15,6 +21,7 @@ public class SimpleLoggerAdapter extends AVLogAdapter {
     } else {
       logger = Logger.getLogger(tag);
     }
+    logger.addHandler(consoleHandler);
     SimpleLogger result = new SimpleLogger(logger);
     result.setLogLevel(this.getLevel());
     return result;

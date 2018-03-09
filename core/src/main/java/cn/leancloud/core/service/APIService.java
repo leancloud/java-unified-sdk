@@ -42,11 +42,11 @@ public interface APIService {
    * File Operations.
    */
 
-  @POST("/1.1/filetokens")
-  Observable<FileUploadToken> createUploadToken(@Body String fileData);
+  @POST("/1.1/fileTokens")
+  Observable<FileUploadToken> createUploadToken(@Body JSONObject fileData);
 
   @POST("/1.1/fileCallback")
-  Call<Void> fileCallback(@Body String result);
+  Call<Void> fileCallback(@Body JSONObject result);
 
   @GET("/1.1/files/{objectId}")
   Observable<AVFile> fetchFile(@Path("objectId") String objectId);

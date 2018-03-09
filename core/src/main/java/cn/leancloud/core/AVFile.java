@@ -27,7 +27,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 
 public final class AVFile extends AVObject {
-  private static AVLogger logger = LogUtil.getLogger(AVFile.class);
+  private static AVLogger LOGGER = LogUtil.getLogger(AVFile.class);
   public static final String CLASS_NAME = "_File";
 
   private static final String FILE_SUM_KEY = "_checksum";
@@ -67,6 +67,7 @@ public final class AVFile extends AVObject {
   public AVFile(String name, byte[] data) {
     this();
     if (null == data) {
+      LOGGER.w("data is illegal(null)");
       throw new IllegalArgumentException("data is illegal(null)");
     }
     internalPut(KEY_FILE_NAME, name);
@@ -81,6 +82,7 @@ public final class AVFile extends AVObject {
   public AVFile(String name, File localFile) {
     this();
     if (null == localFile || !localFile.exists() || !localFile.isFile()) {
+      LOGGER.w("local file is illegal");
       throw new IllegalArgumentException("local file is illegal.");
     }
     internalPut(KEY_FILE_NAME, name);
@@ -200,10 +202,6 @@ public final class AVFile extends AVObject {
     return (String) internalGet(KEY_BUCKET);
   }
 
-//  public void setBucket(String bucket) {
-//    internalPut(KEY_BUCKET, bucket);
-//  }
-
   public String getUrl() {
     return (String) internalGet(KEY_URL);
   }
@@ -222,27 +220,32 @@ public final class AVFile extends AVObject {
 
   @Override
   public void put(String key, Object value) {
+    LOGGER.w("cannot invoke put method in AVFile");
     throw new UnsupportedOperationException("cannot invoke put method in AVFile");
   }
 
   @Override
   public Object get(String key) {
+    LOGGER.w("cannot invoke get method in AVFile");
     throw new UnsupportedOperationException("cannot invoke get method in AVFile");
   }
 
   @Override
   public void remove(String key) {
-    throw new UnsupportedOperationException("cannot invoke get method in AVFile");
+    LOGGER.w("cannot invoke remove method in AVFile");
+    throw new UnsupportedOperationException("cannot invoke remove method in AVFile");
   }
 
   @Override
   public void increment(String key) {
-    throw new UnsupportedOperationException("cannot invoke get method in AVFile");
+    LOGGER.w("cannot invoke increment method in AVFile");
+    throw new UnsupportedOperationException("cannot invoke increment method in AVFile");
   }
 
   @Override
   public void increment(String key, Number value) {
-    throw new UnsupportedOperationException("cannot invoke get method in AVFile");
+    LOGGER.w("cannot invoke increment method in AVFile");
+    throw new UnsupportedOperationException("cannot invoke increment method in AVFile");
   }
 
   /**
@@ -260,12 +263,15 @@ public final class AVFile extends AVObject {
 
   public String getThumbnailUrl(boolean scaleToFit, int width, int height, int quality, String fmt) {
     if (AVOSCloud.getRegion() != AVOSCloud.REGION.NorthChina) {
+      LOGGER.w("We only support this method for qiniu storage.");
       throw new UnsupportedOperationException("We only support this method for qiniu storage.");
     }
     if (width < 0 || height < 0) {
+      LOGGER.w("Invalid width or height.");
       throw new IllegalArgumentException("Invalid width or height.");
     }
     if (quality < 1 || quality > 100) {
+      LOGGER.w("Invalid quality,valid range is 0-100.");
       throw new IllegalArgumentException("Invalid quality,valid range is 0-100.");
     }
     if (fmt == null || StringUtil.isEmpty(fmt.trim())) {
@@ -279,7 +285,7 @@ public final class AVFile extends AVObject {
 
   public synchronized void saveInBackground(final ProgressCallback progressCallback) {
     if (StringUtil.isEmpty(objectId)) {
-      Uploader uploader = getUploader(progressCallback);
+      Uploader uploader = getUploader(null, progressCallback);
       uploader.execute();
     } else {
       if (null != progressCallback) {
@@ -291,41 +297,46 @@ public final class AVFile extends AVObject {
   @Override
   public Observable<AVFile> saveInBackground() {
     JSONObject paramData = generateChangedParam();
+    String fileKey = FileUtil.generateFileKey(this.getName());
+    paramData.put("key", fileKey);
+    paramData.put("__type", "File");
     if (StringUtil.isEmpty(getObjectId())) {
-      return PaasClient.getStorageClient().newUploadToken(paramData.toJSONString())
+      LOGGER.d("createToken params: " + paramData.toJSONString());
+      return PaasClient.getStorageClient().newUploadToken(paramData)
               .map(new Function<FileUploadToken, AVFile>() {
                 public AVFile apply(@NonNull FileUploadToken fileUploadToken) throws Exception {
-                  logger.d(fileUploadToken.toString());
-                  System.out.println(fileUploadToken.toString());
+                  LOGGER.d(fileUploadToken.toString());
                   AVFile.this.setObjectId(fileUploadToken.getObjectId());
-                  AVFile.this.internalPutDirectly(KEY_URL, fileUploadToken.getUrl());
                   AVFile.this.internalPutDirectly(KEY_OBJECT_ID, fileUploadToken.getObjectId());
                   AVFile.this.internalPutDirectly(KEY_BUCKET, fileUploadToken.getBucket());
                   AVFile.this.internalPutDirectly(KEY_PROVIDER, fileUploadToken.getProvider());
                   AVFile.this.internalPutDirectly(KEY_FILE_KEY, FileUtil.generateFileKey(AVFile.this.getName()));
-                  Uploader uploader = getUploader(null);
+
+                  Uploader uploader = getUploader(fileUploadToken, null);
+                  AVFile.this.internalPutDirectly(KEY_URL, fileUploadToken.getUrl());
+
                   AVException exception = uploader.execute();
 
                   JSONObject completeResult = new JSONObject();
                   completeResult.put("result", null == exception);
                   completeResult.put("token",fileUploadToken.getToken());
-                  String finalResult = completeResult.toJSONString();
+                  LOGGER.d("file upload result: " + completeResult.toJSONString());
                   try {
-                    PaasClient.getStorageClient().fileCallback(finalResult);
+                    PaasClient.getStorageClient().fileCallback(completeResult);
                     if (null != exception) {
-                      logger.w("failed to invoke fileCallback. cause:", exception);
+                      LOGGER.w("failed to invoke fileCallback. cause:", exception);
                       throw exception;
                     } else {
                       return AVFile.this;
                     }
                   } catch (IOException ex) {
-                    logger.w(ex);
+                    LOGGER.w(ex);
                     throw ex;
                   }
                 }
               });
     } else {
-      logger.d("file has been upload to cloud, ignore request.");
+      LOGGER.d("file has been upload to cloud, ignore request.");
       return Observable.just((AVFile) this);
     }
   }
@@ -335,10 +346,10 @@ public final class AVFile extends AVObject {
     return super.deleteInBackground();
   }
 
-  private Uploader getUploader(ProgressCallback progressCallback) {
+  private Uploader getUploader(FileUploadToken uploadToken, ProgressCallback progressCallback) {
 
     if (StringUtil.isEmpty(getUrl())) {
-      return new FileUploader(this, progressCallback);
+      return new FileUploader(this, uploadToken, progressCallback);
     } else {
       return new UrlDirectlyUploader(this, progressCallback);
     }

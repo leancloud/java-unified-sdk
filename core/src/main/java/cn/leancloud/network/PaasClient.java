@@ -58,9 +58,4 @@ public class PaasClient {
     }
     return storageClient;
   }
-
-
-  public static void setSchedulerCreator(SchedulerCreator creator) {
-    defaultScheduler = creator;
-  }
 }

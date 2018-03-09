@@ -17,11 +17,11 @@ import junit.framework.TestSuite;
 public class AVFileTest extends TestCase {
   public AVFileTest(String name) {
     super(name);
-    PaasClient.config(true, new PaasClient.SchedulerCreator() {
-      public Scheduler create() {
-        return Schedulers.newThread();
-      }
-    });
+//    PaasClient.config(true, new PaasClient.SchedulerCreator() {
+//      public Scheduler create() {
+//        return Schedulers.newThread();
+//      }
+//    });
     AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
     AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
     AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
@@ -37,6 +37,10 @@ public class AVFileTest extends TestCase {
 
   @Override
   protected void tearDown() throws Exception {
+    ;
+  }
+
+  public void testCreateWithObjectId() {
     ;
   }
 

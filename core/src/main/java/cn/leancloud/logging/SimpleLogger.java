@@ -1,7 +1,6 @@
 package cn.leancloud.logging;
 
 import cn.leancloud.AVLogger;
-import cn.leancloud.AVLogger.Level;
 
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -19,11 +18,11 @@ public class SimpleLogger extends AVLogger {
   @Override
   public void setLogLevel(Level logLevel) {
     super.setLogLevel(logLevel);
-    java.util.logging.Level utilLevel = getUtilLevel(logLevel);
+    java.util.logging.Level utilLevel = getNativeLevel(logLevel);
     this.logger.setLevel(utilLevel);
   }
 
-  private java.util.logging.Level getUtilLevel(Level level) {
+  private java.util.logging.Level getNativeLevel(Level level) {
     java.util.logging.Level result;
     switch (level) {
       case OFF:
@@ -52,18 +51,18 @@ public class SimpleLogger extends AVLogger {
   }
 
   protected void internalWriteLog(Level level, String msg) {
-    java.util.logging.Level utilLevel = getUtilLevel(level);
-    this.logger.log(utilLevel, msg);
+    java.util.logging.Level nativeLevel = getNativeLevel(level);
+    this.logger.log(nativeLevel, msg);
   }
 
   protected void internalWriteLog(Level level, String msg, Throwable tr) {
-    java.util.logging.Level utilLevel = getUtilLevel(level);
-    this.logger.log(utilLevel, msg, tr);
+    java.util.logging.Level nativeLevel = getNativeLevel(level);
+    this.logger.log(nativeLevel, msg, tr);
   }
 
   protected void internalWriteLog(Level level, Throwable tr) {
-    java.util.logging.Level utilLevel = getUtilLevel(level);
-    LogRecord record = new LogRecord(utilLevel, "");
+    java.util.logging.Level nativeLevel = getNativeLevel(level);
+    LogRecord record = new LogRecord(nativeLevel, "");
     record.setThrown(tr);
     this.logger.log(record);
   }

@@ -1,10 +1,12 @@
 package cn.leancloud.upload;
 
 import cn.leancloud.AVException;
+import cn.leancloud.AVLogger;
 import cn.leancloud.ProgressCallback;
 import cn.leancloud.SaveCallback;
 import cn.leancloud.core.AVFile;
 import cn.leancloud.utils.AVUtils;
+import cn.leancloud.utils.LogUtil;
 
 import java.io.InputStream;
 
@@ -18,6 +20,8 @@ import java.util.ArrayList;
  */
 
 class QiniuSlicingUploader extends HttpClientUploader {
+  private static AVLogger LOGGER = LogUtil.getLogger(QiniuSlicingUploader.class);
+
   private final String token;
   private FileUploader.ProgressCalculator progressCalculator;
   private int uploadChunkSize = QiniuAccessor.WIFI_CHUNK_SIZE;

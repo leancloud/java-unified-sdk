@@ -84,11 +84,11 @@ public class StorageClient {
     });
   }
 
-  public Observable<FileUploadToken> newUploadToken(String fileData) {
+  public Observable<FileUploadToken> newUploadToken(JSONObject fileData) {
     return wrappObservable(apiService.createUploadToken(fileData));//.subscribeOn(Schedulers.io()).observeOn(Schedulers.io());
   }
 
-  public void fileCallback(String result) throws IOException {
+  public void fileCallback(JSONObject result) throws IOException {
     apiService.fileCallback(result).execute();
     return;
   }

@@ -1,9 +1,11 @@
 package cn.leancloud.upload;
 
 import cn.leancloud.AVException;
+import cn.leancloud.AVLogger;
 import cn.leancloud.ProgressCallback;
 import cn.leancloud.core.AVFile;
 import cn.leancloud.network.PaasClient;
+import cn.leancloud.utils.LogUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -11,6 +13,8 @@ import okhttp3.Response;
 import java.io.IOException;
 
 public abstract class HttpClientUploader implements Uploader {
+  private static AVLogger LOGGER = LogUtil.getLogger(HttpClientUploader.class);
+
   ProgressCallback progressCallback;
 
   private volatile boolean cancelled = false;

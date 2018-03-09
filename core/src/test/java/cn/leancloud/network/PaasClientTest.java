@@ -1,6 +1,7 @@
 package cn.leancloud.network;
 
 import cn.leancloud.AVException;
+import cn.leancloud.AVLogger;
 import cn.leancloud.Configure;
 import cn.leancloud.GetCallback;
 import cn.leancloud.core.convertor.ObserverBuilder;
@@ -9,6 +10,7 @@ import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AVObject;
 import cn.leancloud.upload.FileUploadToken;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -26,6 +28,7 @@ public class PaasClientTest extends TestCase {
   @Override
   protected void setUp() throws Exception {
     AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
+    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
     AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
   }
 
@@ -84,8 +87,9 @@ public class PaasClientTest extends TestCase {
 
   public void testCreateUploadToken() {
     try {
+      JSONObject fileObject = new JSONObject();
       StorageClient storageClient = PaasClient.getStorageClient();
-      storageClient.newUploadToken("").subscribe(new Observer<FileUploadToken>() {
+      storageClient.newUploadToken(fileObject).subscribe(new Observer<FileUploadToken>() {
         public void onComplete() {
 
         }
