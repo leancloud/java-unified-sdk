@@ -18,6 +18,12 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class HttpClientUploader implements Uploader {
   private static AVLogger LOGGER = LogUtil.getLogger(HttpClientUploader.class);
+  private OkHttpClient client = new OkHttpClient.Builder()
+          .connectTimeout(15, TimeUnit.SECONDS)
+          .readTimeout(10, TimeUnit.SECONDS)
+          .writeTimeout(10, TimeUnit.SECONDS)
+          .dns(new DNSDetoxicant())
+          .build();
 
   ProgressCallback progressCallback;
 
@@ -38,13 +44,8 @@ public abstract class HttpClientUploader implements Uploader {
 //            new LinkedBlockingQueue<Runnable>());
 //  }
 
-  protected static synchronized OkHttpClient getOKHttpClient() {
-    return new OkHttpClient.Builder()
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .dns(new DNSDetoxicant())
-            .build();
+  protected synchronized OkHttpClient getOKHttpClient() {
+    return client;
   }
 
   protected AVFile avFile = null;

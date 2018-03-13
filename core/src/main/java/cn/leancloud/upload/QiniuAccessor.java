@@ -7,7 +7,12 @@ import cn.leancloud.codec.Base64;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
-import okhttp3.*;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import java.util.List;
 import java.util.zip.CRC32;
@@ -118,6 +123,7 @@ class QiniuAccessor {
         return data;
       }
     } catch (Exception e) {
+      LOGGER.w(e);
     }
 
     if (responseData.length() > 0) {
@@ -279,7 +285,7 @@ class QiniuAccessor {
           throws Exception {
     try {
       String endPoint = String.format(QINIU_MKFILE_EP, fileTotalSize,
-              Base64.encode(this.fileKey.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP));
+              Base64.encodeToString(this.fileKey.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP));
       final String joinedFileCtx = StringUtil.join(",", uploadFileCtxs);
       Request.Builder builder = new Request.Builder();
       builder.url(endPoint);

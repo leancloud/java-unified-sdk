@@ -9,15 +9,14 @@ public class PersistenceUtil {
   private static PersistenceUtil INSTANCE = new PersistenceUtil();
   private static final int MAX_FILE_BUF_SIZE = 1024*1024*2;
 
-  private String documentDir = "./data";
-  private String fileCacheDir = "./file";
-  private String commandCacheDir = "./command";
-  private String analyticsCacheDir = "./stats";
+  private String documentDir = "./data/";
+  private String fileCacheDir = "./file/";
+  private String commandCacheDir = "./command/";
+  private String analyticsCacheDir = "./stats/";
   private ConcurrentHashMap<String, ReentrantReadWriteLock> fileLocks =
           new ConcurrentHashMap<String, ReentrantReadWriteLock>();
 
   private PersistenceUtil() {
-    ;
   }
 
   public static PersistenceUtil sharedInstance() {
