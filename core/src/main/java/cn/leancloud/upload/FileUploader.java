@@ -17,6 +17,7 @@ import java.util.*;
 
 public class FileUploader extends HttpClientUploader {
   private static AVLogger LOGGER = LogUtil.getLogger(FileUploader.class);
+
   static final int PROGRESS_GET_TOKEN = 10;
   static final int PROGRESS_UPLOAD_FILE = 90;
   static final int PROGRESS_COMPLETE = 100;

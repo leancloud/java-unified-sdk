@@ -77,6 +77,7 @@ public final class AVFile extends AVObject {
     addMetaData(FILE_SUM_KEY, md5);
     addMetaData(FILE_LENGTH_KEY, data.length);
     internalPut(KEY_MIME_TYPE, FileUtil.getMimeTypeFromLocalFile(name));
+    LOGGER.d("localpath=" + localPath);
   }
 
   public AVFile(String name, File localFile) {
@@ -297,22 +298,22 @@ public final class AVFile extends AVObject {
   @Override
   public Observable<AVFile> saveInBackground() {
     JSONObject paramData = generateChangedParam();
-    String fileKey = FileUtil.generateFileKey(this.getName());
+    final String fileKey = FileUtil.generateFileKey(this.getName());
     paramData.put("key", fileKey);
     paramData.put("__type", "File");
     if (StringUtil.isEmpty(getObjectId())) {
-      LOGGER.d("createToken params: " + paramData.toJSONString());
+      LOGGER.d("createToken params: " + paramData.toJSONString() + ", " + this);
       return PaasClient.getStorageClient().newUploadToken(paramData)
               .map(new Function<FileUploadToken, AVFile>() {
                 public AVFile apply(@NonNull FileUploadToken fileUploadToken) throws Exception {
-                  LOGGER.d(fileUploadToken.toString());
+                  LOGGER.d(fileUploadToken.toString() + ", " + AVFile.this);
                   AVFile.this.setObjectId(fileUploadToken.getObjectId());
                   AVFile.this.internalPutDirectly(KEY_OBJECT_ID, fileUploadToken.getObjectId());
                   AVFile.this.internalPutDirectly(KEY_BUCKET, fileUploadToken.getBucket());
                   AVFile.this.internalPutDirectly(KEY_PROVIDER, fileUploadToken.getProvider());
-                  AVFile.this.internalPutDirectly(KEY_FILE_KEY, FileUtil.generateFileKey(AVFile.this.getName()));
+                  AVFile.this.internalPutDirectly(KEY_FILE_KEY, fileKey);
 
-                  Uploader uploader = getUploader(fileUploadToken, null);
+                  Uploader uploader = AVFile.this.getUploader(fileUploadToken, null);
                   AVFile.this.internalPutDirectly(KEY_URL, fileUploadToken.getUrl());
 
                   AVException exception = uploader.execute();
@@ -394,6 +395,7 @@ public final class AVFile extends AVObject {
       filePath = cacheFile.getAbsolutePath();
     }
     if(!StringUtil.isEmpty(filePath)) {
+      LOGGER.d("dest file path=" + filePath);
       return FileCache.getIntance().getInputStreamFromFile(new File(filePath));
     }
     return null;

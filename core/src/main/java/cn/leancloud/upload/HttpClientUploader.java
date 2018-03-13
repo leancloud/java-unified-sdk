@@ -4,13 +4,17 @@ import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.ProgressCallback;
 import cn.leancloud.core.AVFile;
+import cn.leancloud.network.DNSDetoxicant;
+import cn.leancloud.network.LoggingInterceptor;
 import cn.leancloud.network.PaasClient;
+import cn.leancloud.network.RequestPaddingInterceptor;
 import cn.leancloud.utils.LogUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public abstract class HttpClientUploader implements Uploader {
   private static AVLogger LOGGER = LogUtil.getLogger(HttpClientUploader.class);
@@ -35,7 +39,12 @@ public abstract class HttpClientUploader implements Uploader {
 //  }
 
   protected static synchronized OkHttpClient getOKHttpClient() {
-    return PaasClient.getGlobalOkHttpClient();
+    return new OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .dns(new DNSDetoxicant())
+            .build();
   }
 
   protected AVFile avFile = null;

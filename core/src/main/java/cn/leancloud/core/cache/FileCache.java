@@ -4,6 +4,8 @@ import cn.leancloud.codec.MD5;
 import cn.leancloud.utils.StringUtil;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class FileCache {
@@ -51,7 +53,11 @@ public class FileCache {
   }
 
   public InputStream getInputStreamFromFile(File file) {
-    return null;
+    try {
+      return new FileInputStream(file);
+    } catch (FileNotFoundException ex) {
+      return null;
+    }
   }
 
   public void clearCachedFile(String name) {

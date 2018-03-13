@@ -2,7 +2,9 @@ package cn.leancloud.upload;
 
 
 import cn.leancloud.AVException;
+import cn.leancloud.AVLogger;
 import cn.leancloud.codec.Base64;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import okhttp3.*;
@@ -40,6 +42,8 @@ import java.util.zip.CRC32;
  */
 
 class QiniuAccessor {
+  private static AVLogger LOGGER = LogUtil.getLogger(QiniuAccessor.class);
+
   static final String QINIU_HOST = "http://upload.qiniu.com";
   static final String QINIU_CREATE_BLOCK_EP = QINIU_HOST + "/mkblk/%d";
   static final String QINIU_BRICK_UPLOAD_EP = QINIU_HOST + "/bput/%s/%d";
@@ -61,11 +65,30 @@ class QiniuAccessor {
     public int offset;
     public String host;
     public String checksum;
+
+    @Override
+    public String toString() {
+      return "QiniuBlockResponseData{" +
+              "ctx='" + ctx + '\'' +
+              ", crc32=" + crc32 +
+              ", offset=" + offset +
+              ", host='" + host + '\'' +
+              ", checksum='" + checksum + '\'' +
+              '}';
+    }
   }
 
   static class QiniuMKFileResponseData {
     public String key;
     public String hash;
+
+    @Override
+    public String toString() {
+      return "QiniuMKFileResponseData{" +
+              "key='" + key + '\'' +
+              ", hash='" + hash + '\'' +
+              '}';
+    }
   }
 
   private OkHttpClient client;
@@ -148,6 +171,8 @@ class QiniuAccessor {
     } catch (Exception e) {
       if (retry-- > 0) {
         return createBlockInQiniu(blockSize, firstChunkSize, firstChunkData, retry);
+      } else {
+        LOGGER.w(e);
       }
     }
     return null;
@@ -206,6 +231,8 @@ class QiniuAccessor {
     } catch (Exception e) {
       if (retry-- > 0) {
         return putFileBlocksToQiniu(lastChunk, blockOffset, currentChunkData, currentChunkSize, retry);
+      } else {
+        LOGGER.w(e);
       }
     }
     return null;
@@ -266,6 +293,8 @@ class QiniuAccessor {
     } catch (Exception e) {
       if (retry-- > 0) {
         return makeFile(fileTotalSize, uploadFileCtxs, retry);
+      } else {
+        LOGGER.w(e);
       }
     }
     return null;

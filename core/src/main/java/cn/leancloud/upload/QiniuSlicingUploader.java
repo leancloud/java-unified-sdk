@@ -32,7 +32,8 @@ class QiniuSlicingUploader extends HttpClientUploader {
     super(avFile, progressCallback);
     this.token = token;
     this.fileKey = avFile.getKey();
-    this.qiniuAccessor = new QiniuAccessor(getOKHttpClient(), token, avFile.getKey());
+    this.qiniuAccessor = new QiniuAccessor(getOKHttpClient(), this.token, this.fileKey);
+    LOGGER.d("Constructor with token=" + token + ", key=" + fileKey + ", accessor=" + qiniuAccessor);
   }
 
   public AVException execute() {
@@ -55,6 +56,7 @@ class QiniuSlicingUploader extends HttpClientUploader {
 
     try {
       is = this.avFile.getDataStream();
+      LOGGER.d("begin to upload qiniu. chunkSize=" + uploadChunkSize + ", blockCount=" + blockCount + ", is=" + is);
       // loop for read, upload block to qiniu.
       for (int i = 0; i< blockCount; i++) {
         int currentBlockSize = QiniuAccessor.BLOCK_SIZE;
@@ -81,15 +83,20 @@ class QiniuSlicingUploader extends HttpClientUploader {
           if (j == 0) {
             // 1.创建一个block,并且会上传第一个block的第一个chunk的数据
             lastResponse = this.qiniuAccessor.createBlockInQiniu(currentBlockSize, currentChunkSize, buf, DEFAULT_RETRY_TIMES);
+            LOGGER.d("createBlockInQiniu(curBlockSize=" + currentBlockSize + ", curChunkSize=" + currentChunkSize + ") result=" + lastResponse);
           } else {
             // 2.分片上传
+            QiniuAccessor.QiniuBlockResponseData tmpResponse = lastResponse;
             lastResponse = this.qiniuAccessor.putFileBlocksToQiniu(lastResponse, currentBlockOffset, buf, currentChunkSize, DEFAULT_RETRY_TIMES);
+            LOGGER.d("putFileBlocksToQiniu(lastRes=" + tmpResponse + ", curBlockOffset=" + currentBlockOffset + ", curChunkSize=" + currentChunkSize
+              + ") result=" + lastResponse);
           }
         }
 
         if (null != lastResponse){
           uploadFileCtxs.add(lastResponse.ctx);
           progressCalculator.publishProgress(i, 100);
+          LOGGER.d("finished to upload block(" + i + "), ctx=" + lastResponse.ctx);
         } else {
           // error.
           // FIXME: 2017/8/14 603 is hardcode.
@@ -97,6 +104,7 @@ class QiniuSlicingUploader extends HttpClientUploader {
         }
       }
       QiniuAccessor.QiniuMKFileResponseData finalResponse = this.qiniuAccessor.makeFile(fileSize, uploadFileCtxs, DEFAULT_RETRY_TIMES);
+      LOGGER.d("makeFile(fileSize=" + fileSize + ") result=" + finalResponse);
       if (finalResponse == null || !finalResponse.key.equals(fileKey)) {
         return new AVException(AVException.OTHER_CAUSE, "upload file failure");
       }
