@@ -41,7 +41,24 @@ public class AVFileTest extends TestCase {
   }
 
   public void testCreateWithObjectId() {
-    ;
+    String fileObjectId = "5aa634357565710044bde4df";
+    AVFile.withObjectIdInBackground(fileObjectId).subscribe(new Observer<AVFile>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVFile avFile) {
+        System.out.println(avFile);
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+      }
+    });
+
   }
 
   public void testUploader() {

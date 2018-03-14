@@ -67,7 +67,7 @@ public abstract class AVLogger {
   }
 
   protected boolean isEnabled(Level testLevel) {
-    return this.level.intLevel() > testLevel.intLevel();
+    return this.level.intLevel() >= testLevel.intLevel();
   }
 
   protected abstract void internalWriteLog(Level level, String msg);

@@ -22,10 +22,12 @@ import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.annotation.JSONType;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 
+@JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public final class AVFile extends AVObject {
   private static AVLogger LOGGER = LogUtil.getLogger(AVFile.class);
   public static final String CLASS_NAME = "_File";
