@@ -353,7 +353,7 @@ public class AVObject {
   @Override
   public String toString() {
     String serverDataStr = JSON.toJSONString(this.serverData);
-    return "AVObject{" +
+    return this.getClass().getSimpleName() + "{" +
             "className='" + className + '\'' +
             ", serverData=" + serverDataStr +
             '}';

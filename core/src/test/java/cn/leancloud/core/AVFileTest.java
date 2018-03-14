@@ -49,6 +49,18 @@ public class AVFileTest extends TestCase {
 
       public void onNext(AVFile avFile) {
         System.out.println(avFile);
+        String url = avFile.getUrl();
+        String name = avFile.getName();
+        String key = avFile.getKey();
+        int size = avFile.getSize();
+        String objectId = avFile.getObjectId();
+        String thumbnailUrl = avFile.getThumbnailUrl(true, 200, 200);
+        String mimeType = avFile.getMimeType();
+        System.out.println("url=" + url + ", name=" + name + ", key=" + key + ", size=" + size);
+        System.out.println("objId=" + objectId + ", thumbnail=" + thumbnailUrl + ", mime=" + mimeType);
+        assertTrue(url.length() > 0 && thumbnailUrl.length() > 0 && name.length() > 0 && key.length() > 0);
+        assertTrue(size > 0 && objectId.equals("5aa634357565710044bde4df"));
+        assertTrue(mimeType.length() > 0);
       }
 
       public void onError(Throwable throwable) {
@@ -58,7 +70,6 @@ public class AVFileTest extends TestCase {
       public void onComplete() {
       }
     });
-
   }
 
   public void testUploader() {
