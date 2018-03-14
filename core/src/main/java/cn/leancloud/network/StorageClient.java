@@ -2,6 +2,7 @@ package cn.leancloud.network;
 
 import cn.leancloud.core.AVFile;
 import cn.leancloud.core.AVObject;
+import cn.leancloud.core.AVUser;
 import cn.leancloud.core.service.APIService;
 import cn.leancloud.core.types.AVDate;
 import cn.leancloud.upload.FileUploadToken;
@@ -96,5 +97,9 @@ public class StorageClient {
   public Observable<Void> batchSave(JSONObject parameter) {
     Observable<Void> result = wrappObservable(apiService.batchSave(parameter));
     return result;
+  }
+
+  public Observable<AVUser> signUp(JSONObject data) {
+    return wrappObservable(apiService.signup(data));
   }
 }

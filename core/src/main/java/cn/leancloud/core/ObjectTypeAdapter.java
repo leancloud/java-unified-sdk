@@ -39,25 +39,29 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
    * @since 1.8+
    */
   public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
-    AVObject obj;
-    if (type.toString().endsWith(AVFile.class.getCanonicalName())) {
-      obj = new AVFile();
-    } else {
-      obj = new AVObject("");
-    }
+    String className = "";
+    JSONObject serverJson = null;
     JSONObject jsonObject = parser.parseObject();
     if (jsonObject.containsKey(AVObject.KEY_CLASSNAME)) {
-      String className = (String)jsonObject.get(AVObject.KEY_CLASSNAME);
-      obj.className = className;
+      className = (String)jsonObject.get(AVObject.KEY_CLASSNAME);
       if (jsonObject.containsKey("serverData")) {
-        obj.serverData = jsonObject.getJSONObject("serverData");
+        serverJson = jsonObject.getJSONObject("serverData");
       } else {
-        obj.serverData = jsonObject;
+        serverJson = jsonObject;
       }
     } else {
       // server response.
-      obj.serverData = jsonObject;
+      serverJson = jsonObject;
     }
+    AVObject obj;
+    if (type.toString().endsWith(AVFile.class.getCanonicalName())) {
+      obj = new AVFile();
+    } else if (type.toString().endsWith(AVUser.class.getCanonicalName())) {
+      obj = new AVUser();
+    } else {
+      obj = new AVObject(className);
+    }
+    obj.serverData = serverJson;
     return (T) obj;
   }
 
