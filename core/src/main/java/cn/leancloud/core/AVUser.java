@@ -76,6 +76,7 @@ public class AVUser extends AVObject {
 
   public Observable<AVUser> signUp() {
     JSONObject paramData = generateChangedParam();
+    LOGGER.d("signup param: " + paramData.toJSONString());
     return PaasClient.getStorageClient().signUp(paramData);
   }
 }

@@ -32,6 +32,7 @@ public class AVUserTest extends TestCase {
   public void testSingupWithEmail() throws Exception {
     AVUser user = new AVUser();
     user.setEmail("jfeng@test.com");
+    user.setUsername("jfeng");
     user.setPassword("FER$@$@#Ffwe");
     user.signUp().subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
