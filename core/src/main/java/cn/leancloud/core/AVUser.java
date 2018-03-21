@@ -3,6 +3,7 @@ package cn.leancloud.core;
 import cn.leancloud.AVLogger;
 import cn.leancloud.network.PaasClient;
 import cn.leancloud.utils.LogUtil;
+import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -90,10 +91,53 @@ public class AVUser extends AVObject {
   }
 
   public static <T extends AVUser> Observable<T> logIn(String username, String password, final Class<T> clazz) {
-    Map<String, Object> params = new HashMap<String, Object>();
-    params.put("username", username);
-    params.put("password", password);
+    Map<String, Object> params = createUserMap(username, password, null, null, null);
     JSONObject data = new JSONObject(params);
     return PaasClient.getStorageClient().logIn(data, clazz);
+  }
+
+  public static Observable<AVUser> loginByMobilePhoneNumber(String mobile, String password) {
+    return loginByMobilePhoneNumber(mobile, password, AVUser.class);
+  }
+
+  public static <T extends AVUser> Observable<T> loginByMobilePhoneNumber(String mobile, String password, final Class<T> clazz) {
+    Map<String, Object> params = createUserMap(null, password, null, mobile, null);
+    JSONObject data = new JSONObject(params);
+    return PaasClient.getStorageClient().logIn(data, clazz);
+  }
+
+  public static Observable<AVUser> loginBySMSCode(String mobile, String smsCode) {
+    return loginBySMSCode(mobile, smsCode, AVUser.class);
+  }
+
+  public static <T extends AVUser> Observable<T> loginBySMSCode(String mobile, String smsCode, Class<T> clazz) {
+    Map<String, Object> params = createUserMap(null, null, null, mobile, smsCode);
+    JSONObject data = new JSONObject(params);
+    return PaasClient.getStorageClient().logIn(data, clazz);
+  }
+
+  private static Map<String, Object> createUserMap(String username, String password, String email,
+                                                   String phoneNumber, String smsCode) {
+    Map<String, Object> map = new HashMap<String, Object>();
+
+    if (StringUtil.isEmpty(username) && StringUtil.isEmpty(phoneNumber)) {
+      throw new IllegalArgumentException("Blank username and blank mobile phone number");
+    }
+    if (!StringUtil.isEmpty(username)) {
+      map.put("username", username);
+    }
+    if (!StringUtil.isEmpty(password)) {
+      map.put("password", password);
+    }
+    if (!StringUtil.isEmpty(email)) {
+      map.put("email", email);
+    }
+    if (!StringUtil.isEmpty(phoneNumber)) {
+      map.put("mobilePhoneNumber", phoneNumber);
+    }
+    if (!StringUtil.isEmpty(smsCode)) {
+      map.put("smsCode", smsCode);
+    }
+    return map;
   }
 }
