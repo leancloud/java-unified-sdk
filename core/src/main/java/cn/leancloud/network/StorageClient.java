@@ -113,7 +113,9 @@ public class StorageClient {
     return object.map(new Function<JSONObject, T>() {
       public T apply(JSONObject object) throws Exception {
         LOGGER.d("convert JSONObject to target Class:" + clazz.getCanonicalName());
-        return (T) JSON.toJavaObject(object, clazz);
+        T result = (T) JSON.parseObject(object.toJSONString(), clazz);
+        LOGGER.d("result:" + result);
+        return result;
       }
     });
   }
