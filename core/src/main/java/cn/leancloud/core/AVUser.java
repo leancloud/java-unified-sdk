@@ -3,10 +3,15 @@ package cn.leancloud.core;
 import cn.leancloud.AVLogger;
 import cn.leancloud.network.PaasClient;
 import cn.leancloud.utils.LogUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 import io.reactivex.Observable;
+import io.reactivex.functions.Function;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVUser extends AVObject {
@@ -78,5 +83,17 @@ public class AVUser extends AVObject {
     JSONObject paramData = generateChangedParam();
     LOGGER.d("signup param: " + paramData.toJSONString());
     return PaasClient.getStorageClient().signUp(paramData);
+  }
+
+  public static Observable<AVUser> logIn(String username, String password) {
+    return (Observable<AVUser>)logIn(username, password, AVUser.class);
+  }
+
+  public static <T extends AVUser> Observable<T> logIn(String username, String password, final Class<T> clazz) {
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put("username", username);
+    params.put("password", password);
+    JSONObject data = new JSONObject(params);
+    return PaasClient.getStorageClient().logIn(data, clazz);
   }
 }

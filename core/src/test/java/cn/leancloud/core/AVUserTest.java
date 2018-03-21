@@ -52,4 +52,25 @@ public class AVUserTest extends TestCase {
       }
     });
   }
+
+  public void testLogin() throws Exception {
+    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+      public void onSubscribe(Disposable disposable) {
+        System.out.println("onSubscribe " + disposable.toString());
+      }
+
+      public void onNext(AVUser avUser) {
+        System.out.println("onNext. result=" + avUser.toString());
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+        System.out.println("onComplete");
+      }
+    });
+    Thread.sleep(3000);
+  }
 }

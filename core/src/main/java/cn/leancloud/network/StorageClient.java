@@ -1,11 +1,14 @@
 package cn.leancloud.network;
 
+import cn.leancloud.AVLogger;
 import cn.leancloud.core.AVFile;
 import cn.leancloud.core.AVObject;
 import cn.leancloud.core.AVUser;
 import cn.leancloud.core.service.APIService;
 import cn.leancloud.core.types.AVDate;
 import cn.leancloud.upload.FileUploadToken;
+import cn.leancloud.utils.LogUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
@@ -14,6 +17,8 @@ import io.reactivex.schedulers.Schedulers;
 import java.io.IOException;
 
 public class StorageClient {
+  private static AVLogger LOGGER = LogUtil.getLogger(StorageClient.class);
+
   private APIService apiService = null;
   private boolean asynchronized = false;
   private PaasClient.SchedulerCreator defaultCreator = null;
@@ -101,5 +106,15 @@ public class StorageClient {
 
   public Observable<AVUser> signUp(JSONObject data) {
     return wrappObservable(apiService.signup(data));
+  }
+
+  public <T extends AVUser> Observable<T> logIn(JSONObject data, final Class clazz) {
+    Observable<JSONObject> object = wrappObservable(apiService.login(data));
+    return object.map(new Function<JSONObject, T>() {
+      public T apply(JSONObject object) throws Exception {
+        LOGGER.d("convert JSONObject to target Class:" + clazz.getCanonicalName());
+        return (T) JSON.toJavaObject(object, clazz);
+      }
+    });
   }
 }

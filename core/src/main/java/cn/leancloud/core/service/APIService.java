@@ -71,7 +71,7 @@ public interface APIService {
   Observable<AVUser> signupByMobilePhone(@Body JSONObject object);
 
   @POST("/1.1/login")
-  Observable<AVUser> login(@Body JSONObject object);
+  Observable<JSONObject> login(@Body JSONObject object);
 
   @PUT("/1.1/users/{objectId}/updatePassword")
   Observable<AVUser> updatePassword(@Path("objectId") String objectId, @Body JSONObject object);
