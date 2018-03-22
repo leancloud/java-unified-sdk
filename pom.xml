@@ -10,8 +10,6 @@
   <modules>
     <module>core</module>
     <module>realtime</module>
-    <module>android-sdk</module>
-    <!--<module>android-push</module>-->
     <module>java-sdk</module>
   </modules>
 
