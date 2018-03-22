@@ -1,4 +1,5 @@
 */.DS_Store
+*/.gitignore
 **/*.iml
 .idea/
 *.class
