@@ -1,6 +1,6 @@
 package cn.leancloud.utils;
 
-import cn.leancloud.core.AVFile;
+import cn.leancloud.AVFile;
 
 public class FileUtil {
   public static final int DEFAULT_FILE_KEY_LEN = 40;

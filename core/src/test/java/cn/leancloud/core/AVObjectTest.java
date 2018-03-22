@@ -1,10 +1,10 @@
 package cn.leancloud.core;
 
+import cn.leancloud.AVACL;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Configure;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -80,7 +80,8 @@ public class AVObjectTest extends TestCase {
       }
 
       public void onNext(AVObject avObject) {
-        System.out.println("create object finished. objectId=" + avObject.getObjectId() + ", className=" + avObject.getClassName());
+        System.out.println("[Thread:" + Thread.currentThread().getId() +
+                "]create object finished. objectId=" + avObject.getObjectId() + ", className=" + avObject.getClassName());
         avObject.deleteInBackground().subscribe(new Observer<Void>() {
           public void onSubscribe(Disposable disposable) {
             ;

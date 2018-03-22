@@ -1,7 +1,7 @@
 package cn.leancloud.network;
 
 import cn.leancloud.AVLogger;
-import cn.leancloud.core.AVFile;
+import cn.leancloud.AVFile;
 import cn.leancloud.core.AVObject;
 import cn.leancloud.core.AVUser;
 import cn.leancloud.core.service.APIService;
@@ -11,6 +11,7 @@ import cn.leancloud.utils.LogUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -37,6 +38,19 @@ public class StorageClient {
     }
     if (null != defaultCreator) {
       observable = observable.observeOn(defaultCreator.create());
+    }
+    return observable;
+  }
+  private Observable wrappObservableInBackground(Observable observable) {
+    if (null == observable) {
+      return null;
+    }
+    Scheduler scheduler = Schedulers.io();
+    if (asynchronized) {
+      observable = observable.subscribeOn(scheduler);
+    }
+    if (null != defaultCreator) {
+      observable = observable.observeOn(scheduler);
     }
     return observable;
   }
@@ -91,7 +105,7 @@ public class StorageClient {
   }
 
   public Observable<FileUploadToken> newUploadToken(JSONObject fileData) {
-    return wrappObservable(apiService.createUploadToken(fileData));//.subscribeOn(Schedulers.io()).observeOn(Schedulers.io());
+    return wrappObservableInBackground(apiService.createUploadToken(fileData));
   }
 
   public void fileCallback(JSONObject result) throws IOException {

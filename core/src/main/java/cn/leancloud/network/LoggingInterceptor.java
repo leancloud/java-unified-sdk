@@ -9,14 +9,14 @@ import okhttp3.Response;
 import java.io.IOException;
 
 public class LoggingInterceptor implements Interceptor {
-  private static AVLogger logger = LogUtil.getLogger(LoggingInterceptor.class);
+  private static AVLogger LOGGER = LogUtil.getLogger(LoggingInterceptor.class);
 
   public Response intercept(Interceptor.Chain chain) throws IOException {
     Request request = chain.request();
 
     long t1 = System.nanoTime();
 
-    System.out.print(String.format("Sending request(%s) %s %n%s%n",
+    System.out.print(String.format("[Thread:%d] Sending request(%s) %s %n%s%n",Thread.currentThread().getId(),
                 request.method(), request.url(), request.headers()));
 
     Response response = chain.proceed(request);

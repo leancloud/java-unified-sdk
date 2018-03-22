@@ -1,5 +1,6 @@
 package cn.leancloud.core;
 
+import cn.leancloud.AVFile;
 import cn.leancloud.AVLogger;
 import cn.leancloud.utils.LogUtil;
 import com.alibaba.fastjson.JSON;

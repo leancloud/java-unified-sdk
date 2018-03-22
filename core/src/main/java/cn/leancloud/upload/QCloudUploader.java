@@ -3,7 +3,7 @@ package cn.leancloud.upload;
 import cn.leancloud.AVException;
 import cn.leancloud.ProgressCallback;
 import cn.leancloud.codec.SHA1;
-import cn.leancloud.core.AVFile;
+import cn.leancloud.AVFile;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

@@ -1,15 +1,10 @@
-package cn.leancloud.core;
+package cn.leancloud;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.Configure;
-import cn.leancloud.network.PaasClient;
+import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -82,14 +77,15 @@ public class AVFileTest extends TestCase {
       }
 
       public void onNext(AVFile avFile) {
-        System.out.println("succeed to upload file. objectId=" + avFile.getObjectId());
+        System.out.println("[Thread:" + Thread.currentThread().getId() +
+                "]succeed to upload file. objectId=" + avFile.getObjectId());
         avFile.deleteInBackground().subscribe(new Observer<Void>() {
           public void onSubscribe(Disposable disposable) {
 
           }
 
           public void onNext(Void aVoid) {
-            System.out.println("succeed to delete file.");
+            System.out.println("[Thread:" + Thread.currentThread().getId() + "]succeed to delete file.");
           }
 
           public void onError(Throwable throwable) {

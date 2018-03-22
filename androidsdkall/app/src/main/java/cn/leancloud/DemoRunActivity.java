@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.app.Activity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,6 +62,7 @@ public class DemoRunActivity extends Activity {
 
     //noinspection SimplifiableIfStatement
     if (id == R.id.action_run) {
+      Log.d("DemoRunActivity", "MainThread: " + Thread.currentThread().getId());
       demoActivity.runMethod(this, methodName);
       return true;
     }

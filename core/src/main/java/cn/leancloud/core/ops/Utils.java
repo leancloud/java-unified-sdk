@@ -2,11 +2,10 @@ package cn.leancloud.core.ops;
 
 import java.util.*;
 
-import cn.leancloud.core.AVFile;
+import cn.leancloud.AVFile;
 import cn.leancloud.core.AVObject;
 import cn.leancloud.core.types.AVGeoPoint;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
 
 import cn.leancloud.codec.Base64;
 

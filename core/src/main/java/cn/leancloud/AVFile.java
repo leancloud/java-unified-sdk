@@ -1,8 +1,9 @@
-package cn.leancloud.core;
+package cn.leancloud;
 
-import cn.leancloud.AVException;
-import cn.leancloud.ProgressCallback;
 import cn.leancloud.codec.MD5;
+import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.AVObject;
+import cn.leancloud.core.ObjectTypeAdapter;
 import cn.leancloud.core.cache.FileCache;
 import cn.leancloud.core.cache.PersistenceUtil;
 import cn.leancloud.core.ops.ObjectFieldOperation;
@@ -16,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.leancloud.upload.*;
-import cn.leancloud.AVLogger;
 import cn.leancloud.utils.FileUtil;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -308,7 +308,7 @@ public final class AVFile extends AVObject {
       return PaasClient.getStorageClient().newUploadToken(paramData)
               .map(new Function<FileUploadToken, AVFile>() {
                 public AVFile apply(@NonNull FileUploadToken fileUploadToken) throws Exception {
-                  LOGGER.d(fileUploadToken.toString() + ", " + AVFile.this);
+                  LOGGER.d("[Thread:" + Thread.currentThread().getId() + "]" + fileUploadToken.toString() + ", " + AVFile.this);
                   AVFile.this.setObjectId(fileUploadToken.getObjectId());
                   AVFile.this.internalPutDirectly(KEY_OBJECT_ID, fileUploadToken.getObjectId());
                   AVFile.this.internalPutDirectly(KEY_BUCKET, fileUploadToken.getBucket());
@@ -400,6 +400,7 @@ public final class AVFile extends AVObject {
       LOGGER.d("dest file path=" + filePath);
       return FileCache.getIntance().getInputStreamFromFile(new File(filePath));
     }
+    LOGGER.w("failed to get dataStream.");
     return null;
   }
 }

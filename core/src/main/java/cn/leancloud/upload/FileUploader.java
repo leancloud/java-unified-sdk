@@ -1,16 +1,10 @@
 package cn.leancloud.upload;
 
 import cn.leancloud.*;
-import cn.leancloud.core.AVFile;
-import cn.leancloud.core.ops.ObjectFieldOperation;
-import cn.leancloud.core.ops.OperationBuilder;
+import cn.leancloud.AVFile;
 import cn.leancloud.network.PaasClient;
-import cn.leancloud.utils.AVUtils;
-import cn.leancloud.utils.FileUtil;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.*;

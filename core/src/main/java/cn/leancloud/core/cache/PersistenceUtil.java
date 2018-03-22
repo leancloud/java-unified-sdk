@@ -28,17 +28,36 @@ public class PersistenceUtil {
     if (!documentDir.endsWith("/")) {
       this.documentDir += "/";
     }
+    File dirFile = new File(this.documentDir);
+    if (!dirFile.exists()) {
+      dirFile.mkdirs();
+    }
+
     this.fileCacheDir = fileCacheDir;
     if (!fileCacheDir.endsWith("/")) {
       this.fileCacheDir += "/";
     }
+    dirFile = new File(this.fileCacheDir);
+    if (!dirFile.exists()) {
+      dirFile.mkdirs();
+    }
+
     this.commandCacheDir = commandCacheDir;
     if (!commandCacheDir.endsWith("/")) {
       this.commandCacheDir += "/";
     }
+    dirFile = new File(this.commandCacheDir);
+    if (!dirFile.exists()) {
+      dirFile.mkdirs();
+    }
+
     this.analyticsCacheDir = analyticsCacheDir;
     if (!analyticsCacheDir.endsWith("/")) {
       this.analyticsCacheDir += "/";
+    }
+    dirFile = new File(this.analyticsCacheDir);
+    if (!dirFile.exists()) {
+      dirFile.mkdirs();
     }
   }
 

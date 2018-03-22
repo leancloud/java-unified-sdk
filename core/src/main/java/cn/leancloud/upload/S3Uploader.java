@@ -2,7 +2,7 @@ package cn.leancloud.upload;
 
 import cn.leancloud.AVException;
 import cn.leancloud.ProgressCallback;
-import cn.leancloud.core.AVFile;
+import cn.leancloud.AVFile;
 import cn.leancloud.utils.FileUtil;
 import cn.leancloud.utils.StringUtil;
 import okhttp3.*;

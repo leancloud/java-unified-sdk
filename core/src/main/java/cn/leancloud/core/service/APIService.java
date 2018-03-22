@@ -1,6 +1,6 @@
 package cn.leancloud.core.service;
 
-import cn.leancloud.core.AVFile;
+import cn.leancloud.AVFile;
 import cn.leancloud.core.AVObject;
 import cn.leancloud.core.AVRole;
 import cn.leancloud.core.AVUser;

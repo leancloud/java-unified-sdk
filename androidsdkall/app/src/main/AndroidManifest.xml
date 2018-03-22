@@ -37,6 +37,7 @@
         <activity android:name=".SourceCodeActivity">
         </activity>
         <activity android:name=".testcase.ObjectDemoActivity"/>
+        <activity android:name=".testcase.FileDemoActivity"/>
     </application>
 
 </manifest>

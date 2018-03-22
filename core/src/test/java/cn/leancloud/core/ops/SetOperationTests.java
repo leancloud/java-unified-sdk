@@ -1,7 +1,7 @@
 package cn.leancloud.core.ops;
 
 import cn.leancloud.Configure;
-import cn.leancloud.core.AVACL;
+import cn.leancloud.AVACL;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.network.PaasClient;
 import io.reactivex.Scheduler;

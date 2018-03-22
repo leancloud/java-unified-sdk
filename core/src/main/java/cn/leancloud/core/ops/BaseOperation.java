@@ -1,8 +1,8 @@
 package cn.leancloud.core.ops;
 
 import cn.leancloud.codec.Base64;
-import cn.leancloud.core.AVACL;
-import cn.leancloud.core.AVFile;
+import cn.leancloud.AVACL;
+import cn.leancloud.AVFile;
 import cn.leancloud.core.AVObject;
 import cn.leancloud.core.types.AVGeoPoint;
 import cn.leancloud.utils.StringUtil;
