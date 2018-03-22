@@ -20,7 +20,7 @@ public interface APIService {
    */
 
   @GET("/1.1/classes/{className}")
-  Observable<List<AVObject>> findObjects(@Path("className") String className);
+  Observable<List<? extends AVObject>> findObjects(@Path("className") String className);
 
   @GET("/1.1/classes/{className}/{objectId}")
   Observable<AVObject> fetchObject(@Path("className") String className, @Path("objectId") String objectId);

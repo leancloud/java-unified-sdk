@@ -87,13 +87,12 @@ public class AVObjectTest extends TestCase {
           }
 
           public void onNext(Void aVoid) {
-            System.out.println("delete object finished.");
+            System.out.println("delete object finished, but ACL doesn't work!");
             fail();
           }
 
           public void onError(Throwable throwable) {
-            System.out.println("delete object failed.");
-            throwable.printStackTrace();
+            System.out.println("delete object failed as expected.");
             assertNotNull(throwable);
           }
 
@@ -134,6 +133,7 @@ public class AVObjectTest extends TestCase {
 
           public void onError(Throwable throwable) {
             System.out.println("delete object failed.");
+            fail();
           }
 
           public void onComplete() {
@@ -165,7 +165,6 @@ public class AVObjectTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-        throwable.printStackTrace();
         fail();
       }
 

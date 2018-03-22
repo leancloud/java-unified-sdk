@@ -76,31 +76,38 @@ public class AVFileTest extends TestCase {
     String contents = StringUtil.getRandomString(64);
     AVFile file = new AVFile("test", contents.getBytes());
     Observable<AVFile> result = file.saveInBackground();
-    result.subscribe(new Consumer<AVFile>() {
-      public void accept(AVFile avFile) throws Exception {
-        if (null == avFile) {
-          fail();
-        } else {
-          System.out.println("succeed to upload file. objectId=" + avFile.getObjectId());
-          avFile.deleteInBackground().subscribe(new Observer<Void>() {
-            public void onSubscribe(Disposable disposable) {
+    result.subscribe(new Observer<AVFile>() {
+      public void onSubscribe(Disposable disposable) {
 
-            }
+      }
 
-            public void onNext(Void aVoid) {
-              System.out.println("succeed to delete file.");
-            }
+      public void onNext(AVFile avFile) {
+        System.out.println("succeed to upload file. objectId=" + avFile.getObjectId());
+        avFile.deleteInBackground().subscribe(new Observer<Void>() {
+          public void onSubscribe(Disposable disposable) {
 
-            public void onError(Throwable throwable) {
-              throwable.printStackTrace();
-              fail();
-            }
+          }
 
-            public void onComplete() {
+          public void onNext(Void aVoid) {
+            System.out.println("succeed to delete file.");
+          }
 
-            }
-          });
-        }
+          public void onError(Throwable throwable) {
+            fail();
+          }
+
+          public void onComplete() {
+
+          }
+        });
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+
       }
     });
   }

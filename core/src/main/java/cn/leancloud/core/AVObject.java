@@ -45,8 +45,20 @@ public class AVObject {
   protected Map<String, ObjectFieldOperation> operations = new ConcurrentHashMap<String, ObjectFieldOperation>();
   protected AVACL acl = null;
 
+  public AVObject() {
+    this.className = getSubClassName(this.getClass());
+  }
+
   public AVObject(String className) {
     this.className = className;
+  }
+
+  public AVObject(AVObject other) {
+    this.className = other.className;
+    this.objectId = other.objectId;
+    this.serverData.putAll(other.serverData);
+    this.operations.putAll(other.operations);
+    this.acl = other.acl;
   }
 
   public String getClassName() {
@@ -104,6 +116,14 @@ public class AVObject {
 
   public Date getDate(String key) {
     return (Date) get(key);
+  }
+
+  public String getString(String key) {
+    Object obj = get(key);
+    if (obj instanceof String)
+      return (String) obj;
+    else
+      return null;
   }
 
   public int getInt(String key) {
@@ -253,7 +273,7 @@ public class AVObject {
     return PaasClient.getStorageClient().deleteObject(this.className, getObjectId());
   }
 
-  public Observable<AVObject> refreshInBackground() {
+  public Observable<? extends AVObject> refreshInBackground() {
     Observable<AVObject> result = PaasClient.getStorageClient().fetchObject(this.className, getObjectId());
     return result.map(new Function<AVObject, AVObject>() {
       public AVObject apply(@NonNull AVObject avObject) throws Exception {
@@ -290,6 +310,8 @@ public class AVObject {
       return "_Role";
     } else if (AVStatus.class.isAssignableFrom(clazz)) {
       return "_Status";
+    } else if (AVFile.class.isAssignableFrom(clazz)) {
+      return "_File";
     } else {
       return SUB_CLASSES_REVERSE_MAP.get(clazz);
     }

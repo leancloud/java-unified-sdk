@@ -44,7 +44,6 @@ public class AVObjectAsyncTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-        throwable.printStackTrace();
         fail();
       }
 

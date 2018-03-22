@@ -44,7 +44,7 @@ public class AVUserTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        assertNotNull(throwable);
       }
 
       public void onComplete() {

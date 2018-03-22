@@ -22,4 +22,8 @@ public class PersistenceUtilTest extends TestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
   }
+
+  public void testDummy() {
+    ;
+  }
 }
