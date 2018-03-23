@@ -1,6 +1,8 @@
 package cn.leancloud.utils;
 
+import cn.leancloud.core.AVOSCloud;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,6 +34,22 @@ public class AVUtils {
     return JSON.toJSONString(parameters);
   }
 
+  public static Map<String, Object> createMap(String cmp, Object value) {
+    Map<String, Object> dict = new HashMap<String, Object>();
+    dict.put(cmp, value);
+    return dict;
+  }
+
+  public static String jsonStringFromMapWithNull(Object map) {
+    if (AVOSCloud.isDebugEnable()) {
+      return JSON.toJSONString(map, SerializerFeature.WriteMapNullValue,
+              SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero,
+              SerializerFeature.PrettyFormat);
+    } else {
+      return JSON.toJSONString(map, SerializerFeature.WriteMapNullValue,
+              SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero);
+    }
+  }
   public static boolean equals(Object a, Object b) {
     return (a == b) || (a != null && a.equals(b));
   }

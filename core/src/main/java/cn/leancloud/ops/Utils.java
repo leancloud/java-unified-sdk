@@ -80,6 +80,10 @@ public class Utils {
     return result;
   }
 
+  public static Map<String, Object> getParsedMap(Map<String, Object> map) {
+    return getParsedMap(map, false);
+  }
+
   private static Map<String, Object> getParsedMap(Map<String, Object> object, boolean topObject) {
     Map newMap = new HashMap<String, Object>(object.size());
 

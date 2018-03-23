@@ -29,6 +29,9 @@ public class AVOSCloud {
       logAdapter.setLevel(level);
     }
   }
+  public static boolean isDebugEnable() {
+    return logLevel.intLevel() >= AVLogger.Level.DEBUG.intLevel();
+  }
 
   public static void initialize(String appId, String appKey) {
     applicationId = appId;
