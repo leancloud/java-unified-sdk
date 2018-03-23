@@ -30,8 +30,7 @@ public class AVObjectTest {
       }
 
       public void onNext(AVObject avObject) {
-        System.out.println("create object finished. objectId=" + avObject.getObjectId() + ", className="
-            + avObject.getClassName());
+        System.out.println("create object finished. " + avObject.toString());
         avObject.deleteInBackground().subscribe(new Observer<Void>() {
           public void onSubscribe(Disposable disposable) {
             ;

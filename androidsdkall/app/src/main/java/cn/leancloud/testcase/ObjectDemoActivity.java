@@ -23,9 +23,7 @@ public class ObjectDemoActivity extends DemoBaseActivity {
 
       @Override
       public void onNext(AVObject avObject) {
-        log("Thread:" + Thread.currentThread().getId());
-        log("保存了一个学生：" + prettyJSON(avObject));
-        logThreadTips();
+        log("[Thread:" + Thread.currentThread().getId() + "] 保存了一个学生：" + avObject.toString());
       }
 
       @Override

@@ -2,7 +2,7 @@ package cn.leancloud;
 
 import android.content.Context;
 
-import cn.leancloud.core.cache.PersistenceUtil;
+import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.logging.DefaultLoggerAdapter;
 import cn.leancloud.network.PaasClient;
 import cn.leancloud.utils.LogUtil;
@@ -12,7 +12,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
 
   public static void initialize(Context context, String appId, String appKey) {
-    cn.leancloud.core.AVOSCloud.initialize(appId, appKey);
     setLogAdapter(new DefaultLoggerAdapter());
     String baseDir = context.getCacheDir().getAbsolutePath();
     String documentDir = context.getDir("PaaS", Context.MODE_PRIVATE).getAbsolutePath();
@@ -28,5 +27,6 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
         return AndroidSchedulers.mainThread();
       }
     });
+    cn.leancloud.core.AVOSCloud.initialize(appId, appKey);
   }
 }

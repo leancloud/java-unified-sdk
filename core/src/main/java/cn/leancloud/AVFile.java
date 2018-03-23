@@ -2,12 +2,10 @@ package cn.leancloud;
 
 import cn.leancloud.codec.MD5;
 import cn.leancloud.core.AVOSCloud;
-import cn.leancloud.core.AVObject;
-import cn.leancloud.core.ObjectTypeAdapter;
-import cn.leancloud.core.cache.FileCache;
-import cn.leancloud.core.cache.PersistenceUtil;
-import cn.leancloud.core.ops.ObjectFieldOperation;
-import cn.leancloud.core.ops.OperationBuilder;
+import cn.leancloud.cache.FileCache;
+import cn.leancloud.cache.PersistenceUtil;
+import cn.leancloud.ops.ObjectFieldOperation;
+import cn.leancloud.ops.OperationBuilder;
 import cn.leancloud.network.PaasClient;
 
 import java.io.File;
@@ -16,6 +14,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.leancloud.types.AVNull;
 import cn.leancloud.upload.*;
 import cn.leancloud.utils.FileUtil;
 import cn.leancloud.utils.LogUtil;
@@ -345,7 +344,7 @@ public final class AVFile extends AVObject {
   }
 
   @Override
-  public Observable<Void> deleteInBackground() {
+  public Observable<AVNull> deleteInBackground() {
     return super.deleteInBackground();
   }
 

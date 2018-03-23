@@ -2,10 +2,11 @@ package cn.leancloud.network;
 
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVFile;
-import cn.leancloud.core.AVObject;
-import cn.leancloud.core.AVUser;
-import cn.leancloud.core.service.APIService;
-import cn.leancloud.core.types.AVDate;
+import cn.leancloud.AVObject;
+import cn.leancloud.AVUser;
+import cn.leancloud.service.APIService;
+import cn.leancloud.types.AVDate;
+import cn.leancloud.types.AVNull;
 import cn.leancloud.upload.FileUploadToken;
 import cn.leancloud.utils.LogUtil;
 import com.alibaba.fastjson.JSON;
@@ -70,7 +71,7 @@ public class StorageClient {
             });
   }
 
-  public Observable<Void> deleteObject(final String className, String objectId) {
+  public Observable<AVNull> deleteObject(final String className, String objectId) {
     return wrappObservable(apiService.deleteObject(className, objectId));
   }
 
@@ -78,6 +79,7 @@ public class StorageClient {
     Observable<? extends AVObject> object = wrappObservable(apiService.createObject(className, data));
     return object.map(new Function<AVObject, AVObject>() {
       public AVObject apply(AVObject avObject) {
+        LOGGER.d(avObject.toString());
         avObject.setClassName(className);
         return avObject;
       }
@@ -113,8 +115,8 @@ public class StorageClient {
     return;
   }
 
-  public Observable<Void> batchSave(JSONObject parameter) {
-    Observable<Void> result = wrappObservable(apiService.batchSave(parameter));
+  public Observable<AVNull> batchSave(JSONObject parameter) {
+    Observable<AVNull> result = wrappObservable(apiService.batchSave(parameter));
     return result;
   }
 

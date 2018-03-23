@@ -1,6 +1,6 @@
 package cn.leancloud.codec;
 
-import cn.leancloud.core.cache.PersistenceUtil;
+import cn.leancloud.cache.PersistenceUtil;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,7 +1,7 @@
 package cn.leancloud.upload;
 
 import cn.leancloud.AVException;
-import cn.leancloud.core.cache.PersistenceUtil;
+import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.network.PaasClient;
 import cn.leancloud.utils.StringUtil;
 import okhttp3.Headers;

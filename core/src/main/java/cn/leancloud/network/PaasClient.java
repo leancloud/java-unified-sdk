@@ -1,7 +1,7 @@
 package cn.leancloud.network;
 
 import cn.leancloud.AVACL;
-import cn.leancloud.core.service.APIService;
+import cn.leancloud.service.APIService;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.fastjson.*;

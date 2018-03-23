@@ -1,6 +1,5 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVUser;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
