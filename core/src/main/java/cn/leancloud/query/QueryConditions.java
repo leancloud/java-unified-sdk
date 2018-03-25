@@ -437,4 +437,20 @@ public class QueryConditions {
     addWhereItem(key, "$exists", false);
   }
 
+  public String generateQueryString() {
+    assembleParameters();
+    Map<String, String> params = getParameters();
+    StringBuilder sb = new StringBuilder();
+    int index = 0;
+    for (Map.Entry<String, String> param: params.entrySet()) {
+      if (index > 0) {
+        sb.append("&");
+      }
+      index++;
+      sb.append(AVRequestParams.urlEncode(param.getKey()));
+      sb.append("=");
+      sb.append(AVRequestParams.urlEncode(param.getValue()));
+    }
+    return sb.toString();
+  }
 }
