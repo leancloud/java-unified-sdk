@@ -1,11 +1,11 @@
 package cn.leancloud;
 
-import cn.leancloud.annotation.AVClassName;
 import cn.leancloud.ops.ObjectFieldOperation;
 import cn.leancloud.ops.OperationBuilder;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.network.PaasClient;
 import cn.leancloud.types.AVNull;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -15,8 +15,6 @@ import com.alibaba.fastjson.annotation.JSONType;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alibaba.fastjson.parser.ParserConfig;
-import com.alibaba.fastjson.serializer.SerializeConfig;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
@@ -32,12 +30,9 @@ public class AVObject {
 
   private static final Set<String> RESERVED_ATTRS = new HashSet<String>(
           Arrays.asList(KEY_CREATED_AT, KEY_UPDATED_AT, KEY_OBJECT_ID, KEY_ACL));
-  private final static Map<String, Class<? extends AVObject>> SUB_CLASSES_MAP =
-          new HashMap<String, Class<? extends AVObject>>();
-  private final static Map<Class<? extends AVObject>, String> SUB_CLASSES_REVERSE_MAP =
-          new HashMap<Class<? extends AVObject>, String>();
 
   protected String className;
+  protected static AVLogger LOGGER = LogUtil.getLogger(AVObject.class);
 
   protected String objectId = "";
   protected Map<String, Object> serverData = new ConcurrentHashMap<String, Object>();
@@ -45,10 +40,11 @@ public class AVObject {
   protected AVACL acl = null;
 
   public AVObject() {
-    this.className = getSubClassName(this.getClass());
+    this.className = Transformer.getSubClassName(this.getClass());
   }
 
   public AVObject(String className) {
+    Transformer.checkClassName(className);
     this.className = className;
   }
 
@@ -66,7 +62,10 @@ public class AVObject {
   public String internalClassName() {
     return this.getClassName();
   }
-  public void setClassName(String name) {this.className = name;}
+  public void setClassName(String name) {
+    Transformer.checkClassName(name);
+    this.className = name;
+  }
 
   public String getCreatedAt() {
     return (String) this.serverData.get(KEY_CREATED_AT);
@@ -273,46 +272,21 @@ public class AVObject {
   }
 
   public Observable<? extends AVObject> refreshInBackground() {
-    Observable<AVObject> result = PaasClient.getStorageClient().fetchObject(this.className, getObjectId());
-    return result.map(new Function<AVObject, AVObject>() {
-      public AVObject apply(@NonNull AVObject avObject) throws Exception {
-        System.out.println("update self.");
-        AVObject.this.resetByServerData(avObject);
-        return avObject;
-      }
-    });
+    return PaasClient.getStorageClient().fetchObject(this.className, getObjectId());
   }
 
   protected void resetAll() {
+    this.objectId = "";
+    this.acl = null;
     this.serverData.clear();
+    this.operations.clear();
   }
 
-  protected void resetByServerData(AVObject avObject) {
-    if (null == avObject) {
-      return;
-    }
+  protected void resetByRawData(AVObject avObject) {
     resetAll();
-    this.serverData.putAll(avObject.serverData);
-  }
-
-  /**
-   * subclass
-   */
-  static Class<? extends AVObject> getSubClass(String className) {
-    return SUB_CLASSES_MAP.get(className);
-  }
-
-  static String getSubClassName(Class<? extends AVObject> clazz) {
-    if (AVUser.class.isAssignableFrom(clazz)) {
-      return "_User";
-    } else if (AVRole.class.isAssignableFrom(clazz)) {
-      return "_Role";
-    } else if (AVStatus.class.isAssignableFrom(clazz)) {
-      return "_Status";
-    } else if (AVFile.class.isAssignableFrom(clazz)) {
-      return "_File";
-    } else {
-      return SUB_CLASSES_REVERSE_MAP.get(clazz);
+    if (null != avObject) {
+      this.serverData.putAll(avObject.serverData);
+      this.acl = generateACLFromServerData();
     }
   }
 
@@ -323,16 +297,7 @@ public class AVObject {
    * @since 1.3.6
    */
   public static <T extends AVObject> void registerSubclass(Class<T> clazz) {
-    AVClassName avClassName = clazz.getAnnotation(AVClassName.class);
-    if (avClassName == null) {
-      throw new IllegalArgumentException("The class is not annotated by @AVClassName");
-    }
-    String className = avClassName.value();
-    SUB_CLASSES_MAP.put(className, clazz);
-    SUB_CLASSES_REVERSE_MAP.put(clazz, className);
-    // register object serializer/deserializer.
-    ParserConfig.getGlobalInstance().putDeserializer(clazz, new ObjectTypeAdapter());
-    SerializeConfig.getGlobalInstance().put(clazz, new ObjectTypeAdapter());
+    Transformer.registerClass(clazz);
   }
 
   /**
@@ -367,8 +332,7 @@ public class AVObject {
    */
 
   public JSONObject toJSONObject() {
-    // TODO
-    return null;
+    return new JSONObject(this.serverData);
   }
 
   @Override

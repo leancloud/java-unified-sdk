@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.utils.LogUtil;
+import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
@@ -57,10 +58,13 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
       obj = new AVFile();
     } else if (type.toString().endsWith(AVUser.class.getCanonicalName())) {
       obj = new AVUser();
-    } else {
+    } else if (!StringUtil.isEmpty(className)){
       obj = new AVObject(className);
+    } else {
+      obj = new AVObject();
     }
     obj.serverData = serverJson;
+    LOGGER.d("deserialze: Type=" + type + ", fieldName=" + fieldName + ", result=" + obj.toString());
     return (T) obj;
   }
 

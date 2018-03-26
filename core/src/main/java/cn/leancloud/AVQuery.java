@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.network.PaasClient;
 import cn.leancloud.query.AVRequestParams;
 import cn.leancloud.query.QueryConditions;
 import cn.leancloud.query.QueryOperation;
@@ -12,6 +13,8 @@ import cn.leancloud.utils.StringUtil;
 import java.util.*;
 
 import io.reactivex.Observable;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Function;
 
 public class AVQuery<T extends AVObject> {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVQuery.class);
@@ -64,8 +67,7 @@ public class AVQuery<T extends AVObject> {
   }
 
   AVQuery(String theClassName, Class<T> clazz) {
-    //TODO: implement me!
-//    AVUtils.checkClassName(theClassName);
+    Transformer.checkClassName(theClassName);
     this.className = theClassName;
     this.clazz = clazz;
     this.conditions = new QueryConditions();
@@ -89,7 +91,7 @@ public class AVQuery<T extends AVObject> {
    * @return The AVQuery
    */
   public static <T extends AVObject> AVQuery<T> getQuery(Class<T> clazz) {
-    return new AVQuery<T>(AVObject.getSubClassName(clazz), clazz);
+    return new AVQuery<T>(Transformer.getSubClassName(clazz), clazz);
   }
 
   Class<T> getClazz() {
@@ -846,19 +848,50 @@ public class AVQuery<T extends AVObject> {
   }
 
   public Observable<List<T>> findInBackground() {
-    return null;
+    conditions.assembleParameters();
+    Map<String, String> query = conditions.getParameters();
+    LOGGER.d("Query: " + query);
+    Observable<List<AVObject>> rawResult = PaasClient.getStorageClient().queryObjects(getClassName(), query);
+    Observable<List<T>> castedResult = rawResult.map(new Function<List<AVObject>, List<T>>() {
+      public List<T> apply(@NonNull List<AVObject> var1) throws Exception {
+        LOGGER.d("invoke within AVQuery.findInBackground(). resultSize=" + var1.size());
+        List<T> result = new ArrayList<T>(var1.size());
+        for (AVObject obj: var1) {
+          T tmp = Transformer.transform(obj, getClassName());
+          result.add(tmp);
+        }
+        return result;
+      }
+    });
+    return castedResult;
   }
 
   public Observable<T> getInBackground(String objectId) {
-    return null;
+    return PaasClient.getStorageClient().fetchObject(getClassName(), objectId).map(new Function<AVObject, T>() {
+      public T apply(AVObject avObject) throws Exception {
+        return Transformer.transform(avObject, getClassName());
+      }
+    });
   }
 
   public Observable<T> getFirstInBackground() {
-    return null;
+    conditions.setLimit(1);
+    return findInBackground().map(new Function<List<T>, T>() {
+      public T apply(List<T> ts) throws Exception {
+        if (null == ts || ts.size() < 1) {
+          return null;
+        } else {
+          return ts.get(0);
+        }
+      }
+    });
   }
 
   public Observable<Integer> countInBackground() {
-    return null;
+    conditions.setCountResult();
+    conditions.assembleParameters();
+    Map<String, String> query = conditions.getParameters();
+    return PaasClient.getStorageClient().queryCount(getClassName(), query);
   }
 
   public Observable<AVNull> deleteAllInBackground() {

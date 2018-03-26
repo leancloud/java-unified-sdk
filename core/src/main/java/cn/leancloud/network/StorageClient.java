@@ -1,9 +1,7 @@
 package cn.leancloud.network;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVFile;
-import cn.leancloud.AVObject;
-import cn.leancloud.AVUser;
+import cn.leancloud.*;
+import cn.leancloud.query.AVQueryResult;
 import cn.leancloud.service.APIService;
 import cn.leancloud.types.AVDate;
 import cn.leancloud.types.AVNull;
@@ -17,6 +15,8 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 public class StorageClient {
   private static AVLogger LOGGER = LogUtil.getLogger(StorageClient.class);
@@ -61,14 +61,31 @@ public class StorageClient {
     return date;
   }
 
-  public Observable<AVObject> fetchObject(final String className, String objectId) {
+  public Observable<? extends AVObject> fetchObject(final String className, String objectId) {
     Observable<AVObject> object = wrappObservable(apiService.fetchObject(className, objectId));
     return object.map(new Function<AVObject, AVObject>() {
               public AVObject apply(AVObject avObject) throws Exception {
-                avObject.setClassName(className);
-                return avObject;
+                return Transformer.transform(avObject, className);
               }
             });
+  }
+
+  public Observable<List<AVObject>> queryObjects(final String className, Map<String, String> query) {
+    return wrappObservable(apiService.queryObjects(className, query)).map(new Function<AVQueryResult, List<AVObject>>() {
+      public List<AVObject> apply(AVQueryResult o) throws Exception {
+        LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:" + ((null != o.getResults())? o.getResults().size(): 0));
+        return o.getResults();
+      }
+    });
+  }
+
+  public Observable<Integer> queryCount(final String className, Map<String, String> query) {
+    return wrappObservable(apiService.queryObjects(className, query).map(new Function<AVQueryResult, Integer>() {
+      public Integer apply(AVQueryResult o) throws Exception {
+        LOGGER.d("invoke within StorageClient.queryCount(). result:" + o + ", return:" + o.getCount());
+        return o.getCount();
+      }
+    }));
   }
 
   public Observable<AVNull> deleteObject(final String className, String objectId) {
@@ -76,22 +93,21 @@ public class StorageClient {
   }
 
   public Observable<? extends AVObject> createObject(final String className, JSONObject data) {
-    Observable<? extends AVObject> object = wrappObservable(apiService.createObject(className, data));
+    Observable<AVObject> object = wrappObservable(apiService.createObject(className, data));
     return object.map(new Function<AVObject, AVObject>() {
       public AVObject apply(AVObject avObject) {
         LOGGER.d(avObject.toString());
-        avObject.setClassName(className);
-        return avObject;
+        return Transformer.transform(avObject, className);
       }
     });
   }
 
   public Observable<? extends AVObject> saveObject(final String className, String objectId, JSONObject data) {
-    Observable<? extends AVObject> object = wrappObservable(apiService.updateObject(className, objectId, data));
+    Observable<AVObject> object = wrappObservable(apiService.updateObject(className, objectId, data));
     return object.map(new Function<AVObject, AVObject>() {
       public AVObject apply(AVObject avObject) {
-        avObject.setClassName(className);
-        return avObject;
+        LOGGER.d(avObject.toString());
+        return Transformer.transform(avObject, className);
       }
     });
   }

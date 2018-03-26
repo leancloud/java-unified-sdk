@@ -52,4 +52,26 @@ public class AVObjectSubClassTest extends TestCase {
       }
     });
   }
+
+  public void testRefreshObject() {
+    Student student = new Student();
+    student.setObjectId("5a8e7d00128fe10037d2cf58");
+    student.refreshInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVObject avObject) {
+        System.out.println(avObject.toString());
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+  }
 }

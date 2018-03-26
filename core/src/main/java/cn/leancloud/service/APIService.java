@@ -1,6 +1,7 @@
 package cn.leancloud.service;
 
 import cn.leancloud.*;
+import cn.leancloud.query.AVQueryResult;
 import cn.leancloud.types.AVDate;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.upload.FileUploadToken;
@@ -9,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.http.*;
 
 import java.util.List;
+import java.util.Map;
 
 import com.alibaba.fastjson.*;
 
@@ -20,11 +22,11 @@ public interface APIService {
   @GET("/1.1/classes/{className}")
   Observable<List<? extends AVObject>> findObjects(@Path("className") String className);
 
-  @GET("/1.1/classes/{className}?{query}")
-  Observable<List<? extends AVObject>> queryObjects(@Path("className") String className, @Path("query") String query);
+  @GET("/1.1/classes/{className}")
+  Observable<AVQueryResult> queryObjects(@Path("className") String className, @QueryMap Map<String, String> query);
 
-  @GET("/1.1/cloudQuery?{query}")
-  Observable<AVCloudQueryResult> cloudQuery(@Path("query") String query);
+  @GET("/1.1/cloudQuery")
+  Observable<AVQueryResult> cloudQuery(@Query("") String query);
 
   @GET("/1.1/classes/{className}/{objectId}")
   Observable<AVObject> fetchObject(@Path("className") String className, @Path("objectId") String objectId);

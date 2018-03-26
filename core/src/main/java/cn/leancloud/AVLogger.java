@@ -12,14 +12,14 @@ public abstract class AVLogger {
     private int intLevel;
   }
 
-  private Level level = Level.INFO;
+  private static Level level = Level.INFO;
 
-  public Level getLogLevel() {
+  public static Level getLogLevel() {
     return level;
   }
 
   public void setLogLevel(Level logLevel) {
-    this.level = logLevel;
+    level = logLevel;
   }
 
   public void v(String msg) {
@@ -66,8 +66,8 @@ public abstract class AVLogger {
     writeLog(Level.ERROR, msg, tr);
   }
 
-  protected boolean isEnabled(Level testLevel) {
-    return this.level.intLevel() >= testLevel.intLevel();
+  protected static boolean isEnabled(Level testLevel) {
+    return level.intLevel() >= testLevel.intLevel();
   }
 
   protected abstract void internalWriteLog(Level level, String msg);
