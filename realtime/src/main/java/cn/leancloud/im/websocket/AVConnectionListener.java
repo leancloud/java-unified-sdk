@@ -2,7 +2,7 @@ package cn.leancloud.im.websocket;
 
 import cn.leancloud.im.Messages;
 
-public interface AVWebSocketListener {
+public interface AVConnectionListener {
   void onWebSocketOpen();
 
   void onWebSocketClose();
