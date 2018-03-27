@@ -3,6 +3,7 @@ package cn.leancloud.im.websocket;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Configure;
 import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.im.command.SessionControlPacket;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -10,6 +11,7 @@ import okhttp3.Response;
 import okio.ByteString;
 
 public class AVOKWebSocketClientTest extends TestCase {
+  private AVOKWebSocketClient client = null;
   public AVOKWebSocketClientTest(String testname) {
     super(testname);
     AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
@@ -24,9 +26,19 @@ public class AVOKWebSocketClientTest extends TestCase {
 
   public void testConnect() throws Exception {
     String wsUrl = "wss://rtm51.leancloud.cn";
-    AVOKWebSocketClient client = new AVOKWebSocketClient(new WsStatusListener(){
+    client = new AVOKWebSocketClient(new WsStatusListener(){
       public void onOpen(Response response) {
         System.out.println("websockdet opened!");
+        int requestId = 100;
+
+        SessionControlPacket scp = SessionControlPacket.genSessionCommand(
+                "fengjunwen", null,
+                SessionControlPacket.SessionControlOp.OPEN, null,
+                0, 0, requestId);
+        scp.setTag("mobile");
+        scp.setReconnectionRequest(false);
+        client.sendMessage(ByteString.of(scp.getGenericCommand().toByteString().asReadOnlyByteBuffer()));
+        System.out.println("send open command.");
       }
       public void onMessage(String text) {
 
@@ -48,7 +60,7 @@ public class AVOKWebSocketClientTest extends TestCase {
       }
     }, true);
     client.connect(wsUrl);
-    Thread.sleep(6000);
+    Thread.sleep(10000);
     client.close();
     Thread.sleep(3000);
   }

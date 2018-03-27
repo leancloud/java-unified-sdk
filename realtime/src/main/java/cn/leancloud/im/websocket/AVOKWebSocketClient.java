@@ -107,11 +107,11 @@ public class AVOKWebSocketClient {
   }
 
   public boolean sendMessage(String msg) {
-    return false;
+    return this.webSocket.send(msg);
   }
 
   public boolean sendMessage(ByteString byteString) {
-    return false;
+    return this.webSocket.send(byteString);
   }
 
   public void connect(String wsUrl) {
