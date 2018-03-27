@@ -9,8 +9,8 @@ import junit.framework.TestSuite;
 import okhttp3.Response;
 import okio.ByteString;
 
-public class AVPushWebSocketClientTest extends TestCase {
-  public AVPushWebSocketClientTest(String testname) {
+public class AVOKWebSocketClientTest extends TestCase {
+  public AVOKWebSocketClientTest(String testname) {
     super(testname);
     AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
     AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
@@ -19,12 +19,12 @@ public class AVPushWebSocketClientTest extends TestCase {
 
   public static Test suite()
   {
-    return new TestSuite( AVPushWebSocketClientTest.class );
+    return new TestSuite( AVOKWebSocketClientTest.class );
   }
 
   public void testConnect() throws Exception {
     String wsUrl = "wss://rtm51.leancloud.cn";
-    AVPushWebSocketClient client = new AVPushWebSocketClient(new WsStatusListener(){
+    AVOKWebSocketClient client = new AVOKWebSocketClient(new WsStatusListener(){
       public void onOpen(Response response) {
         System.out.println("websockdet opened!");
       }

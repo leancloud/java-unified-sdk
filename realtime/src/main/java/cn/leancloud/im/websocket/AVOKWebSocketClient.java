@@ -12,14 +12,14 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * useage:
- *   AVPushWebSocketClient client = new AVPushWebSocketClient();
+ *   AVOKWebSocketClient client = new AVOKWebSocketClient(null, true);
  *   client.connect(wsUrl);
  *   client.sendMessage("hello world");
  *   client.close();
  *
  */
-public class AVPushWebSocketClient {
-  private static AVLogger LOGGER = LogUtil.getLogger(AVPushWebSocketClient.class);
+public class AVOKWebSocketClient {
+  private static AVLogger LOGGER = LogUtil.getLogger(AVOKWebSocketClient.class);
   private final static int RECONNECT_INTERVAL = 10 * 1000;    //重连自增步长
   private final static long RECONNECT_MAX_TIME = 120 * 1000;   //最大重连间隔
 
@@ -38,8 +38,8 @@ public class AVPushWebSocketClient {
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
       LOGGER.d("onOpen");
-      AVPushWebSocketClient.this.webSocket = webSocket;
-      AVPushWebSocketClient.this.currentStatus = Status.CONNECTED;
+      AVOKWebSocketClient.this.webSocket = webSocket;
+      AVOKWebSocketClient.this.currentStatus = Status.CONNECTED;
       connected();
       if (null != wsStatusListener) {
         wsStatusListener.onOpen(response);
@@ -96,7 +96,7 @@ public class AVPushWebSocketClient {
     DISCONNECTED, CONNECTED, CONNECTING, CLOSING, RECONNECT;
   }
 
-  public AVPushWebSocketClient(WsStatusListener externalListener, boolean needReconnect) {
+  public AVOKWebSocketClient(WsStatusListener externalListener, boolean needReconnect) {
     this.wsStatusListener = externalListener;
     this.isNeedReconnect = needReconnect;
     this.client = new OkHttpClient.Builder().retryOnConnectionFailure(true).build();
