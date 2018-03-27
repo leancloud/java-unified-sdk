@@ -29,7 +29,11 @@ public class AVOKWebSocketClientTest extends TestCase {
     String wsUrl = "wss://rtm51.leancloud.cn";
     client = new AVOKWebSocketClient(new WsStatusListener(){
       public void onOpen(Response response) {
-        System.out.println("websockdet opened!");
+        try {
+          System.out.println("websockdet opened! responseCode=" + response.code() + ", body=" + response.message());
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
         final int requestId = 100;
         final String installation = "d45304813cf37c6c1a2177f84aee0bb8";
 
@@ -40,6 +44,11 @@ public class AVOKWebSocketClientTest extends TestCase {
         System.out.println("uplink: " + lp.getGenericCommand().toString());
         client.sendMessage(lp.getGenericCommand().toString());
 
+        try {
+          Thread.sleep(2000);
+        } catch (Exception ex) {
+          ;
+        }
         new Thread() {
           @Override
           public void run() {

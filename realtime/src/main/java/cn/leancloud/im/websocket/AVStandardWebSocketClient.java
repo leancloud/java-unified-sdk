@@ -2,15 +2,19 @@ package cn.leancloud.im.websocket;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
+import cn.leancloud.im.Messages;
 import cn.leancloud.im.command.CommandPacket;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_6455;
+import org.java_websocket.extensions.IExtension;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.framing.PingFrame;
 import org.java_websocket.handshake.ServerHandshake;
+import org.java_websocket.protocols.IProtocol;
+import org.java_websocket.protocols.Protocol;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.*;
@@ -18,6 +22,7 @@ import java.net.Socket;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,12 +36,18 @@ public class AVStandardWebSocketClient extends WebSocketClient {
 
   private SSLSocketFactory socketFactory;
   private HeartBeatPolicy heartBeatPolicy;
+  private static ArrayList<IProtocol> protocols = new ArrayList<IProtocol>();
+  static {
+    protocols.add(new Protocol(SUB_PROTOCOL_2_3));
+//    protocols.add(new Protocol(SUB_PROTOCOL_2_1));
+  }
+
   public AVStandardWebSocketClient(URI serverUrl, final String subProtocol, boolean secEnabled, boolean sniEnabled, SSLSocketFactory socketFactory) {
-    super(serverUrl, new Draft_6455(), new HashMap<String, String>() {
+    super(serverUrl, new Draft_6455(Collections.<IExtension>emptyList(), protocols), new HashMap<String, String>() {
       {
         put(HEADER_SUB_PROTOCOL, subProtocol);
       }
-    }, 0);
+    }, 10);
     this.socketFactory = socketFactory;
     this.heartBeatPolicy = new HeartBeatPolicy() {
       @Override
@@ -55,6 +66,7 @@ public class AVStandardWebSocketClient extends WebSocketClient {
   }
 
   protected void ping() {
+    LOGGER.d("send ping packet");
     PingFrame frame = new PingFrame();
     this.sendFrame(frame);
   }
@@ -106,7 +118,7 @@ public class AVStandardWebSocketClient extends WebSocketClient {
 
   // WebSocketClient interfaces.
   public void onOpen(ServerHandshake var1) {
-    LOGGER.d("onOpen");
+    LOGGER.d("onOpen status=" + var1.getHttpStatus() + ", statusMsg=" + var1.getHttpStatusMessage());
     this.heartBeatPolicy.start();
   }
 
@@ -115,7 +127,12 @@ public class AVStandardWebSocketClient extends WebSocketClient {
   }
 
   public void onMessage(ByteBuffer bytes) {
-    LOGGER.d("onMessage " + bytes.toString());
+    try {
+      Messages.GenericCommand command = Messages.GenericCommand.parseFrom(bytes.array());
+      LOGGER.d("downLink: " + command.toString());
+    } catch (Exception ex) {
+      LOGGER.d("onMessage " + bytes.toString());
+    }
   }
 
   public void onClose(int var1, String var2, boolean var3) {

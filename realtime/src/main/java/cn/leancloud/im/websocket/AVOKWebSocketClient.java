@@ -1,12 +1,19 @@
 package cn.leancloud.im.websocket;
 
 import cn.leancloud.AVLogger;
+import cn.leancloud.im.Messages;
 import cn.leancloud.utils.LogUtil;
 import okhttp3.*;
 import okio.ByteString;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -48,7 +55,7 @@ public class AVOKWebSocketClient {
 
     @Override
     public void onMessage(WebSocket webSocket, String text) {
-      LOGGER.d("onMessage");
+      LOGGER.d("onMessage(text): " + text);
       if (null != wsStatusListener) {
         wsStatusListener.onMessage(text);
       }
@@ -56,7 +63,12 @@ public class AVOKWebSocketClient {
 
     @Override
     public void onMessage(WebSocket webSocket, ByteString bytes) {
-      LOGGER.d("onMessage");
+      try {
+        Messages.GenericCommand command = Messages.GenericCommand.parseFrom(bytes.toByteArray());
+        LOGGER.d("downLink: " + command.toString());
+      } catch (Exception ex) {
+        LOGGER.d("onMessage " + bytes.utf8());
+      }
       if (null != wsStatusListener) {
         wsStatusListener.onMessage(bytes);
       }
@@ -99,7 +111,26 @@ public class AVOKWebSocketClient {
   public AVOKWebSocketClient(WsStatusListener externalListener, boolean needReconnect) {
     this.wsStatusListener = externalListener;
     this.isNeedReconnect = needReconnect;
-    this.client = new OkHttpClient.Builder().retryOnConnectionFailure(true).build();
+    SSLSocketFactory sf = null;
+    try {
+      SSLContext sslContext = SSLContext.getDefault();
+      sf = sslContext.getSocketFactory();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    this.client = new OkHttpClient.Builder()
+            .pingInterval(180, TimeUnit.SECONDS)
+            .sslSocketFactory(sf)
+            .retryOnConnectionFailure(true)
+            .addInterceptor(new Interceptor() {
+              public Response intercept(Interceptor.Chain chain) throws IOException {
+                Request originalRequest = chain.request();
+                Request newRequest = originalRequest.newBuilder()
+                        .header("Sec-WebSocket-Protocol", "lc.protobuf2.3").build();
+                return chain.proceed(newRequest);
+              }
+            })
+            .build();
   }
 
   public Status currentStatus() {

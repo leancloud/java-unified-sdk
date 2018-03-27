@@ -8,6 +8,7 @@ import cn.leancloud.im.command.SessionControlPacket;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.java_websocket.WebSocketImpl;
 import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 
 import javax.net.SocketFactory;
@@ -19,6 +20,7 @@ public class AVStandardWebSocketClientTest extends TestCase {
 
   public AVStandardWebSocketClientTest(String testname) {
     super(testname);
+    WebSocketImpl.DEBUG = true;
     AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
     AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
     AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
@@ -45,8 +47,8 @@ public class AVStandardWebSocketClientTest extends TestCase {
     lp.setAppId(Configure.TEST_APP_ID);
     lp.setInstallationId(installation);
     lp.setRequestId(requestId - 1);
-    System.out.println("uplink: " + lp.getGenericCommand().toString());
     client.send(lp);
+    Thread.sleep(3000);
 
     SessionControlPacket scp = SessionControlPacket.genSessionCommand(
             "fengjunwen", null,
@@ -56,10 +58,9 @@ public class AVStandardWebSocketClientTest extends TestCase {
     scp.setAppId(Configure.TEST_APP_ID);
     scp.setInstallationId(installation);
     scp.setReconnectionRequest(false);
-    System.out.println("uplink: " + scp.getGenericCommand().toString());
     client.send(scp);
 
-    Thread.sleep(10000);
+    Thread.sleep(3000);
     client.close();
     Thread.sleep(3000);
   }
