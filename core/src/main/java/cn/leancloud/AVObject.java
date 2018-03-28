@@ -16,8 +16,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Observable;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Function;
 
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVObject {
@@ -196,7 +194,19 @@ public class AVObject {
     return (T) get(key);
   }
 
-  public Map<String, Object> getServerData() {
+  public <T extends AVObject> AVRelation<T> getRelation(String key) {
+    return null;
+  }
+  void addRelation(final AVObject object, final String key, boolean submit) {
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.AddRelation, key, object);
+    addNewOperation(op);
+  }
+  void removeRelation(final AVObject object, final String key, boolean submit) {
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.RemoveRelation, key, object);
+    addNewOperation(op);
+  }
+
+  Map<String, Object> getServerData() {
     return this.serverData;
   }
 
@@ -204,11 +214,13 @@ public class AVObject {
    * changable operations.
    */
   public void add(String key, Object value) {
-    ;
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Add, key, value);
+    addNewOperation(op);
   }
 
   public void addUnique(String key, Object value) {
-    ;
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.AddUnique, key, value);
+    addNewOperation(op);
   }
 
   public void put(String key, Object value) {
@@ -259,6 +271,10 @@ public class AVObject {
   }
 
   public Observable<? extends AVObject> saveInBackground() {
+    return saveInBackground(null);
+  }
+
+  public Observable<? extends AVObject> saveInBackground(AVSaveOption option) {
     JSONObject paramData = generateChangedParam();
     if (StringUtil.isEmpty(getObjectId())) {
       return PaasClient.getStorageClient().createObject(this.className, paramData);

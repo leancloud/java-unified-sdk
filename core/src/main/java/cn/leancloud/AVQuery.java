@@ -118,13 +118,13 @@ public class AVQuery<T extends AVObject> {
     conditions.setSelectedKeys(selectedKeys);
   }
 
-//  Map<String, String> getParameters() {
-//    return conditions.getParameters();
-//  }
-//
-//  void setParameters(Map<String, String> parameters) {
-//    conditions.setParameters(parameters);
-//  }
+  Map<String, String> getParameters() {
+    return conditions.getParameters();
+  }
+
+  void setParameters(Map<String, String> parameters) {
+    conditions.setParameters(parameters);
+  }
 
   Map<String, List<QueryOperation>> getWhere() {
     return conditions.getWhere();
