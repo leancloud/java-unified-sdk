@@ -8,6 +8,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.util.List;
+
 public class AVObjectSubClassTest extends TestCase {
   @AVClassName("Student")
   static class Student extends AVObject {
@@ -63,6 +65,31 @@ public class AVObjectSubClassTest extends TestCase {
 
       public void onNext(AVObject avObject) {
         System.out.println(avObject.toString());
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+  }
+
+  public void testQuery() {
+    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+    query.whereGreaterThan("age", 18);
+    query.whereDoesNotExist("name");
+    query.findInBackground().subscribe(new Observer<List<Student>>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(List<Student> students) {
+        for (Student s: students) {
+          System.out.println(s.toString());
+        }
       }
 
       public void onError(Throwable throwable) {

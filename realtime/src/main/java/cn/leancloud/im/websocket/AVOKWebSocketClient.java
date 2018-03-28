@@ -119,7 +119,10 @@ public class AVOKWebSocketClient {
       ex.printStackTrace();
     }
     this.client = new OkHttpClient.Builder()
-            .pingInterval(180, TimeUnit.SECONDS)
+            .pingInterval(120, TimeUnit.SECONDS)
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
             .sslSocketFactory(sf)
             .retryOnConnectionFailure(true)
             .addInterceptor(new Interceptor() {
