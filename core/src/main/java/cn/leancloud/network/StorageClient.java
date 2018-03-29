@@ -92,8 +92,8 @@ public class StorageClient {
     return wrappObservable(apiService.deleteObject(className, objectId));
   }
 
-  public Observable<? extends AVObject> createObject(final String className, JSONObject data) {
-    Observable<AVObject> object = wrappObservable(apiService.createObject(className, data));
+  public Observable<? extends AVObject> createObject(final String className, JSONObject data, boolean fetchFlag) {
+    Observable<AVObject> object = wrappObservable(apiService.createObject(className, data, fetchFlag));
     return object.map(new Function<AVObject, AVObject>() {
       public AVObject apply(AVObject avObject) {
         LOGGER.d(avObject.toString());
@@ -102,11 +102,11 @@ public class StorageClient {
     });
   }
 
-  public Observable<? extends AVObject> saveObject(final String className, String objectId, JSONObject data) {
-    Observable<AVObject> object = wrappObservable(apiService.updateObject(className, objectId, data));
+  public Observable<? extends AVObject> saveObject(final String className, String objectId, JSONObject data, boolean fetchFlag) {
+    Observable<AVObject> object = wrappObservable(apiService.updateObject(className, objectId, data, fetchFlag));
     return object.map(new Function<AVObject, AVObject>() {
       public AVObject apply(AVObject avObject) {
-        LOGGER.d(avObject.toString());
+        LOGGER.d("saveObject finished. intermediaObj=" + avObject.toString() + ", convert to " + className);
         return Transformer.transform(avObject, className);
       }
     });

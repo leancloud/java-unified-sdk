@@ -1,29 +1,37 @@
 package cn.leancloud.ops;
 
+import cn.leancloud.AVLogger;
 import cn.leancloud.codec.Base64;
 import cn.leancloud.AVACL;
 import cn.leancloud.AVFile;
 import cn.leancloud.AVObject;
 import cn.leancloud.types.AVGeoPoint;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 
 public abstract class BaseOperation implements ObjectFieldOperation {
+  static final AVLogger LOGGER = LogUtil.getLogger(BaseOperation.class);
   static final String KEY_OP = "__op";
   static final String KEY_OBJECTS = "objects";
   static final String KEY_AMOUNT = "amount";
   static final String KEY_VALUE = "value";
+  static final String KEY_OP_ADD = "Add";
 
   protected String op = null;
   protected String field = null;
   protected Object value = null;
-  public BaseOperation(String op, String field, Object value) {
+  protected boolean isFinal = false;
+
+  public BaseOperation(String op, String field, Object value, boolean isFinal) {
     this.op = op;
     this.field = field;
     this.value = value;
+    this.isFinal = isFinal;
   }
 
   public String getOperation() {
@@ -35,13 +43,67 @@ public abstract class BaseOperation implements ObjectFieldOperation {
   public Object getValue() {
     return this.value;
   }
+
+  /**
+   * apply operation to object, in order to generate new attribute value.
+   *
+   * @param obj
+   * @return
+   */
   public abstract Object apply(Object obj);
-  protected abstract ObjectFieldOperation mergeWithPrevious(ObjectFieldOperation previous);
+
+  /**
+   * merge with previous operations.
+   *
+   * @param previous
+   * @return
+   */
+  protected ObjectFieldOperation mergeWithPrevious(ObjectFieldOperation previous) {
+    return NullOperation.INSTANCE;
+  }
+
   public ObjectFieldOperation merge(ObjectFieldOperation other) {
     if (null == other || other instanceof NullOperation) {
       return this;
     }
+    if (isFinal) {
+      // ignore all previous operations.
+      return this;
+    }
     return mergeWithPrevious(other);
+  }
+
+  protected Object concatCollections(Object left, Object right) {
+    if (null == left || null == right) {
+      return null == left? right : left;
+    }
+    List<Object> result = new ArrayList<Object>();
+    if (left instanceof Collection) {
+      result.addAll((Collection<?>) left);
+    } else {
+      result.add(left);
+    }
+    if (right instanceof Collection) {
+      result.addAll((Collection<?>) right);
+    } else {
+      result.add(right);
+    }
+    try {
+      if (null != result) {
+        HashSet uniqueSet = new HashSet(result.size());
+        for (Object o:result) {
+          uniqueSet.add(o);
+        }
+        result = Arrays.asList(uniqueSet.toArray());
+      }
+    } catch (Exception ex) {
+      LOGGER.w("failed to concat collections.", ex);
+    }
+    return result;
+  }
+
+  protected void reportIllegalOperations(ObjectFieldOperation current, ObjectFieldOperation prev) {
+    LOGGER.w("illegal operations. current=" + current.getClass().getSimpleName() + ", prev=" + prev.getClass().getSimpleName());
   }
 
   public abstract Map<String, Object> encode();

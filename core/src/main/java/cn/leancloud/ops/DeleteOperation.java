@@ -5,14 +5,11 @@ import java.util.Map;
 
 public class DeleteOperation extends BaseOperation {
   DeleteOperation(String key) {
-    super("Delete", key, null);
-  }
-  public Object apply(Object obj) {
-    return null;
+    super("Delete", key, null, true);
   }
 
-  protected ObjectFieldOperation mergeWithPrevious(ObjectFieldOperation previous) {
-    return this;
+  public Object apply(Object obj) {
+    return null;
   }
 
   public Map<String, Object> encode() {

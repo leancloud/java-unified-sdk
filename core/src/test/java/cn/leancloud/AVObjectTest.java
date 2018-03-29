@@ -9,6 +9,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.util.Arrays;
+
 public class AVObjectTest extends TestCase {
   public AVObjectTest(String testName) {
     super(testName);
@@ -66,13 +68,80 @@ public class AVObjectTest extends TestCase {
     });
   }
 
-  public void testCreateObjectWithACL() {
+  public void testCreateObjectWithPublicACL() {
+    AVACL acl = new AVACL();
+    acl.setPublicWriteAccess(true);
+    acl.setPublicReadAccess(true);
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 19);
+    object.put("course", Arrays.asList("Math", "Science"));
+    object.setFetchWhenSave(true);
+    object.setACL(acl);
+    object.saveInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVObject avObject) {
+        avObject.addUnique("course", Arrays.asList("Math", "Reading"));
+        avObject.saveInBackground().subscribe(new Observer<AVObject>() {
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          public void onNext(AVObject avObject) {
+            System.out.println("[Thread:" + Thread.currentThread().getId() +
+                    "]update object finished. objectId=" + avObject.getObjectId() + ", className=" + avObject.getClassName());
+            avObject.deleteInBackground().subscribe(new Observer<AVNull>() {
+              public void onSubscribe(Disposable disposable) {
+                ;
+              }
+
+              public void onNext(AVNull aVoid) {
+                System.out.println("delete object finished!");
+              }
+
+              public void onError(Throwable throwable) {
+                fail();
+              }
+
+              public void onComplete() {
+              }
+            });
+
+          }
+
+          public void onError(Throwable throwable) {
+            fail();
+          }
+
+          public void onComplete() {
+
+          }
+        });
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+
+  }
+
+  public void testCreateObjectWithReadOnlyACL() {
     AVACL acl = new AVACL();
     acl.setPublicWriteAccess(false);
     acl.setPublicReadAccess(true);
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 19);
+    object.put("course", Arrays.asList("Math", "Science"));
+    object.setFetchWhenSave(true);
     object.setACL(acl);
     object.saveInBackground().subscribe(new Observer<AVObject>() {
       public void onSubscribe(Disposable disposable) {
@@ -81,7 +150,7 @@ public class AVObjectTest extends TestCase {
 
       public void onNext(AVObject avObject) {
         System.out.println("[Thread:" + Thread.currentThread().getId() +
-                "]create object finished. objectId=" + avObject.getObjectId() + ", className=" + avObject.getClassName());
+                "]update object finished. objectId=" + avObject.getObjectId() + ", className=" + avObject.getClassName());
         avObject.deleteInBackground().subscribe(new Observer<AVNull>() {
           public void onSubscribe(Disposable disposable) {
             ;
@@ -174,5 +243,253 @@ public class AVObjectTest extends TestCase {
       }
     });
     System.out.println("test completed.");
+  }
+
+  public void testIncrementOperation() {
+    AVObject object = new AVObject("Student");
+    object.setObjectId("5ab5f7b89f545437fe95f860");
+    object.increment("age", 5);
+    object.setFetchWhenSave(true);
+    object.saveInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVObject avObject) {
+        System.out.println("new value of age: " + avObject.getInt("age"));
+        avObject.decrement("age");
+        avObject.setFetchWhenSave(false);
+        avObject.saveInBackground().subscribe(new Observer<AVObject>() {
+          public void onSubscribe(Disposable disposable) {
+            ;
+          }
+
+          public void onNext(AVObject avObject) {
+            System.out.println("new value of age: " + avObject.getInt("age"));
+          }
+
+          public void onError(Throwable throwable) {
+            fail();
+          }
+
+          public void onComplete() {
+
+          }
+        });
+
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+  }
+
+  public void testCreateObjectThenBitOperation() {
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 39);
+    object.put("course", Arrays.asList("Math", "Science"));
+    object.setFetchWhenSave(true);
+    object.saveInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVObject avObject) {
+        avObject.bitAnd("age", 0x32);
+        avObject.saveInBackground().subscribe(new Observer<AVObject>() {
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          public void onNext(AVObject avObject) {
+            avObject.bitOr("age", 0x12);
+            avObject.saveInBackground().subscribe(new Observer<AVObject>() {
+              public void onSubscribe(Disposable disposable) {
+
+              }
+
+              public void onNext(AVObject avObject) {
+                avObject.bitXor("age", 0x3208);
+                avObject.saveInBackground().subscribe(new Observer<AVObject>() {
+                  public void onSubscribe(Disposable disposable) {
+
+                  }
+
+                  public void onNext(AVObject avObject) {
+                    avObject.deleteInBackground().subscribe(new Observer<AVNull>() {
+                      public void onSubscribe(Disposable disposable) {
+
+                      }
+
+                      public void onNext(AVNull avNull) {
+                        System.out.println("OK!");
+                      }
+
+                      public void onError(Throwable throwable) {
+                        fail();
+                      }
+
+                      public void onComplete() {
+
+                      }
+                    });
+                  }
+
+                  public void onError(Throwable throwable) {
+                    fail();
+                  }
+
+                  public void onComplete() {
+
+                  }
+                });
+              }
+
+              public void onError(Throwable throwable) {
+                fail();
+              }
+
+              public void onComplete() {
+
+              }
+            });
+          }
+
+          public void onError(Throwable throwable) {
+            fail();
+          }
+
+          public void onComplete() {
+
+          }
+        });
+
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+
+  }
+  public void testCreateObjectThenRemoveOperation() {
+    AVACL acl = new AVACL();
+    acl.setPublicWriteAccess(true);
+    acl.setPublicReadAccess(true);
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 19);
+    object.put("course", Arrays.asList("Math", "Science"));
+    object.setFetchWhenSave(true);
+    object.setACL(acl);
+    object.saveInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVObject avObject) {
+        avObject.removeAll("course", Arrays.asList("Math", "Reading"));
+        avObject.setFetchWhenSave(true);
+        avObject.saveInBackground().subscribe(new Observer<AVObject>() {
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          public void onNext(AVObject avObject2) {
+            System.out.println("[Thread:" + Thread.currentThread().getId() +
+                    "]update object finished. objectId=" + avObject2.getObjectId() + ", className=" + avObject2.getClassName());
+            System.out.println(avObject2.get("course").toString());
+            avObject2.deleteInBackground().subscribe(new Observer<AVNull>() {
+              public void onSubscribe(Disposable disposable) {
+                ;
+              }
+
+              public void onNext(AVNull aVoid) {
+                System.out.println("delete object finished!");
+              }
+
+              public void onError(Throwable throwable) {
+                fail();
+              }
+
+              public void onComplete() {
+              }
+            });
+
+          }
+
+          public void onError(Throwable throwable) {
+            fail();
+          }
+
+          public void onComplete() {
+
+          }
+        });
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+  }
+
+  public void testCompoundOperation() {
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 19);
+    object.put("course", Arrays.asList("Math", "Science"));
+    object.setFetchWhenSave(true);
+    object.saveInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVObject avObject) {
+        avObject.add("course", "Sports");
+        avObject.addUnique("course", "Art");
+        avObject.removeAll("course", Arrays.asList("Math"));
+        avObject.saveInBackground().subscribe(new Observer<AVObject>() {
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          public void onNext(AVObject avObject) {
+
+          }
+
+          public void onError(Throwable throwable) {
+            fail();;
+          }
+
+          public void onComplete() {
+
+          }
+        });
+
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+
+      }
+    });
   }
 }

@@ -36,6 +36,7 @@ public class AVObject {
   protected Map<String, Object> serverData = new ConcurrentHashMap<String, Object>();
   protected Map<String, ObjectFieldOperation> operations = new ConcurrentHashMap<String, ObjectFieldOperation>();
   protected AVACL acl = null;
+  private volatile boolean fetchWhenSave = false;
 
   public AVObject() {
     this.className = Transformer.getSubClassName(this.getClass());
@@ -83,6 +84,14 @@ public class AVObject {
 
   public void setObjectId(String objectId) {
     this.objectId = objectId;
+  }
+
+  public boolean isFetchWhenSave() {
+    return fetchWhenSave;
+  }
+
+  public void setFetchWhenSave(boolean fetchWhenSave) {
+    this.fetchWhenSave = fetchWhenSave;
   }
 
   /**
@@ -206,7 +215,7 @@ public class AVObject {
     addNewOperation(op);
   }
 
-  Map<String, Object> getServerData() {
+  public Map<String, Object> getServerData() {
     return this.serverData;
   }
 
@@ -217,9 +226,17 @@ public class AVObject {
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Add, key, value);
     addNewOperation(op);
   }
+  public void addAll(String key, Collection<?> values) {
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Add, key, values);
+    addNewOperation(op);
+  }
 
   public void addUnique(String key, Object value) {
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.AddUnique, key, value);
+    addNewOperation(op);
+  }
+  public void addAllUnique(String key, Collection<?> values) {
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.AddUnique, key, values);
     addNewOperation(op);
   }
 
@@ -233,11 +250,37 @@ public class AVObject {
     addNewOperation(op);
   }
 
+  public void removeAll(String key, Collection<?> values) {
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Remove, key, values);
+    addNewOperation(op);
+  }
+
   public void increment(String key) {
     this.increment(key, 1);
   }
   public void increment(String key, Number value) {
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Increment, key, value);
+    addNewOperation(op);
+  }
+
+  public void decrement(String key) {
+    decrement(key, 1);
+  }
+  public void decrement(String key, Number value) {
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Decrement, key, value);
+    addNewOperation(op);
+  }
+
+  public void bitAnd(String key, long value) {
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.BitAnd, key, value);
+    addNewOperation(op);
+  }
+  public void bitOr(String key, long value) {
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.BitOr, key, value);
+    addNewOperation(op);
+  }
+  public void bitXor(String key, long value) {
+    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.BitXor, key, value);
     addNewOperation(op);
   }
 
@@ -263,9 +306,11 @@ public class AVObject {
       params.putAll(oneOp);
     }
     if (null != this.acl) {
-      // TODO: need to check whether acl is changed or not.
-      ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Set, KEY_ACL, acl);
-      params.putAll(op.encode());
+      AVACL serverACL = generateACLFromServerData();
+      if (!this.acl.equals(serverACL)) {
+        ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Set, KEY_ACL, acl);
+        params.putAll(op.encode());
+      }
     }
     return new JSONObject(params);
   }
@@ -276,10 +321,11 @@ public class AVObject {
 
   public Observable<? extends AVObject> saveInBackground(AVSaveOption option) {
     JSONObject paramData = generateChangedParam();
+    LOGGER.d("saveObject param: " + paramData.toJSONString());
     if (StringUtil.isEmpty(getObjectId())) {
-      return PaasClient.getStorageClient().createObject(this.className, paramData);
+      return PaasClient.getStorageClient().createObject(this.className, paramData, isFetchWhenSave());
     } else {
-      return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData);
+      return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData, isFetchWhenSave());
     }
   }
 
@@ -302,7 +348,6 @@ public class AVObject {
     resetAll();
     if (null != avObject) {
       this.serverData.putAll(avObject.serverData);
-      this.acl = generateACLFromServerData();
     }
   }
 

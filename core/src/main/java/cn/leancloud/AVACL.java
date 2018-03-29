@@ -7,6 +7,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class AVACL {
@@ -72,6 +73,19 @@ public class AVACL {
 
   public Map<String, Permissions> getPermissionsById() {
     return permissionsById;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof AVACL)) return false;
+    AVACL avacl = (AVACL) o;
+    return Objects.equals(getPermissionsById(), avacl.getPermissionsById());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getPermissionsById());
   }
 
   public JSONObject toJSONObject() {

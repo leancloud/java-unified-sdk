@@ -6,7 +6,7 @@ public final class NullOperation extends BaseOperation {
   public static NullOperation INSTANCE = new NullOperation("", null);
 
   public NullOperation(String key, Object value) {
-    super("", key, value);
+    super("", key, value, false);
   }
   public Object apply(Object obj) {
     return obj;

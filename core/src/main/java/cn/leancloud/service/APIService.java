@@ -31,12 +31,13 @@ public interface APIService {
   @GET("/1.1/classes/{className}/{objectId}")
   Observable<AVObject> fetchObject(@Path("className") String className, @Path("objectId") String objectId);
 
-  @POST("/1.1/classes/{className}?fetchWhenSave=true")
-  Observable<AVObject> createObject(@Path("className") String className, @Body JSONObject object);
+  @POST("/1.1/classes/{className}")
+  Observable<AVObject> createObject(@Path("className") String className, @Body JSONObject object,
+                                    @Query("fetchWhenSave") boolean fetchFlag);
 
   @PUT("/1.1/classes/{className}/{objectId}")
   Observable<AVObject> updateObject(@Path("className") String className, @Path("objectId") String objectId,
-                                    @Body JSONObject object);
+                                    @Body JSONObject object, @Query("fetchWhenSave") boolean fetchFlag);
 
   @DELETE("/1.1/classes/{className}/{objectId}")
   Observable<AVNull> deleteObject(@Path("className") String className, @Path("objectId") String objectId);
