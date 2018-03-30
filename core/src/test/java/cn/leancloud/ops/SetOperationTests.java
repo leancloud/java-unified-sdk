@@ -1,9 +1,11 @@
 package cn.leancloud.ops;
 
+import cn.leancloud.AVObject;
 import cn.leancloud.Configure;
 import cn.leancloud.AVACL;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.network.PaasClient;
+import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import junit.framework.TestCase;
@@ -33,5 +35,15 @@ public class SetOperationTests extends TestCase {
     Map<String, Object> result = op.encode();
     System.out.println(result.toString());
     assertNotNull(result);
+  }
+
+  public void testSetObject() {
+    AVObject p = new AVObject("Student");
+    p.setObjectId("fewruwpr");
+
+    SetOperation op = (SetOperation) OperationBuilder.BUILDER.create(
+            OperationBuilder.OperationType.Set, "friend", p);
+    Map<String, Object> result = op.encode();
+    System.out.println(new JSONObject(result).toJSONString());
   }
 }
