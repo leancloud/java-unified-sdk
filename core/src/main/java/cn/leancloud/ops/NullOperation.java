@@ -3,10 +3,10 @@ package cn.leancloud.ops;
 import java.util.Map;
 
 public final class NullOperation extends BaseOperation {
-  public static NullOperation INSTANCE = new NullOperation("", null);
+  public static NullOperation INSTANCE = new NullOperation("nothing", null);
 
   public NullOperation(String key, Object value) {
-    super("", key, value, false);
+    super("Null", key, value, false);
   }
   public Object apply(Object obj) {
     return obj;

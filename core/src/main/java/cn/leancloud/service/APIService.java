@@ -43,7 +43,24 @@ public interface APIService {
   Observable<AVNull> deleteObject(@Path("className") String className, @Path("objectId") String objectId);
 
   @POST("/1.1/batch")
-  Observable<AVNull> batchSave(@Body JSONObject object);
+  Observable<JSONArray> batchCreate(@Body JSONObject param);
+
+  /**
+   * request format:
+   *    requests: [unit, unit]
+   * unit format:
+   *    {"path":"/1.1/classes/{class}/{objectId}",
+   *     "method":"PUT",
+   *     "body":{"{field}":operationJson,
+   *             "__internalId":"{objectId}",
+   *             "__children":[]},
+   *     "params":{}
+   *    }
+   * for update same field with multiple operations, we must use batchUpdate instead of batchSave,
+   * otherwise, `__internalId` will become a common field of target instance.
+   */
+  @POST("/1.1/batch/save")
+  Observable<JSONObject> batchUpdate(@Body JSONObject param);
 
   /**
    * File Operations.

@@ -20,7 +20,10 @@ public abstract class BaseOperation implements ObjectFieldOperation {
   static final String KEY_OBJECTS = "objects";
   static final String KEY_AMOUNT = "amount";
   static final String KEY_VALUE = "value";
-  static final String KEY_OP_ADD = "Add";
+  public static final String KEY_INTERNAL_ID = "__internalId";
+  public static final String KEY_BODY = "body";
+  public static final String KEY_PATH = "path";
+  public static final String KEY_HTTP_METHOD = "method";
 
   protected String op = null;
   protected String field = null;

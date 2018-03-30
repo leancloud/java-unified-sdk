@@ -463,13 +463,30 @@ public class AVObjectTest extends TestCase {
         avObject.add("course", "Sports");
         avObject.addUnique("course", "Art");
         avObject.removeAll("course", Arrays.asList("Math"));
+        avObject.removeAll("course", Arrays.asList("Sports"));
         avObject.saveInBackground().subscribe(new Observer<AVObject>() {
           public void onSubscribe(Disposable disposable) {
 
           }
 
           public void onNext(AVObject avObject) {
+            avObject.deleteInBackground().subscribe(new Observer<AVNull>() {
+              public void onSubscribe(Disposable disposable) {
 
+              }
+
+              public void onNext(AVNull avNull) {
+
+              }
+
+              public void onError(Throwable throwable) {
+                fail();
+              }
+
+              public void onComplete() {
+
+              }
+            });
           }
 
           public void onError(Throwable throwable) {
@@ -480,6 +497,32 @@ public class AVObjectTest extends TestCase {
 
           }
         });
+
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+  }
+
+  public void testBatchSaveOperation() {
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 19);
+    object.add("course", "Art");
+    object.removeAll("course", Arrays.asList("Math"));
+    object.setFetchWhenSave(true);
+    object.saveInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVObject avObject) {
 
       }
 

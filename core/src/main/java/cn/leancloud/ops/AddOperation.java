@@ -41,7 +41,7 @@ public class AddOperation extends BaseOperation {
       this.value = concatCollections(this.value, ((AddOperation) other).value);
       return this;
     } else if (other instanceof RemoveOperation) {
-      return new CompoundOperation(this.field, this, other);
+      return new CompoundOperation(this.field, other, this);
     } else if (other instanceof CompoundOperation) {
       return ((CompoundOperation) other).mergeWithPrevious(this);
     } else if (other instanceof AddRelationOperation || other instanceof RemoveRelationOperation

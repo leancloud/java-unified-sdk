@@ -1,5 +1,7 @@
 package cn.leancloud;
 
+import cn.leancloud.ops.BaseOperation;
+import cn.leancloud.ops.CompoundOperation;
 import cn.leancloud.ops.ObjectFieldOperation;
 import cn.leancloud.ops.OperationBuilder;
 import cn.leancloud.types.AVGeoPoint;
@@ -15,7 +17,9 @@ import com.alibaba.fastjson.annotation.JSONType;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.sun.xml.internal.rngom.parse.host.Base;
 import io.reactivex.Observable;
+import io.reactivex.functions.Function;
 
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVObject {
@@ -207,10 +211,12 @@ public class AVObject {
     return null;
   }
   void addRelation(final AVObject object, final String key, boolean submit) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.AddRelation, key, object);
     addNewOperation(op);
   }
   void removeRelation(final AVObject object, final String key, boolean submit) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.RemoveRelation, key, object);
     addNewOperation(op);
   }
@@ -219,38 +225,56 @@ public class AVObject {
     return this.serverData;
   }
 
+  protected void validFieldName(String key) {
+    if (StringUtil.isEmpty(key)) {
+      throw new IllegalArgumentException("Blank key");
+    }
+    if (key.startsWith("_")) {
+      throw new IllegalArgumentException("key should not start with '_'");
+    }
+    if (RESERVED_ATTRS.contains(key)) {
+      throw new IllegalArgumentException("key(" + key + ") is reserved by LeanCloud");
+    }
+  }
   /**
    * changable operations.
    */
   public void add(String key, Object value) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Add, key, value);
     addNewOperation(op);
   }
   public void addAll(String key, Collection<?> values) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Add, key, values);
     addNewOperation(op);
   }
 
   public void addUnique(String key, Object value) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.AddUnique, key, value);
     addNewOperation(op);
   }
   public void addAllUnique(String key, Collection<?> values) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.AddUnique, key, values);
     addNewOperation(op);
   }
 
   public void put(String key, Object value) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Set, key, value);
     addNewOperation(op);
   }
 
   public void remove(String key) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Delete, key, null);
     addNewOperation(op);
   }
 
   public void removeAll(String key, Collection<?> values) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Remove, key, values);
     addNewOperation(op);
   }
@@ -259,6 +283,7 @@ public class AVObject {
     this.increment(key, 1);
   }
   public void increment(String key, Number value) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Increment, key, value);
     addNewOperation(op);
   }
@@ -267,19 +292,23 @@ public class AVObject {
     decrement(key, 1);
   }
   public void decrement(String key, Number value) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Decrement, key, value);
     addNewOperation(op);
   }
 
   public void bitAnd(String key, long value) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.BitAnd, key, value);
     addNewOperation(op);
   }
   public void bitOr(String key, long value) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.BitOr, key, value);
     addNewOperation(op);
   }
   public void bitXor(String key, long value) {
+    validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.BitXor, key, value);
     addNewOperation(op);
   }
@@ -293,6 +322,15 @@ public class AVObject {
       previous = this.operations.get(op.getField());
     }
     this.operations.put(op.getField(), op.merge(previous));
+  }
+
+  private boolean needBatchMode() {
+    for (ObjectFieldOperation op : this.operations.values()) {
+      if (op instanceof CompoundOperation) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -312,7 +350,30 @@ public class AVObject {
         params.putAll(op.encode());
       }
     }
-    return new JSONObject(params);
+    if (!needBatchMode()) {
+      return new JSONObject(params);
+    }
+    params.put(BaseOperation.KEY_INTERNAL_ID, getObjectId());
+
+    Map<String, Object> topParams = new HashMap<String, Object>();
+    topParams.put(BaseOperation.KEY_PATH, getRequestRawEndpoint());
+    topParams.put(BaseOperation.KEY_HTTP_METHOD, getRequestMethod());
+    topParams.put(BaseOperation.KEY_BODY, params);
+
+    List<Map<String, Object>> finalParams = new ArrayList<Map<String, Object>>();
+    finalParams.add(topParams);
+    for (ObjectFieldOperation ops : this.operations.values()) {
+      if (ops instanceof CompoundOperation) {
+        List<Map<String, Object>> restParams = ((CompoundOperation)ops).encodeRestOp(this);
+        if (null != restParams && restParams.size() > 0) {
+          finalParams.addAll(restParams);
+        }
+      }
+    }
+    Map<String, Object> finalResult = new HashMap<String, Object>(1);
+    finalResult.put("requests", finalParams);
+
+    return new JSONObject(finalResult);
   }
 
   public Observable<? extends AVObject> saveInBackground() {
@@ -322,10 +383,29 @@ public class AVObject {
   public Observable<? extends AVObject> saveInBackground(AVSaveOption option) {
     JSONObject paramData = generateChangedParam();
     LOGGER.d("saveObject param: " + paramData.toJSONString());
-    if (StringUtil.isEmpty(getObjectId())) {
-      return PaasClient.getStorageClient().createObject(this.className, paramData, isFetchWhenSave());
+    if (needBatchMode()) {
+      LOGGER.w("Caution: batch mode will ignore fetchWhenSave flag.");
+      if (StringUtil.isEmpty(getObjectId())) {
+        return PaasClient.getStorageClient().batchSave(paramData).map(new Function<JSONArray, AVObject>() {
+          public AVObject apply(JSONArray object) throws Exception {
+            LOGGER.d("batchSave result: " + object.toJSONString());
+            return AVObject.this;
+          }
+        });
+      } else {
+        return PaasClient.getStorageClient().batchUpdate(paramData).map(new Function<JSONObject, AVObject>() {
+          public AVObject apply(JSONObject object) throws Exception {
+            LOGGER.d("batchUpdate result: " + object.toJSONString());
+            return AVObject.this;
+          }
+        });
+      }
     } else {
-      return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData, isFetchWhenSave());
+      if (StringUtil.isEmpty(getObjectId())) {
+        return PaasClient.getStorageClient().createObject(this.className, paramData, isFetchWhenSave());
+      } else {
+        return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData, isFetchWhenSave());
+      }
     }
   }
 
@@ -348,6 +428,22 @@ public class AVObject {
     resetAll();
     if (null != avObject) {
       this.serverData.putAll(avObject.serverData);
+    }
+  }
+
+  public String getRequestRawEndpoint() {
+    if (StringUtil.isEmpty(getObjectId())) {
+      return "/1.1/classes/" + this.getClassName();
+    } else {
+      return "/1.1/classes/" + this.getClassName() + "/" + getObjectId();
+    }
+  }
+
+  public String getRequestMethod() {
+    if (StringUtil.isEmpty(getObjectId())) {
+      return "POST";
+    } else {
+      return "PUT";
     }
   }
 

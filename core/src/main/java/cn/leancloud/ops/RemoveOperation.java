@@ -30,7 +30,7 @@ public class RemoveOperation extends BaseOperation {
     if (other instanceof SetOperation || other instanceof DeleteOperation) {
       return other;
     } else if (other instanceof AddOperation || other instanceof AddUniqueOperation) {
-      return new CompoundOperation(this.field, this, other);
+      return new CompoundOperation(this.field, other, this);
     } else if (other instanceof RemoveOperation) {
       this.value = concatCollections(this.value, ((RemoveOperation) other).value);
       return this;

@@ -1,5 +1,6 @@
 package cn.leancloud.ops;
 
+import cn.leancloud.AVObject;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
@@ -27,19 +28,32 @@ public class CompoundOperation extends BaseOperation {
     return this;
   }
 
-  public Map<String, Object> encode() {
-    // FIXME: bug for encode.
-    Map<String, Object> params = new HashMap<String, Object>();
-    List<Map<String, Object>> operationList = new ArrayList<Map<String, Object>>(operations.size());
-    for (ObjectFieldOperation op : operations) {
-      Map<String, Object> opMap = new HashMap<String, Object>(2);
-      opMap.put(BaseOperation.KEY_OP, op.getOperation());
-      opMap.put(BaseOperation.KEY_OBJECTS, encodeObject(op.getValue()));
-      operationList.add(opMap);
+  public List<Map<String, Object>> encodeRestOp(AVObject parent) {
+    List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+    if (null == parent) {
+      return result;
     }
+    String requestEndPoint = parent.getRequestRawEndpoint();
+    String requestMethod = parent.getRequestMethod();
+    for (int i = 1; i < this.operations.size(); i++) {
+      ObjectFieldOperation tmp = this.operations.get(i);
+      Map<String, Object> tmpOp = tmp.encode();
+      tmpOp.put(KEY_INTERNAL_ID, parent.getObjectId());
 
-    Map<String, Object> result = new HashMap<String, Object>(1);
-    result.put(getField(), operationList);
+      Map<String, Object> tmpResult = new HashMap<String, Object>();
+      tmpResult.put(KEY_BODY, tmpOp);
+      tmpResult.put(KEY_PATH, requestEndPoint);
+      tmpResult.put(KEY_HTTP_METHOD, requestMethod);
+      result.add(tmpResult);
+    }
     return result;
+  }
+
+  public Map<String, Object> encode() {
+    if (this.operations.size() < 1) {
+      return null;
+    }
+    // just return the first Operation.
+    return this.operations.get(0).encode();
   }
 }

@@ -58,7 +58,7 @@ public abstract class NumericOperation extends BaseOperation {
     if (other instanceof SetOperation || other instanceof DeleteOperation) {
       return other;
     } else if (other instanceof NumericOperation) {
-      return new CompoundOperation(this.field, this, other);
+      return new CompoundOperation(this.field, other, this);
     } else if (other instanceof CompoundOperation) {
       return ((CompoundOperation) other).mergeWithPrevious(this);
     } else {

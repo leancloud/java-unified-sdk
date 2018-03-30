@@ -8,6 +8,7 @@ import cn.leancloud.types.AVNull;
 import cn.leancloud.upload.FileUploadToken;
 import cn.leancloud.utils.LogUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
@@ -131,8 +132,19 @@ public class StorageClient {
     return;
   }
 
-  public Observable<AVNull> batchSave(JSONObject parameter) {
-    Observable<AVNull> result = wrappObservable(apiService.batchSave(parameter));
+  public Observable<JSONArray> batchSave(JSONObject parameter) {
+    // resposne is:
+    // [{"success":{"updatedAt":"2018-03-30T06:21:08.052Z","objectId":"5abd026d9f54540038791715"}},
+    //  {"success":{"updatedAt":"2018-03-30T06:21:08.092Z","objectId":"5abd026d9f54540038791715"}},
+    //  {"success":{"updatedAt":"2018-03-30T06:21:08.106Z","objectId":"5abd026d9f54540038791715"}}]
+    Observable<JSONArray> result = wrappObservable(apiService.batchCreate(parameter));
+    return result;
+  }
+
+  public Observable<JSONObject> batchUpdate(JSONObject parameter) {
+    // response is:
+    // {"5abd026d9f54540038791715":{"updatedAt":"2018-03-30T06:21:46.084Z","objectId":"5abd026d9f54540038791715"}}
+    Observable<JSONObject> result = wrappObservable(apiService.batchUpdate(parameter));
     return result;
   }
 
