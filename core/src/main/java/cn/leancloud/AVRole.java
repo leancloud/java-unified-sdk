@@ -27,6 +27,7 @@ public class AVRole extends AVObject {
   public String getName() {
     return this.getString(ATTR_NAME);
   }
+
   public static AVQuery<AVRole> getQuery() {
     AVQuery<AVRole> query = new AVQuery<AVRole>(CLASS_NAME);
     return query;
