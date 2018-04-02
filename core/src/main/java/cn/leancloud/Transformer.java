@@ -89,10 +89,10 @@ public class Transformer {
         result = clazz.newInstance();
       } catch (Exception ex) {
         LOGGER.w("newInstance failed. cause: " + ex.getMessage());
-        result = new AVObject();
+        result = new AVObject(clazz.getSimpleName());
       }
     } else {
-      result = new AVObject();
+      result = new AVObject(clazz.getSimpleName());
     }
     result.resetByRawData(rawObj);
     return (T)result;

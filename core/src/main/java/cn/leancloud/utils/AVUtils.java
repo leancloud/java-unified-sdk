@@ -50,6 +50,18 @@ public class AVUtils {
               SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero);
     }
   }
+
+  public static String jsonStringFromObjectWithNull(Object map) {
+    if (AVOSCloud.isDebugEnable()) {
+      return JSON.toJSONString(map, SerializerFeature.WriteMapNullValue,
+              SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero,
+              SerializerFeature.PrettyFormat);
+    } else {
+      return JSON.toJSONString(map, SerializerFeature.WriteMapNullValue,
+              SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero);
+    }
+  }
+
   public static boolean equals(Object a, Object b) {
     return (a == b) || (a != null && a.equals(b));
   }

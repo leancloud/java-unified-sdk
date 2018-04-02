@@ -80,6 +80,10 @@ public class StorageClient {
     });
   }
 
+  public Observable<AVQueryResult> cloudQuery(Map<String, String> query) {
+    return wrappObservable(apiService.cloudQuery(query));
+  }
+
   public Observable<Integer> queryCount(final String className, Map<String, String> query) {
     return wrappObservable(apiService.queryObjects(className, query).map(new Function<AVQueryResult, Integer>() {
       public Integer apply(AVQueryResult o) throws Exception {

@@ -2,6 +2,9 @@ package cn.leancloud.query;
 
 import okio.Buffer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class AVRequestParams {
   private static final char[] HEX_DIGITS =
           {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
@@ -72,4 +75,93 @@ public class AVRequestParams {
           String input, String encodeSet, boolean alreadyEncoded, boolean query) {
     return canonicalize(input, 0, input.length(), encodeSet, alreadyEncoded, query);
   }
+
+//  private static class ParameterValuePair {
+//    String encodedParam;
+//    String param;
+//
+//    public String getEncodedParam() {
+//      return encodedParam;
+//    }
+//
+//    public String getParam() {
+//      return param;
+//    }
+//
+//    public static ParameterValuePair getParameterValuePair(String param, String encodedParam) {
+//      ParameterValuePair pair = new ParameterValuePair();
+//      pair.encodedParam = encodedParam;
+//      pair.param = param;
+//      return pair;
+//    }
+//
+//    public static ParameterValuePair getParameterValuePair(String param) {
+//      ParameterValuePair pair = new ParameterValuePair();
+//      pair.encodedParam = canonicalize(param, QUERY_COMPONENT_ENCODE_SET, false, true);
+//      pair.param = param;
+//      return pair;
+//    }
+//  }
+//
+//  HashMap<String, ParameterValuePair> params;
+//  public AVRequestParams() {
+//    params = new HashMap<String, ParameterValuePair>();
+//  }
+//
+//  public AVRequestParams(Map<String, String> params) {
+//    this();
+//    if (params != null) {
+//      for (Map.Entry<String, String> param : params.entrySet()) {
+//        this.put(param.getKey(), param.getValue());
+//      }
+//    }
+//  }
+//
+//  public void put(String name, Object value) {
+//    params.put(canonicalize(name, QUERY_COMPONENT_ENCODE_SET, false, true),
+//            ParameterValuePair.getParameterValuePair(value.toString()));
+//  }
+//  public String getQueryString() {
+//    if (params.isEmpty()) {
+//      return "";
+//    } else {
+//      StringBuilder sb = new StringBuilder();
+//      int index = 0;
+//      for (Map.Entry<String, ParameterValuePair> entry : params.entrySet()) {
+//        if (index > 0) {
+//          sb.append('&');
+//        }
+//        sb.append(entry.getKey());
+//        sb.append('=');
+//        sb.append(entry.getValue().encodedParam);
+//        index++;
+//      }
+//      return sb.toString();
+//    }
+//  }
+//
+//  public String getWholeUrl(String url) {
+//    if (params.isEmpty()) {
+//      return url;
+//    } else {
+//      StringBuilder sb = new StringBuilder(url);
+//      sb.append('?');
+//      int index = 0;
+//      for (Map.Entry<String, ParameterValuePair> entry : params.entrySet()) {
+//        if (index > 0) {
+//          sb.append('&');
+//        }
+//        sb.append(entry.getKey());
+//        sb.append('=');
+//        sb.append(entry.getValue().encodedParam);
+//        index++;
+//      }
+//      return sb.toString();
+//    }
+//  }
+//
+//  public boolean isEmpty() {
+//    return params == null || params.isEmpty();
+//  }
+
 }

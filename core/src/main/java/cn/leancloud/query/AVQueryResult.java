@@ -12,6 +12,9 @@ public class AVQueryResult {
   @JSONField(name="count")
   private int count = 0;
 
+  @JSONField(name="className")
+  private String className = "";
+
   public List<AVObject> getResults() {
     return results;
   }
@@ -26,6 +29,14 @@ public class AVQueryResult {
 
   public void setCount(int count) {
     this.count = count;
+  }
+
+  public String getClassName() {
+    return className;
+  }
+
+  public void setClassName(String className) {
+    this.className = className;
   }
 
   public String toString() {
