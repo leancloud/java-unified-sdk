@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.core.PaasClient;
+import cn.leancloud.query.AVCloudQueryResult;
 import cn.leancloud.query.QueryConditions;
 import cn.leancloud.query.QueryOperation;
 import cn.leancloud.types.AVGeoPoint;
@@ -897,5 +898,20 @@ public class AVQuery<T extends AVObject> {
     return null;
   }
 
-  // TODO: need to implement doCloudQueryInBackground method yet.
+  /**
+   * Cloud Query
+   */
+  public static Observable<AVCloudQueryResult> doCloudQueryInBackground(String cql) {
+    return AVCloudQuery.executeInBackground(cql);
+  }
+  public static Observable<AVCloudQueryResult> doCloudQueryInBackground(String cql, Object... params) {
+    return AVCloudQuery.executeInBackground(cql, params);
+  }
+  public static Observable<AVCloudQueryResult> doCloudQueryInBackground(String cql, Class<? extends AVObject> clazz) {
+    return AVCloudQuery.executeInBackground(cql, clazz);
+  }
+  public static Observable<AVCloudQueryResult> doCloudQueryInBackground(String cql, final Class<? extends AVObject> clazz,
+                                                                        Object... params) {
+    return AVCloudQuery.executeInBackground(cql, clazz, params);
+  }
 }
