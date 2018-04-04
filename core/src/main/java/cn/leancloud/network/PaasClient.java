@@ -21,6 +21,12 @@ public class PaasClient {
     Scheduler create();
   }
 
+  /**
+   * configure run-time env.
+   *
+   * @param asyncRequest
+   * @param observerSchedulerCreator
+   */
   public static void config(boolean asyncRequest, SchedulerCreator observerSchedulerCreator) {
     asynchronized = asyncRequest;
     defaultScheduler = observerSchedulerCreator;

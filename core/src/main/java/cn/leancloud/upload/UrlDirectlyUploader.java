@@ -1,7 +1,7 @@
 package cn.leancloud.upload;
 
 import cn.leancloud.AVException;
-import cn.leancloud.ProgressCallback;
+import cn.leancloud.callback.ProgressCallback;
 import cn.leancloud.AVFile;
 
 public class UrlDirectlyUploader extends HttpClientUploader {

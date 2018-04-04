@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.callback.ProgressCallback;
 import cn.leancloud.codec.MD5;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.cache.FileCache;

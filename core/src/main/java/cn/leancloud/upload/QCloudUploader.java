@@ -1,7 +1,7 @@
 package cn.leancloud.upload;
 
 import cn.leancloud.AVException;
-import cn.leancloud.ProgressCallback;
+import cn.leancloud.callback.ProgressCallback;
 import cn.leancloud.codec.SHA1;
 import cn.leancloud.AVFile;
 import cn.leancloud.utils.StringUtil;

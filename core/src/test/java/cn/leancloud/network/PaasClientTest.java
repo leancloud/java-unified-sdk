@@ -3,7 +3,7 @@ package cn.leancloud.network;
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Configure;
-import cn.leancloud.GetCallback;
+import cn.leancloud.callback.GetCallback;
 import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.types.AVDate;
 import cn.leancloud.core.AVOSCloud;

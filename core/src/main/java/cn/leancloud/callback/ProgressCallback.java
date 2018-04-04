@@ -1,4 +1,6 @@
-package cn.leancloud;
+package cn.leancloud.callback;
+
+import cn.leancloud.AVException;
 
 public abstract class ProgressCallback extends AVCallback<Integer> {
   public abstract void done(Integer percentDone);

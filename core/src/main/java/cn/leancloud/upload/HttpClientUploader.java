@@ -2,7 +2,7 @@ package cn.leancloud.upload;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
-import cn.leancloud.ProgressCallback;
+import cn.leancloud.callback.ProgressCallback;
 import cn.leancloud.AVFile;
 import cn.leancloud.network.DNSDetoxicant;
 import cn.leancloud.utils.LogUtil;

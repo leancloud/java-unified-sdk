@@ -1,4 +1,6 @@
-package cn.leancloud;
+package cn.leancloud.callback;
+
+import cn.leancloud.AVException;
 
 public abstract class AVCallback<T> {
   public void internalDone(final T t, final AVException avException) {

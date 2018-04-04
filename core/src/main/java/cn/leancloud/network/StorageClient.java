@@ -31,6 +31,7 @@ public class StorageClient {
     this.defaultCreator = observerSchedulerCreator;
   }
 
+  // TODO: need to change observable thread in case of AVFile.saveInBackground.
   private Observable wrappObservable(Observable observable) {
     if (null == observable) {
       return null;
@@ -43,6 +44,7 @@ public class StorageClient {
     }
     return observable;
   }
+
   private Observable wrappObservableInBackground(Observable observable) {
     if (null == observable) {
       return null;
