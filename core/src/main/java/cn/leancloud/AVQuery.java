@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.cache.QueryResultCache;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.query.AVCloudQueryResult;
 import cn.leancloud.query.QueryConditions;
@@ -192,8 +193,7 @@ public class AVQuery<T extends AVObject> {
    * Clears the cached result for all queries.
    */
   public static void clearAllCachedResults() {
-    //TODO: implement me!
-    // AVCacheManager.clearAllCache();
+    QueryResultCache.getInstance().clearAllCachedFiles();
   }
 
   /**
@@ -201,11 +201,10 @@ public class AVQuery<T extends AVObject> {
    * network. If there is no cached result for this query, then this is a no-op.
    */
   public void clearCachedResult() {
-    //TODO: implement me!
-//    generateQueryPath();
-//    if (!StringUtil.isEmpty(queryPath)) {
-//      AVCacheManager.sharedInstance().delete(queryPath);
-//    }
+    conditions.assembleParameters();
+    Map<String, String> query = conditions.getParameters();
+    String cacheKey = QueryResultCache.generateKeyForQueryCondition(getClassName(), query);
+    QueryResultCache.getInstance().clearCachedFile(cacheKey);
   }
 
   /**
@@ -851,7 +850,8 @@ public class AVQuery<T extends AVObject> {
     conditions.assembleParameters();
     Map<String, String> query = conditions.getParameters();
     LOGGER.d("Query: " + query);
-    Observable<List<AVObject>> rawResult = PaasClient.getStorageClient().queryObjects(getClassName(), query);
+    Observable<List<AVObject>> rawResult = PaasClient.getStorageClient().queryObjects(getClassName(), query,
+            this.cachePolicy, this.maxCacheAge);
     Observable<List<T>> castedResult = rawResult.map(new Function<List<AVObject>, List<T>>() {
       public List<T> apply(@NonNull List<AVObject> var1) throws Exception {
         LOGGER.d("invoke within AVQuery.findInBackground(). resultSize=" + var1.size());

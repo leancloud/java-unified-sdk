@@ -23,7 +23,7 @@ public class RequestPaddingInterceptor implements Interceptor {
   public Response intercept(Interceptor.Chain chain) throws IOException {
     Request originalRequest = chain.request();
     Request newRequest = originalRequest.newBuilder()
-            .header(HEADER_KEY_LC_PROD_MODE, "1")
+            .header(HEADER_KEY_LC_PROD_MODE, AVOSCloud.isProductionMode()?"1":"0")
             .header(HEADER_KEY_LC_APPID, AVOSCloud.getApplicationId())
             .header(HEADER_KEY_LC_APPKEY, AVOSCloud.getApplicationKey())
             .header(HEADER_KEY_ACCEPT, DEFAULT_CONTENT_TYPE)

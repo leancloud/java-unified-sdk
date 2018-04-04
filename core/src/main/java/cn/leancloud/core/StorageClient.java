@@ -1,6 +1,7 @@
 package cn.leancloud.core;
 
 import cn.leancloud.*;
+import cn.leancloud.cache.QueryResultCache;
 import cn.leancloud.query.AVQueryResult;
 import cn.leancloud.service.APIService;
 import cn.leancloud.types.AVDate;
@@ -12,6 +13,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -25,6 +27,7 @@ public class StorageClient {
   private APIService apiService = null;
   private boolean asynchronized = false;
   private PaasClient.SchedulerCreator defaultCreator = null;
+  private QueryResultCache queryResultCache = QueryResultCache.getInstance();
   public StorageClient(APIService apiService, boolean asyncRequest, PaasClient.SchedulerCreator observerSchedulerCreator) {
     this.apiService = apiService;
     this.asynchronized = asyncRequest;
@@ -73,13 +76,53 @@ public class StorageClient {
             });
   }
 
-  public Observable<List<AVObject>> queryObjects(final String className, Map<String, String> query) {
-    return wrappObservable(apiService.queryObjects(className, query)).map(new Function<AVQueryResult, List<AVObject>>() {
-      public List<AVObject> apply(AVQueryResult o) throws Exception {
-        LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:" + ((null != o.getResults())? o.getResults().size(): 0));
-        return o.getResults();
-      }
-    });
+  public Observable<List<AVObject>> queryObjects(final String className, final Map<String, String> query,
+                                                 AVQuery.CachePolicy cachePolicy, final long maxAgeInMilliseconds) {
+    final String cacheKey = QueryResultCache.generateKeyForQueryCondition(className, query);
+    switch (cachePolicy) {
+      case CACHE_ONLY:
+        byte[] content = QueryResultCache.getInstance().readData(cacheKey);
+        AVQueryResult queryResult = AVQueryResult.fromJSONString(String.valueOf(content));
+        return Observable.just(queryResult.getResults());
+      case CACHE_ELSE_NETWORK:
+        return wrappObservable(QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds))
+                .onErrorReturn(new Function<Throwable, Observable<List<AVObject>>>() {
+                  public Observable<List<AVObject>> apply(Throwable o) throws Exception {
+                    LOGGER.d("failed to query local cache, cause: " + o.getMessage() + ", try to query networking");
+                    return wrappObservable(apiService.queryObjects(className, query)
+                            .map(new Function<AVQueryResult, List<AVObject>>() {
+                              public List<AVObject> apply(AVQueryResult o) throws Exception {
+                                QueryResultCache.getInstance().saveData(cacheKey, o.toJSONString().getBytes("UTF-8"));
+                                LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:" + ((null != o.getResults())? o.getResults().size(): 0));
+                                return o.getResults();
+                              }
+                            }));
+                  }
+                });
+      case NETWORK_ELSE_CACHE:
+        return wrappObservable(apiService.queryObjects(className, query))
+                .map(new Function<AVQueryResult, List<AVObject>>() {
+                  public List<AVObject> apply(AVQueryResult o) throws Exception {
+                    LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:" + ((null != o.getResults())? o.getResults().size(): 0));
+                    return o.getResults();
+                  }
+                })
+                .onErrorReturn(new Function<Throwable, Observable<List<AVObject>>>() {
+                  public Observable<List<AVObject>> apply(Throwable o) throws Exception {
+                    LOGGER.d("failed to query networking, cause: " + o.getMessage() + ", try to query local cache.");
+                    return wrappObservable(QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds));
+                  }
+                });
+      case IGNORE_CACHE:
+      default:
+        return wrappObservable(apiService.queryObjects(className, query)).map(new Function<AVQueryResult, List<AVObject>>() {
+          public List<AVObject> apply(AVQueryResult o) throws Exception {
+            QueryResultCache.getInstance().saveData(cacheKey, o.toJSONString().getBytes("UTF-8"));
+            LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:" + ((null != o.getResults())? o.getResults().size(): 0));
+            return o.getResults();
+          }
+        });
+    }
   }
 
   public Observable<AVQueryResult> cloudQuery(Map<String, String> query) {

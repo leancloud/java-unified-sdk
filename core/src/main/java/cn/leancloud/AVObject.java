@@ -408,12 +408,31 @@ public class AVObject {
     }
   }
 
+  public void save() {
+    saveInBackground().blockingSubscribe();
+  }
+
   public Observable<AVNull> deleteInBackground() {
     return PaasClient.getStorageClient().deleteObject(this.className, getObjectId());
   }
 
+  public void delete() {
+    deleteInBackground().blockingSubscribe();
+  }
+
   public Observable<? extends AVObject> refreshInBackground() {
-    return PaasClient.getStorageClient().fetchObject(this.className, getObjectId());
+    return PaasClient.getStorageClient().fetchObject(this.className, getObjectId())
+            .map(new Function<AVObject, AVObject>() {
+              public AVObject apply(AVObject avObject) throws Exception {
+                AVObject.this.serverData.clear();
+                AVObject.this.serverData.putAll(avObject.serverData);
+                return AVObject.this;
+              }
+            });
+  }
+
+  public void refresh() {
+    refreshInBackground().blockingSubscribe();
   }
 
   protected void resetAll() {

@@ -2,6 +2,7 @@ package cn.leancloud.core;
 
 import cn.leancloud.AVLogAdapter;
 import cn.leancloud.AVLogger;
+import cn.leancloud.cache.LastModifyCache;
 import cn.leancloud.logging.SimpleLoggerAdapter;
 
 public class AVOSCloud {
@@ -38,6 +39,18 @@ public class AVOSCloud {
     applicationKey = appKey;
   }
 
+  public void setLastModifyEnabled(boolean val) {
+    LastModifyCache.getInstance().setLastModifyEnabled(val);
+  }
+
+  public boolean isLastModifyEnabled() {
+    return LastModifyCache.getInstance().isLastModifyEnabled();
+  }
+  public static void setProductionMode(boolean productionMode) {
+    isProduction = productionMode;
+  }
+  public static boolean isProductionMode() {return isProduction;}
+
   public static String getApplicationId() {
     return applicationId;
   }
@@ -50,4 +63,5 @@ public class AVOSCloud {
   private static String applicationKey = "";
   private static AVLogAdapter logAdapter = new SimpleLoggerAdapter();
   private static AVLogger.Level logLevel = AVLogger.Level.INFO;
+  private static boolean isProduction = true;
 }

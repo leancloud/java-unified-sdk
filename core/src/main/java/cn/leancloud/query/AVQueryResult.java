@@ -1,6 +1,7 @@
 package cn.leancloud.query;
 
 import cn.leancloud.AVObject;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import java.util.List;
@@ -41,5 +42,13 @@ public class AVQueryResult {
 
   public String toString() {
     return "{\"count\":"+ this.count + ", \"results\":" + this.results + "}";
+  }
+
+  public String toJSONString() {
+    return JSON.toJSONString(this);
+  }
+
+  public static AVQueryResult fromJSONString(String content) {
+    return JSON.parseObject(content, AVQueryResult.class);
   }
 }

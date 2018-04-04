@@ -13,6 +13,7 @@ public class PersistenceUtil {
   private String fileCacheDir = "./file/";
   private String commandCacheDir = "./command/";
   private String analyticsCacheDir = "./stats/";
+  private String queryResultCacheDir = "./PaasKeyValueCache";
   private ConcurrentHashMap<String, ReentrantReadWriteLock> fileLocks =
           new ConcurrentHashMap<String, ReentrantReadWriteLock>();
 
@@ -23,7 +24,7 @@ public class PersistenceUtil {
     return INSTANCE;
   }
 
-  public void config(String documentDir, String fileCacheDir, String commandCacheDir, String analyticsCacheDir) {
+  public void config(String documentDir, String fileCacheDir, String queryResultCacheDir, String commandCacheDir, String analyticsCacheDir) {
     this.documentDir = documentDir;
     if (!documentDir.endsWith("/")) {
       this.documentDir += "/";
@@ -41,6 +42,15 @@ public class PersistenceUtil {
     if (!dirFile.exists()) {
       dirFile.mkdirs();
     }
+
+    if (!queryResultCacheDir.endsWith("/")) {
+      queryResultCacheDir += "/";
+    }
+    dirFile = new File(queryResultCacheDir);
+    if (!dirFile.exists()) {
+      dirFile.mkdirs();
+    }
+    this.queryResultCacheDir = queryResultCacheDir;
 
     this.commandCacheDir = commandCacheDir;
     if (!commandCacheDir.endsWith("/")) {
@@ -67,6 +77,10 @@ public class PersistenceUtil {
 
   public String getFileCacheDir() {
     return fileCacheDir;
+  }
+
+  public String getQueryResultCacheDir() {
+    return this.queryResultCacheDir;
   }
 
   public String getCommandCacheDir() {
