@@ -10,6 +10,13 @@ import java.security.NoSuchAlgorithmException;
 
 public class MD5 {
   private static final int MAX_FILE_BUF_SIZE = 1024*1024*2;
+
+  public static String computeMD5(String data) {
+    if (null == data) {
+      return null;
+    }
+    return computeMD5(data.getBytes());
+  }
   public static String computeMD5(byte[] data) {
     if (null == data) {
       return null;

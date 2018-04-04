@@ -113,4 +113,55 @@ public class AVQueryTest extends TestCase {
       }
     });
   }
+
+  public void testQueryCacheNotExisted() {
+    AVQuery query = new AVQuery("Student");
+    query.orderByDescending(AVObject.KEY_CREATED_AT);
+    query.limit(5);
+    query.setCachePolicy(AVQuery.CachePolicy.CACHE_ONLY);
+    query.findInBackground().subscribe(new Observer<List<AVObject>>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(List<AVObject> o) {
+        fail();
+      }
+
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+  }
+
+  public void testQueryCacheElseNetworking() {
+    AVQuery query = new AVQuery("Student");
+    query.orderByDescending(AVObject.KEY_CREATED_AT);
+    query.limit(5);
+    query.setCachePolicy(AVQuery.CachePolicy.CACHE_ELSE_NETWORK);
+    query.findInBackground().subscribe(new Observer<List<AVObject>>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(List<AVObject> o) {
+        for (AVObject j: o) {
+          System.out.println("found result: " + j.toString());
+        }
+      }
+
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        fail();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+  }
 }

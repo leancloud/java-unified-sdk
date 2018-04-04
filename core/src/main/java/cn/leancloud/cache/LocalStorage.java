@@ -10,6 +10,17 @@ import java.io.InputStream;
 public class LocalStorage {
   private String baseDir;
   public LocalStorage(String baseDir) {
+    if (StringUtil.isEmpty(baseDir)) {
+      throw new IllegalArgumentException("baseDir is empty");
+    }
+    if (!baseDir.endsWith("/")) {
+      baseDir += "/";
+    }
+    File root = new File(baseDir);
+    if (!root.exists()) {
+      root.mkdirs();
+    }
+
     this.baseDir = baseDir;
   }
 
