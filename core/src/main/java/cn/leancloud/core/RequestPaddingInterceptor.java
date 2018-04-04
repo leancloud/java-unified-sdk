@@ -1,4 +1,4 @@
-package cn.leancloud.network;
+package cn.leancloud.core;
 
 import cn.leancloud.core.AVOSCloud;
 import okhttp3.Interceptor;

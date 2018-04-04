@@ -1,14 +1,10 @@
-# java-sdk-all
+# LeanCloud Java SDK(Android included)
 
-Java and Android sdk by LeanCloud.
+LeanCloud Java SDK 包含 LeanCloud 平台全部功能的客户端接口，适用于 Java 和 Android 两个平台。
 
-## Download
+SDK 中所有 API 接口与 LeanCloud 云端交互严格遵循 LeanCloud REST API 规范，并且全部采用了 Reactive 函数式编程风格来设计（同时也兼容老的 Callback 方式）。
 
-## GetStarted
-
-## Communication
-
-## Build
+For more information, please reference to [Wiki](https://github.com/leancloud/java-sdk-all/wiki).
 
 ## Bugs and Feedback
 For bugs, questions and discussions please use the [Github Issues](https://github.com/leancloud/java-sdk-all/issues).

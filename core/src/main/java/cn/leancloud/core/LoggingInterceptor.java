@@ -1,4 +1,4 @@
-package cn.leancloud.network;
+package cn.leancloud.core;
 
 import cn.leancloud.AVLogger;
 import cn.leancloud.utils.LogUtil;

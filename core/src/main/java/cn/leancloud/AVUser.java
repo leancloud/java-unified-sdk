@@ -1,6 +1,6 @@
 package cn.leancloud;
 
-import cn.leancloud.network.PaasClient;
+import cn.leancloud.core.PaasClient;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSONObject;

@@ -1,4 +1,4 @@
-package cn.leancloud.network;
+package cn.leancloud.core;
 
 public class EngineClient {
 }

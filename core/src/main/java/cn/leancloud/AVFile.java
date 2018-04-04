@@ -7,7 +7,7 @@ import cn.leancloud.cache.FileCache;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.ops.ObjectFieldOperation;
 import cn.leancloud.ops.OperationBuilder;
-import cn.leancloud.network.PaasClient;
+import cn.leancloud.core.PaasClient;
 
 import java.io.File;
 import java.io.IOException;

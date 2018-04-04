@@ -5,6 +5,8 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.Configure;
 import cn.leancloud.callback.GetCallback;
 import cn.leancloud.convertor.ObserverBuilder;
+import cn.leancloud.core.PaasClient;
+import cn.leancloud.core.StorageClient;
 import cn.leancloud.types.AVDate;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.AVObject;

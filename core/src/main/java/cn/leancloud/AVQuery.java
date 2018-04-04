@@ -1,7 +1,6 @@
 package cn.leancloud;
 
-import cn.leancloud.network.PaasClient;
-import cn.leancloud.query.AVRequestParams;
+import cn.leancloud.core.PaasClient;
 import cn.leancloud.query.QueryConditions;
 import cn.leancloud.query.QueryOperation;
 import cn.leancloud.types.AVGeoPoint;

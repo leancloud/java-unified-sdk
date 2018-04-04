@@ -4,7 +4,7 @@ import cn.leancloud.AVObject;
 import cn.leancloud.Configure;
 import cn.leancloud.annotation.AVClassName;
 import cn.leancloud.core.AVOSCloud;
-import cn.leancloud.network.PaasClient;
+import cn.leancloud.core.PaasClient;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;

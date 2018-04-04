@@ -1,6 +1,7 @@
-package cn.leancloud.network;
+package cn.leancloud.core;
 
 import cn.leancloud.AVACL;
+import cn.leancloud.network.DNSDetoxicant;
 import cn.leancloud.service.APIService;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;

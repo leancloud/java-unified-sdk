@@ -5,7 +5,7 @@ import cn.leancloud.ops.CompoundOperation;
 import cn.leancloud.ops.ObjectFieldOperation;
 import cn.leancloud.ops.OperationBuilder;
 import cn.leancloud.types.AVGeoPoint;
-import cn.leancloud.network.PaasClient;
+import cn.leancloud.core.PaasClient;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;

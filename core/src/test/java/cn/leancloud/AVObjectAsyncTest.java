@@ -1,9 +1,8 @@
 package cn.leancloud;
 
 import cn.leancloud.core.AVOSCloud;
-import cn.leancloud.network.PaasClient;
+import cn.leancloud.core.PaasClient;
 import cn.leancloud.types.AVNull;
-import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;

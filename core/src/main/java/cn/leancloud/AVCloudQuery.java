@@ -1,9 +1,8 @@
 package cn.leancloud;
 
-import cn.leancloud.network.PaasClient;
+import cn.leancloud.core.PaasClient;
 import cn.leancloud.query.AVCloudQueryResult;
 import cn.leancloud.query.AVQueryResult;
-import cn.leancloud.query.AVRequestParams;
 import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observable;
