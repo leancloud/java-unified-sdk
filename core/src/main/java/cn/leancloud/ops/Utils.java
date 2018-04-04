@@ -4,6 +4,7 @@ import java.util.*;
 
 import cn.leancloud.AVFile;
 import cn.leancloud.AVObject;
+import cn.leancloud.Transformer;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.utils.StringUtil;
 
@@ -37,6 +38,23 @@ public class Utils {
     result.put("longitude", point.getLongitude());
     return result;
   }
+
+  public static AVGeoPoint geoPointFromMap(Map<String, Object> map) {
+    double la = ((Number) map.get("latitude")).doubleValue();
+    double lo = ((Number) map.get("longitude")).doubleValue();
+    AVGeoPoint point = new AVGeoPoint(la, lo);
+    return point;
+  }
+
+  public static byte[] dataFromMap(Map<String, Object> map) {
+    String value = (String) map.get("base64");
+    return Base64.decode(value, Base64.NO_WRAP);
+  }
+  public static Date dateFromMap(Map<String, Object> map) {
+    String value = (String) map.get("iso");
+    return StringUtil.dateFromString(value);
+  }
+
 
   public static Map<String, Object> mapFromDate(Date date) {
     Map<String, Object> result = new HashMap<String, Object>();
@@ -162,4 +180,72 @@ public class Utils {
     ops.put(key, map);
     return ops;
   }
+
+  public static AVObject objectFromRelationMap(Map<String, Object> map) {
+    String className = (String) map.get("className");
+    AVObject object = Transformer.objectFromClassName(className);
+    return object;
+  }
+
+  public static AVFile fileFromMap(Map<String, Object> map) {
+    AVFile file = new AVFile("", "");
+    file.resetServerData(map);
+    Object metadata = map.get("metaData");
+    if (metadata != null && metadata instanceof Map) {
+      file.getMetaData().putAll((Map) metadata);
+    }
+    return file;
+  }
+
+  public static List getObjectFrom(Collection list) {
+    List newList = new ArrayList();
+
+    for (Object obj : list) {
+      newList.add(getObjectFrom(obj));
+    }
+
+    return newList;
+  }
+
+  public static Object getObjectFrom(Map<String, Object> map) {
+    Object type = map.get("__type");
+    if (type == null || !(type instanceof String)) {
+      Map<String, Object> newMap = new HashMap<String, Object>(map.size());
+
+      for (Map.Entry<String, Object> entry : map.entrySet()) {
+        final String key = entry.getKey();
+        Object o = entry.getValue();
+        newMap.put(key, getObjectFrom(o));
+      }
+
+      return newMap;
+    } else if (type.equals("Pointer") || type.equals("Object")) {
+      AVObject avObject = Transformer.objectFromClassName((String) map.get("className"));
+      map.remove("__type");
+      avObject.resetServerData(map);
+      return avObject;
+    } else if (type.equals("GeoPoint")) {
+      return geoPointFromMap(map);
+    } else if (type.equals("Bytes")) {
+      return dataFromMap(map);
+    } else if (type.equals("Date")) {
+      return dateFromMap(map);
+    } else if (type.equals("Relation")) {
+      return objectFromRelationMap(map);
+    } else if (type.equals("File")) {
+      return fileFromMap(map);
+    }
+    return map;
+  }
+
+  public static Object getObjectFrom(Object obj) {
+    if (obj instanceof Collection) {
+      return getObjectFrom((Collection) obj);
+    } else if (obj instanceof Map) {
+      return getObjectFrom((Map<String, Object>) obj);
+    }
+
+    return obj;
+  }
+
 }

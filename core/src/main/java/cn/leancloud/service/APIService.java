@@ -63,6 +63,15 @@ public interface APIService {
   Observable<JSONObject> batchUpdate(@Body JSONObject param);
 
   /**
+   * Cloud Functions
+   */
+  @POST("/1.1/functions/{name}")
+  Observable<Map<String, Object>> cloudFunction(@Path("name") String functionName, @Body Map<String, Object> param);
+
+  @POST("/1.1/call/{name}")
+  Observable<Map<String, Object>> cloudRPC(@Path("name") String functionName, @Body Object param);
+
+  /**
    * File Operations.
    */
 

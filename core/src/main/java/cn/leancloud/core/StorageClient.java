@@ -2,6 +2,7 @@ package cn.leancloud.core;
 
 import cn.leancloud.*;
 import cn.leancloud.cache.QueryResultCache;
+import cn.leancloud.ops.Utils;
 import cn.leancloud.query.AVQueryResult;
 import cn.leancloud.service.APIService;
 import cn.leancloud.types.AVDate;
@@ -18,10 +19,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class StorageClient {
   private static AVLogger LOGGER = LogUtil.getLogger(StorageClient.class);
@@ -224,5 +222,45 @@ public class StorageClient {
         return result;
       }
     });
+  }
+
+  public <T> Observable<T> callRPC(String name, Object param) {
+    return wrappObservable(apiService.cloudRPC(name, param))
+            .map(new Function<Map<String, ?>, T>() {
+              public T apply(Map<String, ?> resultMap) throws Exception {
+                try {
+                  Object resultValue = resultMap.get("result");
+                  if (resultValue instanceof Collection) {
+                    return (T) Utils.getObjectFrom((Collection) resultValue);
+                  } else if (resultValue instanceof Map) {
+                    return (T) Utils.getObjectFrom((Map) resultValue);
+                  } else {
+                    return (T) resultValue;
+                  }
+                } catch (Exception ex) {
+                  return null;
+                }
+              }
+            });
+  }
+
+  public <T> Observable<T> callFunction(String name, Map<String, Object> params) {
+    return wrappObservable(apiService.cloudFunction(name, params))
+            .map(new Function<Map<String, ?>, T>() {
+              public T apply(Map<String, ?> resultMap) throws Exception {
+                try {
+                  Object resultValue = resultMap.get("result");
+                  if (resultValue instanceof Collection) {
+                    return (T) Utils.getObjectFrom((Collection) resultValue);
+                  } else if (resultValue instanceof Map) {
+                    return (T) Utils.getObjectFrom((Map) resultValue);
+                  } else {
+                    return (T) resultValue;
+                  }
+                } catch (Exception ex) {
+                  return null;
+                }
+              }
+            });
   }
 }

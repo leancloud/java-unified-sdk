@@ -52,24 +52,7 @@ public class Transformer {
   }
 
   public static <T extends AVObject> T transform(AVObject rawObj, String className) {
-    AVObject result = null;
-    if (AVUser.CLASS_NAME.equals(className)) {
-      result = new AVUser();
-    } else if (AVStatus.CLASS_NAME.equals(className)) {
-      result = new AVStatus();
-    } else if (AVRole.CLASS_NAME.equals(className)) {
-      result = new AVRole();
-    } else if (AVFile.CLASS_NAME.equals(className)) {
-      result = new AVFile();
-    } else if (SUB_CLASSES_MAP.containsKey(className)) {
-      try {
-        result = SUB_CLASSES_MAP.get(className).newInstance();
-      } catch (Exception ex) {
-        result = new AVObject(className);
-      }
-    } else {
-      result = new AVObject(className);
-    }
+    AVObject result = objectFromClassName(className);
     result.resetByRawData(rawObj);
     return (T) result;
   }
@@ -103,5 +86,27 @@ public class Transformer {
       throw new IllegalArgumentException("Blank class name");
     if (!CLASSNAME_PATTERN.matcher(className).matches())
       throw new IllegalArgumentException("Invalid class name");
+  }
+
+  public static AVObject objectFromClassName(String className) {
+    AVObject result = null;
+    if (AVUser.CLASS_NAME.equals(className)) {
+      result = new AVUser();
+    } else if (AVStatus.CLASS_NAME.equals(className)) {
+      result = new AVStatus();
+    } else if (AVRole.CLASS_NAME.equals(className)) {
+      result = new AVRole();
+    } else if (AVFile.CLASS_NAME.equals(className)) {
+      result = new AVFile();
+    } else if (SUB_CLASSES_MAP.containsKey(className)) {
+      try {
+        result = SUB_CLASSES_MAP.get(className).newInstance();
+      } catch (Exception ex) {
+        result = new AVObject(className);
+      }
+    } else {
+      result = new AVObject(className);
+    }
+    return result;
   }
 }

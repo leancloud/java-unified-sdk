@@ -12,6 +12,17 @@ public class StringUtil {
     return null == str || str.trim().length() == 0;
   }
 
+  public static boolean isDigitString(String s) {
+    if (s == null) return false;
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      if (!Character.isDigit(c)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public static String stringFromDate(Date date) {
     if (null == date) {
       return null;
@@ -21,6 +32,22 @@ public class StringUtil {
     df.setTimeZone(TimeZone.getTimeZone("UTC"));
     String isoDate = df.format(date);
     return isoDate;
+  }
+
+  public static Date dateFromString(String content) {
+    if (isEmpty(content)) return null;
+    if (isDigitString(content)) {
+      return new Date(Long.parseLong(content));
+    }
+    Date date = null;
+    SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+    format.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+    try {
+      date = format.parse(content);
+    } catch (Exception exception) {
+    }
+    return date;
   }
 
   public static String stringFromBytes(byte[] data) {

@@ -449,6 +449,11 @@ public class AVObject {
     }
   }
 
+  public void resetServerData(Map data) {
+    this.serverData.clear();
+    this.serverData.putAll(data);
+  }
+
   public String getRequestRawEndpoint() {
     if (StringUtil.isEmpty(getObjectId())) {
       return "/1.1/classes/" + this.getClassName();
