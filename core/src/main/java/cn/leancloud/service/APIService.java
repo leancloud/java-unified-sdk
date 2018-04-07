@@ -2,6 +2,8 @@ package cn.leancloud.service;
 
 import cn.leancloud.*;
 import cn.leancloud.query.AVQueryResult;
+import cn.leancloud.sms.AVCaptchaDigest;
+import cn.leancloud.sms.AVCaptchaValidateResult;
 import cn.leancloud.types.AVDate;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.upload.FileUploadToken;
@@ -108,4 +110,19 @@ public interface APIService {
 
   @PUT("/1.1/users/{objectId}/updatePassword")
   Observable<AVUser> updatePassword(@Path("objectId") String objectId, @Body JSONObject object);
+
+  /**
+   * SMS / Capture requests
+   */
+  @GET("/1.1/requestCaptcha")
+  Observable<AVCaptchaDigest> requestCaptcha(@QueryMap Map<String, String> query);
+
+  @POST("/1.1/verifyCaptcha")
+  Observable<AVCaptchaValidateResult> verifyCaptcha(@Body Map<String, String> param);
+
+  @POST("/1.1/requestSmsCode")
+  Observable<AVNull> requestSMSCode(@Body Map<String, Object> param);
+
+  @POST("/1.1/verifySmsCode/{code}")
+  Observable<AVNull> verifySMSCode(@Path("code") String code, @Body Map<String, Object> param);
 }

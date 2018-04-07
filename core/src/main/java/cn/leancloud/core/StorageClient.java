@@ -5,16 +5,19 @@ import cn.leancloud.cache.QueryResultCache;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.query.AVQueryResult;
 import cn.leancloud.service.APIService;
+import cn.leancloud.sms.AVCaptchaDigest;
+import cn.leancloud.sms.AVCaptchaOption;
+import cn.leancloud.sms.AVCaptchaValidateResult;
 import cn.leancloud.types.AVDate;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.upload.FileUploadToken;
 import cn.leancloud.utils.LogUtil;
+import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
-import io.reactivex.functions.Action;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -262,5 +265,33 @@ public class StorageClient {
                 }
               }
             });
+  }
+
+  public Observable<AVCaptchaDigest> requestCaptcha(AVCaptchaOption option) {
+    return wrappObservable(apiService.requestCaptcha(option.getRequestParam()));
+  }
+
+  public Observable<AVCaptchaValidateResult> verifyCaptcha(String code, String token) {
+    if (StringUtil.isEmpty(code) || StringUtil.isEmpty(token)) {
+      throw new IllegalArgumentException("code or token is empty");
+    }
+    Map<String, String> param = new HashMap<String, String>(2);
+    param.put("captcha_code", code);
+    param.put("captcha_token", token);
+    return wrappObservable(apiService.verifyCaptcha(param));
+  }
+
+  public Observable<AVNull> requestSMSCode(String mobilePhone, Map<String, Object> param) {
+    param.put("mobilePhoneNumber", mobilePhone);
+    return wrappObservable(apiService.requestSMSCode(param));
+  }
+
+  public Observable<AVNull> verifySMSCode(String code, String mobilePhone) {
+    if (StringUtil.isEmpty(code) || StringUtil.isEmpty(mobilePhone)) {
+      throw new IllegalArgumentException("code or mobilePhone is empty");
+    }
+    Map<String, Object> param = new HashMap<String, Object>(1);
+    param.put("mobilePhoneNumber", mobilePhone);
+    return wrappObservable(apiService.verifySMSCode(code, param));
   }
 }
