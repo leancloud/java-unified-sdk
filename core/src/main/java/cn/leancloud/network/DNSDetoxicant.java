@@ -67,19 +67,15 @@ public class DNSDetoxicant implements Dns {
   }
 
   private void cacheDNS(String host, String response) {
-//    PersistenceUtil.sharedInstance().savePersistentSettingString(AVOS_SERVER_HOST_ZONE,
-//            host, response);
-//    PersistenceUtil.sharedInstance().savePersistentSettingString(AVOS_SERVER_HOST_ZONE,
-//            host + EXPIRE_TIME, String.valueOf(System.currentTimeMillis() + TWENTY_MIN_IN_MILLS));
+    PersistenceUtil.sharedInstance().getDefaultSetting().saveValue(AVOS_SERVER_HOST_ZONE, host, response);
+    PersistenceUtil.sharedInstance().getDefaultSetting().saveValue(AVOS_SERVER_HOST_ZONE,
+            host + EXPIRE_TIME, String.valueOf(System.currentTimeMillis() + TWENTY_MIN_IN_MILLS));
   }
 
   private String getCacheDNSResult(String url) {
-    String response = "";
-//            PersistenceUtil.sharedInstance().getPersistentSettingString(AVOS_SERVER_HOST_ZONE, url,
-//                    null);
-    String expiredAt = "";
-//            PersistenceUtil.sharedInstance().getPersistentSettingString(AVOS_SERVER_HOST_ZONE,
-//                    url + EXPIRE_TIME, "0");
+    String response = PersistenceUtil.sharedInstance().getDefaultSetting().getValue(AVOS_SERVER_HOST_ZONE, url, null);
+    String expiredAt = PersistenceUtil.sharedInstance().getDefaultSetting().getValue(AVOS_SERVER_HOST_ZONE,
+            url + EXPIRE_TIME, "0");
 
     if (!StringUtil.isEmpty(response) && System.currentTimeMillis() < Long.parseLong(expiredAt)) {
       return response;

@@ -16,6 +16,7 @@ public class PersistenceUtil {
   private String queryResultCacheDir = "./PaasKeyValueCache";
   private ConcurrentHashMap<String, ReentrantReadWriteLock> fileLocks =
           new ConcurrentHashMap<String, ReentrantReadWriteLock>();
+  private SystemSetting defaultSetting = null;
 
   private PersistenceUtil() {
   }
@@ -24,7 +25,9 @@ public class PersistenceUtil {
     return INSTANCE;
   }
 
-  public void config(String documentDir, String fileCacheDir, String queryResultCacheDir, String commandCacheDir, String analyticsCacheDir) {
+  public void config(String documentDir, String fileCacheDir, String queryResultCacheDir,
+                     String commandCacheDir, String analyticsCacheDir,
+                     SystemSetting defaultSetting) {
     this.documentDir = documentDir;
     if (!documentDir.endsWith("/")) {
       this.documentDir += "/";
@@ -69,6 +72,8 @@ public class PersistenceUtil {
     if (!dirFile.exists()) {
       dirFile.mkdirs();
     }
+
+    this.defaultSetting = defaultSetting;
   }
 
   public String getDocumentDir() {
@@ -89,6 +94,10 @@ public class PersistenceUtil {
 
   public String getAnalyticsCacheDir() {
     return analyticsCacheDir;
+  }
+
+  public SystemSetting getDefaultSetting() {
+    return defaultSetting;
   }
 
   public ReentrantReadWriteLock getLock(String path) {
