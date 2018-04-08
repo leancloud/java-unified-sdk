@@ -2,9 +2,10 @@ package cn.leancloud;
 
 import android.content.Context;
 
+import cn.leancloud.cache.AndroidSystemSetting;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.logging.DefaultLoggerAdapter;
-import cn.leancloud.network.PaasClient;
+import cn.leancloud.core.PaasClient;
 import cn.leancloud.utils.LogUtil;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -18,11 +19,13 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
     String fileCacheDir = baseDir + "/avfile/";
     String commandCacheDir = baseDir + "/CommandCache";
     String analyticsDir = baseDir + "/Analysis";
-    PersistenceUtil.sharedInstance().config(documentDir, fileCacheDir, commandCacheDir, analyticsDir);
+    String queryResultCacheDir = baseDir + "/PaasKeyValueCache";
+    AndroidSystemSetting defaultSetting = new AndroidSystemSetting(context);
+    PersistenceUtil.sharedInstance().config(documentDir, fileCacheDir, queryResultCacheDir,
+        commandCacheDir, analyticsDir, defaultSetting);
     LogUtil.getLogger(AVOSCloud.class).d("docDir=" + documentDir + ", fileDir=" + fileCacheDir
         + ", cmdDir=" + commandCacheDir + ", statDir=" + analyticsDir);
     PaasClient.config(true, new PaasClient.SchedulerCreator() {
-      @Override
       public Scheduler create() {
         return AndroidSchedulers.mainThread();
       }

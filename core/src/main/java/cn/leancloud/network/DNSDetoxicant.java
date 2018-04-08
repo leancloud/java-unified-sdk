@@ -67,14 +67,14 @@ public class DNSDetoxicant implements Dns {
   }
 
   private void cacheDNS(String host, String response) {
-    PersistenceUtil.sharedInstance().getDefaultSetting().saveValue(AVOS_SERVER_HOST_ZONE, host, response);
-    PersistenceUtil.sharedInstance().getDefaultSetting().saveValue(AVOS_SERVER_HOST_ZONE,
+    PersistenceUtil.sharedInstance().getDefaultSetting().saveString(AVOS_SERVER_HOST_ZONE, host, response);
+    PersistenceUtil.sharedInstance().getDefaultSetting().saveString(AVOS_SERVER_HOST_ZONE,
             host + EXPIRE_TIME, String.valueOf(System.currentTimeMillis() + TWENTY_MIN_IN_MILLS));
   }
 
   private String getCacheDNSResult(String url) {
-    String response = PersistenceUtil.sharedInstance().getDefaultSetting().getValue(AVOS_SERVER_HOST_ZONE, url, null);
-    String expiredAt = PersistenceUtil.sharedInstance().getDefaultSetting().getValue(AVOS_SERVER_HOST_ZONE,
+    String response = PersistenceUtil.sharedInstance().getDefaultSetting().getString(AVOS_SERVER_HOST_ZONE, url, null);
+    String expiredAt = PersistenceUtil.sharedInstance().getDefaultSetting().getString(AVOS_SERVER_HOST_ZONE,
             url + EXPIRE_TIME, "0");
 
     if (!StringUtil.isEmpty(response) && System.currentTimeMillis() < Long.parseLong(expiredAt)) {
