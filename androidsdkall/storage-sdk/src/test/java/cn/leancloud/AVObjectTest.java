@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.types.AVNull;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -31,12 +32,12 @@ public class AVObjectTest {
 
       public void onNext(AVObject avObject) {
         System.out.println("create object finished. " + avObject.toString());
-        avObject.deleteInBackground().subscribe(new Observer<Void>() {
+        avObject.deleteInBackground().subscribe(new Observer<AVNull>() {
           public void onSubscribe(Disposable disposable) {
             ;
           }
 
-          public void onNext(Void aVoid) {
+          public void onNext(AVNull aVoid) {
             System.out.println("delete object finished.");
           }
 
