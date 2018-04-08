@@ -31,10 +31,20 @@ public class StorageClient {
   private boolean asynchronized = false;
   private PaasClient.SchedulerCreator defaultCreator = null;
   private QueryResultCache queryResultCache = QueryResultCache.getInstance();
+  private AVUser currentUser = null;
+
   public StorageClient(APIService apiService, boolean asyncRequest, PaasClient.SchedulerCreator observerSchedulerCreator) {
     this.apiService = apiService;
     this.asynchronized = asyncRequest;
     this.defaultCreator = observerSchedulerCreator;
+  }
+
+  public void setCurrentUser(AVUser newUser) {
+    this.currentUser = newUser;
+  }
+
+  public AVUser getCurrentUser() {
+    return this.currentUser;
   }
 
   // TODO: need to change observable thread in case of AVFile.saveInBackground.

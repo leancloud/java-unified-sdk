@@ -1,13 +1,19 @@
 package cn.leancloud;
 
+import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.core.PaasClient;
+import cn.leancloud.ops.Utils;
+import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observable;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -136,5 +142,98 @@ public class AVUser extends AVObject {
       map.put("smsCode", smsCode);
     }
     return map;
+  }
+
+  transient private static boolean enableAutomatic = false;
+
+  public static void enableAutomaticUser() {
+    enableAutomatic = true;
+  }
+
+  public static boolean isEnableAutomatic() {
+    return enableAutomatic;
+  }
+
+  public static void disableAutomaticUser() {
+    enableAutomatic = false;
+  }
+
+  private static File currentUserArchivePath() {
+    File file = new File(PersistenceUtil.sharedInstance().getDocumentDir() + "/currentUser");
+    return file;
+  }
+
+  static private boolean userArchiveExist() {
+    return currentUserArchivePath().exists();
+  }
+
+  public static synchronized void changeCurrentUser(AVUser newUser, boolean save) {
+    if (null != newUser) {
+      newUser.setPassword(null);
+    }
+    File currentUserArchivePath = currentUserArchivePath();
+    if (null != newUser && save) {
+      String jsonString = JSON.toJSONString(newUser, ObjectValueFilter.instance,
+              SerializerFeature.WriteClassName,
+              SerializerFeature.DisableCircularReferenceDetect);
+      PersistenceUtil.sharedInstance().saveContentToFile(jsonString, currentUserArchivePath);
+    } else if (save) {
+      PersistenceUtil.sharedInstance().removeLock(currentUserArchivePath.getAbsolutePath());
+      currentUserArchivePath.delete();
+    }
+    PaasClient.getStorageClient().setCurrentUser(newUser);
+  }
+
+  public static AVUser getCurrentUser() {
+    return getCurrentUser(AVUser.class);
+  }
+  public static <T extends AVUser> T getCurrentUser(Class<T> userClass) {
+    AVUser user = PaasClient.getStorageClient().getCurrentUser();
+    if (null != user && userClass.isAssignableFrom(user.getClass())) {
+      return (T) user;
+    } else if (userArchiveExist()) {
+      File currentUserArchivePath = currentUserArchivePath();
+      synchronized (AVUser.class) {
+        String jsonString = PersistenceUtil.sharedInstance().readContentFromFile(currentUserArchivePath);
+        if (!StringUtil.isEmpty(jsonString)) {
+          if (jsonString.indexOf("@type") > 0) {
+            // new version.
+            try {
+              AVUser newUser = (AVUser) JSON.parse(jsonString);
+              if (userClass.isAssignableFrom(newUser.getClass())) {
+                user = newUser;
+              } else {
+                T tmp = userClass.newInstance();
+                tmp.resetByRawData(newUser);
+                user = tmp;
+              }
+              PaasClient.getStorageClient().setCurrentUser(user);
+            } catch (Exception ex) {
+              ;
+            }
+          } else {
+            // older format
+            try {
+              T newUser = userClass.newInstance();
+              Map<String, Object> rawData = JSON.parseObject(jsonString, Map.class);
+              newUser.resetServerData(rawData);
+              changeCurrentUser(newUser, true);
+              user = newUser;
+            } catch (Exception ex) {
+              ;
+            }
+          }
+        }
+      }
+    }
+    if (enableAutomatic && null == user) {
+      try {
+        user = userClass.newInstance();
+        changeCurrentUser(user, true);
+      } catch (Exception ex) {
+        ;
+      }
+    }
+    return (T) user;
   }
 }

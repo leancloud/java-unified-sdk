@@ -111,7 +111,7 @@ public class PersistenceUtil {
     }
     return lock;
   }
-  void removeLock(String path) {
+  public void removeLock(String path) {
     fileLocks.remove(path);
   }
 
@@ -148,6 +148,15 @@ public class PersistenceUtil {
       }
     }
     return succeed;
+  }
+
+  public String readContentFromFile(File fileForRead) {
+    byte[] data = this.readContentBytesFromFile(fileForRead);
+    if (null == data || data.length < 1) {
+      return "";
+    } else {
+      return new String(data);
+    }
   }
 
   public byte[] readContentBytesFromFile(File fileForRead) {

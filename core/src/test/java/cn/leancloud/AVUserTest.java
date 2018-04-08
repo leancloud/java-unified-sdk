@@ -72,4 +72,22 @@ public class AVUserTest extends TestCase {
     });
     Thread.sleep(3000);
   }
+
+  public void testCurrentUser() throws Exception {
+    AVUser.disableAutomaticUser();
+    AVUser currentUser = AVUser.getCurrentUser();
+    assertNull(currentUser);
+  }
+
+  public void testCurrentUserWithNew() throws Exception {
+    ;
+  }
+
+  public void testCurrentUserWithCached() throws Exception {
+    ;
+  }
+
+  public void testCurrentUserWithSubclass() throws Exception {
+    ;
+  }
 }
