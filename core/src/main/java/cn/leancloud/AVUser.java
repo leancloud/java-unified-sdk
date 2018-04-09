@@ -89,8 +89,11 @@ public class AVUser extends AVObject {
   public String getSessionToken() {
     return (String)get(ATTR_SESSION_TOKEN);
   }
-  void setSessionToken(String token) {
-    put(ATTR_SESSION_TOKEN, token);
+  /**
+   * not use it!
+   */
+  public void internalChangeSessionToken(String token) {
+    getServerData().put(ATTR_SESSION_TOKEN, token);
   }
 
   public Observable<AVUser> signUp() {
@@ -129,15 +132,6 @@ public class AVUser extends AVObject {
     return PaasClient.getStorageClient().logIn(data, clazz);
   }
 
-  public Observable<Boolean> checkAuthenticatedInBackground() {
-    String sessionToken = getSessionToken();
-    if (StringUtil.isEmpty(sessionToken)) {
-      LOGGER.d("sessionToken is not existed.");
-      return Observable.just(false);
-    }
-    return PaasClient.getStorageClient().checkAuthenticated(sessionToken);
-  }
-
   private static Map<String, Object> createUserMap(String username, String password, String email,
                                                    String phoneNumber, String smsCode) {
     Map<String, Object> map = new HashMap<String, Object>();
@@ -161,6 +155,35 @@ public class AVUser extends AVObject {
       map.put("smsCode", smsCode);
     }
     return map;
+  }
+
+  /**
+   * Session token operations
+   */
+
+  public Observable<Boolean> checkAuthenticatedInBackground() {
+    String sessionToken = getSessionToken();
+    if (StringUtil.isEmpty(sessionToken)) {
+      LOGGER.d("sessionToken is not existed.");
+      return Observable.just(false);
+    }
+    return PaasClient.getStorageClient().checkAuthenticated(sessionToken);
+  }
+
+  public Observable<Boolean> refreshSessionTokenInBackground() {
+    return PaasClient.getStorageClient().refreshSessionToken(this);
+  }
+
+  public static Observable<AVUser> becomeWithSessionTokenInBackground(String sessionToken) {
+    return becomeWithSessionTokenInBackground(sessionToken, AVUser.class);
+  }
+
+  public static <T extends AVUser> Observable<T> becomeWithSessionTokenInBackground(String sessionToken, Class<T> clazz) {
+    return PaasClient.getStorageClient().createUserBySession(sessionToken, clazz);
+  }
+
+  public static void logOut() {
+    AVUser.changeCurrentUser(null, true);
   }
 
   /**
@@ -223,6 +246,7 @@ public class AVUser extends AVObject {
   public static AVUser getCurrentUser() {
     return getCurrentUser(AVUser.class);
   }
+
   public static <T extends AVUser> T getCurrentUser(Class<T> userClass) {
     AVUser user = PaasClient.getStorageClient().getCurrentUser();
     if (null != user && userClass.isAssignableFrom(user.getClass())) {

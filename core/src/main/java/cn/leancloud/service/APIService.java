@@ -106,13 +106,16 @@ public interface APIService {
   Observable<AVUser> signupByMobilePhone(@Body JSONObject object);
 
   @POST("/1.1/login")
-  Observable<JSONObject> login(@Body JSONObject object);
+  Observable<AVUser> login(@Body JSONObject object);
 
   @PUT("/1.1/users/{objectId}/updatePassword")
   Observable<AVUser> updatePassword(@Path("objectId") String objectId, @Body JSONObject object);
 
   @GET("/1.1/users/me")
-  Observable<AVNull> checkAuthenticated(@QueryMap Map<String, String> query);
+  Observable<AVUser> checkAuthenticated(@QueryMap Map<String, String> query);
+
+  @PUT("/1.1/users/{objectId}/refreshSessionToken")
+  Observable<AVUser> refreshSessionToken(@Path("objectId") String objectId);
 
   /**
    * SMS / Capture requests

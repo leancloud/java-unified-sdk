@@ -225,14 +225,11 @@ public class StorageClient {
     return wrappObservable(apiService.signup(data));
   }
 
-  public <T extends AVUser> Observable<T> logIn(JSONObject data, final Class clazz) {
-    Observable<JSONObject> object = wrappObservable(apiService.login(data));
-    return object.map(new Function<JSONObject, T>() {
-      public T apply(JSONObject object) throws Exception {
-        LOGGER.d("convert JSONObject to target Class:" + clazz.getCanonicalName());
-        T result = (T) JSON.parseObject(object.toJSONString(), clazz);
-        LOGGER.d("result:" + result);
-        return result;
+  public <T extends AVUser> Observable<T> logIn(JSONObject data, final Class<T> clazz) {
+    Observable<AVUser> object = wrappObservable(apiService.login(data));
+    return object.map(new Function<AVUser, T>() {
+      public T apply(AVUser avUser) throws Exception {
+        return Transformer.transform(avUser, clazz);
       }
     });
   }
@@ -240,9 +237,38 @@ public class StorageClient {
   public Observable<Boolean> checkAuthenticated(String sessionToken) {
     Map<String, String> param = new HashMap<String, String>(1);
     param.put("session_token", sessionToken);
-    return wrappObservable(apiService.checkAuthenticated(param).map(new Function<AVNull, Boolean>() {
-      public Boolean apply(AVNull o) throws Exception {
-        return true;
+    return wrappObservable(apiService.checkAuthenticated(param).map(new Function<AVUser, Boolean>() {
+      public Boolean apply(AVUser o) throws Exception {
+        if (null != o) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }));
+  }
+
+  public <T extends AVUser> Observable<T> createUserBySession(String sessionToken, final Class<T> clazz) {
+    Map<String, String> param = new HashMap<String, String>(1);
+    param.put("session_token", sessionToken);
+    return apiService.checkAuthenticated(param).map(new Function<AVUser, T>() {
+      public T apply(AVUser avUser) throws Exception {
+        if (null == avUser) {
+          return null;
+        }
+        return Transformer.transform(avUser, clazz);
+      }
+    });
+  }
+
+  public Observable<Boolean> refreshSessionToken(final AVUser user) {
+    return wrappObservable(apiService.refreshSessionToken(user.getObjectId()).map(new Function<AVUser, Boolean>() {
+      public Boolean apply(AVUser avUser) throws Exception {
+        if (null != avUser && !StringUtil.isEmpty(avUser.getSessionToken())) {
+          user.internalChangeSessionToken(avUser.getSessionToken());
+          return true;
+        }
+        return false;
       }
     }));
   }
