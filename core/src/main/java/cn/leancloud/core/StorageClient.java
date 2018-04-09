@@ -237,6 +237,16 @@ public class StorageClient {
     });
   }
 
+  public Observable<Boolean> checkAuthenticated(String sessionToken) {
+    Map<String, String> param = new HashMap<String, String>(1);
+    param.put("session_token", sessionToken);
+    return wrappObservable(apiService.checkAuthenticated(param).map(new Function<AVNull, Boolean>() {
+      public Boolean apply(AVNull o) throws Exception {
+        return true;
+      }
+    }));
+  }
+
   public <T> Observable<T> callRPC(String name, Object param) {
     return wrappObservable(apiService.cloudRPC(name, param))
             .map(new Function<Map<String, ?>, T>() {

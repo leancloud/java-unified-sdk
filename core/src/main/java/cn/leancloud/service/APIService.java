@@ -111,6 +111,9 @@ public interface APIService {
   @PUT("/1.1/users/{objectId}/updatePassword")
   Observable<AVUser> updatePassword(@Path("objectId") String objectId, @Body JSONObject object);
 
+  @GET("/1.1/users/me")
+  Observable<AVNull> checkAuthenticated(@QueryMap Map<String, String> query);
+
   /**
    * SMS / Capture requests
    */

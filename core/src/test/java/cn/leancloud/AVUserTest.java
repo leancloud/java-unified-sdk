@@ -80,7 +80,26 @@ public class AVUserTest extends TestCase {
   }
 
   public void testCurrentUserWithNew() throws Exception {
-    ;
+    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+      public void onSubscribe(Disposable disposable) {
+        System.out.println("onSubscribe " + disposable.toString());
+      }
+
+      public void onNext(AVUser avUser) {
+        System.out.println("onNext. result=" + avUser.toString());
+        AVUser.changeCurrentUser(avUser, true);
+        AVUser u = AVUser.getCurrentUser();
+        assertTrue(avUser.equals(u));
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+        System.out.println("onComplete");
+      }
+    });
   }
 
   public void testCurrentUserWithCached() throws Exception {
@@ -89,5 +108,68 @@ public class AVUserTest extends TestCase {
 
   public void testCurrentUserWithSubclass() throws Exception {
     ;
+  }
+
+  public void testCheckAuthenticatedFalse() throws Exception {
+    AVUser u = new AVUser();
+    u.setEmail("jfeng@test.com");
+    u.setUsername("jfeng");
+    u.setPassword("FER$@$@#Ffwe");
+    u.setObjectId("ferewr2343");
+    u.checkAuthenticatedInBackground().subscribe(new Observer<Boolean>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(Boolean aBoolean) {
+        if (aBoolean) {
+          fail();
+        }
+      }
+
+      public void onError(Throwable throwable) {
+
+      }
+
+      public void onComplete() {
+
+      }
+    });
+  }
+  public void testCheckAuthenticatedTrue() throws Exception {
+    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+      public void onSubscribe(Disposable disposable) {
+        System.out.println("onSubscribe " + disposable.toString());
+      }
+
+      public void onNext(AVUser avUser) {
+        avUser.checkAuthenticatedInBackground().subscribe(new Observer<Boolean>() {
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          public void onNext(Boolean aBoolean) {
+            if (!aBoolean) {
+              fail();
+            }
+          }
+
+          public void onError(Throwable throwable) {
+            fail();
+          }
+
+          public void onComplete() {
+
+          }
+        });
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+      }
+    });
   }
 }

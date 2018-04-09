@@ -507,6 +507,10 @@ public class AVObject {
     }
   }
 
+  public static <T extends AVObject> AVQuery<T> getQuery(Class<T> clazz) {
+    return new AVQuery<T>(Transformer.getSubClassName(clazz), clazz);
+  }
+
   /**
    * common methods.
    */
@@ -522,5 +526,24 @@ public class AVObject {
             "className='" + className + '\'' +
             ", serverData=" + serverDataStr +
             '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof AVObject)) return false;
+    AVObject avObject = (AVObject) o;
+    return isFetchWhenSave() == avObject.isFetchWhenSave() &&
+            Objects.equals(getClassName(), avObject.getClassName()) &&
+            Objects.equals(getObjectId(), avObject.getObjectId()) &&
+            Objects.equals(getServerData(), avObject.getServerData()) &&
+            Objects.equals(operations, avObject.operations) &&
+            Objects.equals(acl, avObject.acl);
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hash(getClassName(), getObjectId(), getServerData(), operations, acl, isFetchWhenSave());
   }
 }

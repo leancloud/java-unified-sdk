@@ -3,6 +3,7 @@ package cn.leancloud;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.ops.Utils;
+import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -25,6 +26,7 @@ public class AVUser extends AVObject {
   private static final String ATTR_EMAIL = "email";
   private static final String ATTR_MOBILEPHONE = "mobilePhoneNumber";
   private static final String ATTR_MOBILEPHONE_VERIFIED = "mobilePhoneVerified";
+  private static final String ATTR_SESSION_TOKEN = "sessionToken";
 
   public static final String CLASS_NAME = "_User";
   public enum SNS_PLATFORM {
@@ -83,6 +85,14 @@ public class AVUser extends AVObject {
     return getBoolean(ATTR_MOBILEPHONE_VERIFIED);
   }
 
+  @JSONField(serialize = false)
+  public String getSessionToken() {
+    return (String)get(ATTR_SESSION_TOKEN);
+  }
+  void setSessionToken(String token) {
+    put(ATTR_SESSION_TOKEN, token);
+  }
+
   public Observable<AVUser> signUp() {
     JSONObject paramData = generateChangedParam();
     LOGGER.d("signup param: " + paramData.toJSONString());
@@ -119,6 +129,15 @@ public class AVUser extends AVObject {
     return PaasClient.getStorageClient().logIn(data, clazz);
   }
 
+  public Observable<Boolean> checkAuthenticatedInBackground() {
+    String sessionToken = getSessionToken();
+    if (StringUtil.isEmpty(sessionToken)) {
+      LOGGER.d("sessionToken is not existed.");
+      return Observable.just(false);
+    }
+    return PaasClient.getStorageClient().checkAuthenticated(sessionToken);
+  }
+
   private static Map<String, Object> createUserMap(String username, String password, String email,
                                                    String phoneNumber, String smsCode) {
     Map<String, Object> map = new HashMap<String, Object>();
@@ -144,6 +163,22 @@ public class AVUser extends AVObject {
     return map;
   }
 
+  /**
+   * User Query
+   */
+  public static <T extends AVUser> AVQuery<T> getUserQuery(Class<T> clazz) {
+    AVQuery<T> query = new AVQuery<T>(CLASS_NAME, clazz);
+    return query;
+  }
+
+  public static AVQuery<AVUser> getQuery() {
+    return getQuery(AVUser.class);
+  }
+
+
+  /**
+   * Current User Cache
+   */
   transient private static boolean enableAutomatic = false;
 
   public static void enableAutomaticUser() {
@@ -176,6 +211,7 @@ public class AVUser extends AVObject {
       String jsonString = JSON.toJSONString(newUser, ObjectValueFilter.instance,
               SerializerFeature.WriteClassName,
               SerializerFeature.DisableCircularReferenceDetect);
+      LOGGER.d(jsonString);
       PersistenceUtil.sharedInstance().saveContentToFile(jsonString, currentUserArchivePath);
     } else if (save) {
       PersistenceUtil.sharedInstance().removeLock(currentUserArchivePath.getAbsolutePath());
