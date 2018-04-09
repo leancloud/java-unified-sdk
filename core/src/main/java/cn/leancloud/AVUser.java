@@ -16,6 +16,7 @@ import io.reactivex.Observable;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
@@ -198,6 +199,11 @@ public class AVUser extends AVObject {
     return getQuery(AVUser.class);
   }
 
+  public Observable<List<AVRole>> getRolesInBackground() {
+    AVQuery<AVRole> roleQuery = new AVQuery<AVRole>(AVRole.CLASS_NAME);
+    roleQuery.whereEqualTo("users", this);
+    return roleQuery.findInBackground();
+  }
 
   /**
    * Current User Cache
@@ -296,4 +302,90 @@ public class AVUser extends AVObject {
     }
     return (T) user;
   }
+
+  /**
+   * Password-relative operations
+   */
+  public static Observable<AVNull> requestPasswordResetInBackground(String email) {
+    return PaasClient.getStorageClient().requestResetPassword(email);
+  }
+
+  public static Observable<AVNull> requestPasswordResetBySmsCodeInBackground(String phoneNumber) {
+    return requestPasswordResetBySmsCodeInBackground(phoneNumber, null);
+  }
+
+  public static Observable<AVNull> requestPasswordResetBySmsCodeInBackground(String phoneNumber, String validateToken) {
+    return PaasClient.getStorageClient().requestResetPasswordBySmsCode(phoneNumber, validateToken);
+  }
+
+  public static Observable<AVNull> resetPasswordBySmsCodeInBackground(String smsCode, String newPassword) {
+    return PaasClient.getStorageClient().resetPasswordBySmsCode(smsCode, newPassword);
+  }
+  public Observable<AVNull> updatePasswordInBackground(String oldPass, String newPass) {
+    return PaasClient.getStorageClient().updatePassword(this, oldPass, newPass);
+  }
+
+  public static Observable<AVNull> requestEmailVerifyInBackground(String email) {
+    return PaasClient.getStorageClient().requestEmailVerify(email);
+  }
+
+  public static Observable<AVNull> requestMobilePhoneVerifyInBackground(String mobilePhone) {
+    return requestMobilePhoneVerifyInBackground(mobilePhone, null);
+  }
+  public static Observable<AVNull> requestMobilePhoneVerifyInBackground(String mobilePhone, String validateToken) {
+    return PaasClient.getStorageClient().requestMobilePhoneVerify(mobilePhone, validateToken);
+  }
+
+  public static Observable<AVNull> requestLoginSmsCodeInBackground(String phoneNumber) {
+    return requestLoginSmsCodeInBackground(phoneNumber, null);
+  }
+  public static Observable<AVNull> requestLoginSmsCodeInBackground(String phoneNumber, String validateToken) {
+    return PaasClient.getStorageClient().requestLoginSmsCode(phoneNumber, validateToken);
+  }
+  public static Observable<AVNull> verifyMobilePhoneInBackground(String verifyCode) {
+    return PaasClient.getStorageClient().verifyMobilePhone(verifyCode);
+  }
+
+  /**
+   * follow-relative opersations
+   */
+  public Observable<JSONObject> followInBackground(String userObjectId) {
+    return this.followInBackground(userObjectId, null);
+  }
+  public Observable<JSONObject> followInBackground(String userObjectId, Map<String, Object> attributes) {
+    return PaasClient.getStorageClient().followUser(getObjectId(), userObjectId, attributes);
+  }
+  public Observable<JSONObject> unfollowInBackground(String userObjectId) {
+    return PaasClient.getStorageClient().unfollowUser(getObjectId(), userObjectId);
+  }
+  public <T extends AVUser> AVQuery<T> followerQuery(Class<T> clazz) {
+    return AVUser.followerQuery(getObjectId(), clazz);
+  }
+  public <T extends AVUser> AVQuery<T> followeeQuery(Class<T> clazz) {
+    return AVUser.followeeQuery(getObjectId(), clazz);
+  }
+  public static <T extends AVUser> AVQuery<T> followerQuery(final String userObjectId,
+                                                            Class<T> clazz) {
+    if (StringUtil.isEmpty(userObjectId)) {
+      throw new IllegalArgumentException("Blank user objectId");
+    }
+    AVFellowshipQuery query = new AVFellowshipQuery<T>("_Follower", clazz);
+    query.whereEqualTo("user", AVUser.createWithoutData(CLASS_NAME, userObjectId));
+    query.setFriendshipTag("follower");
+    return query;
+  }
+  public static <T extends AVUser> AVQuery<T> followeeQuery(final String userObjectId, Class<T> clazz) {
+    if (StringUtil.isEmpty(userObjectId)) {
+      throw new IllegalArgumentException("Blank user objectId");
+    }
+    AVFellowshipQuery query = new AVFellowshipQuery<T>("_Followee", clazz);
+    query.whereEqualTo("user", AVUser.createWithoutData(CLASS_NAME, userObjectId));
+    query.setFriendshipTag("followee");
+    return query;
+  }
+
+  /**
+   * third-party login methods.
+   */
+
 }

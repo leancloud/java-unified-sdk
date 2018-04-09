@@ -519,6 +519,12 @@ public class AVObject {
     return new JSONObject(this.serverData);
   }
 
+  public static AVObject createWithoutData(String className, String objectId) {
+    AVObject object = new AVObject(className);
+    object.setObjectId(objectId);
+    return object;
+  }
+
   @Override
   public String toString() {
     String serverDataStr = JSON.toJSONString(this.serverData);

@@ -111,11 +111,39 @@ public interface APIService {
   @PUT("/1.1/users/{objectId}/updatePassword")
   Observable<AVUser> updatePassword(@Path("objectId") String objectId, @Body JSONObject object);
 
+  @PUT("/1.1/resetPasswordBySmsCode/{smsCode}")
+  Observable<AVNull> resetPasswordBySmsCode(@Path("smsCode") String smsCode, @Body Map<String, String> param);
+
   @GET("/1.1/users/me")
   Observable<AVUser> checkAuthenticated(@QueryMap Map<String, String> query);
 
   @PUT("/1.1/users/{objectId}/refreshSessionToken")
   Observable<AVUser> refreshSessionToken(@Path("objectId") String objectId);
+
+  @POST("/1.1/requestPasswordReset")
+  Observable<AVNull> requestResetPassword(@Body Map<String, String> param);
+
+  @POST("/1.1/requestPasswordResetBySmsCode")
+  Observable<AVNull> requestResetPasswordBySmsCode(@Body Map<String, String> param);
+
+  @POST("/1.1/requestEmailVerify")
+  Observable<AVNull> requestEmailVerify(@Body Map<String, String> param);
+
+  @POST("/1.1/requestMobilePhoneVerify")
+  Observable<AVNull> requestMobilePhoneVerify(@Body Map<String, String> param);
+
+  @POST("/1.1/requestLoginSmsCode")
+  Observable<AVNull> requestLoginSmsCode(@Body Map<String, String> param);
+
+  @POST("/1.1/verifyMobilePhone/{verifyCode}")
+  Observable<AVNull> verifyMobilePhone(@Path("verifyCode") String verifyCode);
+
+  @POST("/1.1/users/{followee}/friendship/{follower}")
+  Observable<JSONObject> followUser(@Path("followee") String followee, @Path("follower") String follower,
+                                    @Body Map<String, Object> param);
+
+  @DELETE("/1.1/users/{followee}/friendship/{follower}")
+  Observable<JSONObject> unfollowUser(@Path("followee") String followee, @Path("follower") String follower);
 
   /**
    * SMS / Capture requests

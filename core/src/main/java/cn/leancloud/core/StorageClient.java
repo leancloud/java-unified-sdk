@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -271,6 +272,83 @@ public class StorageClient {
         return false;
       }
     }));
+  }
+
+  public Observable<AVNull> requestResetPassword(String email) {
+    Map<String, String> map = new HashMap<String, String>();
+    map.put("email", email);
+    return wrappObservable(apiService.requestResetPassword(map));
+  }
+
+  public Observable<AVNull> requestResetPasswordBySmsCode(String phoneNumber, String validateToken) {
+    Map<String, String> map = new HashMap<String, String>();
+    map.put("mobilePhoneNumber", phoneNumber);
+    if (!StringUtil.isEmpty(validateToken)) {
+      map.put("validate_token", validateToken);
+    }
+    return wrappObservable(apiService.requestResetPasswordBySmsCode(map));
+  }
+
+  public Observable<AVNull> requestEmailVerify(String email) {
+    Map<String, String> map = new HashMap<String, String>();
+    map.put("email", email);
+    return wrappObservable(apiService.requestEmailVerify(map));
+  }
+
+  public Observable<AVNull> requestMobilePhoneVerify(String mobilePhone, String validateToken) {
+    Map<String, String> map = new HashMap<String, String>();
+    map.put("mobilePhoneNumber", mobilePhone);
+    if (!StringUtil.isEmpty(validateToken)) {
+      map.put("validate_token", validateToken);
+    }
+    return wrappObservable(apiService.requestMobilePhoneVerify(map));
+  }
+
+  public Observable<AVNull> verifyMobilePhone(String verifyCode) {
+    return wrappObservable(apiService.verifyMobilePhone(verifyCode));
+  }
+
+  public Observable<AVNull> requestLoginSmsCode(String phoneNumber, String validateToken) {
+    Map<String, String> map = new HashMap<String, String>();
+    map.put("mobilePhoneNumber", phoneNumber);
+    if (!StringUtil.isEmpty(validateToken)) {
+      map.put("validate_token", validateToken);
+    }
+    return wrappObservable(apiService.requestLoginSmsCode(map));
+  }
+
+  public Observable<AVNull> resetPasswordBySmsCode(String smsCode, String newPass) {
+    Map<String, String> map = new HashMap<String, String>();
+    map.put("password", newPass);
+    return wrappObservable(apiService.resetPasswordBySmsCode(smsCode, map));
+  }
+
+  public Observable<AVNull> updatePassword(final AVUser user, String oldPass, String newPass) {
+    if (null == user) {
+      throw new IllegalArgumentException("user is null");
+    }
+    if (StringUtil.isEmpty(oldPass) || StringUtil.isEmpty(newPass)) {
+      throw new IllegalArgumentException("old password or new password is empty");
+    }
+    JSONObject param = new JSONObject();
+    param.put("old_password", oldPass);
+    param.put("new_password", newPass);
+    return wrappObservable(apiService.updatePassword(user.getObjectId(), param).map(new Function<AVUser, AVNull>() {
+      public AVNull apply(AVUser var1) throws Exception {
+        if (null != var1) {
+          user.internalChangeSessionToken(var1.getSessionToken());
+        }
+        return new AVNull();
+      }
+    }));
+  }
+
+  public Observable<JSONObject> followUser(String followee, String follower, Map<String, Object> attr) {
+    return wrappObservable(apiService.followUser(followee, follower, attr));
+  }
+
+  public Observable<JSONObject> unfollowUser(String followee, String follower) {
+    return wrappObservable(apiService.unfollowUser(followee, follower));
   }
 
   public <T> Observable<T> callRPC(String name, Object param) {
