@@ -12,6 +12,22 @@
     <module>realtime</module>
   </modules>
 
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>LeanCloud Engineer</name>
+      <email>eng@leancloud.rocks</email>
+      <organization>LeanCloud</organization>
+      <organizationUrl>https://leancloud.cn</organizationUrl>
+    </developer>
+  </developers>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.sourceEncoding>UTF-8</project.reporting.sourceEncoding>
