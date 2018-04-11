@@ -8,9 +8,9 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <groupId>cn.leancloud</groupId>
-  <artifactId>java-sdk</artifactId>
+  <artifactId>leanengine-sdk</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>java-sdk</name>
+  <name>leanengine-sdk</name>
   <url>http://maven.apache.org</url>
   <properties>
     <log4j.version>2.10.0</log4j.version>
