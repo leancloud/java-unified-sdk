@@ -81,8 +81,13 @@ public class StorageClient {
     return date;
   }
 
-  public Observable<? extends AVObject> fetchObject(final String className, String objectId) {
-    Observable<AVObject> object = wrappObservable(apiService.fetchObject(className, objectId));
+  public Observable<? extends AVObject> fetchObject(final String className, String objectId, String includeKeys) {
+    Observable<AVObject> object = null;
+    if (StringUtil.isEmpty(includeKeys)) {
+      object = wrappObservable(apiService.fetchObject(className, objectId));
+    } else {
+      object = wrappObservable(apiService.fetchObject(className, objectId, includeKeys));
+    }
     return object.map(new Function<AVObject, AVObject>() {
               public AVObject apply(AVObject avObject) throws Exception {
                 return Transformer.transform(avObject, className);

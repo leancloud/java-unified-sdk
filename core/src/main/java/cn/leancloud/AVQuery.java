@@ -846,6 +846,10 @@ public class AVQuery<T extends AVObject> {
     return result;
   }
 
+  public List<T> find() {
+    return findInBackground().blockingLast();
+  }
+
   public Observable<List<T>> findInBackground() {
     conditions.assembleParameters();
     Map<String, String> query = conditions.getParameters();
@@ -871,7 +875,7 @@ public class AVQuery<T extends AVObject> {
   }
 
   public Observable<T> getInBackground(String objectId) {
-    return PaasClient.getStorageClient().fetchObject(getClassName(), objectId).map(new Function<AVObject, T>() {
+    return PaasClient.getStorageClient().fetchObject(getClassName(), objectId, null).map(new Function<AVObject, T>() {
       public T apply(AVObject avObject) throws Exception {
         return Transformer.transform(avObject, getClassName());
       }

@@ -256,15 +256,12 @@ public class ObjectUnitTest extends TestCase {
     final AVObject avObject = new AVObject("ObjectUnitTest");
     assertTrue(avObject.getObjectId().isEmpty());
     avObject.put("$test", "hello world".getBytes());
-    assertFail(new FailCallback() {
-
-      @Override
-      public void go() throws AVException {
-        avObject.save();
-
-      }
-    }, AVException.INVALID_KEY_NAME);
-
+    try {
+      avObject.save();
+      fail();
+    } catch (Exception ex) {
+      ;
+    }
   }
 
   public void testDeleteObjectField() throws Exception {
@@ -299,7 +296,6 @@ public class ObjectUnitTest extends TestCase {
   }
 
   public void testAddRemoveRelation() throws Exception {
-    AVLock.reset();
     AVObject avObject = new AVObject("ObjectUnitTest");
     AVRelation likes = avObject.getRelation("parents");
 
@@ -308,15 +304,7 @@ public class ObjectUnitTest extends TestCase {
     List<AVObject> list = query.find();
     likes.addAll(list);
 
-    avObject.saveInBackground(new SaveCallback() {
-
-      @Override
-      public void done(AVException e) {
-        AVLock.goShouldNoError(e);
-
-      }
-    });
-    AVLock.lock();
+    avObject.saveInBackground().blockingSubscribe();
 
     assertFalse(avObject.getObjectId().isEmpty());
     AVRelation anotherLikes = avObject.getRelation("parents");
@@ -381,15 +369,7 @@ public class ObjectUnitTest extends TestCase {
     Armor armor = new Armor();
     armor.setDisplayName("dennis zane");
     armor.setBroken(false);
-    armor.saveInBackground(new SaveCallback() {
-
-      @Override
-      public void done(AVException e) {
-        AVLock.goShouldNoError(e);
-
-      }
-    });
-    AVLock.lock();
+    armor.saveInBackground().blockingSubscribe();
     assertFalse(armor.getObjectId().isEmpty());
   }
 

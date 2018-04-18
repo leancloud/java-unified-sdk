@@ -33,6 +33,10 @@ public interface APIService {
   @GET("/1.1/classes/{className}/{objectId}")
   Observable<AVObject> fetchObject(@Path("className") String className, @Path("objectId") String objectId);
 
+  @GET("/1.1/classes/{className}/{objectId}")
+  Observable<AVObject> fetchObject(@Path("className") String className, @Path("objectId") String objectId,
+                                   @Query("include") String includeKeys);
+
   @POST("/1.1/classes/{className}")
   Observable<AVObject> createObject(@Path("className") String className, @Body JSONObject object,
                                     @Query("fetchWhenSave") boolean fetchFlag);

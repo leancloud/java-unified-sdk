@@ -105,6 +105,10 @@ public class AVObject {
     return serverData.containsKey(key);
   }
 
+  public boolean has(String key) {
+    return (this.get(key) != null);
+  }
+
   public Object get(String key) {
     Object value = serverData.get(key);
     ObjectFieldOperation op = operations.get(key);
@@ -228,6 +232,10 @@ public class AVObject {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.RemoveRelation, key, object);
     addNewOperation(op);
+  }
+
+  public List getList(String key) {
+    return (List) get(key);
   }
 
   public Map<String, Object> getServerData() {
@@ -458,8 +466,21 @@ public class AVObject {
     deleteInBackground().blockingSubscribe();
   }
 
+  public void refresh() {
+    refresh(null);
+  }
+
+  public void refresh(String includeKeys) {
+    refreshInBackground(includeKeys).blockingSubscribe();
+  }
+
   public Observable<? extends AVObject> refreshInBackground() {
-    return PaasClient.getStorageClient().fetchObject(this.className, getObjectId())
+    return refreshInBackground(null);
+
+  }
+
+  public Observable<? extends AVObject> refreshInBackground(String includeKeys) {
+    return PaasClient.getStorageClient().fetchObject(this.className, getObjectId(), includeKeys)
             .map(new Function<AVObject, AVObject>() {
               public AVObject apply(AVObject avObject) throws Exception {
                 AVObject.this.serverData.clear();
@@ -467,6 +488,14 @@ public class AVObject {
                 return AVObject.this;
               }
             });
+  }
+
+  public AVObject fetch() {
+    return fetch(null);
+  }
+  public AVObject fetch(String includeKeys) {
+    refresh(includeKeys);
+    return this;
   }
 
   public Observable<? extends AVObject> fetchIfNeededInBackground() {
@@ -480,10 +509,6 @@ public class AVObject {
   public AVObject fetchIfNeeded() {
     fetchIfNeededInBackground().blockingSubscribe();
     return this;
-  }
-
-  public void refresh() {
-    refreshInBackground().blockingSubscribe();
   }
 
   protected void resetAll() {
@@ -580,6 +605,17 @@ public class AVObject {
     AVObject object = new AVObject(className);
     object.setObjectId(objectId);
     return object;
+  }
+
+  public static <T extends AVObject> T createWithoutData(Class<T> clazz, String objectId) throws AVException{
+    try {
+      T obj = clazz.newInstance();
+      obj.setClassName(Transformer.getSubClassName(clazz));
+      obj.setObjectId(objectId);
+      return obj;
+    } catch (Exception ex) {
+      throw new AVException(ex);
+    }
   }
 
   @Override
