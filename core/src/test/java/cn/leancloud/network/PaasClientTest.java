@@ -79,7 +79,7 @@ public class PaasClientTest extends TestCase {
           }
         }
       };
-      storageClient.fetchObject("Student", "5a7a4ac8128fe1003768d2b1")
+      storageClient.fetchObject("Student", "5a7a4ac8128fe1003768d2b1", null)
               .subscribe(ObserverBuilder.buildSingleObserver(callback));
       Thread.sleep(2000);
     } catch (Exception ex) {
