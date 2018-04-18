@@ -95,6 +95,10 @@ public class StorageClient {
             });
   }
 
+  public boolean hasCachedResult(String className, Map<String, String> query, long maxAgeInMilliseconds) {
+    return QueryResultCache.getInstance().hasCachedResult(className, query, maxAgeInMilliseconds);
+  }
+
   public Observable<List<AVObject>> queryObjects(final String className, final Map<String, String> query,
                                                  AVQuery.CachePolicy cachePolicy, final long maxAgeInMilliseconds) {
     final String cacheKey = QueryResultCache.generateKeyForQueryCondition(className, query);

@@ -466,6 +466,29 @@ public class AVObject {
     deleteInBackground().blockingSubscribe();
   }
 
+  public static Observable<AVNull> deleteAllInBackground(Collection<? extends AVObject> objects) {
+    if (null == objects || objects.size() < 1) {
+      return Observable.just(AVNull.getINSTANCE());
+    }
+    String className = null;
+    StringBuilder sb = new StringBuilder();
+    boolean isFirst = true;
+    for (AVObject o : objects) {
+      if (StringUtil.isEmpty(o.getObjectId()) || StringUtil.isEmpty(o.getClassName())) {
+        return Observable.error(new IllegalArgumentException("Invalid AVObject, the class name or objectId is blank."));
+      }
+      if (className == null) {
+        className = o.getClassName();
+        sb.append(o.getObjectId());
+      } else if (className.equals(o.getClassName())) {
+        sb.append(",").append(o.getObjectId());
+      } else {
+        return Observable.error(new IllegalArgumentException("The objects class name must be the same."));
+      }
+    }
+    return PaasClient.getStorageClient().deleteObject(className, sb.toString());
+  }
+
   public void refresh() {
     refresh(null);
   }

@@ -847,8 +847,9 @@ public class AVQuery<T extends AVObject> {
   }
 
   public boolean hasCachedResult() {
-    // TODO: complete me!
-    return true;
+    conditions.assembleParameters();
+    Map<String, String> query = conditions.getParameters();
+    return PaasClient.getStorageClient().hasCachedResult(getClassName(), query, this.getMaxCacheAge());
   }
 
   public List<T> find() {
@@ -920,8 +921,11 @@ public class AVQuery<T extends AVObject> {
   }
 
   public Observable<AVNull> deleteAllInBackground() {
-    // TODO: complete me!
-    return Observable.just(AVNull.getINSTANCE());
+    return findInBackground().map(new Function<List<T>, AVNull>() {
+      public AVNull apply(@NonNull List<T> list) throws Exception {
+        return AVObject.deleteAllInBackground(list).blockingFirst();
+      }
+    });
   }
 
   /**

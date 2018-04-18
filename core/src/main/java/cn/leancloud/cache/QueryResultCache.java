@@ -60,6 +60,20 @@ public class QueryResultCache extends LocalStorage {
     return MD5.computeMD5(sb.toString());
   }
 
+  public boolean hasCachedResult(String className, Map<String, String> query, long maxAgeInMilliseconds) {
+    String cacheKey = generateKeyForQueryCondition(className, query);
+    File cacheFile = getCacheFile(cacheKey);
+    if (null == cacheFile || !cacheFile.exists()) {
+      LOGGER.d("cache file(key=" + cacheKey + ") not existed.");
+      return false;
+    }
+    if (maxAgeInMilliseconds > 0 && (System.currentTimeMillis() - cacheFile.lastModified() > maxAgeInMilliseconds)) {
+      LOGGER.d("cache file(key=" + cacheKey + ") is expired.");
+      return false;
+    }
+    return true;
+  }
+
   public Observable<List<AVObject>> getCacheResult(final String className, final Map<String, String> query,
                                                    final long maxAgeInMilliseconds) {
     LOGGER.d("try to get cache result for class:" + className);
