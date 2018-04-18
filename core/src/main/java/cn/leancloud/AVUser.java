@@ -97,7 +97,11 @@ public class AVUser extends AVObject {
     getServerData().put(ATTR_SESSION_TOKEN, token);
   }
 
-  public Observable<AVUser> signUp() {
+  public void signUp() {
+    signUpInBackground().blockingSubscribe();
+  }
+
+  public Observable<AVUser> signUpInBackground() {
     JSONObject paramData = generateChangedParam();
     LOGGER.d("signup param: " + paramData.toJSONString());
     return PaasClient.getStorageClient().signUp(paramData);
