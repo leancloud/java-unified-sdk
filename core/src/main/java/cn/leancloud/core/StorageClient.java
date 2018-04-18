@@ -325,10 +325,10 @@ public class StorageClient {
 
   public Observable<AVNull> updatePassword(final AVUser user, String oldPass, String newPass) {
     if (null == user) {
-      throw new IllegalArgumentException("user is null");
+      return Observable.error(new IllegalArgumentException("user is null"));
     }
     if (StringUtil.isEmpty(oldPass) || StringUtil.isEmpty(newPass)) {
-      throw new IllegalArgumentException("old password or new password is empty");
+      return Observable.error(new IllegalArgumentException("old password or new password is empty"));
     }
     JSONObject param = new JSONObject();
     param.put("old_password", oldPass);
@@ -397,7 +397,7 @@ public class StorageClient {
 
   public Observable<AVCaptchaValidateResult> verifyCaptcha(String code, String token) {
     if (StringUtil.isEmpty(code) || StringUtil.isEmpty(token)) {
-      throw new IllegalArgumentException("code or token is empty");
+      return Observable.error(new IllegalArgumentException("code or token is empty"));
     }
     Map<String, String> param = new HashMap<String, String>(2);
     param.put("captcha_code", code);
@@ -412,7 +412,7 @@ public class StorageClient {
 
   public Observable<AVNull> verifySMSCode(String code, String mobilePhone) {
     if (StringUtil.isEmpty(code) || StringUtil.isEmpty(mobilePhone)) {
-      throw new IllegalArgumentException("code or mobilePhone is empty");
+      return Observable.error(new IllegalArgumentException("code or mobilePhone is empty"));
     }
     Map<String, Object> param = new HashMap<String, Object>(1);
     param.put("mobilePhoneNumber", mobilePhone);

@@ -866,12 +866,20 @@ public class AVQuery<T extends AVObject> {
     return castedResult;
   }
 
+  public T get(String objectId) {
+    return getInBackground(objectId).blockingFirst();
+  }
+
   public Observable<T> getInBackground(String objectId) {
     return PaasClient.getStorageClient().fetchObject(getClassName(), objectId).map(new Function<AVObject, T>() {
       public T apply(AVObject avObject) throws Exception {
         return Transformer.transform(avObject, getClassName());
       }
     });
+  }
+
+  public T getFirst() {
+    return getFirstInBackground().blockingFirst();
   }
 
   public Observable<T> getFirstInBackground() {
@@ -885,6 +893,10 @@ public class AVQuery<T extends AVObject> {
         }
       }
     });
+  }
+
+  public int count() {
+    return countInBackground().blockingFirst();
   }
 
   public Observable<Integer> countInBackground() {

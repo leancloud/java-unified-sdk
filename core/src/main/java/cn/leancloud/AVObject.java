@@ -4,6 +4,7 @@ import cn.leancloud.ops.BaseOperation;
 import cn.leancloud.ops.CompoundOperation;
 import cn.leancloud.ops.ObjectFieldOperation;
 import cn.leancloud.ops.OperationBuilder;
+import cn.leancloud.types.AVDate;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.types.AVNull;
@@ -123,7 +124,16 @@ public class AVObject {
   }
 
   public Date getDate(String key) {
-    return (Date) get(key);
+    Object res = get(key);
+    if (res instanceof Date) {
+      return (Date)res;
+    }
+    JSONObject rawData = (JSONObject) get(key);
+    if (null == rawData) {
+      return null;
+    }
+    AVDate date = new AVDate((JSONObject) get(key));
+    return (null == date) ? null : date.getDate();
   }
 
   public String getString(String key) {
@@ -380,30 +390,58 @@ public class AVObject {
   }
 
   public Observable<? extends AVObject> saveInBackground(AVSaveOption option) {
-    JSONObject paramData = generateChangedParam();
+    final JSONObject paramData = generateChangedParam();
     LOGGER.d("saveObject param: " + paramData.toJSONString());
+    final String currentObjectId = getObjectId();
     if (needBatchMode()) {
       LOGGER.w("Caution: batch mode will ignore fetchWhenSave flag.");
-      if (StringUtil.isEmpty(getObjectId())) {
+      if (StringUtil.isEmpty(currentObjectId)) {
         return PaasClient.getStorageClient().batchSave(paramData).map(new Function<JSONArray, AVObject>() {
           public AVObject apply(JSONArray object) throws Exception {
-            LOGGER.d("batchSave result: " + object.toJSONString());
+            if (null != object && object.size() > 0) {
+              LOGGER.d("batchSave result: " + object.toJSONString());
+
+              Map<String, Object> lastResult = object.getObject(object.size() - 1, Map.class);
+              if (null != lastResult) {
+                AVObject.this.serverData.putAll(lastResult);
+              }
+            }
             return AVObject.this;
           }
         });
       } else {
         return PaasClient.getStorageClient().batchUpdate(paramData).map(new Function<JSONObject, AVObject>() {
           public AVObject apply(JSONObject object) throws Exception {
-            LOGGER.d("batchUpdate result: " + object.toJSONString());
+            if (null != object) {
+              LOGGER.d("batchUpdate result: " + object.toJSONString());
+              Map<String, Object> lastResult = object.getObject(currentObjectId, Map.class);
+              if (null != lastResult) {
+                AVObject.this.serverData.putAll(lastResult);
+              }
+            }
             return AVObject.this;
           }
         });
       }
     } else {
-      if (StringUtil.isEmpty(getObjectId())) {
-        return PaasClient.getStorageClient().createObject(this.className, paramData, isFetchWhenSave());
+      if (StringUtil.isEmpty(currentObjectId)) {
+        return PaasClient.getStorageClient().createObject(this.className, paramData, isFetchWhenSave())
+                .map(new Function<AVObject, AVObject>() {
+                  @Override
+                  public AVObject apply(AVObject avObject) throws Exception {
+                    AVObject.this.mergeRawData(avObject);
+                    return AVObject.this;
+                  }
+                });
       } else {
-        return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData, isFetchWhenSave());
+        return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData, isFetchWhenSave())
+                .map(new Function<AVObject, AVObject>() {
+                  @Override
+                  public AVObject apply(AVObject avObject) throws Exception {
+                    AVObject.this.mergeRawData(avObject);
+                    return AVObject.this;
+                  }
+                });
       }
     }
   }
@@ -431,6 +469,19 @@ public class AVObject {
             });
   }
 
+  public Observable<? extends AVObject> fetchIfNeededInBackground() {
+    if (!StringUtil.isEmpty(getObjectId()) && this.serverData.size() > 0) {
+      return Observable.just(this);
+    } else {
+      return refreshInBackground();
+    }
+  }
+
+  public AVObject fetchIfNeeded() {
+    fetchIfNeededInBackground().blockingSubscribe();
+    return this;
+  }
+
   public void refresh() {
     refreshInBackground().blockingSubscribe();
   }
@@ -444,6 +495,12 @@ public class AVObject {
 
   protected void resetByRawData(AVObject avObject) {
     resetAll();
+    if (null != avObject) {
+      this.serverData.putAll(avObject.serverData);
+    }
+  }
+
+  void mergeRawData(AVObject avObject) {
     if (null != avObject) {
       this.serverData.putAll(avObject.serverData);
     }
