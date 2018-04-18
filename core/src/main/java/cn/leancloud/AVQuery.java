@@ -846,6 +846,11 @@ public class AVQuery<T extends AVObject> {
     return result;
   }
 
+  public boolean hasCachedResult() {
+    // TODO: complete me!
+    return true;
+  }
+
   public List<T> find() {
     return findInBackground().blockingLast();
   }
@@ -910,8 +915,13 @@ public class AVQuery<T extends AVObject> {
     return PaasClient.getStorageClient().queryCount(getClassName(), query);
   }
 
+  public void deleteAll() {
+    this.deleteAllInBackground().blockingSubscribe();
+  }
+
   public Observable<AVNull> deleteAllInBackground() {
-    return null;
+    // TODO: complete me!
+    return Observable.just(AVNull.getINSTANCE());
   }
 
   /**
