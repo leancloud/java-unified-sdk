@@ -13,6 +13,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observable;
+import io.reactivex.functions.Function;
 
 import java.io.File;
 import java.util.HashMap;
@@ -28,6 +29,12 @@ public class AVUser extends AVObject {
   private static final String ATTR_MOBILEPHONE = "mobilePhoneNumber";
   private static final String ATTR_MOBILEPHONE_VERIFIED = "mobilePhoneVerified";
   private static final String ATTR_SESSION_TOKEN = "sessionToken";
+
+  private static final String AUTHDATA_TAG = "authData";
+
+  private static final String AUTHDATA_ATTR_UNIONID = "unionid";
+  private static final String AUTHDATA_ATTR_UNIONID_PLATFORM = "platform";
+  private static final String AUTHDATA_ATTR_MAIN_ACCOUNT = "main_account";
 
   public static final String CLASS_NAME = "_User";
   public enum SNS_PLATFORM {
@@ -90,11 +97,18 @@ public class AVUser extends AVObject {
   public String getSessionToken() {
     return (String)get(ATTR_SESSION_TOKEN);
   }
+
   /**
    * not use it!
    */
   public void internalChangeSessionToken(String token) {
     getServerData().put(ATTR_SESSION_TOKEN, token);
+  }
+
+  public boolean isAuthenticated() {
+    // TODO: need to support thirdparty login.
+    String sessionToken = getSessionToken();
+    return !StringUtil.isEmpty(sessionToken);
   }
 
   public void signUp() {
@@ -160,6 +174,112 @@ public class AVUser extends AVObject {
       map.put("smsCode", smsCode);
     }
     return map;
+  }
+
+  public static Observable<AVUser> loginWithAuthData(final Map<String, Object> authData, final String platform) {
+    return loginWithAuthData(AVUser.class, authData, platform);
+  }
+
+  public static Observable<AVUser> loginWithAuthData(final Map<String, Object> authData, final String platform,
+                                                                   final String unionId, final String unionIdPlatform, final boolean asMainAccount) {
+    return loginWithAuthData(AVUser.class, authData, platform, unionId, unionIdPlatform, asMainAccount);
+  }
+
+  public static <T extends AVUser> Observable<T> loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData, final String platform) {
+    if (null == clazz) {
+      return Observable.error(new IllegalArgumentException("illegal parameter. clazz must not null/empty."));
+    }
+    if (null == authData || authData.isEmpty()) {
+      return Observable.error(new IllegalArgumentException("illegal parameter. authdata must not null/empty."));
+    }
+    if (StringUtil.isEmpty(platform)) {
+      return Observable.error(new IllegalArgumentException("illegal parameter. platform must not null/empty."));
+    }
+    Map<String, Object> data = new HashMap<String, Object>();
+    Map<String, Object> authMap = new HashMap<String, Object>();
+    authMap.put(platform, authData);
+    data.put(AUTHDATA_TAG, authMap);
+    JSONObject param = new JSONObject(data);
+    return PaasClient.getStorageClient().signUp(param).map(new Function<AVUser, T>() {
+      @Override
+      public T apply(AVUser avUser) throws Exception {
+        T result = Transformer.transform(avUser, clazz);
+        AVUser.changeCurrentUser(result, true);
+        return result;
+      }
+    });
+  }
+
+  public static <T extends AVUser> Observable<T> loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData, final String platform,
+                                                                   final String unionId, final String unionIdPlatform, final boolean asMainAccount) {
+    if (StringUtil.isEmpty(unionId)) {
+      return Observable.error(new IllegalArgumentException("illegal parameter. unionId must not null/empty."));
+    }
+    if (StringUtil.isEmpty(unionIdPlatform)) {
+      return Observable.error(new IllegalArgumentException("illegal parameter. unionIdPlatform must not null/empty."));
+    }
+    if (null == authData || authData.isEmpty()) {
+      return Observable.error(new IllegalArgumentException("illegal parameter. authdata must not null/empty."));
+    }
+    authData.put(AUTHDATA_ATTR_UNIONID, unionId);
+    authData.put(AUTHDATA_ATTR_UNIONID_PLATFORM, unionIdPlatform);
+    if (asMainAccount) {
+      authData.put(AUTHDATA_ATTR_MAIN_ACCOUNT, asMainAccount);
+    }
+    return loginWithAuthData(clazz, authData, platform);
+  }
+
+  public Observable<AVUser> associateWithAuthData(Map<String, Object> authData, String platform) {
+    if (null == authData || authData.isEmpty()) {
+      return Observable.error(new IllegalArgumentException("illegal parameter. authdata must not null/empty."));
+    }
+    if (StringUtil.isEmpty(platform)) {
+      return Observable.error(new IllegalArgumentException("illegal parameter. platform must not null/empty."));
+    }
+    Map<String, Object> authDataAttr = new HashMap<String, Object>();
+    authDataAttr.put(platform, authData);
+    Object existedAuthData = this.get(AUTHDATA_TAG);
+    if (existedAuthData != null && existedAuthData instanceof Map) {
+      authDataAttr.putAll((Map<String, Object>)existedAuthData);
+    }
+    this.put(AUTHDATA_TAG, authDataAttr);
+    return (Observable<AVUser>) saveInBackground();
+  }
+
+  public Observable<AVUser> associateWithAuthData(Map<String, Object> authData, String platform, String unionId, String unionIdPlatform,
+                                                  boolean asMainAccount) {
+    if (null == authData || authData.isEmpty()) {
+      return Observable.error(new IllegalArgumentException("illegal parameter. authdata must not null/empty."));
+    }
+    if (StringUtil.isEmpty(unionId)) {
+      return Observable.error(new IllegalArgumentException("illegal parameter. unionId must not null/empty."));
+    }
+    if (StringUtil.isEmpty(unionIdPlatform)) {
+      return Observable.error(new IllegalArgumentException("illegal parameter. unionIdPlatform must not null/empty."));
+    }
+    authData.put(AUTHDATA_ATTR_UNIONID, unionId);
+    authData.put(AUTHDATA_ATTR_UNIONID_PLATFORM, unionIdPlatform);
+    if (asMainAccount) {
+      authData.put(AUTHDATA_ATTR_MAIN_ACCOUNT, true);
+    }
+    return this.associateWithAuthData(authData, platform);
+  }
+
+  public Observable<AVUser> dissociateWithAuthData(final String platform) {
+    if (StringUtil.isEmpty(platform)) {
+      return Observable.error(new IllegalArgumentException("illegal parameter. platform must not null/empty."));
+    }
+    String objectId = getObjectId();
+    if (StringUtil.isEmpty(objectId) || !isAuthenticated()) {
+      return Observable.error(new AVException(AVException.SESSION_MISSING,
+              "the user object missing a valid session"));
+    }
+    Map<String, Object> authData = (Map<String, Object>) this.get(AUTHDATA_TAG);
+    if (authData != null) {
+      authData.remove(platform);
+    }
+    this.put(AUTHDATA_TAG, authData);
+    return (Observable<AVUser>)this.saveInBackground();
   }
 
   /**
