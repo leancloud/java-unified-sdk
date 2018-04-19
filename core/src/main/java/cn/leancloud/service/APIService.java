@@ -150,6 +150,31 @@ public interface APIService {
   Observable<JSONObject> unfollowUser(@Path("followee") String followee, @Path("follower") String follower);
 
   /**
+   * Status API
+   */
+  @POST("/1.1/statuses")
+  Observable<AVStatus> postStatus();
+
+  @GET("/1.1/statuses/{statusId}")
+  Observable<AVStatus> fetchStatus(@Path("statusId") String statusId);
+
+  @DELETE("/1.1/statuses/{statusId}")
+  Observable<AVNull> deleteStatus(@Path("statusId") String statusId);
+
+  @DELETE("/1.1/subscribe/statuses/inbox")
+  Observable<AVNull> deleteInboxStatus(@QueryMap Map<String, String> query);
+
+  @GET("/1.1/subscribe/statuses")
+  Observable<List<AVStatus>> queryStatuses();
+
+  @GET("/1.1/subscribe/statuses/count")
+  Observable<Integer> getInboxUnreadCount();
+
+  @POST("/1.1/subscribe/statuses/resetUnreadCount")
+  Observable<AVNull> resetInboxUnreadCount();
+
+
+  /**
    * SMS / Capture requests
    */
   @GET("/1.1/requestCaptcha")

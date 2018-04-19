@@ -360,6 +360,14 @@ public class StorageClient {
     return wrappObservable(apiService.unfollowUser(followee, follower));
   }
 
+  public Observable<AVNull> deleteStatus(String statusId) {
+    return wrappObservable(apiService.deleteStatus(statusId));
+  }
+
+  public Observable<AVNull> deleteInboxStatus(Map<String, String> param) {
+    return wrappObservable(apiService.deleteInboxStatus(param));
+  }
+
   public <T> Observable<T> callRPC(String name, Object param) {
     return wrappObservable(apiService.cloudRPC(name, param))
             .map(new Function<Map<String, ?>, T>() {

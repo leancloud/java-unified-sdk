@@ -2,6 +2,8 @@ package cn.leancloud.core;
 
 import cn.leancloud.AVLogAdapter;
 import cn.leancloud.AVLogger;
+import cn.leancloud.AVObject;
+import cn.leancloud.AVStatus;
 import cn.leancloud.cache.LastModifyCache;
 import cn.leancloud.logging.SimpleLoggerAdapter;
 
@@ -37,6 +39,7 @@ public class AVOSCloud {
   public static void initialize(String appId, String appKey) {
     applicationId = appId;
     applicationKey = appKey;
+    AVObject.registerSubclass(AVStatus.class);
   }
 
   public void setLastModifyEnabled(boolean val) {

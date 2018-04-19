@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// TODO: need transfer Anonymous User/Common User
+
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVUser extends AVObject {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVUser.class);
