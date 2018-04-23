@@ -7,30 +7,29 @@ import cn.leancloud.AVStatus;
 import cn.leancloud.cache.LastModifyCache;
 import cn.leancloud.logging.SimpleLoggerAdapter;
 
+/**
+ * we should set following variables:
+ * 0. app region(one of EastChina, NorthChina, NorthAmerica)
+ * 1. appid/appKey
+ * 2. log level
+ * 3. log adapter
+ */
 public class AVOSCloud {
-  public static enum REGION {
+  public enum REGION {
     EastChina, NorthChina, NorthAmerica
   }
 
   public static void setRegion(REGION region) {
     defaultRegion = region;
   }
+
   public static REGION getRegion() {
     return defaultRegion;
   }
 
-  public static void setLogAdapter(AVLogAdapter adapter) {
-    logAdapter = adapter;
-    logAdapter.setLevel(logLevel);
-  }
-  public static AVLogAdapter getLogAdapter() {
-    return logAdapter;
-  }
+
   public static void setLogLevel(AVLogger.Level level) {
     logLevel = level;
-    if (null != logAdapter) {
-      logAdapter.setLevel(level);
-    }
   }
   public static boolean isDebugEnable() {
     return logLevel.intLevel() >= AVLogger.Level.DEBUG.intLevel();
@@ -40,6 +39,8 @@ public class AVOSCloud {
     applicationId = appId;
     applicationKey = appKey;
     AVObject.registerSubclass(AVStatus.class);
+
+    AppConfiguration.getLogAdapter().setLevel(logLevel);
   }
 
   public void setLastModifyEnabled(boolean val) {
@@ -64,7 +65,6 @@ public class AVOSCloud {
   private static REGION defaultRegion = REGION.NorthChina;
   private static String applicationId = "";
   private static String applicationKey = "";
-  private static AVLogAdapter logAdapter = new SimpleLoggerAdapter();
   private static AVLogger.Level logLevel = AVLogger.Level.INFO;
   private static boolean isProduction = true;
 }

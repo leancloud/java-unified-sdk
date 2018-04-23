@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.cache.PersistenceUtil;
+import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.types.AVNull;
@@ -30,7 +31,7 @@ public class AVUser extends AVObject {
   private static final String ATTR_EMAIL = "email";
   private static final String ATTR_MOBILEPHONE = "mobilePhoneNumber";
   private static final String ATTR_MOBILEPHONE_VERIFIED = "mobilePhoneVerified";
-  private static final String ATTR_SESSION_TOKEN = "sessionToken";
+  public static final String ATTR_SESSION_TOKEN = "sessionToken";
 
   private static final String AUTHDATA_TAG = "authData";
 
@@ -349,7 +350,7 @@ public class AVUser extends AVObject {
   }
 
   private static File currentUserArchivePath() {
-    File file = new File(PersistenceUtil.sharedInstance().getDocumentDir() + "/currentUser");
+    File file = new File(AppConfiguration.getDocumentDir() + "/currentUser");
     return file;
   }
 

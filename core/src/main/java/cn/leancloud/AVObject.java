@@ -253,6 +253,11 @@ public class AVObject {
       throw new IllegalArgumentException("key(" + key + ") is reserved by LeanCloud");
     }
   }
+
+  public boolean isDataAvailable() {
+    return !StringUtil.isEmpty(this.objectId) && !this.serverData.isEmpty();
+  }
+
   /**
    * changable operations.
    */

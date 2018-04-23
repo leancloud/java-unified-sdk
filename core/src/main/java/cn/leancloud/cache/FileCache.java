@@ -1,6 +1,7 @@
 package cn.leancloud.cache;
 
 import cn.leancloud.codec.MD5;
+import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.utils.StringUtil;
 
 import java.io.File;
@@ -24,7 +25,7 @@ public class FileCache extends LocalStorage{
   }
 
   private FileCache() {
-    super(PersistenceUtil.sharedInstance().getFileCacheDir());
+    super(AppConfiguration.getFileCacheDir());
   }
 
   public String saveLocalFile(String name, File localFile) {

@@ -30,11 +30,11 @@ public class StorageClient {
 
   private APIService apiService = null;
   private boolean asynchronized = false;
-  private PaasClient.SchedulerCreator defaultCreator = null;
+  private AppConfiguration.SchedulerCreator defaultCreator = null;
   private QueryResultCache queryResultCache = QueryResultCache.getInstance();
   private AVUser currentUser = null;
 
-  public StorageClient(APIService apiService, boolean asyncRequest, PaasClient.SchedulerCreator observerSchedulerCreator) {
+  public StorageClient(APIService apiService, boolean asyncRequest, AppConfiguration.SchedulerCreator observerSchedulerCreator) {
     this.apiService = apiService;
     this.asynchronized = asyncRequest;
     this.defaultCreator = observerSchedulerCreator;

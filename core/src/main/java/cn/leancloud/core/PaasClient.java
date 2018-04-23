@@ -7,10 +7,16 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.fastjson.*;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import io.reactivex.Scheduler;
+import cn.leancloud.core.AppConfiguration.SchedulerCreator;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * we must config following variables:
+ * 1. async request or not
+ * 2. SchedulerCreator.
+ * 3. default ACL
+ */
 public class PaasClient {
   private static APIService apiService = null;
   private static StorageClient storageClient = null;
@@ -18,9 +24,6 @@ public class PaasClient {
   static SchedulerCreator defaultScheduler = null;
   static boolean asynchronized = false;
   private static AVACL defaultACL;
-  public static interface SchedulerCreator{
-    Scheduler create();
-  }
 
   /**
    * configure run-time env.

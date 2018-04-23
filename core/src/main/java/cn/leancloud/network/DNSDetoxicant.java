@@ -1,6 +1,7 @@
 package cn.leancloud.network;
 
 import cn.leancloud.cache.PersistenceUtil;
+import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.utils.StringUtil;
 import okhttp3.*;
 
@@ -67,14 +68,14 @@ public class DNSDetoxicant implements Dns {
   }
 
   private void cacheDNS(String host, String response) {
-    PersistenceUtil.sharedInstance().getDefaultSetting().saveString(AVOS_SERVER_HOST_ZONE, host, response);
-    PersistenceUtil.sharedInstance().getDefaultSetting().saveString(AVOS_SERVER_HOST_ZONE,
+    AppConfiguration.getDefaultSetting().saveString(AVOS_SERVER_HOST_ZONE, host, response);
+    AppConfiguration.getDefaultSetting().saveString(AVOS_SERVER_HOST_ZONE,
             host + EXPIRE_TIME, String.valueOf(System.currentTimeMillis() + TWENTY_MIN_IN_MILLS));
   }
 
   private String getCacheDNSResult(String url) {
-    String response = PersistenceUtil.sharedInstance().getDefaultSetting().getString(AVOS_SERVER_HOST_ZONE, url, null);
-    String expiredAt = PersistenceUtil.sharedInstance().getDefaultSetting().getString(AVOS_SERVER_HOST_ZONE,
+    String response = AppConfiguration.getDefaultSetting().getString(AVOS_SERVER_HOST_ZONE, url, null);
+    String expiredAt = AppConfiguration.getDefaultSetting().getString(AVOS_SERVER_HOST_ZONE,
             url + EXPIRE_TIME, "0");
 
     if (!StringUtil.isEmpty(response) && System.currentTimeMillis() < Long.parseLong(expiredAt)) {

@@ -8,15 +8,20 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <groupId>cn.leancloud</groupId>
-  <artifactId>leanengine-sdk</artifactId>
+  <artifactId>leanengine</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>leanengine-sdk</name>
+  <name>leanengine sdk</name>
   <url>http://maven.apache.org</url>
   <properties>
     <log4j.version>2.10.0</log4j.version>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.9</version>
+    </dependency>
     <dependency>
       <groupId>cn.leancloud</groupId>
       <artifactId>storage-core</artifactId>
@@ -31,6 +36,12 @@
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
       <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

@@ -3,6 +3,7 @@ package cn.leancloud.cache;
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVObject;
 import cn.leancloud.codec.MD5;
+import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.query.AVQueryResult;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -34,7 +35,7 @@ public class QueryResultCache extends LocalStorage {
   }
 
   private QueryResultCache() {
-    super(PersistenceUtil.sharedInstance().getQueryResultCacheDir());
+    super(AppConfiguration.getQueryResultCacheDir());
   }
 
   public String cacheResult(String key, String content) {

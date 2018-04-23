@@ -9,95 +9,14 @@ public class PersistenceUtil {
   private static PersistenceUtil INSTANCE = new PersistenceUtil();
   private static final int MAX_FILE_BUF_SIZE = 1024*1024*2;
 
-  private String documentDir = "./data/";
-  private String fileCacheDir = "./file/";
-  private String commandCacheDir = "./command/";
-  private String analyticsCacheDir = "./stats/";
-  private String queryResultCacheDir = "./PaasKeyValueCache";
   private ConcurrentHashMap<String, ReentrantReadWriteLock> fileLocks =
           new ConcurrentHashMap<String, ReentrantReadWriteLock>();
-  private SystemSetting defaultSetting = null;
 
   private PersistenceUtil() {
   }
 
   public static PersistenceUtil sharedInstance() {
     return INSTANCE;
-  }
-
-  public void config(String documentDir, String fileCacheDir, String queryResultCacheDir,
-                     String commandCacheDir, String analyticsCacheDir,
-                     SystemSetting defaultSetting) {
-    this.documentDir = documentDir;
-    if (!documentDir.endsWith("/")) {
-      this.documentDir += "/";
-    }
-    File dirFile = new File(this.documentDir);
-    if (!dirFile.exists()) {
-      dirFile.mkdirs();
-    }
-
-    this.fileCacheDir = fileCacheDir;
-    if (!fileCacheDir.endsWith("/")) {
-      this.fileCacheDir += "/";
-    }
-    dirFile = new File(this.fileCacheDir);
-    if (!dirFile.exists()) {
-      dirFile.mkdirs();
-    }
-
-    if (!queryResultCacheDir.endsWith("/")) {
-      queryResultCacheDir += "/";
-    }
-    dirFile = new File(queryResultCacheDir);
-    if (!dirFile.exists()) {
-      dirFile.mkdirs();
-    }
-    this.queryResultCacheDir = queryResultCacheDir;
-
-    this.commandCacheDir = commandCacheDir;
-    if (!commandCacheDir.endsWith("/")) {
-      this.commandCacheDir += "/";
-    }
-    dirFile = new File(this.commandCacheDir);
-    if (!dirFile.exists()) {
-      dirFile.mkdirs();
-    }
-
-    this.analyticsCacheDir = analyticsCacheDir;
-    if (!analyticsCacheDir.endsWith("/")) {
-      this.analyticsCacheDir += "/";
-    }
-    dirFile = new File(this.analyticsCacheDir);
-    if (!dirFile.exists()) {
-      dirFile.mkdirs();
-    }
-
-    this.defaultSetting = defaultSetting;
-  }
-
-  public String getDocumentDir() {
-    return documentDir;
-  }
-
-  public String getFileCacheDir() {
-    return fileCacheDir;
-  }
-
-  public String getQueryResultCacheDir() {
-    return this.queryResultCacheDir;
-  }
-
-  public String getCommandCacheDir() {
-    return commandCacheDir;
-  }
-
-  public String getAnalyticsCacheDir() {
-    return analyticsCacheDir;
-  }
-
-  public SystemSetting getDefaultSetting() {
-    return defaultSetting;
   }
 
   public ReentrantReadWriteLock getLock(String path) {
