@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.types.AVNull;
 import io.reactivex.Observer;
@@ -14,7 +15,7 @@ import junit.framework.TestSuite;
 public class AVObjectAsyncTest extends TestCase {
   public AVObjectAsyncTest(String testName) {
     super(testName);
-    PaasClient.config(true, new PaasClient.SchedulerCreator() {
+    PaasClient.config(true, new AppConfiguration.SchedulerCreator() {
       public Scheduler create() {
         return Schedulers.newThread();
       }

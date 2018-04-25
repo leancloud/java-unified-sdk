@@ -23,7 +23,6 @@ public class PaasClient {
   private static OkHttpClient globalHttpClient = null;
   static SchedulerCreator defaultScheduler = null;
   static boolean asynchronized = false;
-  private static AVACL defaultACL;
 
   /**
    * configure run-time env.
@@ -34,10 +33,6 @@ public class PaasClient {
   public static void config(boolean asyncRequest, SchedulerCreator observerSchedulerCreator) {
     asynchronized = asyncRequest;
     defaultScheduler = observerSchedulerCreator;
-  }
-
-  public static AVACL getDefaultACL() {
-    return defaultACL;
   }
 
   public static OkHttpClient getGlobalOkHttpClient() {

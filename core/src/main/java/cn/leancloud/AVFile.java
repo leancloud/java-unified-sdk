@@ -5,6 +5,7 @@ import cn.leancloud.codec.MD5;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.cache.FileCache;
 import cn.leancloud.cache.PersistenceUtil;
+import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.ops.ObjectFieldOperation;
 import cn.leancloud.ops.OperationBuilder;
 import cn.leancloud.core.PaasClient;
@@ -61,8 +62,8 @@ public final class AVFile extends AVObject {
 
   public AVFile() {
     super(CLASS_NAME);
-    if (PaasClient.getDefaultACL() != null) {
-      this.acl = new AVACL(PaasClient.getDefaultACL());
+    if (AppConfiguration.getDefaultACL() != null) {
+      this.acl = new AVACL(AppConfiguration.getDefaultACL());
     }
   }
 

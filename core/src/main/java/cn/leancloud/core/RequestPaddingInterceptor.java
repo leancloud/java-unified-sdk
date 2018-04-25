@@ -25,7 +25,7 @@ public class RequestPaddingInterceptor implements Interceptor {
     Request newRequest = originalRequest.newBuilder()
             .header(HEADER_KEY_LC_PROD_MODE, AVOSCloud.isProductionMode()?"1":"0")
             .header(HEADER_KEY_LC_APPID, AVOSCloud.getApplicationId())
-            .header(HEADER_KEY_LC_APPKEY, AVOSCloud.getApplicationKey())
+            .header(HEADER_KEY_LC_SIGN, RequestSignImplementation.requestSign())
             .header(HEADER_KEY_ACCEPT, DEFAULT_CONTENT_TYPE)
             .header(HEADER_KEY_CONTENT_TYPE, DEFAULT_CONTENT_TYPE)
             .header(HEADER_KEY_USER_AGENT, DEFAULT_USER_AGENT)

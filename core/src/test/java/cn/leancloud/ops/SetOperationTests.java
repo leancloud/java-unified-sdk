@@ -4,6 +4,7 @@ import cn.leancloud.AVObject;
 import cn.leancloud.Configure;
 import cn.leancloud.AVACL;
 import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Scheduler;
@@ -15,7 +16,7 @@ import java.util.Map;
 public class SetOperationTests extends TestCase {
   public SetOperationTests(String testName) {
     super(testName);
-    PaasClient.config(true, new PaasClient.SchedulerCreator() {
+    PaasClient.config(true, new AppConfiguration.SchedulerCreator() {
       public Scheduler create() {
         return Schedulers.newThread();
       }
