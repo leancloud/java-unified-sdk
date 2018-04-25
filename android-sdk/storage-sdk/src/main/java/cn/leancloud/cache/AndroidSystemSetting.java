@@ -3,8 +3,6 @@ package cn.leancloud.cache;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.lang.reflect.TypeVariable;
-
 import cn.leancloud.AVLogger;
 import cn.leancloud.utils.LogUtil;
 
@@ -74,7 +72,7 @@ public class AndroidSystemSetting implements SystemSetting {
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
     SharedPreferences.Editor editor = setting.edit();
     editor.putBoolean(key, value);
-    editor.commit();
+    editor.apply();
   }
   public void saveInteger(String keyZone, String key, int value) {
     if (null == this.context) {
@@ -84,7 +82,7 @@ public class AndroidSystemSetting implements SystemSetting {
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
     SharedPreferences.Editor editor = setting.edit();
     editor.putInt(key, value);
-    editor.commit();
+    editor.apply();
   }
   public void saveFloat(String keyZone, String key, float value) {
     if (null == this.context) {
@@ -94,7 +92,7 @@ public class AndroidSystemSetting implements SystemSetting {
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
     SharedPreferences.Editor editor = setting.edit();
     editor.putFloat(key, value);
-    editor.commit();
+    editor.apply();
   }
   public void saveLong(String keyZone, String key, long value) {
     if (null == this.context) {
@@ -104,7 +102,7 @@ public class AndroidSystemSetting implements SystemSetting {
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
     SharedPreferences.Editor editor = setting.edit();
     editor.putLong(key, value);
-    editor.commit();
+    editor.apply();
   }
   public void saveString(String keyZone, String key, String value) {
     if (null == this.context) {
@@ -114,7 +112,7 @@ public class AndroidSystemSetting implements SystemSetting {
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
     SharedPreferences.Editor editor = setting.edit();
     editor.putString(key, value);
-    editor.commit();
+    editor.apply();
   }
 
   public void removeKey(String keyZone, String key) {
@@ -124,7 +122,7 @@ public class AndroidSystemSetting implements SystemSetting {
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
     SharedPreferences.Editor editor = setting.edit();
     editor.remove(key);
-    editor.commit();
+    editor.apply();
   }
 
   public void removeKeyZone(String keyZone) {
@@ -134,7 +132,7 @@ public class AndroidSystemSetting implements SystemSetting {
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
     SharedPreferences.Editor editor = setting.edit();
     editor.clear();
-    editor.commit();
+    editor.apply();
   }
 
 }

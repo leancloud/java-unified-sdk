@@ -13,7 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.InputStream;

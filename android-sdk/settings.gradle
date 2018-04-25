@@ -1,1 +1,1 @@
-include ':app', ':storage-sdk', ':push-sdk'
+include ':storage-sdk', ':push-sdk', ':app'
