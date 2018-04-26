@@ -217,7 +217,6 @@ public class Utils {
         Object o = entry.getValue();
         newMap.put(key, getObjectFrom(o));
       }
-
       return newMap;
     } else if (type.equals("Pointer") || type.equals("Object")) {
       AVObject avObject = Transformer.objectFromClassName((String) map.get("className"));

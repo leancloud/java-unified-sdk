@@ -16,13 +16,13 @@ public class LoggingInterceptor implements Interceptor {
 
     long t1 = System.nanoTime();
 
-    System.out.print(String.format("[Thread:%d] Sending request(%s) %s %n%s%n",Thread.currentThread().getId(),
+    System.out.print(String.format("[LoggingInterceptor] [Thread:%d] Sending request(%s) %s %n%s%n",Thread.currentThread().getId(),
                 request.method(), request.url(), request.headers()));
 
     Response response = chain.proceed(request);
 
     long t2 = System.nanoTime();
-    System.out.print(String.format("Received response for %s in %.1fms%nStatusCode: %d%n",
+    System.out.print(String.format("[LoggingInterceptor] Received response for %s in %.1fms%nStatusCode: %d%n",
                 response.request().url(), (t2 - t1) / 1e6d, response.code()));
 
     return response;

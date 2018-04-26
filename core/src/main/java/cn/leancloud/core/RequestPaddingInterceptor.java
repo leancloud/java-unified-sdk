@@ -17,8 +17,6 @@ public class RequestPaddingInterceptor implements Interceptor {
   private static final String HEADER_KEY_CONTENT_TYPE = "Content-Type";
   private static final String HEADER_KEY_USER_AGENT = "User-Agent";
   private static final String DEFAULT_CONTENT_TYPE = "application/json";
-  private static final String SDK_VERSION = "5.0.0";
-  private static final String DEFAULT_USER_AGENT = "AVOS Cloud Android-" + SDK_VERSION + " SDK";
 
   public Response intercept(Interceptor.Chain chain) throws IOException {
     Request originalRequest = chain.request();
@@ -28,7 +26,7 @@ public class RequestPaddingInterceptor implements Interceptor {
             .header(HEADER_KEY_LC_SIGN, RequestSignImplementation.requestSign())
             .header(HEADER_KEY_ACCEPT, DEFAULT_CONTENT_TYPE)
             .header(HEADER_KEY_CONTENT_TYPE, DEFAULT_CONTENT_TYPE)
-            .header(HEADER_KEY_USER_AGENT, DEFAULT_USER_AGENT)
+            .header(HEADER_KEY_USER_AGENT, AppConfiguration.getUserAgent())
             .header(HEADER_KEY_LC_SESSIONTOKEN, "")
             .build();
     return chain.proceed(newRequest);

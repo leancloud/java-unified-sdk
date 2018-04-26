@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.ops.Utils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
@@ -13,13 +14,17 @@ import com.alibaba.fastjson.serializer.SerializeWriter;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
   private static AVLogger LOGGER = LogUtil.getLogger(ObjectTypeAdapter.class);
 
   public void write(JSONSerializer serializer, Object object, Object fieldName, Type fieldType,
                     int features) throws IOException {
-    LOGGER.d("ObjectTypeAdapter.write for obj:" + object);
+    LOGGER.d("ObjectTypeAdapter.write for obj=" + object + ", fieldName=" + fieldName + ", fieldType=" + fieldType);
+
     // fixme: maybe it is necessary to serialize AVFile.
     AVObject avObject = (AVObject)object;
     SerializeWriter writer = serializer.getWriter();
@@ -63,8 +68,21 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
     } else {
       obj = new AVObject();
     }
-    obj.serverData = serverJson;
-    LOGGER.d("deserialze: Type=" + type + ", fieldName=" + fieldName + ", result=" + obj.toString());
+    Map<String, Object> innerMap = serverJson.getInnerMap();
+    for (String k: innerMap.keySet()) {
+      Object v = innerMap.get(k);
+      if (v instanceof String || v instanceof Number || v instanceof Boolean || v instanceof Byte || v instanceof Character) {
+        // primitive type
+        obj.serverData.put(k, v);
+      } else if (v instanceof Map) {
+        obj.serverData.put(k, Utils.getObjectFrom(v));
+      } else if (v instanceof Collection) {
+        obj.serverData.put(k, Utils.getObjectFrom(v));
+      } else {
+        obj.serverData.put(k, v);
+      }
+    }
+    System.out.println("[ObjectTypeAdapter] deserialze: Type=" + type.toString() + ", fieldName=" + fieldName + ", result=" + obj.toString());
     return (T) obj;
   }
 

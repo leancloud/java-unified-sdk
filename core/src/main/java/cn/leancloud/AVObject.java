@@ -217,7 +217,12 @@ public class AVObject {
   }
 
   public <T extends AVObject> T getAVObject(String key) {
-    return (T) get(key);
+    try {
+      return (T) get(key);
+    } catch (Exception ex) {
+      LOGGER.w("failed to convert Object.", ex);
+      return null;
+    }
   }
 
   public <T extends AVObject> AVRelation<T> getRelation(String key) {
