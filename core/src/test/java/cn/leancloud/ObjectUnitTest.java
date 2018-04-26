@@ -18,6 +18,7 @@ public class ObjectUnitTest extends TestCase {
     super(testName);
     AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
     AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
+    AVObject.registerSubclass(Armor.class);
     AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
   }
   public static Test suite() {
