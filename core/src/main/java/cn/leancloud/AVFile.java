@@ -16,10 +16,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.leancloud.types.AVNull;
 import cn.leancloud.upload.*;
 import cn.leancloud.utils.FileUtil;
-import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -37,7 +35,6 @@ public final class AVFile extends AVObject {
   private static final String FILE_LENGTH_KEY = "size";
   private static final String FILE_SOURCE_KEY = "__source";
   private static final String FILE_SOURCE_EXTERNAL = "external";
-//  private static final String ELDERMETADATAKEYFORIOSFIX = "metadata";
 
   private static final String THUMBNAIL_FMT = "?imageView/%d/w/%d/h/%d/q/%d/format/%s";
 
@@ -119,6 +116,11 @@ public final class AVFile extends AVObject {
     }
     internalPut(KEY_METADATA, meta);
     internalPut(KEY_MIME_TYPE, FileUtil.getMimeTypeFromUrl(url));
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return super.equals(o);
   }
 
   private Object internalGet(String key) {

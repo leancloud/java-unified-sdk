@@ -11,16 +11,16 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class Transformer {
-  private static AVLogger LOGGER = LogUtil.getLogger(Transformer.class);
+  private static AVLogger logger = LogUtil.getLogger(Transformer.class);
 
-  private static Pattern CLASSNAME_PATTERN = Pattern.compile("^[a-zA-Z_][a-zA-Z_0-9]*$");
-  private final static Map<String, Class<? extends AVObject>> SUB_CLASSES_MAP =
+  private static Pattern classnamePattern = Pattern.compile("^[a-zA-Z_][a-zA-Z_0-9]*$");
+  private static final Map<String, Class<? extends AVObject>> subClassesMAP =
           new HashMap<String, Class<? extends AVObject>>();
-  private final static Map<Class<? extends AVObject>, String> SUB_CLASSES_REVERSE_MAP =
+  private static final Map<Class<? extends AVObject>, String> subClassesReverseMAP =
           new HashMap<Class<? extends AVObject>, String>();
 
   static Class<? extends AVObject> getSubClass(String className) {
-    return SUB_CLASSES_MAP.get(className);
+    return subClassesMAP.get(className);
   }
 
   static String getSubClassName(Class<? extends AVObject> clazz) {
@@ -33,7 +33,7 @@ public class Transformer {
     } else if (AVFile.class.isAssignableFrom(clazz)) {
       return AVFile.CLASS_NAME;
     } else {
-      return SUB_CLASSES_REVERSE_MAP.get(clazz);
+      return subClassesReverseMAP.get(clazz);
     }
   }
 
@@ -44,8 +44,8 @@ public class Transformer {
     }
     String className = avClassName.value();
     checkClassName(className);
-    SUB_CLASSES_MAP.put(className, clazz);
-    SUB_CLASSES_REVERSE_MAP.put(clazz, className);
+    subClassesMAP.put(className, clazz);
+    subClassesReverseMAP.put(clazz, className);
     // register object serializer/deserializer.
     ParserConfig.getGlobalInstance().putDeserializer(clazz, new ObjectTypeAdapter());
     SerializeConfig.getGlobalInstance().put(clazz, new ObjectTypeAdapter());
@@ -59,11 +59,11 @@ public class Transformer {
 
   public static <T extends AVObject> T transform(AVObject rawObj, Class<T> clazz) {
     AVObject result = null;
-    if (SUB_CLASSES_REVERSE_MAP.containsKey(clazz)) {
+    if (subClassesReverseMAP.containsKey(clazz)) {
       try {
         result = clazz.newInstance();
       } catch (Exception ex) {
-        LOGGER.w("newInstance failed. cause: " + ex.getMessage());
+        logger.w("newInstance failed. cause: " + ex.getMessage());
         result = new AVObject(clazz.getSimpleName());
       }
     } else if (AVUser.class.isAssignableFrom(clazz)) {
@@ -84,7 +84,7 @@ public class Transformer {
   public static void checkClassName(String className) {
     if (StringUtil.isEmpty(className))
       throw new IllegalArgumentException("Blank class name");
-    if (!CLASSNAME_PATTERN.matcher(className).matches())
+    if (!classnamePattern.matcher(className).matches())
       throw new IllegalArgumentException("Invalid class name");
   }
 
@@ -98,19 +98,21 @@ public class Transformer {
       result = new AVRole();
     } else if (AVFile.CLASS_NAME.equals(className)) {
       result = new AVFile();
-    } else if (SUB_CLASSES_MAP.containsKey(className)) {
-      System.out.println("create subClass for name: " + className);
+    } else if (subClassesMAP.containsKey(className)) {
       try {
-        result = SUB_CLASSES_MAP.get(className).newInstance();
+        result = subClassesMAP.get(className).newInstance();
       } catch (Exception ex) {
-        System.out.println("failed to create subClass: " + className);
-        ex.printStackTrace();
+        logger.w("failed to create subClass: " + className, ex);
         result = new AVObject(className);
       }
     } else {
       result = new AVObject(className);
     }
-    System.out.println("object from class:" + className + " is " + result);
+    logger.d("object from class:" + className + " is " + result);
     return result;
+  }
+
+  private Transformer() {
+
   }
 }

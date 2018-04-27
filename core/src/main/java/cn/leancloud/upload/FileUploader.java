@@ -11,13 +11,13 @@ import com.alibaba.fastjson.JSONObject;
 import java.util.*;
 
 public class FileUploader extends HttpClientUploader {
-  private static AVLogger LOGGER = LogUtil.getLogger(FileUploader.class);
+  private static AVLogger logger = LogUtil.getLogger(FileUploader.class);
 
-  static final int PROGRESS_GET_TOKEN = 10;
-  static final int PROGRESS_UPLOAD_FILE = 90;
-  static final int PROGRESS_COMPLETE = 100;
-  static final String PROVIDER_QCLOUD = "qcloud";
-  static final String PROVIDER_S3 = "s3";
+  static final int gProgressGotToken = 10;
+  static final int gProgressUploadedFile = 90;
+  static final int gProgressComplete = 100;
+  static final String gProviderQCloud = "qcloud";
+  static final String gProviderS3 = "s3";
 
   private String token;
   private String bucket;
@@ -33,7 +33,7 @@ public class FileUploader extends HttpClientUploader {
   }
 
   public AVException execute() {
-    publishProgress(PROGRESS_GET_TOKEN);
+    publishProgress(gProgressGotToken);
     Uploader uploader = getUploaderImplementation();
     if (null == uploader) {
       return new AVException(new Throwable("Uploader can not be instantiated."));
@@ -41,7 +41,7 @@ public class FileUploader extends HttpClientUploader {
 
     AVException uploadException = uploader.execute();
     if (uploadException == null) {
-      publishProgress(PROGRESS_COMPLETE);
+      publishProgress(gProgressComplete);
       completeFileUpload(true);
       return null;
     } else {
@@ -52,15 +52,15 @@ public class FileUploader extends HttpClientUploader {
 
   private Uploader getUploaderImplementation() {
     if (!StringUtil.isEmpty(provider)) {
-      if (PROVIDER_QCLOUD.equalsIgnoreCase(provider)) {
+      if (gProviderQCloud.equalsIgnoreCase(provider)) {
         return new QCloudUploader(avFile, token, uploadUrl, progressCallback);
-      } else if (PROVIDER_S3.equalsIgnoreCase(provider)) {
+      } else if (gProviderS3.equalsIgnoreCase(provider)) {
         return new S3Uploader(avFile, uploadUrl, progressCallback);
       } else {
         return new QiniuSlicingUploader(avFile, token, progressCallback);
       }
     } else {
-      LOGGER.w("provider doesnot exist, cannot upload any file.");
+      logger.w("provider doesnot exist, cannot upload any file.");
       return null;
     }
   }
@@ -96,7 +96,7 @@ public class FileUploader extends HttpClientUploader {
         for (Integer index: keySet) {
           progressSum += blockProgress.get(index);
         }
-        callback.onProgress(PROGRESS_GET_TOKEN + (PROGRESS_UPLOAD_FILE - PROGRESS_GET_TOKEN)
+        callback.onProgress(gProgressGotToken + (gProgressUploadedFile - gProgressGotToken)
                 * progressSum / (100 * fileBlockCount));
       }
     }

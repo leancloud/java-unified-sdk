@@ -407,8 +407,11 @@ public class StorageClient {
   }
 
   public <T> Observable<T> callRPC(String name, Object param) {
-    return wrappObservable(apiService.cloudRPC(name, param))
-            .map(new Function<Map<String, ?>, T>() {
+    Observable<Map<String, ?>> cloudCall =  wrappObservable(apiService.cloudRPC(name, param));
+    if (null == cloudCall) {
+      return null;
+    }
+    return cloudCall.map(new Function<Map<String, ?>, T>() {
               public T apply(Map<String, ?> resultMap) throws Exception {
                 try {
                   Object resultValue = resultMap.get("result");
@@ -427,8 +430,11 @@ public class StorageClient {
   }
 
   public <T> Observable<T> callFunction(String name, Map<String, Object> params) {
-    return wrappObservable(apiService.cloudFunction(name, params))
-            .map(new Function<Map<String, ?>, T>() {
+    Observable<Map<String, ?>> cloudCall = wrappObservable(apiService.cloudFunction(name, params));
+    if (null == cloudCall) {
+      return null;
+    }
+    return cloudCall.map(new Function<Map<String, ?>, T>() {
               public T apply(Map<String, ?> resultMap) throws Exception {
                 try {
                   Object resultValue = resultMap.get("result");

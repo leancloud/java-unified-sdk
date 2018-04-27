@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public abstract class HttpClientUploader implements Uploader {
-  private static AVLogger LOGGER = LogUtil.getLogger(HttpClientUploader.class);
+  private static AVLogger logger = LogUtil.getLogger(HttpClientUploader.class);
   private OkHttpClient client = new OkHttpClient.Builder()
           .connectTimeout(15, TimeUnit.SECONDS)
           .readTimeout(10, TimeUnit.SECONDS)

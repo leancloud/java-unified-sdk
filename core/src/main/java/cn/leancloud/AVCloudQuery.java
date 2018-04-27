@@ -12,7 +12,6 @@ import java.util.*;
 
 class AVCloudQuery {
   private AVCloudQuery() {
-    ;
   }
 
   public static Observable<AVCloudQueryResult> executeInBackground(String cql) {

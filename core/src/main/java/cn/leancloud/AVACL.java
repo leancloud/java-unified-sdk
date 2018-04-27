@@ -96,7 +96,6 @@ public class AVACL {
 
   private void setPermissionsIfNonEmpty(String userId, boolean readPermission, boolean writePermission) {
     if (!(readPermission || writePermission)) {
-      System.out.println("remove permission for userId:" + userId);
       permissionsById.remove(userId);
     } else {
       permissionsById.put(userId, new Permissions(readPermission, writePermission));

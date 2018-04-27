@@ -26,6 +26,5 @@ public class AVCloud {
   }
 
   private AVCloud() {
-    ;
   }
 }

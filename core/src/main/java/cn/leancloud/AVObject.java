@@ -138,7 +138,7 @@ public class AVObject {
       return null;
     }
     AVDate date = new AVDate((JSONObject) get(key));
-    return (null == date) ? null : date.getDate();
+    return date.getDate();
   }
 
   public String getString(String key) {
@@ -664,7 +664,7 @@ public class AVObject {
     return this.acl;
   }
 
-  public void setACL(AVACL acl) {
+  public synchronized void setACL(AVACL acl) {
     this.acl = acl;
   }
 

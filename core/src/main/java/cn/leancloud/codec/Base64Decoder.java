@@ -158,25 +158,25 @@ public class Base64Decoder extends FilterInputStream {
    * @return the decoded form of the encoded string
    */
   public static byte[] decodeToBytes(String encoded) {
-    byte[] bytes = null;
     try {
-      bytes = encoded.getBytes("UTF-8");
-    } catch (UnsupportedEncodingException ignored) {}
+      byte[] bytes = encoded.getBytes("UTF-8");
+      Base64Decoder in = new Base64Decoder(new ByteArrayInputStream(bytes));
 
-    Base64Decoder in = new Base64Decoder(new ByteArrayInputStream(bytes));
+      ByteArrayOutputStream out = new ByteArrayOutputStream((int) (bytes.length * 0.67));
 
-    ByteArrayOutputStream out = new ByteArrayOutputStream((int) (bytes.length * 0.67));
+      try {
+        byte[] buf = new byte[4 * 1024]; // 4K buffer
+        int bytesRead;
+        while ((bytesRead = in.read(buf)) != -1) {
+          out.write(buf, 0, bytesRead);
+        }
+        out.close();
 
-    try {
-      byte[] buf = new byte[4 * 1024]; // 4K buffer
-      int bytesRead;
-      while ((bytesRead = in.read(buf)) != -1) {
-        out.write(buf, 0, bytesRead);
+        return out.toByteArray();
+      } catch (IOException ignored) {
+        return null;
       }
-      out.close();
-
-      return out.toByteArray();
-    } catch (IOException ignored) {
+    } catch (UnsupportedEncodingException ignored) {
       return null;
     }
   }
