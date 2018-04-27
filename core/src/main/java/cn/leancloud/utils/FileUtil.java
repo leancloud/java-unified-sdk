@@ -5,7 +5,7 @@ import cn.leancloud.AVFile;
 public class FileUtil {
   public static final int DEFAULT_FILE_KEY_LEN = 40;
   public static final String DEFAULTMIMETYPE = "application/octet-stream";
-  private static long MAX_FILE_BUF_SIZE = 1024 * 2014 * 4;
+  private static long MAX_FILE_BUF_SIZE = 1024 * 2014 * 4l;
 
   public static interface MimeTypeDetector {
     String getFileExtensionFromUrl(String url);
