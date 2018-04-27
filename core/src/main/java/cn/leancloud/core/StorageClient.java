@@ -104,9 +104,9 @@ public class StorageClient {
     final String cacheKey = QueryResultCache.generateKeyForQueryCondition(className, query);
     switch (cachePolicy) {
       case CACHE_ONLY:
-        return wrappObservable(QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds));
+        return wrappObservable(QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, true));
       case CACHE_ELSE_NETWORK:
-        return wrappObservable(QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds))
+        return wrappObservable(QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, false))
                 .onErrorReturn(new Function<Throwable, List<AVObject>>() {
                   public List<AVObject> apply(Throwable o) throws Exception {
                     LOGGER.d("failed to query local cache, cause: " + o.getMessage() + ", try to query networking");
@@ -140,7 +140,7 @@ public class StorageClient {
                 .onErrorReturn(new Function<Throwable, List<AVObject>>() {
                   public List<AVObject> apply(Throwable o) throws Exception {
                     LOGGER.d("failed to query networking, cause: " + o.getMessage() + ", try to query local cache.");
-                    return QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds).blockingFirst();
+                    return QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, true).blockingFirst();
                   }
                 });
       case IGNORE_CACHE:
@@ -239,7 +239,9 @@ public class StorageClient {
     Observable<AVUser> object = wrappObservable(apiService.login(data));
     return object.map(new Function<AVUser, T>() {
       public T apply(AVUser avUser) throws Exception {
-        return Transformer.transform(avUser, clazz);
+        T rst = Transformer.transform(avUser, clazz);
+        AVUser.changeCurrentUser(rst, true);
+        return rst;
       }
     });
   }

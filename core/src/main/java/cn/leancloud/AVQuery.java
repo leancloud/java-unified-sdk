@@ -14,6 +14,7 @@ import cn.leancloud.utils.StringUtil;
 import java.util.*;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 
@@ -860,20 +861,18 @@ public class AVQuery<T extends AVObject> {
     conditions.assembleParameters();
     Map<String, String> query = conditions.getParameters();
     LOGGER.d("Query: " + query);
-    Observable<List<AVObject>> rawResult = PaasClient.getStorageClient().queryObjects(getClassName(), query,
-            this.cachePolicy, this.maxCacheAge);
-    Observable<List<T>> castedResult = rawResult.map(new Function<List<AVObject>, List<T>>() {
-      public List<T> apply(@NonNull List<AVObject> var1) throws Exception {
-        LOGGER.d("invoke within AVQuery.findInBackground(). resultSize=" + var1.size());
-        List<T> result = new ArrayList<T>(var1.size());
-        for (AVObject obj: var1) {
-          T tmp = Transformer.transform(obj, getClassName());
-          result.add(tmp);
-        }
-        return result;
-      }
-    });
-    return castedResult;
+    return PaasClient.getStorageClient().queryObjects(getClassName(), query, this.cachePolicy, this.maxCacheAge)
+            .map(new Function<List<AVObject>, List<T>>() {
+              public List<T> apply(List<AVObject> var1) throws Exception {
+                LOGGER.d("invoke within AVQuery.findInBackground(). resultSize=" + var1.size());
+                List<T> result = new ArrayList<T>(var1.size());
+                for (AVObject obj: var1) {
+                  T tmp = Transformer.transform(obj, getClassName());
+                  result.add(tmp);
+                }
+                return result;
+              }
+            });
   }
 
   public T get(String objectId) {
@@ -889,18 +888,19 @@ public class AVQuery<T extends AVObject> {
   }
 
   public T getFirst() {
-    return getFirstInBackground().blockingFirst();
+    try {
+      return getFirstInBackground().blockingFirst();
+    } catch (NoSuchElementException ex) {
+      return null;
+    }
   }
 
   public Observable<T> getFirstInBackground() {
     conditions.setLimit(1);
-    return findInBackground().map(new Function<List<T>, T>() {
-      public T apply(List<T> ts) throws Exception {
-        if (null == ts || ts.size() < 1) {
-          return null;
-        } else {
-          return ts.get(0);
-        }
+    return findInBackground().flatMap(new Function<List<T>, ObservableSource<T>>() {
+      @Override
+      public ObservableSource<T> apply(List<T> list) throws Exception {
+        return Observable.fromIterable(list);
       }
     });
   }

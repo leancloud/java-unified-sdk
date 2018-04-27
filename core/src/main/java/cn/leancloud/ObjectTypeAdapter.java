@@ -11,6 +11,7 @@ import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.ObjectSerializer;
 import com.alibaba.fastjson.serializer.SerializeWriter;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -30,7 +31,9 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
     SerializeWriter writer = serializer.getWriter();
     writer.write('{');
     writer.writeFieldValue(' ', AVObject.KEY_CLASSNAME, avObject.getClassName());
-    writer.writeFieldValue(',', "serverData", JSON.toJSONString(avObject.serverData));
+    writer.writeFieldValue(',', "serverData",
+            JSON.toJSONString(avObject.serverData, ObjectValueFilter.instance, SerializerFeature.WriteClassName,
+                    SerializerFeature.DisableCircularReferenceDetect));
     writer.write('}');
   }
 

@@ -50,10 +50,6 @@ public class AVOSCloud {
   public boolean isLastModifyEnabled() {
     return LastModifyCache.getInstance().isLastModifyEnabled();
   }
-  public static void setProductionMode(boolean productionMode) {
-    isProduction = productionMode;
-  }
-  public static boolean isProductionMode() {return isProduction;}
 
   public static String getApplicationId() {
     return applicationId;
@@ -66,5 +62,4 @@ public class AVOSCloud {
   private static String applicationId = "";
   private static String applicationKey = "";
   private static AVLogger.Level logLevel = AVLogger.Level.INFO;
-  private static boolean isProduction = true;
 }

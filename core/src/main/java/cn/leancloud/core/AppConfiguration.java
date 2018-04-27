@@ -59,6 +59,21 @@ public class AppConfiguration {
     return defaultScheduler;
   }
 
+  public static void makeSureCacheDirWorkable() {
+    makeSureDirExist(documentDir);
+    makeSureDirExist(fileCacheDir);
+    makeSureDirExist(queryResultCacheDir);
+    makeSureDirExist(commandCacheDir);
+    makeSureDirExist(analyticsCacheDir);
+  }
+
+  private static void makeSureDirExist(String dirPath) {
+    File dirFile = new File(dirPath);
+    if (!dirFile.exists()) {
+      dirFile.mkdirs();
+    }
+  }
+
   /**
    * config local cache setting.
    * @param docDir
@@ -75,68 +90,53 @@ public class AppConfiguration {
     if (!documentDir.endsWith("/")) {
       documentDir += "/";
     }
-    File dirFile = new File(documentDir);
-    if (!dirFile.exists()) {
-      dirFile.mkdirs();
-    }
 
     fileCacheDir = fileDir;
     if (!fileCacheDir.endsWith("/")) {
       fileCacheDir += "/";
-    }
-    dirFile = new File(fileCacheDir);
-    if (!dirFile.exists()) {
-      dirFile.mkdirs();
     }
 
     queryResultCacheDir = queryResultDir;
     if (!queryResultCacheDir.endsWith("/")) {
       queryResultCacheDir += "/";
     }
-    dirFile = new File(queryResultCacheDir);
-    if (!dirFile.exists()) {
-      dirFile.mkdirs();
-    }
-
 
     commandCacheDir = commandDir;
     if (!commandCacheDir.endsWith("/")) {
       commandCacheDir += "/";
-    }
-    dirFile = new File(commandCacheDir);
-    if (!dirFile.exists()) {
-      dirFile.mkdirs();
     }
 
     analyticsCacheDir = analyticsDir;
     if (!analyticsCacheDir.endsWith("/")) {
       analyticsCacheDir += "/";
     }
-    dirFile = new File(analyticsCacheDir);
-    if (!dirFile.exists()) {
-      dirFile.mkdirs();
-    }
 
+    makeSureCacheDirWorkable();
     defaultSetting = setting;
   }
 
   public static String getAnalyticsCacheDir() {
+    makeSureDirExist(analyticsCacheDir);
     return analyticsCacheDir;
   }
 
   public static String getCommandCacheDir() {
+    makeSureDirExist(commandCacheDir);
     return commandCacheDir;
   }
 
   public static String getDocumentDir() {
+    makeSureDirExist(documentDir);
     return documentDir;
   }
 
   public static String getFileCacheDir() {
+    makeSureDirExist(fileCacheDir);
     return fileCacheDir;
   }
 
   public static String getQueryResultCacheDir() {
+    makeSureDirExist(queryResultCacheDir);
     return queryResultCacheDir;
   }
 

@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.ops.BaseOperation;
 import cn.leancloud.ops.CompoundOperation;
 import cn.leancloud.ops.ObjectFieldOperation;
@@ -19,7 +20,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVObject {
@@ -225,9 +230,18 @@ public class AVObject {
     }
   }
 
-  public <T extends AVObject> AVRelation<T> getRelation(String key) {
-    return null;
+  <T extends AVObject> AVRelation<T> getRelation(String key) {
+    validFieldName(key);
+    Object object = get(key);
+    if (null != object && object instanceof AVRelation) {
+      ((AVRelation)object).setParent(this);
+      return (AVRelation)object;
+    } else {
+      AVRelation<T> relation = new AVRelation<>(this, key);
+      return relation;
+    }
   }
+
   void addRelation(final AVObject object, final String key, boolean submit) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.AddRelation, key, object);
@@ -403,11 +417,33 @@ public class AVObject {
     return new JSONObject(finalResult);
   }
 
-  public Observable<? extends AVObject> saveInBackground() {
-    return saveInBackground(null);
+  protected List<AVObject> extractCascadingObjects(Object o) {
+    List<AVObject> result = new ArrayList<>();
+    if (o instanceof AVObject && StringUtil.isEmpty(((AVObject)o).getObjectId())) {
+      result.add((AVObject) o);
+    } else if (o instanceof Collection) {
+      for (Object secondO: ((Collection)o).toArray()) {
+        List<AVObject> tmp = extractCascadingObjects(secondO);
+        if (null != tmp && tmp.size() > 0) {
+          result.addAll(tmp);
+        }
+      }
+    }
+    return result;
   }
 
-  public Observable<? extends AVObject> saveInBackground(AVSaveOption option) {
+  protected Observable<List<AVObject>> getCascadingSaveObjects() {
+    List<AVObject> result = new ArrayList<>();
+    for (ObjectFieldOperation ofo: operations.values()) {
+      List<AVObject> operationValues = extractCascadingObjects(ofo.getValue());
+      if (null != operationValues && operationValues.size() > 0) {
+        result.addAll(operationValues);
+      }
+    }
+    return Observable.just(result).subscribeOn(Schedulers.io());
+  }
+
+  private Observable<? extends AVObject> _saveAllOperations(AVSaveOption option) {
     final JSONObject paramData = generateChangedParam();
     LOGGER.d("saveObject param: " + paramData.toJSONString());
     final String currentObjectId = getObjectId();
@@ -464,6 +500,26 @@ public class AVObject {
     }
   }
 
+  public Observable<? extends AVObject> saveInBackground() {
+    return saveInBackground(null);
+  }
+
+  public Observable<? extends AVObject> saveInBackground(final AVSaveOption option) {
+    // TODO: need to detect loop-reference.
+
+    Observable<List<AVObject>> needSaveFirstly = getCascadingSaveObjects();
+    return needSaveFirstly.to(new Function<Observable<List<AVObject>>, Observable<? extends AVObject>>() {
+      @Override
+      public Observable<? extends AVObject> apply(Observable<List<AVObject>> avNullObservable) throws Exception {
+        for (AVObject o: avNullObservable.blockingLast()) {
+          o.save();
+        }
+        LOGGER.d("secondly, save object itself...");
+        return _saveAllOperations(option);
+      }
+    });
+  }
+
   public void save() {
     saveInBackground().blockingSubscribe();
   }
@@ -482,7 +538,6 @@ public class AVObject {
     }
     String className = null;
     StringBuilder sb = new StringBuilder();
-    boolean isFirst = true;
     for (AVObject o : objects) {
       if (StringUtil.isEmpty(o.getObjectId()) || StringUtil.isEmpty(o.getClassName())) {
         return Observable.error(new IllegalArgumentException("Invalid AVObject, the class name or objectId is blank."));

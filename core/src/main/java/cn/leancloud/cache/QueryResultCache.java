@@ -11,6 +11,7 @@ import io.reactivex.Observable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -76,7 +77,7 @@ public class QueryResultCache extends LocalStorage {
   }
 
   public Observable<List<AVObject>> getCacheResult(final String className, final Map<String, String> query,
-                                                   final long maxAgeInMilliseconds) {
+                                                   final long maxAgeInMilliseconds, final boolean isFinal) {
     LOGGER.d("try to get cache result for class:" + className);
     Callable<List<AVObject>> callable = new Callable<List<AVObject>>() {
       public List<AVObject> call() throws Exception {
@@ -84,16 +85,28 @@ public class QueryResultCache extends LocalStorage {
         File cacheFile = getCacheFile(cacheKey);
         if (null == cacheFile || !cacheFile.exists()) {
           LOGGER.d("cache file(key=" + cacheKey + ") not existed.");
-          throw new FileNotFoundException("cache is not existed.");
+          if (isFinal) {
+            return new ArrayList<>();
+          } else {
+            throw new FileNotFoundException("cache is not existed.");
+          }
         }
         if (maxAgeInMilliseconds > 0 && (System.currentTimeMillis() - cacheFile.lastModified() > maxAgeInMilliseconds)) {
           LOGGER.d("cache file(key=" + cacheKey + ") is expired.");
-          throw new FileNotFoundException("cache file is expired.");
+          if (isFinal) {
+            return new ArrayList<>();
+          } else {
+            throw new FileNotFoundException("cache file is expired.");
+          }
         }
         byte[] data = readData(cacheFile);
         if (null == data) {
           LOGGER.d("cache file(key=" + cacheKey + ") is empty.");
-          throw new InterruptedException("failed to read cache file.");
+          if (isFinal) {
+            return new ArrayList<>();
+          } else {
+            throw new InterruptedException("failed to read cache file.");
+          }
         }
         String content = new String(data, 0, data.length, "UTF-8");
         LOGGER.d("cache file(key=" + cacheKey + "), content: " + content);

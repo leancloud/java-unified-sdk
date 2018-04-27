@@ -59,7 +59,14 @@ public class Transformer {
 
   public static <T extends AVObject> T transform(AVObject rawObj, Class<T> clazz) {
     AVObject result = null;
-    if (AVUser.class.isAssignableFrom(clazz)) {
+    if (SUB_CLASSES_REVERSE_MAP.containsKey(clazz)) {
+      try {
+        result = clazz.newInstance();
+      } catch (Exception ex) {
+        LOGGER.w("newInstance failed. cause: " + ex.getMessage());
+        result = new AVObject(clazz.getSimpleName());
+      }
+    } else if (AVUser.class.isAssignableFrom(clazz)) {
       result = new AVUser();
     } else if (AVRole.class.isAssignableFrom(clazz)) {
       result = new AVRole();
@@ -67,13 +74,6 @@ public class Transformer {
       result = new AVStatus();
     } else if (AVFile.class.isAssignableFrom(clazz)) {
       result = new AVFile();
-    } else if (SUB_CLASSES_REVERSE_MAP.containsKey(clazz)) {
-      try {
-        result = clazz.newInstance();
-      } catch (Exception ex) {
-        LOGGER.w("newInstance failed. cause: " + ex.getMessage());
-        result = new AVObject(clazz.getSimpleName());
-      }
     } else {
       result = new AVObject(clazz.getSimpleName());
     }
@@ -99,14 +99,18 @@ public class Transformer {
     } else if (AVFile.CLASS_NAME.equals(className)) {
       result = new AVFile();
     } else if (SUB_CLASSES_MAP.containsKey(className)) {
+      System.out.println("create subClass for name: " + className);
       try {
         result = SUB_CLASSES_MAP.get(className).newInstance();
       } catch (Exception ex) {
+        System.out.println("failed to create subClass: " + className);
+        ex.printStackTrace();
         result = new AVObject(className);
       }
     } else {
       result = new AVObject(className);
     }
+    System.out.println("object from class:" + className + " is " + result);
     return result;
   }
 }

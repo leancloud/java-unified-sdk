@@ -121,7 +121,13 @@ public class AVUser extends AVObject {
   public Observable<AVUser> signUpInBackground() {
     JSONObject paramData = generateChangedParam();
     LOGGER.d("signup param: " + paramData.toJSONString());
-    return PaasClient.getStorageClient().signUp(paramData);
+    return PaasClient.getStorageClient().signUp(paramData).map(new Function<AVUser, AVUser>() {
+      @Override
+      public AVUser apply(AVUser avUser) throws Exception {
+        AVUser.this.mergeRawData(avUser);
+        return AVUser.this;
+      }
+    });
   }
 
   public static Observable<AVUser> logIn(String username, String password) {
@@ -392,17 +398,21 @@ public class AVUser extends AVObject {
           if (jsonString.indexOf("@type") > 0) {
             // new version.
             try {
-              AVUser newUser = (AVUser) JSON.parse(jsonString);
-              if (userClass.isAssignableFrom(newUser.getClass())) {
-                user = newUser;
+              T newUser = userClass.newInstance();
+              Map<String, Object> jsonData = JSON.parseObject(jsonString, Map.class);
+              Object serverDataString = jsonData.get("serverData");
+              if (null != serverDataString && serverDataString instanceof String) {
+                Map<String, Object> rawData = JSON.parseObject((String)serverDataString, Map.class);
+                rawData.remove("@type");
+                newUser.resetServerData(rawData);
               } else {
-                T tmp = userClass.newInstance();
-                tmp.resetByRawData(newUser);
-                user = tmp;
+                newUser.resetServerData(jsonData);
+                changeCurrentUser(newUser, true);
               }
+              user = newUser;
               PaasClient.getStorageClient().setCurrentUser(user);
             } catch (Exception ex) {
-              ;
+              ex.printStackTrace();
             }
           } else {
             // older format
