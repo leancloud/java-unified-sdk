@@ -51,7 +51,7 @@ import java.util.Map;
 @AVClassName("_Status")
 @JSONType(ignores = {"acl", "updatedAt", "uuid"})
 public class AVStatus extends AVObject {
-  public static String CLASS_NAME = "_Status";
+  public final static String CLASS_NAME = "_Status";
   public static final String IMAGE_TAG = "image";
   public static final String MESSAGE_TAG = "message";
   public static final String DATAMAP_TAG = "dataMap";

@@ -1,7 +1,7 @@
 package cn.leancloud;
 
 public class AVRole extends AVObject {
-  public static String CLASS_NAME = "_Role";
+  public final static String CLASS_NAME = "_Role";
   private static final String ATTR_NAME = "name";
   private static final String RELATION_ROLE_NAME = "roles";
   private static final String RELATION_USER_NAME = "users";

@@ -3,10 +3,7 @@ package cn.leancloud;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
-import cn.leancloud.ops.Utils;
 import cn.leancloud.types.AVNull;
-import cn.leancloud.utils.AVUtils;
-import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -25,11 +22,11 @@ import java.util.Map;
 
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVUser extends AVObject {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVUser.class);
   private static final String ATTR_USERNAME = "username";
   private static final String ATTR_PASSWORD = "password";
   private static final String ATTR_EMAIL = "email";
   private static final String ATTR_MOBILEPHONE = "mobilePhoneNumber";
+  private static final String ATTR_SMSCODE = "smsCode";
   private static final String ATTR_MOBILEPHONE_VERIFIED = "mobilePhoneVerified";
   public static final String ATTR_SESSION_TOKEN = "sessionToken";
 
@@ -38,6 +35,8 @@ public class AVUser extends AVObject {
   private static final String AUTHDATA_ATTR_UNIONID = "unionid";
   private static final String AUTHDATA_ATTR_UNIONID_PLATFORM = "platform";
   private static final String AUTHDATA_ATTR_MAIN_ACCOUNT = "main_account";
+
+  private static final String ILLEGALARGUMENT_MSG_FORMAT = "illegal parameter. %s must not null/empty.";
 
   public static final String CLASS_NAME = "_User";
   public enum SNS_PLATFORM {
@@ -49,7 +48,7 @@ public class AVUser extends AVObject {
     public String getName() {
       return this.name;
     }
-  };
+  }
 
   public AVUser() {
     super(CLASS_NAME);
@@ -120,7 +119,7 @@ public class AVUser extends AVObject {
 
   public Observable<AVUser> signUpInBackground() {
     JSONObject paramData = generateChangedParam();
-    LOGGER.d("signup param: " + paramData.toJSONString());
+    logger.d("signup param: " + paramData.toJSONString());
     return PaasClient.getStorageClient().signUp(paramData).map(new Function<AVUser, AVUser>() {
       @Override
       public AVUser apply(AVUser avUser) throws Exception {
@@ -131,7 +130,7 @@ public class AVUser extends AVObject {
   }
 
   public static Observable<AVUser> logIn(String username, String password) {
-    return (Observable<AVUser>)logIn(username, password, AVUser.class);
+    return logIn(username, password, AVUser.class);
   }
 
   public static <T extends AVUser> Observable<T> logIn(String username, String password, final Class<T> clazz) {
@@ -168,19 +167,19 @@ public class AVUser extends AVObject {
       throw new IllegalArgumentException("Blank username and blank mobile phone number");
     }
     if (!StringUtil.isEmpty(username)) {
-      map.put("username", username);
+      map.put(ATTR_USERNAME, username);
     }
     if (!StringUtil.isEmpty(password)) {
-      map.put("password", password);
+      map.put(ATTR_PASSWORD, password);
     }
     if (!StringUtil.isEmpty(email)) {
-      map.put("email", email);
+      map.put(ATTR_EMAIL, email);
     }
     if (!StringUtil.isEmpty(phoneNumber)) {
-      map.put("mobilePhoneNumber", phoneNumber);
+      map.put(ATTR_MOBILEPHONE, phoneNumber);
     }
     if (!StringUtil.isEmpty(smsCode)) {
-      map.put("smsCode", smsCode);
+      map.put(ATTR_SMSCODE, smsCode);
     }
     return map;
   }
@@ -196,13 +195,13 @@ public class AVUser extends AVObject {
 
   public static <T extends AVUser> Observable<T> loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData, final String platform) {
     if (null == clazz) {
-      return Observable.error(new IllegalArgumentException("illegal parameter. clazz must not null/empty."));
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "clazz")));
     }
     if (null == authData || authData.isEmpty()) {
-      return Observable.error(new IllegalArgumentException("illegal parameter. authdata must not null/empty."));
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "authData")));
     }
     if (StringUtil.isEmpty(platform)) {
-      return Observable.error(new IllegalArgumentException("illegal parameter. platform must not null/empty."));
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "platform")));
     }
     Map<String, Object> data = new HashMap<String, Object>();
     Map<String, Object> authMap = new HashMap<String, Object>();
@@ -222,13 +221,13 @@ public class AVUser extends AVObject {
   public static <T extends AVUser> Observable<T> loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData, final String platform,
                                                                    final String unionId, final String unionIdPlatform, final boolean asMainAccount) {
     if (StringUtil.isEmpty(unionId)) {
-      return Observable.error(new IllegalArgumentException("illegal parameter. unionId must not null/empty."));
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "unionId")));
     }
     if (StringUtil.isEmpty(unionIdPlatform)) {
-      return Observable.error(new IllegalArgumentException("illegal parameter. unionIdPlatform must not null/empty."));
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "unionIdPlatform")));
     }
     if (null == authData || authData.isEmpty()) {
-      return Observable.error(new IllegalArgumentException("illegal parameter. authdata must not null/empty."));
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "authData")));
     }
     authData.put(AUTHDATA_ATTR_UNIONID, unionId);
     authData.put(AUTHDATA_ATTR_UNIONID_PLATFORM, unionIdPlatform);
@@ -240,15 +239,15 @@ public class AVUser extends AVObject {
 
   public Observable<AVUser> associateWithAuthData(Map<String, Object> authData, String platform) {
     if (null == authData || authData.isEmpty()) {
-      return Observable.error(new IllegalArgumentException("illegal parameter. authdata must not null/empty."));
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "authData")));
     }
     if (StringUtil.isEmpty(platform)) {
-      return Observable.error(new IllegalArgumentException("illegal parameter. platform must not null/empty."));
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "platform")));
     }
     Map<String, Object> authDataAttr = new HashMap<String, Object>();
     authDataAttr.put(platform, authData);
     Object existedAuthData = this.get(AUTHDATA_TAG);
-    if (existedAuthData != null && existedAuthData instanceof Map) {
+    if (existedAuthData instanceof Map) {
       authDataAttr.putAll((Map<String, Object>)existedAuthData);
     }
     this.put(AUTHDATA_TAG, authDataAttr);
@@ -258,13 +257,13 @@ public class AVUser extends AVObject {
   public Observable<AVUser> associateWithAuthData(Map<String, Object> authData, String platform, String unionId, String unionIdPlatform,
                                                   boolean asMainAccount) {
     if (null == authData || authData.isEmpty()) {
-      return Observable.error(new IllegalArgumentException("illegal parameter. authdata must not null/empty."));
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "authData")));
     }
     if (StringUtil.isEmpty(unionId)) {
-      return Observable.error(new IllegalArgumentException("illegal parameter. unionId must not null/empty."));
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "unionId")));
     }
     if (StringUtil.isEmpty(unionIdPlatform)) {
-      return Observable.error(new IllegalArgumentException("illegal parameter. unionIdPlatform must not null/empty."));
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "unionIdPlatform")));
     }
     authData.put(AUTHDATA_ATTR_UNIONID, unionId);
     authData.put(AUTHDATA_ATTR_UNIONID_PLATFORM, unionIdPlatform);
@@ -276,7 +275,7 @@ public class AVUser extends AVObject {
 
   public Observable<AVUser> dissociateWithAuthData(final String platform) {
     if (StringUtil.isEmpty(platform)) {
-      return Observable.error(new IllegalArgumentException("illegal parameter. platform must not null/empty."));
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "platform")));
     }
     String objectId = getObjectId();
     if (StringUtil.isEmpty(objectId) || !isAuthenticated()) {
@@ -298,7 +297,7 @@ public class AVUser extends AVObject {
   public Observable<Boolean> checkAuthenticatedInBackground() {
     String sessionToken = getSessionToken();
     if (StringUtil.isEmpty(sessionToken)) {
-      LOGGER.d("sessionToken is not existed.");
+      logger.d("sessionToken is not existed.");
       return Observable.just(false);
     }
     return PaasClient.getStorageClient().checkAuthenticated(sessionToken);
@@ -324,8 +323,7 @@ public class AVUser extends AVObject {
    * User Query
    */
   public static <T extends AVUser> AVQuery<T> getUserQuery(Class<T> clazz) {
-    AVQuery<T> query = new AVQuery<T>(CLASS_NAME, clazz);
-    return query;
+    return new AVQuery<T>(CLASS_NAME, clazz);
   }
 
   public static AVQuery<AVUser> getQuery() {
@@ -356,11 +354,10 @@ public class AVUser extends AVObject {
   }
 
   private static File currentUserArchivePath() {
-    File file = new File(AppConfiguration.getDocumentDir() + "/currentUser");
-    return file;
+    return new File(AppConfiguration.getDocumentDir() + "/currentUser");
   }
 
-  static private boolean userArchiveExist() {
+  private static boolean userArchiveExist() {
     return currentUserArchivePath().exists();
   }
 
@@ -373,11 +370,14 @@ public class AVUser extends AVObject {
       String jsonString = JSON.toJSONString(newUser, ObjectValueFilter.instance,
               SerializerFeature.WriteClassName,
               SerializerFeature.DisableCircularReferenceDetect);
-      LOGGER.d(jsonString);
+      logger.d(jsonString);
       PersistenceUtil.sharedInstance().saveContentToFile(jsonString, currentUserArchivePath);
     } else if (save) {
       PersistenceUtil.sharedInstance().removeLock(currentUserArchivePath.getAbsolutePath());
-      currentUserArchivePath.delete();
+      boolean deleteRst = currentUserArchivePath.delete();
+      if (!deleteRst) {
+        logger.w("failed to delete currentUser cache file.");
+      }
     }
     PaasClient.getStorageClient().setCurrentUser(newUser);
   }
@@ -395,13 +395,13 @@ public class AVUser extends AVObject {
       synchronized (AVUser.class) {
         String jsonString = PersistenceUtil.sharedInstance().readContentFromFile(currentUserArchivePath);
         if (!StringUtil.isEmpty(jsonString)) {
-          if (jsonString.indexOf("@type") > 0) {
+          if (jsonString.indexOf("@type") >= 0) {
             // new version.
             try {
               T newUser = userClass.newInstance();
               Map<String, Object> jsonData = JSON.parseObject(jsonString, Map.class);
               Object serverDataString = jsonData.get("serverData");
-              if (null != serverDataString && serverDataString instanceof String) {
+              if (serverDataString instanceof String) {
                 Map<String, Object> rawData = JSON.parseObject((String)serverDataString, Map.class);
                 rawData.remove("@type");
                 newUser.resetServerData(rawData);
@@ -412,7 +412,7 @@ public class AVUser extends AVObject {
               user = newUser;
               PaasClient.getStorageClient().setCurrentUser(user);
             } catch (Exception ex) {
-              ex.printStackTrace();
+              logger.w("failed to deserialize AVUser instance.", ex);
             }
           } else {
             // older format
@@ -423,7 +423,7 @@ public class AVUser extends AVObject {
               changeCurrentUser(newUser, true);
               user = newUser;
             } catch (Exception ex) {
-              ;
+              logger.w(ex);
             }
           }
         }
@@ -434,7 +434,7 @@ public class AVUser extends AVObject {
         user = userClass.newInstance();
         changeCurrentUser(user, true);
       } catch (Exception ex) {
-        ;
+        logger.w(ex);
       }
     }
     return (T) user;

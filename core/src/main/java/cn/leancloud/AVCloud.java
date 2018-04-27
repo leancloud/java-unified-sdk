@@ -24,4 +24,8 @@ public class AVCloud {
   public static <T> Observable<T> callRPCInBackground(String name, Object param) {
     return PaasClient.getStorageClient().callRPC(name, param);
   }
+
+  private AVCloud() {
+    ;
+  }
 }

@@ -1,6 +1,5 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.ops.BaseOperation;
 import cn.leancloud.ops.CompoundOperation;
 import cn.leancloud.ops.ObjectFieldOperation;
@@ -20,9 +19,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -39,7 +35,7 @@ public class AVObject {
           Arrays.asList(KEY_CREATED_AT, KEY_UPDATED_AT, KEY_OBJECT_ID, KEY_ACL));
 
   protected String className;
-  protected static AVLogger LOGGER = LogUtil.getLogger(AVObject.class);
+  protected static AVLogger logger = LogUtil.getLogger(AVObject.class);
 
   protected String objectId = "";
   protected Map<String, Object> serverData = new ConcurrentHashMap<String, Object>();
@@ -172,8 +168,7 @@ public class AVObject {
   }
 
   public Number getNumber(String key) {
-    Number number = (Number) get(key);
-    return number;
+    return (Number) get(key);
   }
 
   public JSONArray getJSONArray(String key) {
@@ -185,8 +180,7 @@ public class AVObject {
       return (JSONArray) list;
     }
     if (list instanceof List<?>) {
-      JSONArray array = new JSONArray((List<Object>) list);
-      return array;
+      return new JSONArray((List<Object>) list);
     }
     if (list instanceof Object[]) {
       JSONArray array = new JSONArray();
@@ -225,7 +219,7 @@ public class AVObject {
     try {
       return (T) get(key);
     } catch (Exception ex) {
-      LOGGER.w("failed to convert Object.", ex);
+      logger.w("failed to convert Object.", ex);
       return null;
     }
   }
@@ -233,21 +227,21 @@ public class AVObject {
   <T extends AVObject> AVRelation<T> getRelation(String key) {
     validFieldName(key);
     Object object = get(key);
-    if (null != object && object instanceof AVRelation) {
+    if (object instanceof AVRelation) {
       ((AVRelation)object).setParent(this);
       return (AVRelation)object;
     } else {
-      AVRelation<T> relation = new AVRelation<>(this, key);
-      return relation;
+      return new AVRelation<>(this, key);
     }
   }
 
-  void addRelation(final AVObject object, final String key, boolean submit) {
+  void addRelation(final AVObject object, final String key) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.AddRelation, key, object);
     addNewOperation(op);
   }
-  void removeRelation(final AVObject object, final String key, boolean submit) {
+
+  void removeRelation(final AVObject object, final String key) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.RemoveRelation, key, object);
     addNewOperation(op);
@@ -406,7 +400,7 @@ public class AVObject {
     for (ObjectFieldOperation ops : this.operations.values()) {
       if (ops instanceof CompoundOperation) {
         List<Map<String, Object>> restParams = ((CompoundOperation)ops).encodeRestOp(this);
-        if (null != restParams && restParams.size() > 0) {
+        if (null != restParams && !restParams.isEmpty()) {
           finalParams.addAll(restParams);
         }
       }
@@ -424,7 +418,7 @@ public class AVObject {
     } else if (o instanceof Collection) {
       for (Object secondO: ((Collection)o).toArray()) {
         List<AVObject> tmp = extractCascadingObjects(secondO);
-        if (null != tmp && tmp.size() > 0) {
+        if (null != tmp && !tmp.isEmpty()) {
           result.addAll(tmp);
         }
       }
@@ -436,24 +430,27 @@ public class AVObject {
     List<AVObject> result = new ArrayList<>();
     for (ObjectFieldOperation ofo: operations.values()) {
       List<AVObject> operationValues = extractCascadingObjects(ofo.getValue());
-      if (null != operationValues && operationValues.size() > 0) {
+      if (null != operationValues && !operationValues.isEmpty()) {
         result.addAll(operationValues);
       }
     }
     return Observable.just(result).subscribeOn(Schedulers.io());
   }
 
-  private Observable<? extends AVObject> _saveAllOperations(AVSaveOption option) {
+  private Observable<? extends AVObject> saveSelfOperations(AVSaveOption option) {
+    if (null != option) {
+      setFetchWhenSave(option.fetchWhenSave);
+    }
     final JSONObject paramData = generateChangedParam();
-    LOGGER.d("saveObject param: " + paramData.toJSONString());
+    logger.d("saveObject param: " + paramData.toJSONString());
     final String currentObjectId = getObjectId();
     if (needBatchMode()) {
-      LOGGER.w("Caution: batch mode will ignore fetchWhenSave flag.");
+      logger.w("Caution: batch mode will ignore fetchWhenSave flag.");
       if (StringUtil.isEmpty(currentObjectId)) {
         return PaasClient.getStorageClient().batchSave(paramData).map(new Function<JSONArray, AVObject>() {
           public AVObject apply(JSONArray object) throws Exception {
-            if (null != object && object.size() > 0) {
-              LOGGER.d("batchSave result: " + object.toJSONString());
+            if (null != object && !object.isEmpty()) {
+              logger.d("batchSave result: " + object.toJSONString());
 
               Map<String, Object> lastResult = object.getObject(object.size() - 1, Map.class);
               if (null != lastResult) {
@@ -467,7 +464,7 @@ public class AVObject {
         return PaasClient.getStorageClient().batchUpdate(paramData).map(new Function<JSONObject, AVObject>() {
           public AVObject apply(JSONObject object) throws Exception {
             if (null != object) {
-              LOGGER.d("batchUpdate result: " + object.toJSONString());
+              logger.d("batchUpdate result: " + object.toJSONString());
               Map<String, Object> lastResult = object.getObject(currentObjectId, Map.class);
               if (null != lastResult) {
                 AVObject.this.serverData.putAll(lastResult);
@@ -505,7 +502,9 @@ public class AVObject {
   }
 
   public Observable<? extends AVObject> saveInBackground(final AVSaveOption option) {
-    // TODO: need to detect loop-reference.
+    if (hasCircleReference()) {
+      return Observable.error(new AVException(AVException.CIRCLE_REFERENCE, "Found a circular dependency when saving."));
+    }
 
     Observable<List<AVObject>> needSaveFirstly = getCascadingSaveObjects();
     return needSaveFirstly.to(new Function<Observable<List<AVObject>>, Observable<? extends AVObject>>() {
@@ -514,10 +513,15 @@ public class AVObject {
         for (AVObject o: avNullObservable.blockingLast()) {
           o.save();
         }
-        LOGGER.d("secondly, save object itself...");
-        return _saveAllOperations(option);
+        logger.d("secondly, save object itself...");
+        return saveSelfOperations(option);
       }
     });
+  }
+
+  private boolean hasCircleReference() {
+    // TODO: must need to implement.
+    return false;
   }
 
   public void save() {
@@ -533,7 +537,7 @@ public class AVObject {
   }
 
   public static Observable<AVNull> deleteAllInBackground(Collection<? extends AVObject> objects) {
-    if (null == objects || objects.size() < 1) {
+    if (null == objects || objects.isEmpty()) {
       return Observable.just(AVNull.getINSTANCE());
     }
     String className = null;
@@ -562,12 +566,12 @@ public class AVObject {
     refreshInBackground(includeKeys).blockingSubscribe();
   }
 
-  public Observable<? extends AVObject> refreshInBackground() {
+  public Observable<AVObject> refreshInBackground() {
     return refreshInBackground(null);
 
   }
 
-  public Observable<? extends AVObject> refreshInBackground(String includeKeys) {
+  public Observable<AVObject> refreshInBackground(String includeKeys) {
     return PaasClient.getStorageClient().fetchObject(this.className, getObjectId(), includeKeys)
             .map(new Function<AVObject, AVObject>() {
               public AVObject apply(AVObject avObject) throws Exception {
@@ -586,8 +590,8 @@ public class AVObject {
     return this;
   }
 
-  public Observable<? extends AVObject> fetchIfNeededInBackground() {
-    if (!StringUtil.isEmpty(getObjectId()) && this.serverData.size() > 0) {
+  public Observable<AVObject> fetchIfNeededInBackground() {
+    if (!StringUtil.isEmpty(getObjectId()) && !this.serverData.isEmpty()) {
       return Observable.just(this);
     } else {
       return refreshInBackground();
@@ -653,13 +657,9 @@ public class AVObject {
   /**
    * ACL
    */
-  public AVACL getACL() {
+  public synchronized AVACL getACL() {
     if (null == this.acl) {
-      synchronized (this) {
-        if (null == this.acl) {
-          this.acl = generateACLFromServerData();
-        }
-      }
+      this.acl = generateACLFromServerData();
     }
     return this.acl;
   }

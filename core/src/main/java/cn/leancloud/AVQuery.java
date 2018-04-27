@@ -807,10 +807,11 @@ public class AVQuery<T extends AVObject> {
    * @return A AVQuery that is the 'or' of the passed in queries
    */
   public static <T extends AVObject> AVQuery<T> or(List<AVQuery<T>> queries) {
-    String className = null;
-    if (queries.size() > 0) {
-      className = queries.get(0).getClassName();
+    if (null == queries || queries.isEmpty()) {
+      throw new IllegalArgumentException("queries must be non-empty.");
     }
+    String className = queries.get(0).getClassName();
+
     AVQuery<T> result = new AVQuery<T>(className);
     if (queries.size() > 1) {
       for (AVQuery<T> query : queries) {
@@ -828,10 +829,11 @@ public class AVQuery<T extends AVObject> {
   }
 
   public static <T extends AVObject> AVQuery<T> and(List<AVQuery<T>> queries) {
-    String className = null;
-    if (queries.size() > 0) {
-      className = queries.get(0).getClassName();
+    if (null == queries || queries.isEmpty()) {
+      throw new IllegalArgumentException("queries must be non-empty.");
     }
+    String className = queries.get(0).getClassName();
+
     AVQuery<T> result = new AVQuery<T>(className);
     if (queries.size() > 1) {
       for (AVQuery<T> query : queries) {

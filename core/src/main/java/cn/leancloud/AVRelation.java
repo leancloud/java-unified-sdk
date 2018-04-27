@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class AVRelation<T extends AVObject> {
   private String key;
   private AVObject parent;
@@ -15,15 +16,15 @@ public class AVRelation<T extends AVObject> {
   public AVRelation() {
     super();
   }
-  AVRelation(AVObject parent, String key) {
+  public AVRelation(AVObject parent, String key) {
     this();
     this.parent = parent;
     this.key = key;
   }
-  AVRelation(String targetClass) {
-    this(null, null);
-    this.targetClass = targetClass;
-  }
+//  public AVRelation(String targetClass) {
+//    this(null, null);
+//    this.targetClass = targetClass;
+//  }
 
   public String getKey() {
     return key;
@@ -63,7 +64,7 @@ public class AVRelation<T extends AVObject> {
       throw new IllegalArgumentException("Could not add class '" + object.getClassName()
               + "' to this relation,expect class is '" + targetClass + "'");
     }
-    parent.addRelation(object, key, true);
+    parent.addRelation(object, key);
   }
 
   /**
@@ -85,7 +86,7 @@ public class AVRelation<T extends AVObject> {
    * @param object The object to remove from this relation.
    */
   public void remove(AVObject object) {
-    parent.removeRelation(object, key, true);
+    parent.removeRelation(object, key);
   }
 
   /**

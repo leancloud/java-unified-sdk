@@ -30,7 +30,6 @@ import io.reactivex.functions.Function;
 
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public final class AVFile extends AVObject {
-  private static AVLogger LOGGER = LogUtil.getLogger(AVFile.class);
   public static final String CLASS_NAME = "_File";
 
   private static final String FILE_SUM_KEY = "_checksum";
@@ -38,7 +37,7 @@ public final class AVFile extends AVObject {
   private static final String FILE_LENGTH_KEY = "size";
   private static final String FILE_SOURCE_KEY = "__source";
   private static final String FILE_SOURCE_EXTERNAL = "external";
-  private static final String ELDERMETADATAKEYFORIOSFIX = "metadata";
+//  private static final String ELDERMETADATAKEYFORIOSFIX = "metadata";
 
   private static final String THUMBNAIL_FMT = "?imageView/%d/w/%d/h/%d/q/%d/format/%s";
 
@@ -70,7 +69,7 @@ public final class AVFile extends AVObject {
   public AVFile(String name, byte[] data) {
     this();
     if (null == data) {
-      LOGGER.w("data is illegal(null)");
+      logger.w("data is illegal(null)");
       throw new IllegalArgumentException("data is illegal(null)");
     }
     internalPut(KEY_FILE_NAME, name);
@@ -80,13 +79,13 @@ public final class AVFile extends AVObject {
     addMetaData(FILE_SUM_KEY, md5);
     addMetaData(FILE_LENGTH_KEY, data.length);
     internalPut(KEY_MIME_TYPE, FileUtil.getMimeTypeFromLocalFile(name));
-    LOGGER.d("localpath=" + localPath);
+    logger.d("localpath=" + localPath);
   }
 
   public AVFile(String name, File localFile) {
     this();
     if (null == localFile || !localFile.exists() || !localFile.isFile()) {
-      LOGGER.w("local file is illegal");
+      logger.w("local file is illegal");
       throw new IllegalArgumentException("local file is illegal.");
     }
     internalPut(KEY_FILE_NAME, name);
@@ -214,42 +213,29 @@ public final class AVFile extends AVObject {
     return (String) internalGet(KEY_PROVIDER);
   }
 
-  public AVACL getACL() {
-    return acl;
-  }
-
-  public void setACL(AVACL acl) {
-    this.acl = acl;
-  }
-
   @Override
   public void put(String key, Object value) {
-    LOGGER.w("cannot invoke put method in AVFile");
     throw new UnsupportedOperationException("cannot invoke put method in AVFile");
   }
 
   @Override
   public Object get(String key) {
-    LOGGER.w("cannot invoke get method in AVFile");
     throw new UnsupportedOperationException("cannot invoke get method in AVFile");
   }
 
   @Override
   public void remove(String key) {
-    LOGGER.w("cannot invoke remove method in AVFile");
     throw new UnsupportedOperationException("cannot invoke remove method in AVFile");
   }
 
   @Override
   public void increment(String key) {
-    LOGGER.w("cannot invoke increment method in AVFile");
     throw new UnsupportedOperationException("cannot invoke increment method in AVFile");
   }
 
   @Override
   public void increment(String key, Number value) {
-    LOGGER.w("cannot invoke increment method in AVFile");
-    throw new UnsupportedOperationException("cannot invoke increment method in AVFile");
+    throw new UnsupportedOperationException("cannot invoke increment(Number) method in AVFile");
   }
 
   /**
@@ -267,24 +253,22 @@ public final class AVFile extends AVObject {
 
   public String getThumbnailUrl(boolean scaleToFit, int width, int height, int quality, String fmt) {
     if (AVOSCloud.getRegion() != AVOSCloud.REGION.NorthChina) {
-      LOGGER.w("We only support this method for qiniu storage.");
+      logger.w("We only support this method for qiniu storage.");
       throw new UnsupportedOperationException("We only support this method for qiniu storage.");
     }
     if (width < 0 || height < 0) {
-      LOGGER.w("Invalid width or height.");
+      logger.w("Invalid width or height.");
       throw new IllegalArgumentException("Invalid width or height.");
     }
     if (quality < 1 || quality > 100) {
-      LOGGER.w("Invalid quality,valid range is 0-100.");
+      logger.w("Invalid quality,valid range is 0-100.");
       throw new IllegalArgumentException("Invalid quality,valid range is 0-100.");
     }
     if (fmt == null || StringUtil.isEmpty(fmt.trim())) {
       fmt = "png";
     }
     int mode = scaleToFit ? 2 : 1;
-    String resultUrl =
-            this.getUrl() + String.format(THUMBNAIL_FMT, mode, width, height, quality, fmt);
-    return resultUrl;
+    return this.getUrl() + String.format(THUMBNAIL_FMT, mode, width, height, quality, fmt);
   }
 
   public synchronized void saveInBackground(final ProgressCallback progressCallback) {
@@ -305,11 +289,11 @@ public final class AVFile extends AVObject {
     paramData.put("key", fileKey);
     paramData.put("__type", "File");
     if (StringUtil.isEmpty(getObjectId())) {
-      LOGGER.d("createToken params: " + paramData.toJSONString() + ", " + this);
+      logger.d("createToken params: " + paramData.toJSONString() + ", " + this);
       return PaasClient.getStorageClient().newUploadToken(paramData)
               .map(new Function<FileUploadToken, AVFile>() {
                 public AVFile apply(@NonNull FileUploadToken fileUploadToken) throws Exception {
-                  LOGGER.d("[Thread:" + Thread.currentThread().getId() + "]" + fileUploadToken.toString() + ", " + AVFile.this);
+                  logger.d("[Thread:" + Thread.currentThread().getId() + "]" + fileUploadToken.toString() + ", " + AVFile.this);
                   AVFile.this.setObjectId(fileUploadToken.getObjectId());
                   AVFile.this.internalPutDirectly(KEY_OBJECT_ID, fileUploadToken.getObjectId());
                   AVFile.this.internalPutDirectly(KEY_BUCKET, fileUploadToken.getBucket());
@@ -324,30 +308,25 @@ public final class AVFile extends AVObject {
                   JSONObject completeResult = new JSONObject();
                   completeResult.put("result", null == exception);
                   completeResult.put("token",fileUploadToken.getToken());
-                  LOGGER.d("file upload result: " + completeResult.toJSONString());
+                  logger.d("file upload result: " + completeResult.toJSONString());
                   try {
                     PaasClient.getStorageClient().fileCallback(completeResult);
                     if (null != exception) {
-                      LOGGER.w("failed to invoke fileCallback. cause:", exception);
+                      logger.w("failed to invoke fileCallback. cause:", exception);
                       throw exception;
                     } else {
                       return AVFile.this;
                     }
                   } catch (IOException ex) {
-                    LOGGER.w(ex);
+                    logger.w(ex);
                     throw ex;
                   }
                 }
               });
     } else {
-      LOGGER.d("file has been upload to cloud, ignore request.");
+      logger.d("file has been upload to cloud, ignore request.");
       return Observable.just((AVFile) this);
     }
-  }
-
-  @Override
-  public Observable<AVNull> deleteInBackground() {
-    return super.deleteInBackground();
   }
 
   private Uploader getUploader(FileUploadToken uploadToken, ProgressCallback progressCallback) {
@@ -360,7 +339,7 @@ public final class AVFile extends AVObject {
   }
 
   @JSONField(serialize = false)
-  public byte[] getData() throws AVException {
+  public byte[] getData() {
     // FIXME: need to push background.
     String filePath = "";
     if(!StringUtil.isEmpty(localPath)) {
@@ -373,16 +352,18 @@ public final class AVFile extends AVObject {
         FileDownloader downloader = new FileDownloader();
         downloader.execute(getUrl(), cacheFile);
       }
-      filePath = cacheFile.getAbsolutePath();
+      if (null != cacheFile) {
+        filePath = cacheFile.getAbsolutePath();
+      }
     }
     if(!StringUtil.isEmpty(filePath)) {
       return PersistenceUtil.sharedInstance().readContentBytesFromFile(new File(filePath));
     }
-    return null;
+    return new byte[0];
   }
 
   @JSONField(serialize = false)
-  public InputStream getDataStream() throws AVException {
+  public InputStream getDataStream() {
     // FIXME: need to push background.
     String filePath = "";
     if(!StringUtil.isEmpty(localPath)) {
@@ -395,13 +376,15 @@ public final class AVFile extends AVObject {
         FileDownloader downloader = new FileDownloader();
         downloader.execute(getUrl(), cacheFile);
       }
-      filePath = cacheFile.getAbsolutePath();
+      if (null != cacheFile) {
+        filePath = cacheFile.getAbsolutePath();
+      }
     }
     if(!StringUtil.isEmpty(filePath)) {
-      LOGGER.d("dest file path=" + filePath);
+      logger.d("dest file path=" + filePath);
       return FileCache.getIntance().getInputStreamFromFile(new File(filePath));
     }
-    LOGGER.w("failed to get dataStream.");
+    logger.w("failed to get dataStream.");
     return null;
   }
 }

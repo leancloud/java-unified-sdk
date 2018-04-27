@@ -2,7 +2,7 @@ package cn.leancloud;
 
 public class AVException extends Exception {
   private static final long serialVersionUID = 1L;
-  protected int code;
+  protected final int code;
   public static final int OTHER_CAUSE = -1;
   /**
    * Error code indicating that something has gone wrong with the server. If you get this error
@@ -237,6 +237,7 @@ public class AVException extends Exception {
    */
   public static final int FILE_DOWNLOAD_INCONSISTENT_FAILURE = 253;
 
+  public static final int CIRCLE_REFERENCE = 100001;
   /**
    * Construct a new AVException with a particular error code.
    *
@@ -258,6 +259,8 @@ public class AVException extends Exception {
     super(message, cause);
     if (cause instanceof AVException) {
       this.code = ((AVException) cause).getCode();
+    } else {
+      this.code = UNKNOWN;
     }
   }
 
@@ -271,6 +274,8 @@ public class AVException extends Exception {
     super(cause);
     if (cause instanceof AVException) {
       this.code = ((AVException) cause).getCode();
+    } else {
+      this.code = UNKNOWN;
     }
   }
 

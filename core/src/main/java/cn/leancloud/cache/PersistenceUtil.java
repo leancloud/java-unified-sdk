@@ -63,8 +63,8 @@ public class PersistenceUtil {
         if (out != null) {
           closeQuietly(out);
         }
-        writeLock.unlock();
       }
+      writeLock.unlock();
     }
     return succeed;
   }
@@ -138,11 +138,13 @@ public class PersistenceUtil {
         os = getOutputStreamForFile(new File(localPath), false);
         byte buf[] = new byte[MAX_FILE_BUF_SIZE];
         int len  = 0;
-        while((len = is.read(buf)) != -1) {
-          os.write(buf, 0, len);
+        if (null != is && null != os) {
+          while ((len = is.read(buf)) != -1) {
+            os.write(buf, 0, len);
+          }
+          succeed = true;
         }
-        succeed = true;
-      } catch (IOException ex) {
+      } catch (Exception ex) {
         succeed = false;
       } finally {
         if (null != is) {
@@ -151,8 +153,8 @@ public class PersistenceUtil {
         if (null != os) {
           closeQuietly(os);
         }
-        writeLock.unlock();
       }
+      writeLock.unlock();
     }
     return succeed;
   }

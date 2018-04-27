@@ -24,13 +24,9 @@ public class QueryResultCache extends LocalStorage {
   private static QueryResultCache INSTANCE = null;
   private ExecutorService executor = Executors.newFixedThreadPool(2);
 
-  public static QueryResultCache getInstance() {
+  public static synchronized QueryResultCache getInstance() {
     if (null == INSTANCE) {
-      synchronized(QueryResultCache.class) {
-        if (null == INSTANCE) {
-          INSTANCE = new QueryResultCache();
-        }
-      };
+      INSTANCE = new QueryResultCache();
     }
     return INSTANCE;
   }

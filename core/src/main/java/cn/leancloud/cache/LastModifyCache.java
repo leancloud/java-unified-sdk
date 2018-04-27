@@ -6,13 +6,9 @@ import java.util.WeakHashMap;
 
 public class LastModifyCache {
   private static LastModifyCache INSTANCE = null;
-  public static LastModifyCache getInstance() {
+  public static synchronized LastModifyCache getInstance() {
     if (null == INSTANCE) {
-      synchronized (LastModifyCache.class) {
-        if (null == INSTANCE) {
-          INSTANCE = new LastModifyCache();
-        }
-      }
+      INSTANCE = new LastModifyCache();
     }
     return INSTANCE;
   }

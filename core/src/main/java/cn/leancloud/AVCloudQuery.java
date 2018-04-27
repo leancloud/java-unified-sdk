@@ -11,6 +11,10 @@ import io.reactivex.functions.Function;
 import java.util.*;
 
 class AVCloudQuery {
+  private AVCloudQuery() {
+    ;
+  }
+
   public static Observable<AVCloudQueryResult> executeInBackground(String cql) {
     return executeInBackground(cql, AVObject.class);
   }
@@ -35,7 +39,7 @@ class AVCloudQuery {
     }
     Map<String, String> p = new HashMap<String, String>();
     p.put("cql", cql);
-    if (pValue.size() > 0) {
+    if (!pValue.isEmpty()) {
       p.put("pvalues", AVUtils.jsonStringFromObjectWithNull(pValue));
     }
     return PaasClient.getStorageClient().cloudQuery(p).map(new Function<AVQueryResult, AVCloudQueryResult>() {

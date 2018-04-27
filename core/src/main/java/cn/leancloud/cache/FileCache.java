@@ -13,13 +13,9 @@ public class FileCache extends LocalStorage{
   private static final int MAX_FILE_BUF_SIZE = 4 * 1024 * 1024;
   private static FileCache INSTANCE = null;
 
-  public static FileCache getIntance() {
+  public static synchronized FileCache getIntance() {
     if (null == INSTANCE) {
-      synchronized (FileCache.class) {
-        if (null == INSTANCE) {
-          INSTANCE = new FileCache();
-        }
-      }
+      INSTANCE = new FileCache();
     }
     return INSTANCE;
   }
