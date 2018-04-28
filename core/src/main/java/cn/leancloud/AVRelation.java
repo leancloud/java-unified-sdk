@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Deprecated
 public class AVRelation<T extends AVObject> {
   private String key;
   private AVObject parent;

@@ -502,7 +502,8 @@ public class AVObject {
   }
 
   public Observable<? extends AVObject> saveInBackground(final AVSaveOption option) {
-    if (hasCircleReference()) {
+    Map<AVObject, Boolean> markMap = new HashMap<>();
+    if (hasCircleReference(markMap)) {
       return Observable.error(new AVException(AVException.CIRCLE_REFERENCE, "Found a circular dependency when saving."));
     }
 
@@ -519,9 +520,24 @@ public class AVObject {
     });
   }
 
-  private boolean hasCircleReference() {
-    // TODO: must need to implement.
-    return false;
+  /**
+   * judge operations' value include circle reference or not.
+   *
+   * notice: internal used, pls not invoke it.
+   *
+   * @param markMap
+   * @return
+   */
+  public boolean hasCircleReference(Map<AVObject, Boolean> markMap) {
+    if (null == markMap) {
+      return false;
+    }
+    markMap.put(this, true);
+    boolean rst = false;
+    for (ObjectFieldOperation op: operations.values()) {
+      rst = rst || op.checkCircleReference(markMap);
+    }
+    return rst;
   }
 
   public void save() {

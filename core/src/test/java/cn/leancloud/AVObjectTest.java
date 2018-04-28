@@ -535,4 +535,74 @@ public class AVObjectTest extends TestCase {
       }
     });
   }
+
+  public void testSaveFailureWithCircleReference() {
+    AVObject objectA = new AVObject("Student");
+    AVObject objectB = new AVObject("Student");
+    objectA.put("friend", objectB);
+    objectB.put("friend", objectA);
+    objectB.saveInBackground().subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        fail();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        assertNotNull(throwable);
+        if (throwable instanceof AVException) {
+          AVException ex = (AVException)throwable;
+          assertEquals(ex.getCode(), AVException.CIRCLE_REFERENCE);
+        } else {
+          fail();
+        }
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+  }
+
+  public void testSaveFailureWithIndirectlyCircleReference() {
+    AVObject objectA = new AVObject("Student");
+    AVObject objectB = new AVObject("Student");
+    AVObject objectC = new AVObject("Student");
+    objectA.put("friend", objectC);
+    objectB.put("friend", objectA);
+    objectC.put("friend", objectB);
+    objectC.saveInBackground().subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        fail();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        assertNotNull(throwable);
+        if (throwable instanceof AVException) {
+          AVException ex = (AVException)throwable;
+          assertEquals(ex.getCode(), AVException.CIRCLE_REFERENCE);
+        } else {
+          fail();
+        }
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+  }
 }

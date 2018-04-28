@@ -46,6 +46,21 @@ public abstract class BaseOperation implements ObjectFieldOperation {
   public Object getValue() {
     return this.value;
   }
+  public boolean checkCircleReference(Map<AVObject, Boolean> markMap) {
+    if (null == markMap) {
+      return false;
+    }
+    if (!(this.value instanceof AVObject)) {
+      return false;
+    }
+    AVObject v = (AVObject)this.value;
+    if (markMap.containsKey(v) && markMap.get(v) == true) {
+      return true;
+    }
+    boolean rst = v.hasCircleReference(markMap);
+    markMap.put(v, rst);
+    return rst;
+  }
 
   /**
    * apply operation to object, in order to generate new attribute value.

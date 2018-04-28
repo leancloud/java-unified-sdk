@@ -16,6 +16,15 @@ public class CompoundOperation extends BaseOperation {
     operations.addAll(Arrays.asList(ops));
   }
 
+  @Override
+  public boolean checkCircleReference(Map<AVObject, Boolean> markMap) {
+    boolean result = false;
+    for (ObjectFieldOperation op : operations) {
+      result = result || op.checkCircleReference(markMap);
+    }
+    return result;
+  }
+
   public Object apply(Object obj) {
     for (ObjectFieldOperation op: operations) {
       obj = op.apply(obj);
