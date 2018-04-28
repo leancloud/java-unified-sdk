@@ -9,8 +9,6 @@ import okio.ByteString;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  */
 public class AVOKWebSocketClient {
-  private static AVLogger LOGGER = LogUtil.getLogger(AVOKWebSocketClient.class);
+  private static AVLogger gLogger = LogUtil.getLogger(AVOKWebSocketClient.class);
   private final static int RECONNECT_INTERVAL = 10 * 1000;    //重连自增步长
   private final static long RECONNECT_MAX_TIME = 120 * 1000;   //最大重连间隔
 
@@ -44,7 +42,7 @@ public class AVOKWebSocketClient {
   private WebSocketListener internalSocketListener = new WebSocketListener() {
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
-      LOGGER.d("onOpen");
+      gLogger.d("onOpen");
       AVOKWebSocketClient.this.webSocket = webSocket;
       AVOKWebSocketClient.this.currentStatus = Status.CONNECTED;
       connected();
@@ -55,7 +53,7 @@ public class AVOKWebSocketClient {
 
     @Override
     public void onMessage(WebSocket webSocket, String text) {
-      LOGGER.d("onMessage(text): " + text);
+      gLogger.d("onMessage(text): " + text);
       if (null != wsStatusListener) {
         wsStatusListener.onMessage(text);
       }
@@ -65,9 +63,9 @@ public class AVOKWebSocketClient {
     public void onMessage(WebSocket webSocket, ByteString bytes) {
       try {
         Messages.GenericCommand command = Messages.GenericCommand.parseFrom(bytes.toByteArray());
-        LOGGER.d("downLink: " + command.toString());
+        gLogger.d("downLink: " + command.toString());
       } catch (Exception ex) {
-        LOGGER.d("onMessage " + bytes.utf8());
+        gLogger.d("onMessage " + bytes.utf8());
       }
       if (null != wsStatusListener) {
         wsStatusListener.onMessage(bytes);
@@ -76,7 +74,7 @@ public class AVOKWebSocketClient {
 
     @Override
     public void onClosing(WebSocket webSocket, int code, String reason) {
-      LOGGER.d("onClosing");
+      gLogger.d("onClosing");
       if (null != wsStatusListener) {
         wsStatusListener.onClosing(code, reason);
       }
@@ -84,7 +82,7 @@ public class AVOKWebSocketClient {
 
     @Override
     public void onClosed(WebSocket webSocket, int code, String reason) {
-      LOGGER.d("onClosed");
+      gLogger.d("onClosed");
       if (null != wsStatusListener) {
         wsStatusListener.onClosed(code, reason);
       }
@@ -97,7 +95,7 @@ public class AVOKWebSocketClient {
       }
       tryReconnect();
       // maybe response is null.
-      LOGGER.w("onFailure", t);
+      gLogger.w("onFailure", t);
       if (null != wsStatusListener) {
         wsStatusListener.onFailure(t, response);
       }
@@ -116,7 +114,7 @@ public class AVOKWebSocketClient {
       SSLContext sslContext = SSLContext.getDefault();
       sf = sslContext.getSocketFactory();
     } catch (Exception ex) {
-      ex.printStackTrace();
+      gLogger.w(ex);
     }
     this.client = new OkHttpClient.Builder()
             .pingInterval(120, TimeUnit.SECONDS)
@@ -165,7 +163,7 @@ public class AVOKWebSocketClient {
         this.client.dispatcher().cancelAll();
       }
       boolean isClosed = webSocket.close(CODE.NORMAL_CLOSE, TIP.NORMAL_CLOSE);
-      LOGGER.d("manual close. result=" + isClosed);
+      gLogger.d("manual close. result=" + isClosed);
       if (null != this.wsStatusListener) {
         if (isClosed) {
           this.wsStatusListener.onClosed(CODE.NORMAL_CLOSE, TIP.NORMAL_CLOSE);
@@ -175,7 +173,7 @@ public class AVOKWebSocketClient {
       }
       currentStatus = Status.DISCONNECTED;
     } else {
-      LOGGER.w("state is illegal. status=" + currentStatus + ", websockdet=" + this.webSocket);
+      gLogger.w("state is illegal. status=" + currentStatus + ", websockdet=" + this.webSocket);
     }
   }
 
@@ -199,7 +197,7 @@ public class AVOKWebSocketClient {
     try {
       reconnectTimer.cancel();
     } catch (Exception ex) {
-      ;
+      gLogger.w(ex);
     }
   }
 
@@ -243,7 +241,7 @@ public class AVOKWebSocketClient {
         lock.unlock();
       }
     } catch (InterruptedException ex) {
-      LOGGER.w("failed to initWebSocket", ex);
+      gLogger.w("failed to initWebSocket", ex);
     }
   }
 }

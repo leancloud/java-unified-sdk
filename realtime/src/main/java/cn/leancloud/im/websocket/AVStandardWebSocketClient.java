@@ -28,9 +28,8 @@ import java.util.List;
 
 public class AVStandardWebSocketClient extends WebSocketClient {
   public static final String SUB_PROTOCOL_2_3 = "lc.protobuf2.3";
-  public static final String SUB_PROTOCOL_2_1 = "lc.protobuf2.1";
 
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVStandardWebSocketClient.class);
+  private static final AVLogger gLogger = LogUtil.getLogger(AVStandardWebSocketClient.class);
   private static final String HEADER_SUB_PROTOCOL = "Sec-WebSocket-Protocol";
   private static final int PING_TIMEOUT_CODE = 3000;
 
@@ -39,7 +38,6 @@ public class AVStandardWebSocketClient extends WebSocketClient {
   private static ArrayList<IProtocol> protocols = new ArrayList<IProtocol>();
   static {
     protocols.add(new Protocol(SUB_PROTOCOL_2_3));
-//    protocols.add(new Protocol(SUB_PROTOCOL_2_1));
   }
 
   public AVStandardWebSocketClient(URI serverUrl, final String subProtocol, boolean secEnabled, boolean sniEnabled, SSLSocketFactory socketFactory) {
@@ -66,7 +64,7 @@ public class AVStandardWebSocketClient extends WebSocketClient {
   }
 
   protected void ping() {
-    LOGGER.d("send ping packet");
+    gLogger.d("send ping packet");
     PingFrame frame = new PingFrame();
     this.sendFrame(frame);
   }
@@ -93,7 +91,7 @@ public class AVStandardWebSocketClient extends WebSocketClient {
               params.setServerNames(serverNames);
               ((SSLSocket)socket).setSSLParameters(params);
             } catch (Exception ex) {
-              ex.printStackTrace();
+              gLogger.w(ex);
             }
           }
           setSocket(socket);
@@ -103,45 +101,45 @@ public class AVStandardWebSocketClient extends WebSocketClient {
         }
       }
     } catch (Exception e) {
-      LOGGER.e("Socket Error", new AVException(e));
+      gLogger.e("Socket Error", new AVException(e));
     }
   }
 
   public void send(CommandPacket packet) {
-    LOGGER.d("uplink : " + packet.getGenericCommand().toString());
+    gLogger.d("uplink : " + packet.getGenericCommand().toString());
     try {
       send(packet.getGenericCommand().toByteArray());
     } catch (Exception e) {
-      LOGGER.e(e.getMessage());
+      gLogger.e(e.getMessage());
     }
   }
 
   // WebSocketClient interfaces.
   public void onOpen(ServerHandshake var1) {
-    LOGGER.d("onOpen status=" + var1.getHttpStatus() + ", statusMsg=" + var1.getHttpStatusMessage());
+    gLogger.d("onOpen status=" + var1.getHttpStatus() + ", statusMsg=" + var1.getHttpStatusMessage());
     this.heartBeatPolicy.start();
   }
 
   public void onMessage(String var1) {
-    LOGGER.d("onMessage " + var1);
+    gLogger.d("onMessage " + var1);
   }
 
   public void onMessage(ByteBuffer bytes) {
     try {
       Messages.GenericCommand command = Messages.GenericCommand.parseFrom(bytes.array());
-      LOGGER.d("downLink: " + command.toString());
+      gLogger.d("downLink: " + command.toString());
     } catch (Exception ex) {
-      LOGGER.d("onMessage " + bytes.toString());
+      gLogger.d("onMessage " + bytes.toString());
     }
   }
 
   public void onClose(int var1, String var2, boolean var3) {
-    LOGGER.d("onClose code=" + var1 + ", message=" + var2);
+    gLogger.d("onClose code=" + var1 + ", message=" + var2);
     this.heartBeatPolicy.stop();
   }
 
   public void onError(Exception var1) {
-    LOGGER.w("onError ", var1);
+    gLogger.w("onError ", var1);
   }
   // end of WebSocketClient interfaces.
 

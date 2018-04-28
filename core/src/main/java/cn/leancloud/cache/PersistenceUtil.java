@@ -118,12 +118,13 @@ public class PersistenceUtil {
     if (null == localFile || !localFile.exists()) {
       return false;
     }
+    boolean result = true;
     Lock writeLock = getLock(localFile.getAbsolutePath()).writeLock();
     if (writeLock.tryLock()) {
-      localFile.delete();
+      result = localFile.delete();
       writeLock.unlock();
     }
-    return true;
+    return result;
   }
 
   public boolean saveFileToLocal(String localPath, File inputFile) {

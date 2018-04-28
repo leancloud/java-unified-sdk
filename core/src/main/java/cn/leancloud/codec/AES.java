@@ -161,7 +161,6 @@ public class AES {
       Log.e("illegal block size exception");
     } catch (BadPaddingException e) {
       Log.e("bad padding exception");
-      e.printStackTrace();
     }
     return null;
   }
