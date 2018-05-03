@@ -13,7 +13,10 @@ public abstract class AVLogAdapter {
     if (null == clazz) {
       return null;
     }
-    return getLogger(clazz.getCanonicalName());
+    AVLogger logger = getLogger(clazz.getCanonicalName());
+    logger.setLogLevel(this.level);
+    return logger;
   }
-  public abstract AVLogger getLogger(String tag);
+
+  protected abstract AVLogger getLogger(String tag);
 }

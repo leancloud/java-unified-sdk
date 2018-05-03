@@ -12,9 +12,9 @@ public abstract class AVLogger {
     private int intLevel;
   }
 
-  private static Level level = Level.INFO;
+  private Level level = Level.INFO;
 
-  public static Level getLogLevel() {
+  public Level getLogLevel() {
     return level;
   }
 
@@ -66,7 +66,7 @@ public abstract class AVLogger {
     writeLog(Level.ERROR, msg, tr);
   }
 
-  protected static boolean isEnabled(Level testLevel) {
+  protected boolean isEnabled(Level testLevel) {
     return level.intLevel() >= testLevel.intLevel();
   }
 

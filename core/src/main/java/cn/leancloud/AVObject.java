@@ -35,7 +35,7 @@ public class AVObject {
           Arrays.asList(KEY_CREATED_AT, KEY_UPDATED_AT, KEY_OBJECT_ID, KEY_ACL));
 
   protected String className;
-  protected static AVLogger logger = LogUtil.getLogger(AVObject.class);
+  protected static final AVLogger logger = LogUtil.getLogger(AVObject.class);
 
   protected String objectId = "";
   protected Map<String, Object> serverData = new ConcurrentHashMap<String, Object>();

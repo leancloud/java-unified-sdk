@@ -31,7 +31,7 @@ public class RemoveRelationOperation extends BaseOperation {
     if (other instanceof SetOperation || other instanceof DeleteOperation) {
       return other;
     } else if (other instanceof RemoveRelationOperation) {
-      this.value = concatCollections(this.value, ((AddRelationOperation) other).value);
+      this.value = concatCollections(this.value, ((RemoveRelationOperation) other).value);
       return this;
     } else if (other instanceof AddRelationOperation) {
       return new CompoundOperation(this.field, other, this);

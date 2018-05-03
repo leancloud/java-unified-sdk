@@ -114,7 +114,7 @@ public class StorageClient {
       case CACHE_ELSE_NETWORK:
         result = wrappObservable(QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, false));
         if (null != result) {
-          result.onErrorReturn(new Function<Throwable, List<AVObject>>() {
+          result = result.onErrorReturn(new Function<Throwable, List<AVObject>>() {
             public List<AVObject> apply(Throwable o) throws Exception {
               LOGGER.d("failed to query local cache, cause: " + o.getMessage() + ", try to query networking");
               return apiService.queryObjects(className, query)

@@ -31,6 +31,9 @@ public class AVOSCloud {
   public static void setLogLevel(AVLogger.Level level) {
     logLevel = level;
   }
+  public static AVLogger.Level getLogLevel() {
+    return logLevel;
+  }
   public static boolean isDebugEnable() {
     return logLevel.intLevel() >= AVLogger.Level.DEBUG.intLevel();
   }

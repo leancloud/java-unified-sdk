@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AVUtils {
-  public static double EARTH_MEAN_RADIUS_KM = 6378.140;
+  public static final double EARTH_MEAN_RADIUS_KM = 6378.140;
 
   public static double distance(double lat1, double lat2, double lon1,
                                 double lon2, double el1, double el2) {

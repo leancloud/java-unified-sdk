@@ -14,7 +14,7 @@ public class SimpleLoggerAdapter extends AVLogAdapter {
     consoleHandler.setLevel(Level.ALL);
   }
 
-  public AVLogger getLogger(String tag) {
+  protected AVLogger getLogger(String tag) {
     Logger logger = null;
     if (StringUtil.isEmpty(tag)) {
       logger = Logger.getAnonymousLogger();

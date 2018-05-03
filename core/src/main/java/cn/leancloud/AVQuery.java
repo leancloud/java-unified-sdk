@@ -18,7 +18,7 @@ import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 
-public class AVQuery<T extends AVObject> {
+public class AVQuery<T extends AVObject> implements Cloneable {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVQuery.class);
 
   public enum CachePolicy {
@@ -450,10 +450,10 @@ public class AVQuery<T extends AVObject> {
     return this;
   }
 
-  private AVQuery<T> addWhereItem(QueryOperation op) {
-    conditions.addWhereItem(op);
-    return this;
-  }
+//  private AVQuery<T> addWhereItem(QueryOperation op) {
+//    conditions.addWhereItem(op);
+//    return this;
+//  }
 
   private AVQuery<T> addOrItems(QueryOperation op) {
     conditions.addOrItems(op);

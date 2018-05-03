@@ -3,13 +3,13 @@
   <parent>
     <groupId>cn.leancloud</groupId>
     <artifactId>leancloud-sdk</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.leancloud</groupId>
   <artifactId>storage-core</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>5.0.0-SNAPSHOT</version>
   <name>storage-core</name>
   <url>http://maven.apache.org</url>
 
@@ -35,8 +35,6 @@
     <retrofit.version>2.3.0</retrofit.version>
     <rxjava2.version>2.1.9</rxjava2.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jdk.version>1.7</jdk.version>
-
   </properties>
 
   <dependencies>
@@ -151,8 +149,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.6.1</version>
         <configuration>
-          <source>${jdk.version}</source>
-          <target>${jdk.version}</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
       <!--
@@ -169,6 +167,16 @@
         </configuration>
       </plugin>
       -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5.3</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>2.3</version>
+      </plugin>
     </plugins>
   </build>
 

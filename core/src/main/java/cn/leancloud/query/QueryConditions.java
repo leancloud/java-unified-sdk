@@ -8,7 +8,7 @@ import cn.leancloud.utils.StringUtil;
 
 import java.util.*;
 
-public class QueryConditions {
+public class QueryConditions implements Cloneable {
   Map<String, List<QueryOperation>> where;
   private List<String> include;
   private Set<String> selectedKeys;

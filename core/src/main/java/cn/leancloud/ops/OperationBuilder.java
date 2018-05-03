@@ -15,7 +15,7 @@ public class OperationBuilder {
     BitOr,          // 或运算
     BitXor          // 异或运算
   }
-  public static OperationBuilder BUILDER = new OperationBuilder();
+  public static final OperationBuilder BUILDER = new OperationBuilder();
   private OperationBuilder() {
 
   }

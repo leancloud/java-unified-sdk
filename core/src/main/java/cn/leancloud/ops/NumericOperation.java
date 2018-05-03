@@ -69,12 +69,8 @@ public abstract class NumericOperation extends BaseOperation {
   }
 
   protected static Long calculateLongs(Number a, Number b, char op) {
-    if (a instanceof Double || a instanceof BigDecimal || a instanceof Float
-            || a instanceof Double || a instanceof BigDecimal || a instanceof Float) {
-      return 0l;
-    }
-    Long first = (Long) a;
-    Long second = (Long) b;
+    Long first = a.longValue();
+    Long second = b.longValue();
     Long result = 0l;
     switch (op) {
       case 'A':
