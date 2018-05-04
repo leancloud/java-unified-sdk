@@ -1,8 +1,10 @@
 package cn.leancloud.upload;
 
 import cn.leancloud.AVException;
+import cn.leancloud.AVLogger;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.core.PaasClient;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
@@ -16,6 +18,8 @@ import java.io.InputStream;
 import java.util.concurrent.locks.Lock;
 
 public class FileDownloader {
+  private static final AVLogger gLogger = LogUtil.getLogger(FileDownloader.class);
+
   private static final int READ_BUF_SIZE = 1024*8;
 
   public AVException execute(final String url, File localFile) {
@@ -44,8 +48,8 @@ public class FileDownloader {
         // read data from InputStream and save to cache File
         byte[] content = new byte[READ_BUF_SIZE];
 
-        Lock writeLock = PersistenceUtil.sharedInstance().getLock(cacheFile.getAbsolutePath()).writeLock();
         FileOutputStream out = null;
+        Lock writeLock = PersistenceUtil.sharedInstance().getLock(cacheFile.getAbsolutePath()).writeLock();
         if (writeLock.tryLock()) {
           try {
             out = new FileOutputStream(cacheFile, false);
@@ -55,6 +59,7 @@ public class FileDownloader {
               currentReadSize = data.read(content);
             }
           } catch (Exception e) {
+            gLogger.w(e);
             errors = new AVException(e);
           } finally {
             try {
@@ -69,11 +74,15 @@ public class FileDownloader {
             }
             writeLock.unlock();
           }
+        } else {
+          gLogger.w("failed to lock writeLocker, skip to save network streaming to local cache.");
         }
       } else if (null != data) {
         errors = new AVException(statusCode, "status code is invalid");
+        gLogger.w(errors);
       } else {
         errors = new AVException(statusCode, "data is empty!");
+        gLogger.w(errors);
       }
     } catch (IOException ex) {
       errors = new AVException(ex);
