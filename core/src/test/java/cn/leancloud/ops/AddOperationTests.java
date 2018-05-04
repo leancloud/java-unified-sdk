@@ -33,7 +33,7 @@ public class AddOperationTests extends TestCase {
   public void testAddObject() {
     Student s = new Student();
     s.setObjectId("StudentObjectId");
-    AddOperation op = (AddOperation) OperationBuilder.BUILDER.create(
+    AddOperation op = (AddOperation) OperationBuilder.gBuilder.create(
             OperationBuilder.OperationType.Add, "classmate", s);
     Map<String, Object> result = op.encode();
     System.out.println(new JSONObject(result).toJSONString());

@@ -43,7 +43,7 @@ public class AddRelationOperation extends BaseOperation {
       return ((CompoundOperation) other).mergeWithPrevious(this);
     } else {
       reportIllegalOperations(this, other);
-      return NullOperation.INSTANCE;
+      return NullOperation.gInstance;
     }
   }
 

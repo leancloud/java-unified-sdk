@@ -58,7 +58,7 @@ public class AVGeoPoint {
    * @param point GeoPoint describing the other point being measured against.
    */
   public double distanceInRadiansTo(AVGeoPoint point) {
-    return this.distanceInKilometersTo(point) / AVUtils.EARTH_MEAN_RADIUS_KM;
+    return this.distanceInKilometersTo(point) / AVUtils.earthMeanRadiusInKM;
   }
 
 }

@@ -174,7 +174,6 @@ public class QCloudUploader extends HttpClientUploader {
         return parseSliceUploadResponse(StringUtil.stringFromBytes(responseBody));
       }
     } catch (Exception e) {
-      e.printStackTrace();
       throw new AVException(AVException.OTHER_CAUSE, "Upload file failure");
     }
     return null;

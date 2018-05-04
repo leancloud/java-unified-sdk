@@ -59,11 +59,13 @@ public class FileDownloader {
           } finally {
             try {
               data.close();
-              if (out != null) {
-                out.close();
-              }
             } catch (IOException e) {
-
+            }
+            if (out != null) {
+              try {
+                out.close();
+              } catch (IOException e) {
+              }
             }
             writeLock.unlock();
           }

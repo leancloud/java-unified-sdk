@@ -1,6 +1,5 @@
 package cn.leancloud.ops;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +64,7 @@ public abstract class NumericOperation extends BaseOperation {
       reportIllegalOperations(this, other);
     }
 
-    return NullOperation.INSTANCE;
+    return NullOperation.gInstance;
   }
 
   protected static Long calculateLongs(Number a, Number b, char op) {

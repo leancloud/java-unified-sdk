@@ -31,7 +31,7 @@ public class SetOperationTests extends TestCase {
     acl.setPublicWriteAccess(false);
     System.out.println(acl.toJSONObject().toJSONString());
 
-    SetOperation op = (SetOperation) OperationBuilder.BUILDER.create(
+    SetOperation op = (SetOperation) OperationBuilder.gBuilder.create(
             OperationBuilder.OperationType.Set, "ACL", acl);
     Map<String, Object> result = op.encode();
     System.out.println(result.toString());
@@ -42,7 +42,7 @@ public class SetOperationTests extends TestCase {
     AVObject p = new AVObject("Student");
     p.setObjectId("fewruwpr");
 
-    SetOperation op = (SetOperation) OperationBuilder.BUILDER.create(
+    SetOperation op = (SetOperation) OperationBuilder.gBuilder.create(
             OperationBuilder.OperationType.Set, "friend", p);
     Map<String, Object> result = op.encode();
     System.out.println(new JSONObject(result).toJSONString());

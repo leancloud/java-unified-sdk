@@ -108,12 +108,9 @@ public class AVRelation<T extends AVObject> {
       throw new IllegalStateException("unable to encode an association with an unsaved AVObject");
     }
 
-    Map<String, Object> map = new HashMap<String, Object>() {
-      {
-        put("object", Utils.mapFromPointerObject(AVRelation.this.getParent()));
-        put("key", AVRelation.this.getKey());
-      }
-    };
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("object", Utils.mapFromPointerObject(AVRelation.this.getParent()));
+    map.put("key", AVRelation.this.getKey());
 
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("$relatedTo", map);

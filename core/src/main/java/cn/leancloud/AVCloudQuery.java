@@ -30,13 +30,13 @@ class AVCloudQuery {
     if (null == clazz) {
       throw new IllegalArgumentException("target class is null");
     }
-    List<Object> pValue = new LinkedList<Object>();
+    List<Object> pValue = new LinkedList<>();
     if (null != params) {
       for (Object o: params) {
         pValue.add(o);
       }
     }
-    Map<String, String> p = new HashMap<String, String>();
+    Map<String, String> p = new HashMap<>();
     p.put("cql", cql);
     if (!pValue.isEmpty()) {
       p.put("pvalues", AVUtils.jsonStringFromObjectWithNull(pValue));

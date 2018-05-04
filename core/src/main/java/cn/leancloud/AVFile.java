@@ -140,7 +140,7 @@ public final class AVFile extends AVObject {
   }
 
   private void internalPut(String key, Object value) {
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Set, key, value);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Set, key, value);
     addNewOperation(op);
   }
 

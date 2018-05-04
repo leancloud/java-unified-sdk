@@ -46,7 +46,8 @@ public class Base64 {
   //  shared code
   //  --------------------------------------------------------
 
-  /* package */ static abstract class Coder {
+  /* package */
+  static abstract class Coder {
     public byte[] output;
     public int op;
 

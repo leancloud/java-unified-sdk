@@ -40,7 +40,7 @@ public class RemoveOperation extends BaseOperation {
       reportIllegalOperations(this, other);
     }
 
-    return NullOperation.INSTANCE;
+    return NullOperation.gInstance;
   }
   public Map<String, Object> encode() {
     //{"attr":{"__op":"Remove", "objects":[obj1, obj2]}}

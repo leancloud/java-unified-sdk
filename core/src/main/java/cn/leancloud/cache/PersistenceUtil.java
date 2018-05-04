@@ -53,19 +53,19 @@ public class PersistenceUtil {
     Lock writeLock = getLock(fileForSave.getAbsolutePath()).writeLock();
     boolean succeed = true;
     FileOutputStream out = null;
-    if (writeLock.tryLock()) {
-      try {
-        out = new FileOutputStream(fileForSave, false);
-        out.write(content);
-      } catch (Exception e) {
-        succeed = false;
-      } finally {
-        if (out != null) {
-          closeQuietly(out);
-        }
+    try {
+      writeLock.lock();
+      out = new FileOutputStream(fileForSave, false);
+      out.write(content);
+    } catch (Exception e) {
+      succeed = false;
+    } finally {
+      if (out != null) {
+        closeQuietly(out);
       }
       writeLock.unlock();
     }
+
     return succeed;
   }
 
@@ -105,8 +105,8 @@ public class PersistenceUtil {
       ;
     } finally {
       closeQuietly(input);
-      readLock.unlock();
     }
+    readLock.unlock();
     return null;
   }
 
@@ -133,27 +133,26 @@ public class PersistenceUtil {
     InputStream is = null;
 
     Lock writeLock = getLock(localPath).writeLock();
-    if (writeLock.tryLock()) {
-      try {
-        is = getInputStreamFromFile(inputFile);
-        os = getOutputStreamForFile(new File(localPath), false);
-        byte buf[] = new byte[MAX_FILE_BUF_SIZE];
-        int len  = 0;
-        if (null != is && null != os) {
-          while ((len = is.read(buf)) != -1) {
-            os.write(buf, 0, len);
-          }
-          succeed = true;
+    try {
+      writeLock.lock();
+      is = getInputStreamFromFile(inputFile);
+      os = getOutputStreamForFile(new File(localPath), false);
+      byte buf[] = new byte[MAX_FILE_BUF_SIZE];
+      int len  = 0;
+      if (null != is && null != os) {
+        while ((len = is.read(buf)) != -1) {
+          os.write(buf, 0, len);
         }
-      } catch (Exception ex) {
-        succeed = false;
-      } finally {
-        if (null != is) {
-          closeQuietly(is);
-        }
-        if (null != os) {
-          closeQuietly(os);
-        }
+        succeed = true;
+      }
+    } catch (Exception ex) {
+      succeed = false;
+    } finally {
+      if (null != is) {
+        closeQuietly(is);
+      }
+      if (null != os) {
+        closeQuietly(os);
       }
       writeLock.unlock();
     }

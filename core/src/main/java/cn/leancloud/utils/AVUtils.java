@@ -9,11 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AVUtils {
-  public static final double EARTH_MEAN_RADIUS_KM = 6378.140;
+  public static final double earthMeanRadiusInKM = 6378.140;
 
   public static double distance(double lat1, double lat2, double lon1,
                                 double lon2, double el1, double el2) {
-    final double R = EARTH_MEAN_RADIUS_KM; // Radius of the earth
+    final double R = earthMeanRadiusInKM; // Radius of the earth
 
     double latDistance = Math.toRadians(lat2 - lat1);
     double lonDistance = Math.toRadians(lon2 - lon1);

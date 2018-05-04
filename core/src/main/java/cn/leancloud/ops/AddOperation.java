@@ -50,7 +50,7 @@ public class AddOperation extends BaseOperation {
       reportIllegalOperations(this, other);
     }
 
-    return NullOperation.INSTANCE;
+    return NullOperation.gInstance;
   }
 
   public Map<String, Object> encode() {

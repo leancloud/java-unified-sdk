@@ -237,13 +237,13 @@ public class AVObject {
 
   void addRelation(final AVObject object, final String key) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.AddRelation, key, object);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.AddRelation, key, object);
     addNewOperation(op);
   }
 
   void removeRelation(final AVObject object, final String key) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.RemoveRelation, key, object);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.RemoveRelation, key, object);
     addNewOperation(op);
   }
 
@@ -276,41 +276,41 @@ public class AVObject {
    */
   public void add(String key, Object value) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Add, key, value);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Add, key, value);
     addNewOperation(op);
   }
   public void addAll(String key, Collection<?> values) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Add, key, values);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Add, key, values);
     addNewOperation(op);
   }
 
   public void addUnique(String key, Object value) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.AddUnique, key, value);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.AddUnique, key, value);
     addNewOperation(op);
   }
   public void addAllUnique(String key, Collection<?> values) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.AddUnique, key, values);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.AddUnique, key, values);
     addNewOperation(op);
   }
 
   public void put(String key, Object value) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Set, key, value);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Set, key, value);
     addNewOperation(op);
   }
 
   public void remove(String key) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Delete, key, null);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Delete, key, null);
     addNewOperation(op);
   }
 
   public void removeAll(String key, Collection<?> values) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Remove, key, values);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Remove, key, values);
     addNewOperation(op);
   }
 
@@ -319,7 +319,7 @@ public class AVObject {
   }
   public void increment(String key, Number value) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Increment, key, value);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Increment, key, value);
     addNewOperation(op);
   }
 
@@ -328,23 +328,23 @@ public class AVObject {
   }
   public void decrement(String key, Number value) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Decrement, key, value);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Decrement, key, value);
     addNewOperation(op);
   }
 
   public void bitAnd(String key, long value) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.BitAnd, key, value);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.BitAnd, key, value);
     addNewOperation(op);
   }
   public void bitOr(String key, long value) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.BitOr, key, value);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.BitOr, key, value);
     addNewOperation(op);
   }
   public void bitXor(String key, long value) {
     validFieldName(key);
-    ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.BitXor, key, value);
+    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.BitXor, key, value);
     addNewOperation(op);
   }
 
@@ -381,7 +381,7 @@ public class AVObject {
     if (null != this.acl) {
       AVACL serverACL = generateACLFromServerData();
       if (!this.acl.equals(serverACL)) {
-        ObjectFieldOperation op = OperationBuilder.BUILDER.create(OperationBuilder.OperationType.Set, KEY_ACL, acl);
+        ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Set, KEY_ACL, acl);
         params.putAll(op.encode());
       }
     }

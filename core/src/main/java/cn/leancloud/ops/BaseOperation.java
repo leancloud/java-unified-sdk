@@ -12,7 +12,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.*;
-import java.util.concurrent.Callable;
 
 public abstract class BaseOperation implements ObjectFieldOperation {
   static final AVLogger LOGGER = LogUtil.getLogger(BaseOperation.class);
@@ -77,7 +76,7 @@ public abstract class BaseOperation implements ObjectFieldOperation {
    * @return
    */
   protected ObjectFieldOperation mergeWithPrevious(ObjectFieldOperation previous) {
-    return NullOperation.INSTANCE;
+    return NullOperation.gInstance;
   }
 
   public ObjectFieldOperation merge(ObjectFieldOperation other) {

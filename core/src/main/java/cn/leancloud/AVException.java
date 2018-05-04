@@ -230,7 +230,7 @@ public class AVException extends Exception {
    */
   public static final int UNKNOWN = 999;
 
-  public static final String cacheMissingError = "Cache Missing";
+  public static final String CACHE_MISSING_ERROR = "Cache Missing";
 
   /**
    * Error code indicating the file checkSum value is not equals to original file

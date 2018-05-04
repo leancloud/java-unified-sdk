@@ -50,7 +50,7 @@ public class AVACL {
     }
   }
 
-  private final Map<String, Permissions> permissionsById = new HashMap<String, Permissions>();
+  private final Map<String, Permissions> permissionsById = new HashMap<>();
 
   public AVACL() {
   }
