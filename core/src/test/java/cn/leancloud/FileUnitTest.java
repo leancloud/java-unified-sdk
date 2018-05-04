@@ -21,6 +21,17 @@ public class FileUnitTest extends TestCase {
     return new TestSuite(FileUnitTest.class);
   }
 
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
+    System.out.println("exit setUp()");
+  }
+
+  @Override
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    System.out.println("exit tearDown()");
+  }
 
   public void testUploadDownloadAssociateFile() throws Exception {
     AVFile avFile;
@@ -67,6 +78,7 @@ public class FileUnitTest extends TestCase {
   }
 
   public void testFileArray() throws Exception {
+    System.out.println("begin testFileArray()...");
     AVFile avFile1 = new AVFile("FileUnitTestFiles", "hello world".getBytes());
     avFile1.save();
     AVFile avFile2 = new AVFile("FileUnitTestFiles", "hello world".getBytes());
@@ -84,6 +96,7 @@ public class FileUnitTest extends TestCase {
     assertNotNull(files);
     assertEquals(2, files.size());
     for (AVFile file : files) {
+      file.fetch();
       byte[] data = file.getData();
       assertEquals("hello world", new String(data));
     }
@@ -110,6 +123,7 @@ public class FileUnitTest extends TestCase {
     assertNotNull(files);
     assertEquals(2, files.size());
     for (AVFile file : files) {
+      file.fetch();
       byte[] data = file.getData();
       assertEquals("hello world", new String(data));
     }
@@ -137,6 +151,7 @@ public class FileUnitTest extends TestCase {
     assertNotNull(files);
     assertEquals(2, files.size());
     for (AVFile file : files) {
+      file.fetch();
       byte[] data = file.getData();
       assertEquals("hello world", new String(data));
     }
@@ -163,6 +178,7 @@ public class FileUnitTest extends TestCase {
     assertNotNull(files);
     assertEquals(2, files.size());
     for (AVFile file : files) {
+      file.fetch();
       byte[] data = file.getData();
       assertEquals("hello world", new String(data));
     }

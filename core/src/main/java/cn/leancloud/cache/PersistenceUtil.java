@@ -1,11 +1,16 @@
 package cn.leancloud.cache;
 
+import cn.leancloud.AVLogger;
+import cn.leancloud.utils.LogUtil;
+
 import java.io.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class PersistenceUtil {
+  private static final AVLogger gLogger = LogUtil.getLogger(PersistenceUtil.class);
+
   private static PersistenceUtil INSTANCE = new PersistenceUtil();
   private static final int MAX_FILE_BUF_SIZE = 1024*1024*2;
 
@@ -53,18 +58,21 @@ public class PersistenceUtil {
     boolean succeed = true;
     FileOutputStream out = null;
     Lock writeLock = getLock(fileForSave.getAbsolutePath()).writeLock();
-    writeLock.lock();
-    try {
-      out = new FileOutputStream(fileForSave, false);
-      out.write(content);
-    } catch (Exception e) {
-      succeed = false;
-    } finally {
-      if (out != null) {
-        closeQuietly(out);
+    if (writeLock.tryLock()) {
+      try {
+        out = new FileOutputStream(fileForSave, false);
+        out.write(content);
+      } catch (Exception e) {
+        succeed = false;
+      } finally {
+        if (out != null) {
+          closeQuietly(out);
+        }
       }
+      writeLock.unlock();
+    } else {
+      gLogger.w("failed to lock writeLocker, skip save content to file:" + fileForSave.getAbsolutePath());
     }
-    writeLock.unlock();
 
     return succeed;
   }
@@ -87,27 +95,30 @@ public class PersistenceUtil {
     }
     InputStream input = null;
     Lock readLock = getLock(fileForRead.getAbsolutePath()).readLock();
-    readLock.lock();
-    try {
-      byte[] data = null;
-      data = new byte[(int) fileForRead.length()];
-      int totalBytesRead = 0;
-      input = new BufferedInputStream(new FileInputStream(fileForRead), 8192);
-      while (totalBytesRead < data.length) {
-        int bytesRemaining = data.length - totalBytesRead;
-        int bytesRead = input.read(data, totalBytesRead, bytesRemaining);
-        if (bytesRead > 0) {
-          totalBytesRead = totalBytesRead + bytesRead;
+    if (readLock.tryLock()) {
+      try {
+        byte[] data = null;
+        data = new byte[(int) fileForRead.length()];
+        int totalBytesRead = 0;
+        input = new BufferedInputStream(new FileInputStream(fileForRead), 8192);
+        while (totalBytesRead < data.length) {
+          int bytesRemaining = data.length - totalBytesRead;
+          int bytesRead = input.read(data, totalBytesRead, bytesRemaining);
+          if (bytesRead > 0) {
+            totalBytesRead = totalBytesRead + bytesRead;
+          }
         }
+        return data;
+      } catch (IOException e) {
+        ;
+      } finally {
+        closeQuietly(input);
       }
-      return data;
-    } catch (IOException e) {
-      ;
-    } finally {
-      closeQuietly(input);
+      readLock.unlock();
+    } else {
+      gLogger.w("failed to lock readLocker, return empty result.");
     }
-    readLock.unlock();
-    return null;
+    return new byte[0];
   }
 
   public boolean deleteFile(String localPath) {
@@ -123,6 +134,9 @@ public class PersistenceUtil {
     if (writeLock.tryLock()) {
       result = localFile.delete();
       writeLock.unlock();
+    } else {
+      gLogger.w("failed to lock writeLocker, skip to delete file:" + localFile.getAbsolutePath());
+      result = false;
     }
     return result;
   }
@@ -133,29 +147,33 @@ public class PersistenceUtil {
     InputStream is = null;
 
     Lock writeLock = getLock(localPath).writeLock();
-    writeLock.lock();
-    try {
-      is = getInputStreamFromFile(inputFile);
-      os = getOutputStreamForFile(new File(localPath), false);
-      byte buf[] = new byte[MAX_FILE_BUF_SIZE];
-      int len  = 0;
-      if (null != is && null != os) {
-        while ((len = is.read(buf)) != -1) {
-          os.write(buf, 0, len);
+    if (writeLock.tryLock()) {
+      try {
+        is = getInputStreamFromFile(inputFile);
+        os = getOutputStreamForFile(new File(localPath), false);
+        byte buf[] = new byte[MAX_FILE_BUF_SIZE];
+        int len  = 0;
+        if (null != is && null != os) {
+          while ((len = is.read(buf)) != -1) {
+            os.write(buf, 0, len);
+          }
+          succeed = true;
         }
-        succeed = true;
+      } catch (Exception ex) {
+        succeed = false;
+      } finally {
+        if (null != is) {
+          closeQuietly(is);
+        }
+        if (null != os) {
+          closeQuietly(os);
+        }
       }
-    } catch (Exception ex) {
-      succeed = false;
-    } finally {
-      if (null != is) {
-        closeQuietly(is);
-      }
-      if (null != os) {
-        closeQuietly(os);
-      }
+      writeLock.unlock();
+    } else {
+      gLogger.w("failed to lock writeLocker, skip save content to file:" + localPath);
     }
-    writeLock.unlock();
+
     return succeed;
   }
 
