@@ -65,11 +65,51 @@ class QiniuAccessor {
   static final int NONWIFI_CHUNK_SIZE = 64 * 1024;
 
   static class QiniuBlockResponseData {
-    public String ctx;
-    public long crc32;
-    public int offset;
-    public String host;
-    public String checksum;
+    private String ctx;
+    private long crc32;
+    private int offset;
+    private String host;
+    private String checksum;
+
+    public String getCtx() {
+      return ctx;
+    }
+
+    public void setCtx(String ctx) {
+      this.ctx = ctx;
+    }
+
+    public long getCrc32() {
+      return crc32;
+    }
+
+    public void setCrc32(long crc32) {
+      this.crc32 = crc32;
+    }
+
+    public int getOffset() {
+      return offset;
+    }
+
+    public void setOffset(int offset) {
+      this.offset = offset;
+    }
+
+    public String getHost() {
+      return host;
+    }
+
+    public void setHost(String host) {
+      this.host = host;
+    }
+
+    public String getChecksum() {
+      return checksum;
+    }
+
+    public void setChecksum(String checksum) {
+      this.checksum = checksum;
+    }
 
     @Override
     public String toString() {

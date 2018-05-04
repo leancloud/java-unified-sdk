@@ -17,7 +17,7 @@ public class DNSDetoxicant implements Dns {
   static final long TWENTY_MIN_IN_MILLS = 20 * 60 * 1000L;
   static final String AVOS_SERVER_HOST_ZONE = "avoscloud_server_host_zone";
   public static final String EXPIRE_TIME = ".expireTime";
-  static final String DNSPOD_HOST = "119.29.29.29";
+  static final String DNSPOD_HOST = System.getProperty("dnspodHost","119.29.29.29");
 
   // DNS 请求的超时时间设置为两秒
   private static final int DNS_REQUEST_TIME_OUT = 2 * 1000;

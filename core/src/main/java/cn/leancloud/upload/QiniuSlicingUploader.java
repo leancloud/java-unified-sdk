@@ -92,9 +92,9 @@ class QiniuSlicingUploader extends HttpClientUploader {
         }
 
         if (null != lastResponse){
-          uploadFileCtxs.add(lastResponse.ctx);
+          uploadFileCtxs.add(lastResponse.getCtx());
           progressCalculator.publishProgress(i, 100);
-          LOGGER.d("finished to upload block(" + i + "), ctx=" + lastResponse.ctx);
+          LOGGER.d("finished to upload block(" + i + "), ctx=" + lastResponse.getCtx());
         } else {
           // error.
           // FIXME: 2017/8/14 603 is hardcode.

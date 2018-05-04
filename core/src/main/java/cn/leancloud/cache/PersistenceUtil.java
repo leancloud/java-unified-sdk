@@ -50,11 +50,11 @@ public class PersistenceUtil {
   }
 
   public boolean saveContentToFile(byte[] content, File fileForSave) {
-    Lock writeLock = getLock(fileForSave.getAbsolutePath()).writeLock();
     boolean succeed = true;
     FileOutputStream out = null;
+    Lock writeLock = getLock(fileForSave.getAbsolutePath()).writeLock();
+    writeLock.lock();
     try {
-      writeLock.lock();
       out = new FileOutputStream(fileForSave, false);
       out.write(content);
     } catch (Exception e) {
@@ -63,8 +63,8 @@ public class PersistenceUtil {
       if (out != null) {
         closeQuietly(out);
       }
-      writeLock.unlock();
     }
+    writeLock.unlock();
 
     return succeed;
   }
@@ -85,11 +85,11 @@ public class PersistenceUtil {
     if (!fileForRead.exists() || !fileForRead.isFile()) {
       return null;
     }
+    InputStream input = null;
     Lock readLock = getLock(fileForRead.getAbsolutePath()).readLock();
     readLock.lock();
-    byte[] data = null;
-    InputStream input = null;
     try {
+      byte[] data = null;
       data = new byte[(int) fileForRead.length()];
       int totalBytesRead = 0;
       input = new BufferedInputStream(new FileInputStream(fileForRead), 8192);
@@ -133,8 +133,8 @@ public class PersistenceUtil {
     InputStream is = null;
 
     Lock writeLock = getLock(localPath).writeLock();
+    writeLock.lock();
     try {
-      writeLock.lock();
       is = getInputStreamFromFile(inputFile);
       os = getOutputStreamForFile(new File(localPath), false);
       byte buf[] = new byte[MAX_FILE_BUF_SIZE];
@@ -154,8 +154,8 @@ public class PersistenceUtil {
       if (null != os) {
         closeQuietly(os);
       }
-      writeLock.unlock();
     }
+    writeLock.unlock();
     return succeed;
   }
 
