@@ -15,6 +15,8 @@ import cn.leancloud.AVUser;
 import cn.leancloud.DemoBaseActivity;
 import cn.leancloud.DemoUtils;
 import cn.leancloud.Student;
+import cn.leancloud.callback.FindCallback;
+import cn.leancloud.convertor.ObserverBuilder;
 
 /**
  * Created by fengjunwen on 2018/5/10.
@@ -38,7 +40,7 @@ public class QueryDemoActivity extends DemoBaseActivity {
 
   public void testLimit() throws AVException {
     AVQuery<Student> query = AVQuery.getQuery(Student.class);
-    query.whereLessThanOrEqualTo(AVObject.UPDATED_AT, new Date());
+    query.whereLessThanOrEqualTo(AVObject.KEY_UPDATED_AT, new Date());
     query.limit(2);
     List<Student> students = query.find();
     log("找回了两个学生:" + prettyJSON(students));
@@ -83,11 +85,11 @@ public class QueryDemoActivity extends DemoBaseActivity {
 
   public void testAscending() throws AVException {
     AVQuery<Student> query = AVQuery.getQuery(Student.class);
-    query.orderByAscending(Student.CREATED_AT)
+    query.orderByAscending(Student.KEY_CREATED_AT)
         .limit(5);
     List<Student> students = query.find();
     log("找出了5个最早创建的学生");
-    logObjects(students, Student.CREATED_AT);
+    logObjects(students, Student.KEY_CREATED_AT);
   }
 
   public void testSecondOrder() throws AVException {
@@ -190,7 +192,7 @@ public class QueryDemoActivity extends DemoBaseActivity {
     // 单位毫秒
     q.setMaxCacheAge(1000 * 60 * 60); // 一小时
     q.limit(1);
-    q.findInBackground(new FindCallback<Student>() {
+    q.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(new FindCallback<Student>() {
       int count = 0;
 
       @Override
@@ -202,7 +204,7 @@ public class QueryDemoActivity extends DemoBaseActivity {
         }
         count++;
       }
-    });
+    }));
   }
 
   public void testQueryPolicyCacheElseNetwork() throws AVException {
@@ -292,22 +294,22 @@ public class QueryDemoActivity extends DemoBaseActivity {
 
   // create an object and query it.
   public void testObjectQuery() throws AVException {
-    AVObject person1 = AVObject.create("Person");
+    AVObject person1 = new AVObject("Person");
     person1.put("gender", "Female");
     person1.put("name", "Cake");
     person1.save();
 
-    AVObject person2 = AVObject.create("Person");
+    AVObject person2 = new AVObject("Person");
     person2.put("gender", "Male");
     person2.put("name", "Man");
     person2.save();
 
-    AVObject something = AVObject.create("Something");
+    AVObject something = new AVObject("Something");
     something.put("belongTo", "Cake");
     something.put("city", "ChangDe");
     something.save();
 
-    AVObject another = AVObject.create("Something");
+    AVObject another = new AVObject("Something");
     another.put("belongTo", "Man");
     another.put("city", "Beijing");
     another.save();
