@@ -46,11 +46,11 @@ public class AVOSCloud {
     AppConfiguration.getLogAdapter().setLevel(logLevel);
   }
 
-  public void setLastModifyEnabled(boolean val) {
+  public static void setLastModifyEnabled(boolean val) {
     LastModifyCache.getInstance().setLastModifyEnabled(val);
   }
 
-  public boolean isLastModifyEnabled() {
+  public static boolean isLastModifyEnabled() {
     return LastModifyCache.getInstance().isLastModifyEnabled();
   }
 
