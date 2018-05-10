@@ -11,8 +11,10 @@ import cn.leancloud.ops.OperationBuilder;
 import cn.leancloud.core.PaasClient;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -395,5 +397,48 @@ public final class AVFile extends AVObject {
     }
     logger.w("failed to get dataStream.");
     return null;
+  }
+
+  public static AVFile withAbsoluteLocalPath(String name, String absoluteLocalFilePath)
+          throws FileNotFoundException {
+    return withFile(name, new File(absoluteLocalFilePath));
+  }
+
+  public static AVFile withFile(String name, File file) throws FileNotFoundException {
+    if (file == null) {
+      throw new IllegalArgumentException("null file object.");
+    }
+    if (!file.exists() || !file.isFile()) {
+      throw new FileNotFoundException();
+    }
+
+    AVFile avFile = new AVFile();
+    avFile.setName(name);
+    long fileSize = file.length();
+    String fileMD5 = "";
+    try {
+      InputStream is = PersistenceUtil.getInputStreamFromFile(file);
+      MD5 md5 = MD5.getInstance();
+      md5.prepare();
+      if (null != is) {
+        byte buf[] = new byte[(int)PersistenceUtil.MAX_FILE_BUF_SIZE];
+        int len;
+        while ((len = is.read(buf)) != -1) {
+          md5.update(buf, 0, len);
+        }
+        byte[] md5bytes = md5.digest();
+        fileMD5 = MD5.hexEncodeBytes(md5bytes);
+        is.close();
+      }
+    } catch (Exception ex) {
+      fileMD5 = "";
+    }
+    avFile.addMetaData("size", fileSize);
+    avFile.addMetaData(FILE_SUM_KEY, fileMD5);
+
+    AVUser currentUser = AVUser.getCurrentUser();
+    avFile.addMetaData("owner", currentUser != null ? currentUser.getObjectId() : "");
+    avFile.addMetaData(FILE_NAME_KEY, name);
+    return avFile;
   }
 }

@@ -31,12 +31,13 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   private java.lang.Boolean isRunning;
   private CachePolicy cachePolicy = CachePolicy.IGNORE_CACHE;
   private long maxCacheAge = -1;
+  private boolean includeACL = false;
 
-  private String queryPath;
+//  private String queryPath;
 
   // different from queryPath. externalQueryPath is used by caller directly to
   // create special end point for certain query.
-  private String externalQueryPath;
+//  private String externalQueryPath;
 
   QueryConditions conditions;
 
@@ -62,8 +63,8 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     query.isRunning = false;
     query.cachePolicy = this.cachePolicy;
     query.maxCacheAge = this.maxCacheAge;
-    query.queryPath = this.queryPath;
-    query.externalQueryPath = this.externalQueryPath;
+//    query.queryPath = this.queryPath;
+//    query.externalQueryPath = this.externalQueryPath;
     query.conditions = null != this.conditions? this.conditions.clone(): null;
     return query;
   }
@@ -313,6 +314,21 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     conditions.addDescendingOrder(key);
     return this;
   }
+
+  public boolean isIncludeACL() {
+    return includeACL;
+  }
+
+  /**
+   * set include ACL or not.
+   * @param includeACL
+   * @return
+   */
+  public AVQuery<T> includeACL(boolean includeACL) {
+    this.includeACL = includeACL;
+    return this;
+  }
+
 
   /**
    * Include nested AVObjects for the provided key. You can use dot notation to specify which fields
@@ -862,6 +878,9 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   public Observable<List<T>> findInBackground() {
     conditions.assembleParameters();
     Map<String, String> query = conditions.getParameters();
+    if (this.includeACL && null != query) {
+      query.put("returnACL", "true");
+    }
     LOGGER.d("Query: " + query);
     return PaasClient.getStorageClient().queryObjects(getClassName(), query, this.cachePolicy, this.maxCacheAge)
             .map(new Function<List<AVObject>, List<T>>() {

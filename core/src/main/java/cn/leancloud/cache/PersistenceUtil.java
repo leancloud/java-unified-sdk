@@ -12,7 +12,7 @@ public class PersistenceUtil {
   private static final AVLogger gLogger = LogUtil.getLogger(PersistenceUtil.class);
 
   private static PersistenceUtil INSTANCE = new PersistenceUtil();
-  private static final int MAX_FILE_BUF_SIZE = 1024*1024*2;
+  public static final int MAX_FILE_BUF_SIZE = 1024*1024*2;
 
   private ConcurrentHashMap<String, ReentrantReadWriteLock> fileLocks =
           new ConcurrentHashMap<String, ReentrantReadWriteLock>();
