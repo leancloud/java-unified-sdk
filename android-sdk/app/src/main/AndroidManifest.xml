@@ -36,8 +36,15 @@
         </activity>
         <activity android:name=".SourceCodeActivity">
         </activity>
-        <activity android:name=".testcase.ObjectDemoActivity"/>
+        <activity android:name=".testcase.CQLDemoActivity"/>
+        <activity android:name=".testcase.EngineDemoActivity"/>
         <activity android:name=".testcase.FileDemoActivity"/>
+        <activity android:name=".testcase.ObjectDemoActivity"/>
+        <activity android:name=".testcase.OtherDemoActivity"/>
+        <activity android:name=".testcase.PointerDemoActivity"/>
+        <activity android:name=".testcase.QueryDemoActivity"/>
+        <activity android:name=".testcase.UserAuthDataDemoActivity"/>
+        <activity android:name="ar.com.daidalos.afiledialog.FileChooserActivity" />
     </application>
 
 </manifest>

@@ -1,20 +1,32 @@
 package cn.leancloud;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 
+import org.json.JSONException;
+
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -134,14 +146,15 @@ public class DemoBaseActivity extends ListActivity {
     }
   }
 
-  protected void log(String format, @Nullable Object... objects) {
-    final String msg = String.format(format, objects);
+  protected void log(String msg) {
     Log.d(TAG_DEMO, msg);
+
     if (outputTextView != null) {
+      final String displayText = outputTextView.getText() + "\n-------- RUN --------\n" + msg;
       runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          outputTextView.setText(outputTextView.getText() + "\n-------- RUN --------\n" + msg);
+          outputTextView.setText(displayText);
         }
       });
     }
@@ -154,19 +167,6 @@ public class DemoBaseActivity extends ListActivity {
       sb.append(" ");
     }
     log(sb.toString());
-  }
-
-  protected String prettyJSON(AVObject object) {
-    JSONObject jsonObject = object.toJSONObject();
-    if (null == jsonObject) {
-      return object.toString();
-    }
-    try {
-      return jsonObject.toString();
-    } catch (Exception e) {
-      e.printStackTrace();
-      return object.toString();
-    }
   }
 
   protected void logThreadTips() {
@@ -267,5 +267,151 @@ public class DemoBaseActivity extends ListActivity {
     startActivity(intent);
   }
 
+
+  protected void log(String format, @Nullable Object... objects) {
+    final String msg = String.format(format, objects);
+    Log.d(TAG_DEMO, msg);
+    if (outputTextView != null) {
+      runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          outputTextView.setText(outputTextView.getText() + "\n-------- RUN --------\n" + msg);
+        }
+      });
+    }
+  }
+
+
+  protected void showInputDialog(final String title, final InputDialogListener listener) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(demoRunActivity);
+        LayoutInflater inflater = LayoutInflater.from(demoRunActivity);
+        final LinearLayout layout = (LinearLayout) inflater.inflate(cn.leancloud.R.layout.login_dialog, null);
+
+        final EditText userNameET = (EditText) layout.findViewById(R.id.usernameInput);
+        final EditText passwordET = (EditText) layout.findViewById(R.id.passwordInput);
+        builder.setView(layout);
+        builder.setTitle(title).setPositiveButton(title, new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            String username = userNameET.getText().toString();
+            String password = passwordET.getText().toString();
+            if (listener != null && username.length() > 0 && password.length() > 0) {
+              listener.onAction(username, password);
+            }
+          }
+        });
+        AlertDialog ad = builder.create();
+        ad.show();
+      }
+    });
+  }
+
+  protected void showSimpleInputDialog(final String title, final SimpleInputDialogListner listner) {
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getRunningContext());
+        final EditText editText = new EditText(getRunningContext());
+        editText.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(editText);
+        builder.setTitle(title).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            String text = editText.getText().toString();
+            if (text.length() > 0 && listner != null) {
+              listner.onConfirm(text);
+            }
+          }
+        });
+        AlertDialog ad = builder.create();
+        ad.show();
+      }
+    });
+  }
+
+  protected boolean filterException(Exception e) {
+    if (e == null) {
+      return true;
+    } else {
+      log(e.getMessage());
+      return false;
+    }
+  }
+
+  protected <T extends AVObject> void logObjects(List<T> objects, String key) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("一组对象 ");
+    sb.append(key);
+    sb.append(" 字段的值：\n");
+    for (AVObject obj : objects) {
+      sb.append(obj.get(key));
+      sb.append("\n");
+    }
+    log(sb.toString());
+  }
+
+  public byte[] getAvatarBytes() {
+    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
+    ByteArrayOutputStream output = new ByteArrayOutputStream();
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, output);
+    byte[] bytes = output.toByteArray();
+    return bytes;
+  }
+
+  public List<Student> findStudents() throws AVException {
+    AVQuery<Student> q = AVObject.getQuery(Student.class);
+    q.limit(5);
+    return q.find();
+  }
+
+  protected <T extends AVObject> String prettyJSON(List<T> objects) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
+    for (AVObject object : objects) {
+      sb.append(prettyJSON(object));
+      sb.append(",");
+    }
+    sb.append("]");
+    return sb.toString();
+  }
+
+  protected String prettyJSON(AVObject object) {
+    com.alibaba.fastjson.JSONObject jsonObject = object.toJSONObject();
+    try {
+      return jsonObject.toString();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return object.toString();
+    }
+  }
+
+  public interface InputDialogListener {
+    void onAction(final String username, final String password);
+  }
+
+  public interface SimpleInputDialogListner {
+    void onConfirm(String text);
+  }
+
+  protected String getClassName() {
+    return this.getClass().getSimpleName();
+  }
+
+  protected Student getFirstStudent() throws AVException {
+    AVQuery<Student> q = AVObject.getQuery(Student.class);
+    Student student = q.getFirst();
+    if (student == null) {
+      log("请先运行创建对象的例子，以便有对象可演示");
+      throw new IllegalStateException("can not find any object");
+    }
+    return student;
+  }
+
+  protected Context getRunningContext() {
+    return demoRunActivity;
+  }
 
 }

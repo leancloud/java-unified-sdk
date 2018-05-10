@@ -54,7 +54,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    compile('cn.leancloud:storage-core:1.0-SNAPSHOT') {
+
+    compile('cn.leancloud:storage-core:5.0.0-SNAPSHOT') {
         exclude group: 'com.alibaba', module: 'fastjson'
     }
     compile 'com.alibaba:fastjson:1.1.68.android'
