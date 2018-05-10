@@ -3,6 +3,7 @@ package cn.leancloud.core;
 import cn.leancloud.AVACL;
 import cn.leancloud.AVLogAdapter;
 import cn.leancloud.cache.InMemorySetting;
+import cn.leancloud.cache.LastModifyCache;
 import cn.leancloud.cache.SystemSetting;
 import cn.leancloud.logging.SimpleLoggerAdapter;
 import io.reactivex.Scheduler;
@@ -13,8 +14,10 @@ public class AppConfiguration {
   public interface SchedulerCreator{
     Scheduler create();
   }
+  public static final int DEFAULT_NETWORK_TIMEOUT = 30;
 
   private static AVACL defaultACL;
+  private static int networkTimeout = DEFAULT_NETWORK_TIMEOUT;
   private static AVLogAdapter logAdapter = new SimpleLoggerAdapter();
   private static boolean asynchronized = false;
   private static SchedulerCreator defaultScheduler = null;
@@ -28,6 +31,21 @@ public class AppConfiguration {
 
   private static final String SDK_VERSION = "5.0.0";
   private static final String DEFAULT_USER_AGENT = "LeanCloud SDK v" + SDK_VERSION;
+
+  public static void setNetworkTimeout(int seconds) {
+    networkTimeout = seconds;
+  }
+  public static int getNetworkTimeout() {
+    return networkTimeout;
+  }
+
+  public static void setLastModifyEnabled(boolean val) {
+    LastModifyCache.getInstance().setLastModifyEnabled(val);
+  }
+
+  public static boolean isLastModifyEnabled() {
+    return LastModifyCache.getInstance().isLastModifyEnabled();
+  }
 
   public static AVACL getDefaultACL() {
     return defaultACL;

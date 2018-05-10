@@ -46,12 +46,23 @@ public class AVOSCloud {
     AppConfiguration.getLogAdapter().setLevel(logLevel);
   }
 
+  @Deprecated
   public static void setLastModifyEnabled(boolean val) {
-    LastModifyCache.getInstance().setLastModifyEnabled(val);
+    AppConfiguration.setLastModifyEnabled(val);
   }
 
+  @Deprecated
   public static boolean isLastModifyEnabled() {
-    return LastModifyCache.getInstance().isLastModifyEnabled();
+    return AppConfiguration.isLastModifyEnabled();
+  }
+
+  @Deprecated
+  public static void setNetworkTimeout(int seconds) {
+    AppConfiguration.setNetworkTimeout(seconds);
+  }
+  @Deprecated
+  public static int getNetworkTimeout() {
+    return AppConfiguration.getNetworkTimeout();
   }
 
   public static String getApplicationId() {
