@@ -20,6 +20,7 @@ import cn.leancloud.AVException;
 import cn.leancloud.Student;
 import cn.leancloud.callback.GetCallback;
 import cn.leancloud.callback.SaveCallback;
+import cn.leancloud.convertor.ObserverBuilder;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -68,14 +69,14 @@ public class ObjectDemoActivity extends DemoBaseActivity {
 
   public void testSaveWithOption() throws AVException {
     final AVObject avObject1 = AVObject.createWithoutData("Student", "5a7a4ac8128fe1003768d2b1");
-    avObject1.fetchInBackground(new GetCallback<AVObject>() {
+    avObject1.fetchInBackground().subscribe(ObserverBuilder.buildSingleObserver(new GetCallback<AVObject>() {
       @Override
       public void done(final AVObject avObject, AVException e) {
         System.out.println(avObject.getUpdatedAt());
         AVSaveOption avSaveOption = new AVSaveOption();
         avSaveOption.query(new AVQuery("Student").whereLessThanOrEqualTo("updatedAt", avObject.getUpdatedAt()));
         avObject.put("sss","xxx");
-        avObject.saveInBackground(avSaveOption, new SaveCallback() {
+        avObject.saveInBackground(avSaveOption).subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
           @Override
           public void done(AVException e) {
             if (e == null) {
@@ -84,9 +85,10 @@ public class ObjectDemoActivity extends DemoBaseActivity {
               e.printStackTrace();
             }
           }
-        });
+        }));
       }
-    });
+    }));
+
   }
 
 

@@ -6,6 +6,8 @@ import cn.leancloud.cache.InMemorySetting;
 import cn.leancloud.cache.LastModifyCache;
 import cn.leancloud.cache.SystemSetting;
 import cn.leancloud.logging.SimpleLoggerAdapter;
+import cn.leancloud.network.NetworkingDetector;
+import cn.leancloud.network.SimpleNetworkingDetector;
 import io.reactivex.Scheduler;
 
 import java.io.File;
@@ -21,6 +23,7 @@ public class AppConfiguration {
   private static AVLogAdapter logAdapter = new SimpleLoggerAdapter();
   private static boolean asynchronized = false;
   private static SchedulerCreator defaultScheduler = null;
+  private static NetworkingDetector globalNetworkingDetector = new SimpleNetworkingDetector();
 
   private static String documentDir = "./data/";
   private static String fileCacheDir = "./file/";
@@ -160,5 +163,13 @@ public class AppConfiguration {
 
   public static SystemSetting getDefaultSetting() {
     return defaultSetting;
+  }
+
+  public static NetworkingDetector getGlobalNetworkingDetector() {
+    return globalNetworkingDetector;
+  }
+
+  public static void setGlobalNetworkingDetector(NetworkingDetector globalNetworkingDetector) {
+    AppConfiguration.globalNetworkingDetector = globalNetworkingDetector;
   }
 }

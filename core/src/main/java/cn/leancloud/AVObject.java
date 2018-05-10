@@ -1,5 +1,7 @@
 package cn.leancloud;
 
+import cn.leancloud.core.AppConfiguration;
+import cn.leancloud.network.NetworkingDetector;
 import cn.leancloud.ops.BaseOperation;
 import cn.leancloud.ops.CompoundOperation;
 import cn.leancloud.ops.ObjectFieldOperation;
@@ -19,6 +21,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -544,6 +548,41 @@ public class AVObject {
     saveInBackground().blockingSubscribe();
   }
 
+  public void saveEventually() {
+    NetworkingDetector detector = AppConfiguration.getGlobalNetworkingDetector();
+    if (null != detector && detector.isConnected()) {
+      // network is fine, try to save object;
+      this.saveInBackground().subscribe(new Observer<AVObject>() {
+        @Override
+        public void onSubscribe(Disposable disposable) {
+
+        }
+
+        @Override
+        public void onNext(AVObject avObject) {
+
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+          // failed, save data to local file first;
+          flush2Local();
+        }
+
+        @Override
+        public void onComplete() {
+
+        }
+      });
+    } else {
+      // network down, save data to local file first;
+      flush2Local();
+    }
+  }
+  private void flush2Local() {
+    ;
+  }
+
   public Observable<AVNull> deleteInBackground() {
     return PaasClient.getStorageClient().deleteObject(this.className, getObjectId());
   }
@@ -604,6 +643,9 @@ public class AVObject {
   public AVObject fetch(String includeKeys) {
     refresh(includeKeys);
     return this;
+  }
+  public Observable<AVObject> fetchInBackground() {
+    return refreshInBackground();
   }
 
   public Observable<AVObject> fetchIfNeededInBackground() {
