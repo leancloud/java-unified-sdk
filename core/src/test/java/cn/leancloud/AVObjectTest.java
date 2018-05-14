@@ -710,6 +710,33 @@ public class AVObjectTest extends TestCase {
     });
   }
 
+  public void testSaveEventually() {
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 19);
+    object.add("course", "Art");
+    try {
+      object.saveEventually();
+      Thread.sleep(20000);
+    } catch (Exception ex) {
+      fail();
+    }
+  }
+
+  public void testDeleteEventually() {
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 19);
+    object.add("course", "Art");
+    object.save();
+    try {
+      object.deleteEventually();
+      Thread.sleep(20000);
+    } catch (Exception ex) {
+      fail();
+    }
+  }
+
   public void testUpdateWithSaveOptionShouldNotChange() {
     final AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");

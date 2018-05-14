@@ -9,7 +9,7 @@ import java.util.Enumeration;
 import java.util.regex.Pattern;
 
 public class SimpleNetworkingDetector implements NetworkingDetector {
-  private static final String eth0Pattern = "[1-9]+\\.[1-9]+\\.[1-9]+\\.[1-9]+";
+  private static final String eth0Pattern = "[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+";
 
   public boolean isConnected() {
     boolean result = false;

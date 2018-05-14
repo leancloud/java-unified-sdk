@@ -4,6 +4,8 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.utils.LogUtil;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -192,6 +194,22 @@ public class PersistenceUtil {
       return null;
     }
     return new BufferedInputStream(new FileInputStream(fileForRead), 8192);
+  }
+
+  public static List<File> listFiles(String dirPath) {
+    List<File> result = new ArrayList<>();
+    File dir = new File(dirPath);
+    if (null == dir || !dir.exists() || !dir.isDirectory()) {
+      return result;
+    }
+    File[] files = dir.listFiles();
+    for (File f: files) {
+      if (!f.isFile()) {
+        continue;
+      }
+      result.add(f);
+    }
+    return result;
   }
 
   public void clearDir(String dirPath, long lastModified) {

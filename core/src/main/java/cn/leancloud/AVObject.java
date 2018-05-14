@@ -602,7 +602,7 @@ public class AVObject {
 
         @Override
         public void onNext(AVObject avObject) {
-
+          logger.d("succeed to save directly");
         }
 
         @Override
@@ -633,6 +633,7 @@ public class AVObject {
   public void deleteEventually() {
     String objectId  = getObjectId();
     if (StringUtil.isEmpty(objectId)) {
+      logger.w("objectId is empty, you couldn't delete a persistent object.");
       return;
     }
     NetworkingDetector detector = AppConfiguration.getGlobalNetworkingDetector();
@@ -645,7 +646,7 @@ public class AVObject {
 
         @Override
         public void onNext(AVNull avNull) {
-
+          logger.d("succeed to delete directly.");
         }
 
         @Override
@@ -860,7 +861,6 @@ public class AVObject {
     AVObject avObject = (AVObject) o;
     return isFetchWhenSave() == avObject.isFetchWhenSave() &&
             Objects.equals(getClassName(), avObject.getClassName()) &&
-//            Objects.equals(getObjectId(), avObject.getObjectId()) &&
             Objects.equals(getServerData(), avObject.getServerData()) &&
             Objects.equals(operations, avObject.operations) &&
             Objects.equals(acl, avObject.acl);
@@ -869,6 +869,6 @@ public class AVObject {
   @Override
   public int hashCode() {
 
-    return Objects.hash(getClassName(), getObjectId(), getServerData(), operations, acl, isFetchWhenSave());
+    return Objects.hash(getClassName(), getServerData(), operations, acl, isFetchWhenSave());
   }
 }
