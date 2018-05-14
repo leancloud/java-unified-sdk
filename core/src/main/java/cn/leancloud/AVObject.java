@@ -30,7 +30,7 @@ public class AVObject {
   public static final String KEY_OBJECT_ID = "objectId";
   public static final String KEY_ACL = "ACL";
 
-  static final String KEY_CLASSNAME = "className";
+  public static final String KEY_CLASSNAME = "className";
 
   private static final Set<String> RESERVED_ATTRS = new HashSet<String>(
           Arrays.asList(KEY_CREATED_AT, KEY_UPDATED_AT, KEY_OBJECT_ID, KEY_ACL));
@@ -91,6 +91,9 @@ public class AVObject {
 
   public void setObjectId(String objectId) {
     this.objectId = objectId;
+    if (null != this.serverData) {
+      this.serverData.put(KEY_OBJECT_ID, objectId);
+    }
   }
 
   public boolean isFetchWhenSave() {
@@ -101,6 +104,7 @@ public class AVObject {
     this.fetchWhenSave = fetchWhenSave;
   }
 
+  // Caution: public this method just for compatibility.
   public String getUuid() {
     if (StringUtil.isEmpty(this.uuid)) {
       this.uuid = UUID.randomUUID().toString().toLowerCase();
@@ -604,7 +608,7 @@ public class AVObject {
         @Override
         public void onError(Throwable throwable) {
           // failed, save data to local file first;
-          flush2Local();
+          add2ArchivedRequest(false);
         }
 
         @Override
@@ -614,11 +618,16 @@ public class AVObject {
       });
     } else {
       // network down, save data to local file first;
-      flush2Local();
+      add2ArchivedRequest(false);
     }
   }
-  private void flush2Local() {
-    ;
+  private void add2ArchivedRequest(boolean isDelete) {
+    ArchivedRequests requests = ArchivedRequests.getInstance();
+    if (isDelete) {
+      requests.deleteEventually(this);
+    } else {
+      requests.saveEventually(this);
+    }
   }
 
   public void deleteEventually() {
@@ -628,9 +637,29 @@ public class AVObject {
     }
     NetworkingDetector detector = AppConfiguration.getGlobalNetworkingDetector();
     if (null != detector && detector.isConnected()) {
-      ;
+      this.deleteInBackground().subscribe(new Observer<AVNull>() {
+        @Override
+        public void onSubscribe(Disposable disposable) {
+
+        }
+
+        @Override
+        public void onNext(AVNull avNull) {
+
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+          add2ArchivedRequest(true);
+        }
+
+        @Override
+        public void onComplete() {
+
+        }
+      });
     } else {
-      ;
+      add2ArchivedRequest(true);
     }
   }
   public Observable<AVNull> deleteInBackground() {
@@ -831,7 +860,7 @@ public class AVObject {
     AVObject avObject = (AVObject) o;
     return isFetchWhenSave() == avObject.isFetchWhenSave() &&
             Objects.equals(getClassName(), avObject.getClassName()) &&
-            Objects.equals(getObjectId(), avObject.getObjectId()) &&
+//            Objects.equals(getObjectId(), avObject.getObjectId()) &&
             Objects.equals(getServerData(), avObject.getServerData()) &&
             Objects.equals(operations, avObject.operations) &&
             Objects.equals(acl, avObject.acl);

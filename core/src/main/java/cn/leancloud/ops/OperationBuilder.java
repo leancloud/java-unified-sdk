@@ -1,11 +1,11 @@
 package cn.leancloud.ops;
 
 public class OperationBuilder {
-  public static enum OperationType {
+  public enum OperationType {
     Set,            // 增加属性
     Delete,         // 删除属性
     Add,            // 在数组末尾添加对象
-    AddUnique,      //在数组末尾添加不会重复的对象
+    AddUnique,      // 在数组末尾添加不会重复的对象
     Remove,         // 从数组中删除对象
     AddRelation,    // 添加一个关系
     RemoveRelation, // 删除一个关系
@@ -13,7 +13,8 @@ public class OperationBuilder {
     Decrement,      // 递减
     BitAnd,         // 与运算
     BitOr,          // 或运算
-    BitXor          // 异或运算
+    BitXor,         // 异或运算
+    Compound,       // 复合运算
   }
   public static final OperationBuilder gBuilder = new OperationBuilder();
   private OperationBuilder() {
@@ -58,9 +59,12 @@ public class OperationBuilder {
       case BitXor:
         operation = new BitXorOperation(field, value);
         break;
-        default:
-          operation = new NullOperation(field, value);
-          break;
+      case Compound:
+        operation = new CompoundOperation(field);
+        break;
+      default:
+        operation = new NullOperation(field, value);
+        break;
     }
     return operation;
   }

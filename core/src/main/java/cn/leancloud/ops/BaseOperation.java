@@ -1,18 +1,17 @@
 package cn.leancloud.ops;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.*;
 import cn.leancloud.codec.Base64;
-import cn.leancloud.AVACL;
-import cn.leancloud.AVFile;
-import cn.leancloud.AVObject;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONType;
 
 import java.util.*;
 
+@JSONType(deserializer = BaseOperationAdapter.class, serializer = BaseOperationAdapter.class)
 public abstract class BaseOperation implements ObjectFieldOperation {
   static final AVLogger LOGGER = LogUtil.getLogger(BaseOperation.class);
   static final String KEY_OP = "__op";
@@ -45,6 +44,8 @@ public abstract class BaseOperation implements ObjectFieldOperation {
   public Object getValue() {
     return this.value;
   }
+  public boolean isFinal() {return this.isFinal;}
+
   public boolean checkCircleReference(Map<AVObject, Boolean> markMap) {
     if (null == markMap) {
       return false;
@@ -68,6 +69,8 @@ public abstract class BaseOperation implements ObjectFieldOperation {
    * @return
    */
   public abstract Object apply(Object obj);
+
+  public abstract Map<String, Object> encode();
 
   /**
    * merge with previous operations.
@@ -122,8 +125,6 @@ public abstract class BaseOperation implements ObjectFieldOperation {
   protected void reportIllegalOperations(ObjectFieldOperation current, ObjectFieldOperation prev) {
     LOGGER.w("illegal operations. current=" + current.getClass().getSimpleName() + ", prev=" + prev.getClass().getSimpleName());
   }
-
-  public abstract Map<String, Object> encode();
 
   protected Object encodeObject(Object o) {
     return encodeObject(o, false);

@@ -1,13 +1,13 @@
 package cn.leancloud.ops;
 
 import cn.leancloud.AVObject;
-
 import java.util.Map;
 
 public interface ObjectFieldOperation {
   String getOperation();
   String getField();
   Object getValue();
+
   boolean checkCircleReference(Map<AVObject, Boolean> markMap);
 
   /**

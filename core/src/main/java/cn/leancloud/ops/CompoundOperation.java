@@ -1,8 +1,6 @@
 package cn.leancloud.ops;
 
 import cn.leancloud.AVObject;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 import java.util.*;
 
@@ -14,6 +12,10 @@ public class CompoundOperation extends BaseOperation {
   public CompoundOperation(String field, ObjectFieldOperation... ops) {
     this(field);
     operations.addAll(Arrays.asList(ops));
+  }
+
+  public List<ObjectFieldOperation> getSubOperations() {
+    return this.operations;
   }
 
   @Override
