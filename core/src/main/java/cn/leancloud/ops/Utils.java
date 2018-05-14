@@ -247,4 +247,17 @@ public class Utils {
     return obj;
   }
 
+  public static Map<String, Object> makeCompletedRequest(String internalId, String path, String method, Map<String, Object> param) {
+    if (null == param || StringUtil.isEmpty(path) || StringUtil.isEmpty(method)) {
+      return null;
+    }
+    param.put(BaseOperation.KEY_INTERNAL_ID, internalId);
+
+    Map<String, Object> topParams = new HashMap<String, Object>();
+    topParams.put(BaseOperation.KEY_BODY, param);
+    topParams.put(BaseOperation.KEY_PATH, path);
+    topParams.put(BaseOperation.KEY_HTTP_METHOD, method);
+    return topParams;
+  }
+
 }

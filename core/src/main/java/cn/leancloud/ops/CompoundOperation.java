@@ -47,22 +47,24 @@ public class CompoundOperation extends BaseOperation {
     for (int i = 1; i < this.operations.size(); i++) {
       ObjectFieldOperation tmp = this.operations.get(i);
       Map<String, Object> tmpOp = tmp.encode();
-      tmpOp.put(KEY_INTERNAL_ID, parent.getObjectId());
 
-      Map<String, Object> tmpResult = new HashMap<String, Object>();
-      tmpResult.put(KEY_BODY, tmpOp);
-      tmpResult.put(KEY_PATH, requestEndPoint);
-      tmpResult.put(KEY_HTTP_METHOD, requestMethod);
-      result.add(tmpResult);
+      Map<String, Object> tmpResult = Utils.makeCompletedRequest(parent.getObjectId(), requestEndPoint, requestMethod, tmpOp);
+      if (null != tmpResult) {
+        result.add(tmpResult);
+      }
     }
     return result;
   }
 
-  public Map<String, Object> encode() {
+  private Map<String, Object> encodeHeadOp() {
     if (this.operations.size() < 1) {
       return null;
     }
     // just return the first Operation.
     return this.operations.get(0).encode();
+  }
+
+  public Map<String, Object> encode() {
+    return encodeHeadOp();
   }
 }

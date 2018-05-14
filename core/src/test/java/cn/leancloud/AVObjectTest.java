@@ -605,4 +605,147 @@ public class AVObjectTest extends TestCase {
       }
     });
   }
+  public void testCreateWithSaveOptionShouldAdd() {
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 19);
+    object.add("course", "Art");
+    AVQuery<AVObject> query = new AVQuery<>("Student");
+    query.whereGreaterThan("age", "19");
+    AVSaveOption option = new AVSaveOption();
+    option.matchQuery = query;
+    option.fetchWhenSave = true;
+    object.saveInBackground(option).subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+        ;
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        assertNotNull(avObject);
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        fail();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+  }
+
+  public void testCreateWithSaveOptionShouldNotAdd() {
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 19);
+    object.add("course", "Art");
+    AVQuery<AVObject> query = new AVQuery<>("Student");
+    query.whereGreaterThan("age", "900");
+    AVSaveOption option = new AVSaveOption();
+    option.matchQuery = query;
+    option.fetchWhenSave = true;
+    object.saveInBackground(option).subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+        ;
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        assertNotNull(avObject);
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+
+  }
+  public void testUpdateWithSaveOptionShouldChange() {
+    final AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 19);
+    object.add("course", "Art");
+    object.save();
+
+    AVQuery<AVObject> query = new AVQuery<>("Student");
+    query.whereEqualTo("age", 19);
+    query.whereEqualTo("objectId", object.getObjectId());
+    AVSaveOption option = new AVSaveOption();
+    option.matchQuery = query;
+
+    object.put("age", 30);
+    object.saveInBackground(option).subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        object.delete();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        fail();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+  }
+
+  public void testUpdateWithSaveOptionShouldNotChange() {
+    final AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 19);
+    object.add("course", "Art");
+    object.save();
+
+    AVQuery<AVObject> query = new AVQuery<>("Student");
+    query.whereEqualTo("age", 29);
+    query.whereEqualTo("objectId", object.getObjectId());
+    AVSaveOption option = new AVSaveOption();
+    option.matchQuery = query;
+
+    object.put("age", 30);
+    object.saveInBackground(option).subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        object.delete();
+        fail();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        object.delete();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+  }
 }

@@ -196,8 +196,8 @@ public class StorageClient {
     return wrappObservable(apiService.deleteObject(className, objectId));
   }
 
-  public Observable<? extends AVObject> createObject(final String className, JSONObject data, boolean fetchFlag) {
-    Observable<AVObject> object = wrappObservable(apiService.createObject(className, data, fetchFlag));
+  public Observable<? extends AVObject> createObject(final String className, JSONObject data, boolean fetchFlag, JSONObject where) {
+    Observable<AVObject> object = wrappObservable(apiService.createObject(className, data, fetchFlag, where));
     if (null == object) {
       return null;
     }
@@ -209,8 +209,9 @@ public class StorageClient {
     });
   }
 
-  public Observable<? extends AVObject> saveObject(final String className, String objectId, JSONObject data, boolean fetchFlag) {
-    Observable<AVObject> object = wrappObservable(apiService.updateObject(className, objectId, data, fetchFlag));
+  public Observable<? extends AVObject> saveObject(final String className, String objectId, JSONObject data,
+                                                   boolean fetchFlag, JSONObject where) {
+    Observable<AVObject> object = wrappObservable(apiService.updateObject(className, objectId, data, fetchFlag, where));
     if (null == object) {
       return null;
     }

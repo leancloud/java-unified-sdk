@@ -2,10 +2,7 @@ package cn.leancloud;
 
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.network.NetworkingDetector;
-import cn.leancloud.ops.BaseOperation;
-import cn.leancloud.ops.CompoundOperation;
-import cn.leancloud.ops.ObjectFieldOperation;
-import cn.leancloud.ops.OperationBuilder;
+import cn.leancloud.ops.*;
 import cn.leancloud.types.AVDate;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.core.PaasClient;
@@ -395,28 +392,30 @@ public class AVObject {
     Map<String, Object> params = new HashMap<String, Object>();
     Set<Map.Entry<String, ObjectFieldOperation>> entries = operations.entrySet();
     for (Map.Entry<String, ObjectFieldOperation> entry: entries) {
+      //{"attr":{"__op":"Add", "objects":[obj1, obj2]}}
       Map<String, Object> oneOp = entry.getValue().encode();
       params.putAll(oneOp);
     }
+
     if (null != this.acl) {
       AVACL serverACL = generateACLFromServerData();
       if (!this.acl.equals(serverACL)) {
+        // only append acl request when modified.
         ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Set, KEY_ACL, acl);
         params.putAll(op.encode());
       }
     }
+
     if (!needBatchMode()) {
       return new JSONObject(params);
     }
-    params.put(BaseOperation.KEY_INTERNAL_ID, getObjectId());
-
-    Map<String, Object> topParams = new HashMap<String, Object>();
-    topParams.put(BaseOperation.KEY_PATH, getRequestRawEndpoint());
-    topParams.put(BaseOperation.KEY_HTTP_METHOD, getRequestMethod());
-    topParams.put(BaseOperation.KEY_BODY, params);
 
     List<Map<String, Object>> finalParams = new ArrayList<Map<String, Object>>();
-    finalParams.add(topParams);
+    Map<String, Object> topParams = Utils.makeCompletedRequest(getObjectId(), getRequestRawEndpoint(), getRequestMethod(), params);
+    if (null != topParams) {
+      finalParams.add(topParams);
+    }
+
     for (ObjectFieldOperation ops : this.operations.values()) {
       if (ops instanceof CompoundOperation) {
         List<Map<String, Object>> restParams = ((CompoundOperation)ops).encodeRestOp(this);
@@ -458,14 +457,22 @@ public class AVObject {
   }
 
   private Observable<? extends AVObject> saveSelfOperations(AVSaveOption option) {
-    if (null != option) {
-      setFetchWhenSave(option.fetchWhenSave);
+    final boolean needFetch = (null != option) ? option.fetchWhenSave : isFetchWhenSave();
+
+    if (null != option && null != option.matchQuery) {
+      String currentClass = getClassName();
+      if (!StringUtil.isEmpty(currentClass) && !currentClass.equals(option.matchQuery.getClassName())) {
+        return Observable.error(new AVException(0, "AVObject class inconsistant with AVQuery in AVSaveOption"));
+      }
     }
+
     final JSONObject paramData = generateChangedParam();
-    logger.d("saveObject param: " + paramData.toJSONString());
+    logger.i("saveObject param: " + paramData.toJSONString());
+
     final String currentObjectId = getObjectId();
+
     if (needBatchMode()) {
-      logger.w("Caution: batch mode will ignore fetchWhenSave flag.");
+      logger.w("Caution: batch mode will ignore fetchWhenSave flag and matchQuery.");
       if (StringUtil.isEmpty(currentObjectId)) {
         return PaasClient.getStorageClient().batchSave(paramData).map(new Function<JSONArray, AVObject>() {
           public AVObject apply(JSONArray object) throws Exception {
@@ -475,6 +482,7 @@ public class AVObject {
               Map<String, Object> lastResult = object.getObject(object.size() - 1, Map.class);
               if (null != lastResult) {
                 AVObject.this.serverData.putAll(lastResult);
+                AVObject.this.operations.clear();
               }
             }
             return AVObject.this;
@@ -488,6 +496,7 @@ public class AVObject {
               Map<String, Object> lastResult = object.getObject(currentObjectId, Map.class);
               if (null != lastResult) {
                 AVObject.this.serverData.putAll(lastResult);
+                AVObject.this.operations.clear();
               }
             }
             return AVObject.this;
@@ -495,8 +504,13 @@ public class AVObject {
         });
       }
     } else {
+      JSONObject whereCondition = null;
+      if (null != option && null != option.matchQuery) {
+        Map<String, Object> whereOperationMap = option.matchQuery.conditions.compileWhereOperationMap();
+        whereCondition = new JSONObject(whereOperationMap);
+      }
       if (StringUtil.isEmpty(currentObjectId)) {
-        return PaasClient.getStorageClient().createObject(this.className, paramData, isFetchWhenSave())
+        return PaasClient.getStorageClient().createObject(this.className, paramData, needFetch, whereCondition)
                 .map(new Function<AVObject, AVObject>() {
                   @Override
                   public AVObject apply(AVObject avObject) throws Exception {
@@ -505,7 +519,7 @@ public class AVObject {
                   }
                 });
       } else {
-        return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData, isFetchWhenSave())
+        return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData, needFetch, whereCondition)
                 .map(new Function<AVObject, AVObject>() {
                   @Override
                   public AVObject apply(AVObject avObject) throws Exception {
@@ -714,6 +728,7 @@ public class AVObject {
   void mergeRawData(AVObject avObject) {
     if (null != avObject) {
       this.serverData.putAll(avObject.serverData);
+      this.operations.clear();
     }
   }
 

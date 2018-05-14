@@ -39,11 +39,13 @@ public interface APIService {
 
   @POST("/1.1/classes/{className}")
   Observable<AVObject> createObject(@Path("className") String className, @Body JSONObject object,
-                                    @Query("fetchWhenSave") boolean fetchFlag);
+                                    @Query("fetchWhenSave") boolean fetchFlag,
+                                    @Query("where") JSONObject where);
 
   @PUT("/1.1/classes/{className}/{objectId}")
   Observable<AVObject> updateObject(@Path("className") String className, @Path("objectId") String objectId,
-                                    @Body JSONObject object, @Query("fetchWhenSave") boolean fetchFlag);
+                                    @Body JSONObject object, @Query("fetchWhenSave") boolean fetchFlag,
+                                    @Query("where") JSONObject where);
 
   @DELETE("/1.1/classes/{className}/{objectId}")
   Observable<AVNull> deleteObject(@Path("className") String className, @Path("objectId") String objectId);
