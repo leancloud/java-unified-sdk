@@ -45,6 +45,7 @@ public class AVObject {
   protected Map<String, Object> serverData = new ConcurrentHashMap<String, Object>();
   protected Map<String, ObjectFieldOperation> operations = new ConcurrentHashMap<String, ObjectFieldOperation>();
   protected AVACL acl = null;
+  private String uuid = null;
   private volatile boolean fetchWhenSave = false;
 
   public AVObject() {
@@ -101,6 +102,21 @@ public class AVObject {
 
   public void setFetchWhenSave(boolean fetchWhenSave) {
     this.fetchWhenSave = fetchWhenSave;
+  }
+
+  public String getUuid() {
+    if (StringUtil.isEmpty(this.uuid)) {
+      this.uuid = UUID.randomUUID().toString().toLowerCase();
+    }
+    return this.uuid;
+  }
+
+  void setUuid(String uuid) {
+    this.uuid = uuid;
+  }
+
+  protected String internalId() {
+    return StringUtil.isEmpty(getObjectId()) ? getUuid() : getObjectId();
   }
 
   /**
@@ -548,7 +564,15 @@ public class AVObject {
     saveInBackground().blockingSubscribe();
   }
 
-  public void saveEventually() {
+  public void saveEventually() throws AVException {
+    if (operations.isEmpty()) {
+      return;
+    }
+    Map<AVObject, Boolean> markMap = new HashMap<>();
+    if (hasCircleReference(markMap)) {
+      throw new AVException(AVException.CIRCLE_REFERENCE, "Found a circular dependency when saving.");
+    }
+
     NetworkingDetector detector = AppConfiguration.getGlobalNetworkingDetector();
     if (null != detector && detector.isConnected()) {
       // network is fine, try to save object;
@@ -583,6 +607,18 @@ public class AVObject {
     ;
   }
 
+  public void deleteEventually() {
+    String objectId  = getObjectId();
+    if (StringUtil.isEmpty(objectId)) {
+      return;
+    }
+    NetworkingDetector detector = AppConfiguration.getGlobalNetworkingDetector();
+    if (null != detector && detector.isConnected()) {
+      ;
+    } else {
+      ;
+    }
+  }
   public Observable<AVNull> deleteInBackground() {
     return PaasClient.getStorageClient().deleteObject(this.className, getObjectId());
   }

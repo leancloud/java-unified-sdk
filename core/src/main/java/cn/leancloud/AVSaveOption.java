@@ -22,7 +22,6 @@ public class AVSaveOption {
    * @param query
    * @return
    */
-
   public AVSaveOption query(AVQuery query) {
     this.matchQuery = query;
     return this;
