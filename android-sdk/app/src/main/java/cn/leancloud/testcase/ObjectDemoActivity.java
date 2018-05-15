@@ -143,8 +143,12 @@ public class ObjectDemoActivity extends DemoBaseActivity {
     log("请在网络关闭的时候运行本方法，然后开启网络，看是否保存上");
     Student student = new Student();
     student.setName("testOfflineSave");
-    student.saveEventually();
-    log("离线保存了对象：" + prettyJSON(student));
+    try {
+      student.saveEventually();
+      log("离线保存了对象：" + prettyJSON(student));
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
   }
 
   public void testIncrement() throws AVException {

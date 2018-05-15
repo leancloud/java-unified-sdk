@@ -5,6 +5,7 @@ import java.util.List;
 import cn.leancloud.AVException;
 import cn.leancloud.AVQuery;
 import cn.leancloud.DemoBaseActivity;
+import cn.leancloud.Post;
 import cn.leancloud.Student;
 
 /**

@@ -13,8 +13,12 @@ import cn.leancloud.AVException;
 import cn.leancloud.AVUser;
 import cn.leancloud.DemoBaseActivity;
 import cn.leancloud.R;
+import cn.leancloud.callback.LogInCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.callback.SignUpCallback;
+import cn.leancloud.convertor.ObserverBuilder;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by fengjunwen on 2018/5/10.
@@ -56,7 +60,7 @@ public class UserAuthDataDemoActivity extends DemoBaseActivity {
     authData.put("openid", "6A83158");
     authData.put("access_token", "DCIF");
     authData.put("platform", "weixin");
-    AVUser.loginWithAuthData(authData, "weixin_darenbangbang", new LogInCallback() {
+    AVUser.loginWithAuthData(authData, "weixin_darenbangbang").subscribe(ObserverBuilder.buildSingleObserver(new LogInCallback() {
       @Override
       public void done(AVUser avUser, AVException e) {
         if (null != e) {
@@ -65,7 +69,7 @@ public class UserAuthDataDemoActivity extends DemoBaseActivity {
           log("成功登录，当前用户：" + avUser);
         }
       }
-    });
+    }));
   }
   public void testLoginWithAuthDataEx() {
     final Map<String, Object> authData = new HashMap<String, Object>();
@@ -73,7 +77,8 @@ public class UserAuthDataDemoActivity extends DemoBaseActivity {
     authData.put("openid", "6A83158");
     authData.put("access_token", "DCIF");
     authData.put("platform", "weixin");
-    AVUser.loginWithAuthData(authData, "weixin_darenbangbang", new LogInCallback() {
+    AVUser.loginWithAuthData(authData, "weixin_darenbangbang")
+        .subscribe(ObserverBuilder.buildSingleObserver(new LogInCallback() {
       @Override
       public void done(final AVUser avUser, AVException e) {
         if (null != e) {
@@ -85,34 +90,36 @@ public class UserAuthDataDemoActivity extends DemoBaseActivity {
           authData2.put("openid", "6A8315fwirw328");
           authData2.put("access_token", "Dfaef21CIF");
           authData2.put("platform", "weixin");
-          AVUser.loginWithAuthData(authData2, "weixin_darenxiu", new LogInCallback() {
-            @Override
-            public void done(AVUser avUser2, AVException ex) {
-              if (null != ex) {
-                log("尝试使用第三方账号登录，发生错误。cause：" + ex.getMessage());
-              } else {
-                log("第二次成功登录，当前用户：" + avUser2.getObjectId());
-                AVUser.loginWithAuthData(authData, "weixin_darenbangbang", "ThisisaunionId", "weixin", true, new LogInCallback() {
-                  @Override
-                  public void done(AVUser au, AVException e2) {
-                    if (null != e2) {
-                      log("尝试使用第三方账号登录，发生错误。cause：" + e2.getMessage());
-                    } else {
-                      log("第三次成功登录，当前用户：" + au.getObjectId());
-                      if (au.getObjectId().equals(avUser.getObjectId())) {
-                        log("expected: bind to correct user with unionId");
-                      } else {
-                        log("not expected: cannot bind to correct user with unionId");
-                      }
-                    }
+          AVUser.loginWithAuthData(authData2, "weixin_darenxiu")
+              .subscribe(ObserverBuilder.buildSingleObserver(new LogInCallback() {
+                @Override
+                public void done(AVUser avUser2, AVException ex) {
+                  if (null != ex) {
+                    log("尝试使用第三方账号登录，发生错误。cause：" + ex.getMessage());
+                  } else {
+                    log("第二次成功登录，当前用户：" + avUser2.getObjectId());
+                    AVUser.loginWithAuthData(authData, "weixin_darenbangbang", "ThisisaunionId", "weixin", true)
+                        .subscribe(ObserverBuilder.buildSingleObserver(new LogInCallback() {
+                          @Override
+                          public void done(AVUser au, AVException e2) {
+                            if (null != e2) {
+                              log("尝试使用第三方账号登录，发生错误。cause：" + e2.getMessage());
+                            } else {
+                              log("第三次成功登录，当前用户：" + au.getObjectId());
+                              if (au.getObjectId().equals(avUser.getObjectId())) {
+                                log("expected: bind to correct user with unionId");
+                              } else {
+                                log("not expected: cannot bind to correct user with unionId");
+                              }
+                            }
+                          }
+                        }));
                   }
-                });
-              }
-            }
-          });
+                }
+              }));
         }
       }
-    });
+    }));
   }
   public void testAssociateWithAuthData() {
     showInputDialog("Sign Up", new InputDialogListener(){
@@ -120,7 +127,7 @@ public class UserAuthDataDemoActivity extends DemoBaseActivity {
         final AVUser user = new AVUser();
         user.setUsername(username);
         user.setPassword(password);
-        user.signUpInBackground(new SignUpCallback() {
+        user.signUpInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SignUpCallback() {
           @Override
           public void done(AVException e) {
             if (null != e) {
@@ -132,20 +139,20 @@ public class UserAuthDataDemoActivity extends DemoBaseActivity {
               authData.put("openid", "6A83faefewfew158");
               authData.put("access_token", "DCfafewerEWDWIF");
               authData.put("platform", "weixin");
-              user.associateWithAuthData(authData, "weixin_darenbangbang", new SaveCallback() {
-                @Override
-                public void done(AVException ex) {
-                  if (null != ex) {
-                    log("第三方信息关联失败。 cause：" + ex.getMessage());
-                  } else {
-                    log("第三方信息关联成功");
-                  }
-                }
-              });
+              user.associateWithAuthData(authData, "weixin_darenbangbang")
+                  .subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
+                    @Override
+                    public void done(AVException ex) {
+                      if (null != ex) {
+                        log("第三方信息关联失败。 cause：" + ex.getMessage());
+                      } else {
+                        log("第三方信息关联成功");
+                      }
+                    }
+                  }));
             }
           }
-        });
-        ;
+        }));
       }
     });
   }
@@ -155,7 +162,7 @@ public class UserAuthDataDemoActivity extends DemoBaseActivity {
         final AVUser user = new AVUser();
         user.setUsername(username);
         user.setPassword(password);
-        user.signUpInBackground(new SignUpCallback() {
+        user.signUpInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SignUpCallback() {
           @Override
           public void done(AVException e) {
             if (null != e) {
@@ -168,8 +175,8 @@ public class UserAuthDataDemoActivity extends DemoBaseActivity {
               authData.put("access_token", "DCfafewerEWDWIF");
               authData.put("platform", "weixin");
               user.associateWithAuthData(authData, "weixin_darenbangbang",
-                  "ThisisAUnionIDXXX", "weixin", false,
-                  new SaveCallback() {
+                  "ThisisAUnionIDXXX", "weixin", false)
+                  .subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
                     @Override
                     public void done(AVException ex) {
                       if (null != ex) {
@@ -178,10 +185,10 @@ public class UserAuthDataDemoActivity extends DemoBaseActivity {
                         log("第三方信息关联成功");
                       }
                     }
-                  });
+                  }));
             }
           }
-        });
+        }));
         ;
       }
     });
