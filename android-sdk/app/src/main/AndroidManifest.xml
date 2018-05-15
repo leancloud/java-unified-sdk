@@ -44,6 +44,7 @@
         <activity android:name=".testcase.PointerDemoActivity"/>
         <activity android:name=".testcase.QueryDemoActivity"/>
         <activity android:name=".testcase.UserAuthDataDemoActivity"/>
+        <activity android:name=".testcase.UserDemoActivity"/>
         <activity android:name="ar.com.daidalos.afiledialog.FileChooserActivity" />
     </application>
 

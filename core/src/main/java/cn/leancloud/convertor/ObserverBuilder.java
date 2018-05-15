@@ -93,6 +93,12 @@ public class ObserverBuilder {
     return new SingleObjectObserver<Integer>(callback);
   }
 
+  public static SingleObjectObserver<AVNull> buildSingleObserver(UpdatePasswordCallback callback) {
+    return new SingleObjectObserver<AVNull>(callback);
+  }
+  public static SingleObjectObserver<AVNull> buildSingleObserver(MobilePhoneVerifyCallback callback) {
+    return new SingleObjectObserver<AVNull>(callback);
+  }
   /**
    * Multiple Objects Observer.
    */

@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -582,6 +583,24 @@ public class AVObject {
     saveInBackground().blockingSubscribe();
   }
 
+  public static void saveAll(Collection<? extends AVObject> objects) throws AVException {
+    saveAllInBackground(objects).blockingSubscribe();
+  }
+
+  public static Observable<AVNull> saveAllInBackground(Collection<? extends AVObject> objects) {
+    if (null == objects || objects.isEmpty()) {
+      return Observable.just(AVNull.getINSTANCE());
+    }
+    for (AVObject o : objects) {
+      Map<AVObject, Boolean> markMap = new HashMap<>();
+      if (o.hasCircleReference(markMap)) {
+        return Observable.error(new AVException(AVException.CIRCLE_REFERENCE, "Found a circular dependency when saving."));
+      }
+    }
+    // TODO: need to complete me.
+    return Observable.just(AVNull.getINSTANCE());
+  }
+
   public void saveEventually() throws AVException {
     if (operations.isEmpty()) {
       return;
@@ -669,6 +688,10 @@ public class AVObject {
 
   public void delete() {
     deleteInBackground().blockingSubscribe();
+  }
+
+  public static void deleteAll(Collection<? extends AVObject> objects) throws AVException {
+    deleteAllInBackground(objects).blockingSubscribe();
   }
 
   public static Observable<AVNull> deleteAllInBackground(Collection<? extends AVObject> objects) {
