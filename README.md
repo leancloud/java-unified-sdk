@@ -1,4 +1,4 @@
-# LeanCloud Java/Android uniform SDK(WIP)
+# LeanCloud Java/Android unified SDK(WIP)
 
 LeanCloud Java SDK 包含 LeanCloud 平台全部功能的客户端接口，适用于 Java 和 Android 两个平台。
 
