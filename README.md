@@ -16,7 +16,7 @@ SDK 中所有 API 接口与 LeanCloud 云端交互严格遵循 LeanCloud REST AP
 - [x] AVUser 内建账户系统
 - [x] Role 与 ACL
 - [ ] AVFriendship 与 AVStatus
-### 云引擎 library（soon incoming）
+### 云引擎 library（coming soon）
 - [ ] EngineFunction
 - [ ] EngineHook
 - [ ] IMHook
