@@ -16,6 +16,7 @@ import com.alibaba.fastjson.annotation.JSONType;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -33,6 +34,7 @@ public class AVObject {
 
   public static final String KEY_CLASSNAME = "className";
 
+  private static final String INTERNAL_PATTERN = "^[\\da-z][\\d-a-z]*$";
   private static final Set<String> RESERVED_ATTRS = new HashSet<String>(
           Arrays.asList(KEY_CREATED_AT, KEY_UPDATED_AT, KEY_OBJECT_ID, KEY_ACL));
 
@@ -115,6 +117,10 @@ public class AVObject {
 
   void setUuid(String uuid) {
     this.uuid = uuid;
+  }
+
+  protected static boolean verifyInternalId(String internalId) {
+    return Pattern.matches(INTERNAL_PATTERN, internalId);
   }
 
   protected String internalId() {

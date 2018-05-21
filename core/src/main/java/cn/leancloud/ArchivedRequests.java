@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.operators.observable.ObservableError;
@@ -21,6 +22,9 @@ import io.reactivex.internal.operators.observable.ObservableError;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.alibaba.fastjson.parser.Feature.IgnoreAutoType;
+import static com.alibaba.fastjson.parser.Feature.SupportAutoType;
 
 public class ArchivedRequests {
   private static final AVLogger logger = LogUtil.getLogger(ArchivedRequests.class);
@@ -64,7 +68,8 @@ public class ArchivedRequests {
         }
         if (saveObjects.size() > 0) {
           sendArchivedRequest(saveObjects, false);
-        } else {
+        }
+        if (deleteObjects.size() > 0) {
           sendArchivedRequest(deleteObjects, true);
         }
         logger.i("end to run timer task for archived request.");
@@ -92,7 +97,13 @@ public class ArchivedRequests {
           @Override
           public void onNext(AVNull avNull) {
             collection.remove(obj.internalId());
-            PersistenceUtil.sharedInstance().deleteFile(getArchivedFile(obj, isDelete));
+            File archivedFile = getArchivedFile(obj, isDelete);
+            boolean ret = PersistenceUtil.sharedInstance().forceDeleteFile(archivedFile);
+            if (!ret) {
+              logger.w("failed to delete file:" + archivedFile.getAbsolutePath() + " for objectInternalId: " + obj.internalId());
+            } else {
+              logger.d("succeed to delete file:" + archivedFile.getAbsolutePath() + " for objectInternalId: " + obj.internalId());
+            }
           }
 
           @Override
@@ -111,7 +122,13 @@ public class ArchivedRequests {
           @Override
           public void onNext(AVObject avObject) {
             collection.remove(obj.internalId());
-            PersistenceUtil.sharedInstance().deleteFile(getArchivedFile(obj, isDelete));
+            File archivedFile = getArchivedFile(obj, isDelete);
+            boolean ret = PersistenceUtil.sharedInstance().forceDeleteFile(archivedFile);
+            if (!ret) {
+              logger.w("failed to delete file:" + archivedFile.getAbsolutePath() + " for objectInternalId: " + obj.internalId());
+            } else {
+              logger.d("succeed to delete file:" + archivedFile.getAbsolutePath() + " for objectInternalId: " + obj.internalId());
+            }
           }
 
           @Override
@@ -158,45 +175,64 @@ public class ArchivedRequests {
     content.put(ATTR_METHOD, isDelete ? METHOD_DELETE : METHOD_SAVE);
     content.put(ATTR_INTERNAL_ID, object.internalId());
     content.put(ATTR_OBJECT, JSON.toJSONString(object));
-    content.put(ATTR_OPERATION, JSON.toJSONString(object.operations.values()));
+    content.put(ATTR_OPERATION, JSON.toJSONString(object.operations.values(), ObjectValueFilter.instance,
+            SerializerFeature.WriteClassName, SerializerFeature.QuoteFieldNames,
+            SerializerFeature.DisableCircularReferenceDetect));
 
     return JSON.toJSONString(content);
   }
 
   private void parseArchiveFile(File file) {
-    String content = PersistenceUtil.sharedInstance().readContentFromFile(file);
-    Map<String, String> contentMap = JSON.parseObject(content, Map.class);
-    String method = contentMap.get(ATTR_METHOD);
-    AVObject resultObj = parseAVObject(contentMap);
-    logger.d("get archived request. method=" + method + ", object=" + resultObj.toString());
-    if (METHOD_SAVE.equalsIgnoreCase(method)) {
-      saveObjects.put(resultObj.internalId(), resultObj);
-    } else {
-      deleteObjects.put(resultObj.internalId(), resultObj);
+    if (null == file) {
+      return;
     }
+    if (!AVObject.verifyInternalId(file.getName())) {
+      logger.d("ignore invalid file. " + file.getAbsolutePath());
+      return;
+    }
+
+    String content = PersistenceUtil.sharedInstance().readContentFromFile(file);
+    if (StringUtil.isEmpty(content)) {
+      return;
+    }
+    try {
+      Map<String, String> contentMap = JSON.parseObject(content, Map.class);
+      String method = contentMap.get(ATTR_METHOD);
+      AVObject resultObj = parseAVObject(contentMap);
+      logger.d("get archived request. method=" + method + ", object=" + resultObj.toString());
+      if (METHOD_SAVE.equalsIgnoreCase(method)) {
+        saveObjects.put(resultObj.internalId(), resultObj);
+      } else {
+        deleteObjects.put(resultObj.internalId(), resultObj);
+      }
+    } catch (Exception ex) {
+      logger.w("encounter exception whiling parse archived file.", ex);
+    }
+  }
+
+  // just for serializer test.
+  protected static AVObject parseAVObject(String content) {
+    Map<String, String> contentMap = JSON.parseObject(content, Map.class);
+    return parseAVObject(contentMap);
   }
 
   private static AVObject parseAVObject(Map<String, String> contentMap) {
     String internalId = contentMap.get(ATTR_INTERNAL_ID);
     String objectJSON = contentMap.get(ATTR_OBJECT);
     String operationJSON = contentMap.get(ATTR_OPERATION);
+
     AVObject resultObj = JSON.parseObject(objectJSON, AVObject.class);
     if (!StringUtil.isEmpty(internalId) && !internalId.equals(resultObj.getObjectId())) {
       resultObj.setUuid(internalId);
     }
     if (!StringUtil.isEmpty(operationJSON)) {
       List<BaseOperation> ops = JSON.parseObject(operationJSON,
-              new TypeReference<List<BaseOperation>>() {});
+              new TypeReference<List<BaseOperation>>() {}, IgnoreAutoType);
       for (BaseOperation op: ops) {
         resultObj.addNewOperation(op);
       }
     }
     return resultObj;
-  }
-
-  public static AVObject parse2Object(String content) {
-    Map<String, String> contentMap = JSON.parseObject(content, Map.class);
-    return parseAVObject(contentMap);
   }
 
   private static String getArchiveRequestFileName(AVObject object) {

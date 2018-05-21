@@ -127,6 +127,13 @@ public class PersistenceUtil {
     return deleteFile(new File(localPath));
   }
 
+  public boolean forceDeleteFile(File localFile) {
+    if (null == localFile || !localFile.exists()) {
+      return false;
+    }
+    return localFile.delete();
+  }
+
   public boolean deleteFile(File localFile) {
     if (null == localFile || !localFile.exists()) {
       return false;
@@ -136,6 +143,7 @@ public class PersistenceUtil {
     if (writeLock.tryLock()) {
       result = localFile.delete();
       writeLock.unlock();
+      gLogger.d("succeed to obtain writeLock, and delete file: " + localFile.getAbsolutePath() + ", ret: " + result);
     } else {
       gLogger.w("failed to lock writeLocker, skip to delete file:" + localFile.getAbsolutePath());
       result = false;

@@ -85,7 +85,6 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
         obj.serverData.put(k, v);
       }
     }
-    System.out.println("[ObjectTypeAdapter] deserialze: Type=" + type.toString() + ", fieldName=" + fieldName + ", result=" + obj.toString());
     return (T) obj;
   }
 

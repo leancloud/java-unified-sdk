@@ -26,6 +26,7 @@ public class RemoveOperation extends BaseOperation {
     }
     return obj;
   }
+
   protected ObjectFieldOperation mergeWithPrevious(ObjectFieldOperation other) {
     if (other instanceof SetOperation || other instanceof DeleteOperation) {
       return other;

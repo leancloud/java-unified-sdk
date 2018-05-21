@@ -1,14 +1,25 @@
 package cn.leancloud;
 
 import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.ops.AddOperation;
+import cn.leancloud.ops.BaseOperation;
+import cn.leancloud.ops.BitAndOperation;
+import cn.leancloud.ops.SetOperation;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import static com.alibaba.fastjson.parser.Feature.IgnoreAutoType;
 
 public class ArchivedRequestsTest extends TestCase {
   public ArchivedRequestsTest(String name) {
@@ -16,11 +27,38 @@ public class ArchivedRequestsTest extends TestCase {
     AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
     AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
     AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
-//    SerializeConfig.getGlobalInstance().put(AVObject.class, new ObjectTypeAdapter());
   }
 
   public static Test suite() {
     return new TestSuite(ArchivedRequestsTest.class);
+  }
+
+  public void testFileVerify() {
+    String[] files = {".DS_Store", "5b028f2f17d009726f2ac391", "e87e8586-fe2a-4e24-a632-ff8ff39585eb", "-a632-ff8ff39585eb"};
+    boolean[] results = {false, true, true, false};
+    for (int i = 0; i < files.length; i++) {
+      System.out.println("verify " + files[i]);
+      boolean ret = AVObject.verifyInternalId(files[i]);
+      assertEquals(results[i], ret);
+    }
+  }
+
+  public void testOperationSerialize() {
+    List<BaseOperation> ops = new ArrayList<>();
+    SetOperation setOp = new SetOperation("age", 3);
+    ops.add(setOp);
+    AddOperation addOp = new AddOperation("course", "Computer Science");
+    ops.add(addOp);
+    BitAndOperation bitAndOp = new BitAndOperation("score", 0x002);
+    ops.add(bitAndOp);
+    String opString = JSON.toJSONString(ops, ObjectValueFilter.instance, SerializerFeature.WriteClassName, SerializerFeature.QuoteFieldNames,
+            SerializerFeature.DisableCircularReferenceDetect);
+
+    System.out.println(opString);
+
+    List<BaseOperation> parsedOps = JSON.parseObject(opString,
+            new TypeReference<List<BaseOperation>>() {}, IgnoreAutoType);
+    assertEquals(ops.size(), parsedOps.size());
   }
 
   public void testRequestSerialize() {
@@ -30,9 +68,8 @@ public class ArchivedRequestsTest extends TestCase {
     object.add("course", "Art");
 
     String archivedJSON = ArchivedRequests.getArchiveContent(object, false);
-    System.out.println("archivedJSON: " + archivedJSON);
 
-    AVObject tmp = ArchivedRequests.parse2Object(archivedJSON);
+    AVObject tmp = ArchivedRequests.parseAVObject(archivedJSON);
     assertEquals(object.internalId(), tmp.internalId());
 
     tmp.saveInBackground().subscribe(new Observer<AVObject>() {
@@ -66,9 +103,8 @@ public class ArchivedRequestsTest extends TestCase {
     object.decrement("age");
     object.addUnique("course", "Math");
     String archivedJSON = ArchivedRequests.getArchiveContent(object, false);
-    System.out.println("archivedJSON: " + archivedJSON);
 
-    AVObject tmp = ArchivedRequests.parse2Object(archivedJSON);
+    AVObject tmp = ArchivedRequests.parseAVObject(archivedJSON);
     assertEquals(object.internalId(), tmp.internalId());
   }
 
@@ -79,9 +115,8 @@ public class ArchivedRequestsTest extends TestCase {
     object.put("friend", AVObject.createWithoutData("Student", "fakeObjectId"));
 
     String archivedJSON = ArchivedRequests.getArchiveContent(object, false);
-    System.out.println("archivedJSON: " + archivedJSON);
 
-    AVObject tmp = ArchivedRequests.parse2Object(archivedJSON);
+    AVObject tmp = ArchivedRequests.parseAVObject(archivedJSON);
     assertEquals(object.internalId(), tmp.internalId());
     assertEquals(object.operations.size(), tmp.operations.size());
   }
@@ -93,9 +128,8 @@ public class ArchivedRequestsTest extends TestCase {
     object.add("friend", AVObject.createWithoutData("Student", "fakeObjectId"));
 
     String archivedJSON = ArchivedRequests.getArchiveContent(object, false);
-    System.out.println("archivedJSON: " + archivedJSON);
 
-    AVObject tmp = ArchivedRequests.parse2Object(archivedJSON);
+    AVObject tmp = ArchivedRequests.parseAVObject(archivedJSON);
     assertEquals(object.internalId(), tmp.internalId());
     assertEquals(object.operations.size(), tmp.operations.size());
   }
