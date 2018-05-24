@@ -3,15 +3,36 @@ package cn.leancloud;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import cn.leancloud.AVUser;
-
 public interface AVUserCookieSign {
 
-  public AVUser decodeUser(HttpServletRequest request);
+  /**
+   * decode user from http request.
+   *
+   * @param request
+   * @return
+   */
+  AVUser decodeUser(HttpServletRequest request);
 
-  public Cookie encodeUser(AVUser user);
+  /**
+   * encode user into cookie.
+   *
+   * @param user
+   * @return
+   */
+  Cookie encodeUser(AVUser user);
 
-  public Cookie getCookieSign(AVUser user);
+  /**
+   * get cookie signature.
+   *
+   * @param user
+   * @return
+   */
+  Cookie getCookieSign(AVUser user);
 
-  public boolean validateCookieSign(HttpServletRequest request);
+  /**
+   * validate cookie signature.
+   * @param request
+   * @return
+   */
+  boolean validateCookieSign(HttpServletRequest request);
 }

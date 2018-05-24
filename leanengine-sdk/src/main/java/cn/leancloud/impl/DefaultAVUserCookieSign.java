@@ -1,8 +1,10 @@
 package cn.leancloud.impl;
 
+import cn.leancloud.AVLogger;
 import cn.leancloud.AVUser;
 import cn.leancloud.AVException;
 import cn.leancloud.AVUserCookieSign;
+import cn.leancloud.utils.LogUtil;
 import com.alibaba.fastjson.JSON;
 
 import javax.crypto.Mac;
@@ -16,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DefaultAVUserCookieSign implements AVUserCookieSign {
+  private static final AVLogger LOGGER = LogUtil.getLogger(DefaultAVUserCookieSign.class);
+
   private static final String SESSION_TOKEN = "_sessionToken";
   private static final String UID = "_uid";
   private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
@@ -51,7 +55,7 @@ public class DefaultAVUserCookieSign implements AVUserCookieSign {
           user.resetServerData(value);
           return user;
         } catch (AVException e) {
-          e.printStackTrace();
+          LOGGER.w(e);
         }
       }
     }

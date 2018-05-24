@@ -1,5 +1,7 @@
 package cn.leancloud;
 
+import cn.leancloud.utils.LogUtil;
+
 import java.io.IOException;
 
 import javax.servlet.Filter;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebFilter(filterName = "requestUserAuthFilter", urlPatterns = {"/*"})
 public class RequestUserAuthFilter implements Filter {
+  private static AVLogger LOGGER = LogUtil.getLogger(RequestUserAuthFilter.class);
 
   public void init(FilterConfig filterConfig) throws ServletException {}
 
@@ -28,7 +31,7 @@ public class RequestUserAuthFilter implements Filter {
         sessionCookie.parseCookie((HttpServletRequest) request, (HttpServletResponse) response);
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      LOGGER.w(e);
     }
     chain.doFilter(request, response);
   }

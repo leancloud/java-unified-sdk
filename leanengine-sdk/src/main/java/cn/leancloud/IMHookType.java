@@ -35,7 +35,7 @@ public enum IMHookType {
   conversationUpdate(true);
   boolean isResponseNeed;
 
-  private IMHookType(boolean response) {
+  IMHookType(boolean response) {
     this.isResponseNeed = response;
   }
 

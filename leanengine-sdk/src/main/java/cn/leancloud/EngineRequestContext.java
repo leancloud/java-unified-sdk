@@ -50,7 +50,7 @@ public class EngineRequestContext {
   }
 
   protected static void parseMetaData(Map<String, Object> objectProperties) {
-    Map<String, Object> meta = new HashMap<String, Object>();
+    Map<String, Object> meta = new HashMap<>();
     if (objectProperties == null) {
       return;
     }

@@ -7,8 +7,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.leancloud.impl.DefaultAVUserCookieSign;
+import cn.leancloud.utils.LogUtil;
 
 public class EngineSessionCookie {
+  private static AVLogger LOGGER = LogUtil.getLogger(EngineSessionCookie.class);
   boolean fetchUser;
 
   ThreadLocal<HttpServletResponse> responseHolder = new ThreadLocal<HttpServletResponse>();
@@ -54,6 +56,7 @@ public class EngineSessionCookie {
           URL requestURL = new URL(req.getRequestURL().toString());
           host = requestURL.getHost();
         } catch (Exception e) {
+          LOGGER.w(e);
         }
         addCookie(req, resp, sign.encodeUser(u));
         addCookie(req, resp, sign.getCookieSign(u));

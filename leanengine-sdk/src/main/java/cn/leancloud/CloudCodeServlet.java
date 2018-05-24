@@ -10,12 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import cn.leancloud.AVLogger;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-
 
 import cn.leancloud.EndpointParser.EndpointInfo;
 

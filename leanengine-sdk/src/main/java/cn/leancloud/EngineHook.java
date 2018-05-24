@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EngineHook {
-  public String className();
+  String className();
 
-  public EngineHookType type();
+  EngineHookType type();
 }

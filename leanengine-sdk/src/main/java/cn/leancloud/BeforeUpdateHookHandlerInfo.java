@@ -15,7 +15,11 @@ public class BeforeUpdateHookHandlerInfo extends EngineHookHandlerInfo {
 
   @Override
   public Object wrapperResponse(Object result, String requestBody, boolean rpcCall) {
-    return JSON.parseObject(requestBody, Map.class).get("object");
+    try {
+      return JSON.parseObject(requestBody, Map.class).get("object");
+    } catch (Exception ex) {
+      return null;
+    }
   }
 
 }

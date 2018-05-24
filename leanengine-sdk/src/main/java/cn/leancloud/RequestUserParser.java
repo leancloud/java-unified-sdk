@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import cn.leancloud.core.PaasClient;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -17,6 +18,7 @@ import io.reactivex.disposables.Disposable;
  *
  */
 class RequestUserParser {
+  private static AVLogger LOGGER = LogUtil.getLogger(RequestUserParser.class);
 
   public static void parse(final HttpServletRequest req) {
     if (req.getAttribute(RequestAuth.ATTRIBUTE_KEY) == null) {
@@ -39,7 +41,7 @@ class RequestUserParser {
                 }
 
                 public void onError(Throwable throwable) {
-                  throwable.printStackTrace();
+                  LOGGER.w(throwable);
                 }
 
                 public void onComplete() {
