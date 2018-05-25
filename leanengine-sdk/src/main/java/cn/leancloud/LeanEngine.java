@@ -9,7 +9,9 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.RequestSignImplementation;
+import cn.leancloud.logging.Log4jAdapter;
 import org.apache.commons.codec.binary.Hex;
 
 import cn.leancloud.impl.EnvFirstAppRouter;
@@ -36,6 +38,7 @@ public class LeanEngine {
    * @param masterKey The master key provided in the AVOSCloud dashboard.
    */
   public static void initialize(String applicationId, String clientKey, String masterKey) {
+    AppConfiguration.setLogAdapter(new Log4jAdapter());
     AVOSCloud.initialize(applicationId, clientKey);
 
     appConf = EngineAppConfiguration.instance(applicationId, clientKey, masterKey);

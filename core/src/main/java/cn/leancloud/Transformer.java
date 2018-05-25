@@ -108,11 +108,9 @@ public class Transformer {
     } else {
       result = new AVObject(className);
     }
-    logger.d("object from class:" + className + " is " + result);
     return result;
   }
 
   private Transformer() {
-
   }
 }

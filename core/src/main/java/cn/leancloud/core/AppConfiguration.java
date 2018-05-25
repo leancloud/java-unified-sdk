@@ -1,7 +1,7 @@
 package cn.leancloud.core;
 
 import cn.leancloud.AVACL;
-import cn.leancloud.AVLogAdapter;
+import cn.leancloud.logging.InternalLoggerAdapter;
 import cn.leancloud.cache.InMemorySetting;
 import cn.leancloud.cache.LastModifyCache;
 import cn.leancloud.cache.SystemSetting;
@@ -20,7 +20,7 @@ public class AppConfiguration {
 
   private static AVACL defaultACL;
   private static int networkTimeout = DEFAULT_NETWORK_TIMEOUT;
-  private static AVLogAdapter logAdapter = new SimpleLoggerAdapter();
+  private static InternalLoggerAdapter logAdapter = new SimpleLoggerAdapter();
   private static boolean asynchronized = false;
   private static SchedulerCreator defaultScheduler = null;
   private static NetworkingDetector globalNetworkingDetector = new SimpleNetworkingDetector();
@@ -57,10 +57,10 @@ public class AppConfiguration {
     defaultACL = acl;
   }
 
-  public static void setLogAdapter(AVLogAdapter adapter) {
+  public static void setLogAdapter(InternalLoggerAdapter adapter) {
     logAdapter = adapter;
   }
-  public static AVLogAdapter getLogAdapter() {
+  public static InternalLoggerAdapter getLogAdapter() {
     return logAdapter;
   }
   public static String getUserAgent() {

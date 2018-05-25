@@ -1,9 +1,9 @@
 package cn.leancloud.logging;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.AVLogger.Level;
 import android.util.Log;
 
-public class DefaultLogger extends AVLogger {
+public class DefaultLogger extends InternalLogger {
   private String tag = null;
   public DefaultLogger(String tag) {
     this.tag = tag;

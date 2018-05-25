@@ -24,9 +24,6 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
 
   public void write(JSONSerializer serializer, Object object, Object fieldName, Type fieldType,
                     int features) throws IOException {
-    LOGGER.d("ObjectTypeAdapter.write for obj=" + object + ", fieldName=" + fieldName + ", fieldType=" + fieldType);
-
-    // fixme: maybe it is necessary to serialize AVFile.
     AVObject avObject = (AVObject)object;
     SerializeWriter writer = serializer.getWriter();
     writer.write('{');

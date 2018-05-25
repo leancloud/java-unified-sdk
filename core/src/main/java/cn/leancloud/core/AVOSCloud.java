@@ -1,11 +1,8 @@
 package cn.leancloud.core;
 
-import cn.leancloud.AVLogAdapter;
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVObject;
 import cn.leancloud.AVStatus;
-import cn.leancloud.cache.LastModifyCache;
-import cn.leancloud.logging.SimpleLoggerAdapter;
 
 /**
  * we should set following variables:
@@ -27,7 +24,6 @@ public class AVOSCloud {
     return defaultRegion;
   }
 
-
   public static void setLogLevel(AVLogger.Level level) {
     logLevel = level;
   }
@@ -42,8 +38,6 @@ public class AVOSCloud {
     applicationId = appId;
     applicationKey = appKey;
     AVObject.registerSubclass(AVStatus.class);
-
-    AppConfiguration.getLogAdapter().setLevel(logLevel);
   }
 
   @Deprecated
@@ -75,5 +69,5 @@ public class AVOSCloud {
   private static REGION defaultRegion = REGION.NorthChina;
   private static String applicationId = "";
   private static String applicationKey = "";
-  private static AVLogger.Level logLevel = AVLogger.Level.INFO;
+  private static volatile AVLogger.Level logLevel = AVLogger.Level.INFO;
 }

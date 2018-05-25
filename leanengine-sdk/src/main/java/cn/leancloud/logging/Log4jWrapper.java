@@ -1,10 +1,10 @@
 package cn.leancloud.logging;
 
 import cn.leancloud.AVLogger;
-import org.apache.logging.log4j.Level;
+
 import org.apache.logging.log4j.Logger;
 
-public class Log4jWrapper extends AVLogger {
+public class Log4jWrapper extends InternalLogger {
   Logger logger = null;
   public Log4jWrapper(Logger var) {
     if (null == var) {
@@ -13,12 +13,7 @@ public class Log4jWrapper extends AVLogger {
     this.logger = var;
   }
 
-  @Override
-  public void setLogLevel(Level logLevel) {
-    super.setLogLevel(logLevel);
-  }
-
-  private org.apache.logging.log4j.Level nativeLevel(Level level) {
+  private org.apache.logging.log4j.Level nativeLevel(AVLogger.Level level) {
     org.apache.logging.log4j.Level rst = org.apache.logging.log4j.Level.OFF;
     switch (level) {
       case ERROR:
@@ -44,13 +39,13 @@ public class Log4jWrapper extends AVLogger {
     return rst;
   }
 
-  protected void internalWriteLog(Level level, String msg) {
+  protected void internalWriteLog(AVLogger.Level level, String msg) {
     logger.log(nativeLevel(level), msg);
   }
-  protected void internalWriteLog(Level level, String msg, Throwable tr) {
+  protected void internalWriteLog(AVLogger.Level level, String msg, Throwable tr) {
     logger.log(nativeLevel(level), msg, tr);
   }
-  protected void internalWriteLog(Level level, Throwable tr) {
+  protected void internalWriteLog(AVLogger.Level level, Throwable tr) {
     logger.log(nativeLevel(level), tr);
   }
 

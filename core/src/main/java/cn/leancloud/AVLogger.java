@@ -1,9 +1,13 @@
 package cn.leancloud;
 
-public abstract class AVLogger {
+import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.AppConfiguration;
+import cn.leancloud.logging.InternalLogger;
+
+public class AVLogger {
   public enum Level {
     OFF(0), ERROR(1),WARNING(2), INFO(3), DEBUG(4), VERBOSE(5), ALL(6);
-    private Level(int intLevel) {
+    Level(int intLevel) {
       this.intLevel = intLevel;
     }
     public int intLevel() {
@@ -11,15 +15,11 @@ public abstract class AVLogger {
     }
     private int intLevel;
   }
+  private volatile InternalLogger internalLogger = null;
+  private String tag = null;
 
-  private Level level = Level.INFO;
-
-  public Level getLogLevel() {
-    return level;
-  }
-
-  public void setLogLevel(Level logLevel) {
-    level = logLevel;
+  public AVLogger(String tag) {
+    this.tag = tag;
   }
 
   public void v(String msg) {
@@ -66,32 +66,43 @@ public abstract class AVLogger {
     writeLog(Level.ERROR, msg, tr);
   }
 
-  protected boolean isEnabled(Level testLevel) {
-    return level.intLevel() >= testLevel.intLevel();
+  private InternalLogger getInternalLogger() {
+    if (null == internalLogger) {
+      synchronized (this) {
+        if (null == internalLogger) {
+          internalLogger = AppConfiguration.getLogAdapter().getLogger(tag);
+        }
+      }
+    }
+    return internalLogger;
   }
 
-  protected abstract void internalWriteLog(Level level, String msg);
-  protected abstract void internalWriteLog(Level level, String msg, Throwable tr);
-  protected abstract void internalWriteLog(Level level, Throwable tr);
+  protected boolean isEnabled(Level testLevel) {
+    return AVOSCloud.getLogLevel().intLevel() >= testLevel.intLevel();
+  }
+
 
   protected void writeLog(Level level, String msg) {
     if (!isEnabled(level)) {
       return;
     }
-    internalWriteLog(level, msg);
+    InternalLogger internalLogger = getInternalLogger();
+    internalLogger.writeLog(level, msg);
   }
 
   protected void writeLog(Level level, String msg, Throwable tr) {
     if (!isEnabled(level)) {
       return;
     }
-    internalWriteLog(level, msg, tr);
+    InternalLogger internalLogger = getInternalLogger();
+    internalLogger.writeLog(level, msg, tr);
   }
 
   protected void writeLog(Level level, Throwable tr) {
     if (!isEnabled(level)) {
       return;
     }
-    internalWriteLog(level, tr);
+    InternalLogger internalLogger = getInternalLogger();
+    internalLogger.writeLog(level, tr);
   }
 }
