@@ -781,6 +781,7 @@ public class AVObject {
     resetAll();
     if (null != avObject) {
       this.serverData.putAll(avObject.serverData);
+      this.operations.putAll(avObject.operations);
     }
   }
 

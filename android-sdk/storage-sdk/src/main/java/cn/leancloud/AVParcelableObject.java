@@ -21,14 +21,9 @@ public class AVParcelableObject implements Parcelable {
 
   @Override
   public void writeToParcel(Parcel out, int i) {
+    String archivedContent = ArchivedRequests.getArchiveContent(this.instance, false);
     out.writeString(this.instance.getClassName());
-    out.writeString(this.instance.getCreatedAt());
-    out.writeString(this.instance.getUpdatedAt());
-    out.writeString(this.instance.getObjectId());
-    out.writeString(JSON.toJSONString(instance.serverData, new ObjectValueFilter(),
-            SerializerFeature.NotWriteRootClassName, SerializerFeature.WriteClassName));
-    out.writeString(JSON.toJSONString(instance.operations, SerializerFeature.WriteClassName,
-            SerializerFeature.NotWriteRootClassName));
+    out.writeString(archivedContent);
   }
 
   public static transient final Creator CREATOR = AVObjectCreator.instance;
@@ -42,16 +37,10 @@ public class AVParcelableObject implements Parcelable {
 
     @Override
     public AVObject createFromParcel(Parcel parcel) {
-      AVObject avobject = new AVObject(parcel.readString());
-//      Class<? extends AVObject> subClass = AVUtils.getAVObjectClassByClassName(avobject.getClassName());
-//      if (subClass != null) {
-//        try {
-//          AVObject returnValue = AVObject.cast(avobject, subClass);
-//          return returnValue;
-//        } catch (Exception e) {
-//        }
-//      }
-      return avobject;
+      String className = parcel.readString();
+      String content = parcel.readString();
+      AVObject rawObject = ArchivedRequests.parseAVObject(content);
+      return Transformer.transform(rawObject, className);
     }
 
     @Override

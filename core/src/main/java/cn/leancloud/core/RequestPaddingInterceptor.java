@@ -10,10 +10,10 @@ import java.io.IOException;
 
 public class RequestPaddingInterceptor implements Interceptor {
   private static final String HEADER_KEY_LC_SESSIONTOKEN = "X-LC-Session";
-  private static final String HEADER_KEY_LC_APPID = "X-LC-Id";
-  private static final String HEADER_KEY_LC_APPKEY = "X-LC-Key";
+  public static final String HEADER_KEY_LC_APPID = "X-LC-Id";
+  public static final String HEADER_KEY_LC_APPKEY = "X-LC-Key";
   private static final String HEADER_KEY_LC_PROD_MODE = "X-LC-Prod";
-  private static final String HEADER_KEY_LC_SIGN = "X-LC-Sign";
+  public static final String HEADER_KEY_LC_SIGN = "X-LC-Sign";
   private static final String HEADER_KEY_ACCEPT = "Accept";
   private static final String HEADER_KEY_CONTENT_TYPE = "Content-Type";
   private static final String HEADER_KEY_USER_AGENT = "User-Agent";
