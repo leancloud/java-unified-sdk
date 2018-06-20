@@ -26,6 +26,35 @@ public class AVObjectTest extends TestCase {
   protected void setUp() throws Exception {
   }
 
+  public void testPutNull() {
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 18);
+    object.put("grade", null);
+    object.saveInBackground().subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        System.out.println("saveObject field finished.");
+        //avObject.deleteInBackground().subscribe();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+  }
+
   public void testDeleteField() {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");

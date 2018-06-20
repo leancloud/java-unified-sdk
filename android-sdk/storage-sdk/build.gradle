@@ -9,6 +9,9 @@ android {
         versionCode 1
         versionName "1.0"
 
+        versionName "5.0.0"
+        archivesBaseName = "storage-android"
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
@@ -48,6 +51,7 @@ android.libraryVariants.all { variant ->
     task.exclude '**/R.class'
     task.exclude '**/R$*.class'
     artifacts.add('archives', task);
+
 }
 
 dependencies {

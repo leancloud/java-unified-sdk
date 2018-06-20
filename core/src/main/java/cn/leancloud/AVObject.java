@@ -252,7 +252,7 @@ public class AVObject {
     }
   }
 
-  <T extends AVObject> AVRelation<T> getRelation(String key) {
+  public <T extends AVObject> AVRelation<T> getRelation(String key) {
     validFieldName(key);
     Object object = get(key);
     if (object instanceof AVRelation) {
@@ -485,6 +485,7 @@ public class AVObject {
     if (needBatchMode()) {
       logger.w("Caution: batch mode will ignore fetchWhenSave flag and matchQuery.");
       if (StringUtil.isEmpty(currentObjectId)) {
+        logger.d("request payload: " + paramData.toJSONString());
         return PaasClient.getStorageClient().batchSave(paramData).map(new Function<JSONArray, AVObject>() {
           public AVObject apply(JSONArray object) throws Exception {
             if (null != object && !object.isEmpty()) {
@@ -755,6 +756,9 @@ public class AVObject {
   }
   public Observable<AVObject> fetchInBackground() {
     return refreshInBackground();
+  }
+  public Observable<AVObject> fetchInBackground(String includeKyes) {
+    return refreshInBackground(includeKyes);
   }
 
   public Observable<AVObject> fetchIfNeededInBackground() {

@@ -339,4 +339,51 @@ public class ObjectDemoActivity extends DemoBaseActivity {
       showMessage("", null, false);
     }
   }
+
+  public void testSample1() throws AVException {
+    AVObject todo = new AVObject("Todo");
+    todo.put("title", "工程师周会");
+    todo.put("content", "每周工程师会议，周一下午2点");
+    todo.put("location", "会议室");// 只要添加这一行代码，服务端就会自动添加这个字段
+    todo.saveInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {}
+
+      public void onNext(AVObject avObject) {
+        System.out.println("succeed to save Object.");
+      }
+
+      public void onError(Throwable throwable) {}
+
+      public void onComplete() {}
+    });
+  }
+
+  public void testSample2() throws AVException {
+    AVQuery<AVObject> avQuery = new AVQuery<>("Todo");
+    avQuery.getInBackground("558e20cbe4b060308e3eb36c").subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+      }
+      public void onNext(AVObject o) {
+        System.out.println(o.toString());
+      }
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+      }
+      public void onComplete() {
+      }
+    });
+    AVObject todo = AVObject.createWithoutData("Todo", "558e20cbe4b060308e3eb36c");
+    todo.fetchInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+      }
+      public void onNext(AVObject o) {
+        System.out.println(o.toString());
+      }
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+      }
+      public void onComplete() {
+      }
+    });
+  }
 }

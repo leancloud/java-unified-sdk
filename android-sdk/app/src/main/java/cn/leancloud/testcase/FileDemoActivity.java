@@ -3,12 +3,15 @@ package cn.leancloud.testcase;
 import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 
 import ar.com.daidalos.afiledialog.FileChooserDialog;
 import cn.leancloud.AVException;
@@ -18,9 +21,11 @@ import cn.leancloud.AVQuery;
 import cn.leancloud.DemoBaseActivity;
 import cn.leancloud.DemoUtils;
 import cn.leancloud.R;
+import cn.leancloud.callback.FindCallback;
 import cn.leancloud.callback.ProgressCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
+import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -211,5 +216,60 @@ public class FileDemoActivity extends DemoBaseActivity {
     log("最大宽度为200 、最大高度为200的缩略图 url:" + url);
     // http://docs.qiniu.com/api/v6/image-process.html
     log("其它图片处理见七牛文档");
+  }
+
+  public void testSample1() throws AVException {
+    String contents = StringUtil.getRandomString(64);
+    final AVFile file = new AVFile("test", contents.getBytes());
+    file.saveInBackground().subscribe(new Observer<AVFile>() {
+      public void onSubscribe(Disposable disposable) {
+      }
+      public void onNext(AVFile avFile) {
+        System.out.println("succeed to upload file. objectId=" + avFile.getObjectId());
+        file.deleteInBackground().subscribe(new Observer<AVNull>() {
+          public void onSubscribe(Disposable disposable) {
+          }
+          public void onNext(AVNull avNull) {
+            System.out.println("succeed to delete file");
+          }
+          public void onError(Throwable throwable) {
+            throwable.printStackTrace();
+          }
+          public void onComplete() {
+          }
+        });
+      }
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+      }
+      public void onComplete() {
+      }
+    });
+  }
+  public void testSample2() throws AVException,FileNotFoundException {
+    AVFile file = AVFile.withAbsoluteLocalPath("test.jpg", Environment.getExternalStorageDirectory() + "/xxx.jpg");
+    file.addMetaData("width", 100);
+    file.addMetaData("height", 100);
+    file.addMetaData("author", "LeanCloud");
+    file.saveInBackground().blockingSubscribe();
+
+    file = new AVFile("Satomi_Ishihara.gif", "http://ww3.sinaimg.cn/bmiddle/596b0666gw1ed70eavm5tg20bq06m7wi.gif",
+        new HashMap<String, Object>());
+    AVObject todo = new AVObject("Todo");
+    todo.put("girl", file);
+    todo.put("topic", "明星");
+    todo.save();
+  }
+
+  public void testSample3() throws AVException {
+    AVQuery<AVObject> query = new AVQuery<>("Todo");
+    query.whereEqualTo("topic", "明星");
+    query.include("girl");
+    query.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(new FindCallback<AVObject>() {
+      @Override
+      public void done(List<AVObject> list, AVException e) {
+        list.get(0).getAVFile("girl").getUrl();
+      }
+    }));
   }
 }

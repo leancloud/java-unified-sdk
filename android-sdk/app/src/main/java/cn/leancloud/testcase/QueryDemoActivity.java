@@ -2,6 +2,8 @@ package cn.leancloud.testcase;
 
 import junit.framework.Assert;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -11,6 +13,7 @@ import cn.leancloud.AVException;
 import cn.leancloud.AVOSCloud;
 import cn.leancloud.AVObject;
 import cn.leancloud.AVQuery;
+import cn.leancloud.AVRelation;
 import cn.leancloud.AVUser;
 import cn.leancloud.DemoBaseActivity;
 import cn.leancloud.DemoUtils;
@@ -356,5 +359,55 @@ public class QueryDemoActivity extends DemoBaseActivity {
     for (AVUser resultUser : users) {
       Assert.assertTrue(resultUser.getUsername().equals(lastString));
     }
+  }
+
+  public void testSample1() throws AVException {
+    AVQuery<AVObject> query = new AVQuery<>("Todo");
+    query.whereEqualTo("priority", 0);
+    query.whereEqualTo("priority", 1);
+    // 如果这样写，第二个条件将覆盖第一个条件，查询只会返回 priority = 1 的结果
+    List<AVObject> todos = query.find();
+
+    AVObject tag1 = new AVObject("Tag");// 构建对象
+    tag1.put("name", "今日必做");// 设置 Tag 名称
+
+    AVObject tag2 = new AVObject("Tag");// 构建对象
+    tag2.put("name", "老婆吩咐");// 设置 Tag 名称
+
+    AVObject tag3 = new AVObject("Tag");// 构建对象
+    tag3.put("name", "十分重要");// 设置 Tag 名称
+
+    AVObject todoFolder = new AVObject("TodoFolder");// 构建对象
+    todoFolder.put("name", "家庭");// 设置 Todo 名称
+    todoFolder.put("priority", 1);// 设置优先级
+
+    AVRelation<AVObject> relation = todoFolder.getRelation("tags");
+    relation.add(tag1);
+    relation.add(tag2);
+    relation.add(tag3);
+
+    todoFolder.save();// 保存到云端
+
+    todoFolder = AVObject.createWithoutData("TodoFolder", "5661047dddb299ad5f460166");
+    relation = todoFolder.getRelation("tags");
+    query = relation.getQuery();
+    List<AVObject> list = query.find();
+  }
+
+  private Date getDateWithDateString(String dateString) throws ParseException {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    Date date = dateFormat.parse(dateString);
+    return date;
+  }
+
+  public void testSample2() throws AVException, ParseException {
+    final AVQuery<AVObject> startDateQuery = new AVQuery<>("Todo");
+    startDateQuery.whereGreaterThanOrEqualTo("createdAt", getDateWithDateString("2016-11-13"));
+
+    final AVQuery<AVObject> endDateQuery = new AVQuery<>("Todo");
+    endDateQuery.whereLessThan("createdAt", getDateWithDateString("2016-12-03"));
+
+    AVQuery<AVObject> query = AVQuery.and(Arrays.asList(startDateQuery, endDateQuery));
+    List<AVObject> list = query.find();
   }
 }
