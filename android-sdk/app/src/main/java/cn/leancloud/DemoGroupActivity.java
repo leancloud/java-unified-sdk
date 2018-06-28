@@ -120,6 +120,7 @@ public class DemoGroupActivity extends ListActivity {
     array.add("Engine");
     array.add("Other");
     array.add("UserAuthData");
+    array.add("ObjectTransfer");
     return array;
   }
 

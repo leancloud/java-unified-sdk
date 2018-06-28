@@ -264,7 +264,19 @@ public class StorageClient {
   public Observable<AVUser> signUp(JSONObject data) {
     return wrappObservable(apiService.signup(data));
   }
-
+  public Observable<AVUser> signUpWithFlag(JSONObject data, boolean failOnNotExist) {
+    return wrappObservable(apiService.signup(data, failOnNotExist));
+  }
+  public <T extends AVUser> Observable<T> signUpOrLoginByMobilephone(JSONObject data, final Class<T> clazz) {
+    return wrappObservable(apiService.signupByMobilePhone(data)).map(new Function<AVUser, T>() {
+      @Override
+      public T apply(AVUser avUser) throws Exception {
+        T rst = Transformer.transform(avUser, clazz);
+        AVUser.changeCurrentUser(rst, true);
+        return rst;
+      }
+    });
+  }
   public <T extends AVUser> Observable<T> logIn(JSONObject data, final Class<T> clazz) {
     Observable<AVUser> object = wrappObservable(apiService.login(data));
     if (null == object) {

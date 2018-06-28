@@ -885,6 +885,7 @@ public class AVObject {
     return this.getClass().getSimpleName() + "{" +
             "className='" + className + '\'' +
             ", serverData=" + serverDataStr +
+            ", ops=" + this.operations +
             '}';
   }
 

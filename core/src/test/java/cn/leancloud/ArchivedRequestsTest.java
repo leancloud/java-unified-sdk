@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.alibaba.fastjson.parser.Feature.IgnoreAutoType;
+import static com.alibaba.fastjson.parser.Feature.IgnoreNotMatch;
 
 public class ArchivedRequestsTest extends TestCase {
   public ArchivedRequestsTest(String name) {
@@ -51,14 +52,21 @@ public class ArchivedRequestsTest extends TestCase {
     ops.add(addOp);
     BitAndOperation bitAndOp = new BitAndOperation("score", 0x002);
     ops.add(bitAndOp);
-    String opString = JSON.toJSONString(ops, ObjectValueFilter.instance, SerializerFeature.WriteClassName, SerializerFeature.QuoteFieldNames,
+    String opString = JSON.toJSONString(ops, ObjectValueFilter.instance, /*SerializerFeature.WriteClassName, */SerializerFeature.QuoteFieldNames,
             SerializerFeature.DisableCircularReferenceDetect);
 
     System.out.println(opString);
 
     List<BaseOperation> parsedOps = JSON.parseObject(opString,
-            new TypeReference<List<BaseOperation>>() {}, IgnoreAutoType);
+            new TypeReference<List<BaseOperation>>() {}, IgnoreNotMatch);
     assertEquals(ops.size(), parsedOps.size());
+  }
+
+  public void testOperationSerialize2() {
+    String opString = "[{\"field\":\"name\",\"final\":true,\"operation\":\"Set\", \"value\":\"Mike\"},{\"field\":\"age\",\"final\":true,\"operation\":\"Set\",\"value\":12}]";
+    List<BaseOperation> parsedOps = JSON.parseObject(opString,
+            new TypeReference<List<BaseOperation>>() {}, IgnoreNotMatch);
+    assertEquals(2, parsedOps.size());
   }
 
   public void testRequestSerialize() {

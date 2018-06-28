@@ -41,7 +41,7 @@ public class AVUser extends AVObject {
   public static final String CLASS_NAME = "_User";
   public enum SNS_PLATFORM {
     FACEBOOK("facebook"), TWITTER("twitter"), QQ("qq"), WEIBO("weibo"), WECHAT("weixin");
-    private SNS_PLATFORM(String name) {
+    SNS_PLATFORM(String name) {
       this.name = name;
     }
     private String name;
@@ -50,51 +50,112 @@ public class AVUser extends AVObject {
     }
   }
 
+  /**
+   * constructor
+   */
   public AVUser() {
     super(CLASS_NAME);
   }
 
+  /**
+   * 获取当前登录用户
+   *
+   * @return
+   */
   public static AVUser currentUser() {
-    return null;
+    return getCurrentUser();
   }
 
+  /**
+   * get user email.
+   * @return
+   */
   @JSONField(serialize = false)
   public String getEmail() {
     return (String) get(ATTR_EMAIL);
   }
+
+  /**
+   * set user email
+   *
+   * @param email
+   */
   public void setEmail(String email) {
     put(ATTR_EMAIL, email);
   }
 
+  /**
+   * get user name.
+   *
+   * @return
+   */
   @JSONField(serialize = false)
   public String getUsername() {
     return (String) get(ATTR_USERNAME);
   }
+
+  /**
+   * set user name.
+   *
+   * @param name
+   */
   public void setUsername(String name) {
     put(ATTR_USERNAME, name);
   }
 
+  /**
+   * get user password.
+   * @return
+   */
   @JSONField(serialize = false)
   public String getPassword() {
     return (String) get(ATTR_PASSWORD);
   }
+
+  /**
+   * set user password.
+   *
+   * @param password
+   */
   public void setPassword(String password) {
     put(ATTR_PASSWORD, password);
   }
 
+  /**
+   * get user mobilephone.
+   *
+   * @return
+   */
   @JSONField(serialize = false)
   public String getMobilePhoneNumber() {
     return (String) get(ATTR_MOBILEPHONE);
   }
+
+  /**
+   * set user mobilephone.
+   *
+   * @param mobile
+   */
   public void setMobilePhoneNumber(String mobile) {
     put(ATTR_MOBILEPHONE, mobile);
   }
 
+  /**
+   * whether user's mobilephone is verified or not.
+   *
+   * @return
+   */
   @JSONField(serialize = false)
   public boolean isMobilePhoneVerified() {
     return getBoolean(ATTR_MOBILEPHONE_VERIFIED);
   }
 
+  /**
+   * get user session token.
+   * if user not login, session token is null.
+   *
+   * @return
+   */
   @JSONField(serialize = false)
   public String getSessionToken() {
     return (String)get(ATTR_SESSION_TOKEN);
@@ -107,16 +168,27 @@ public class AVUser extends AVObject {
     getServerData().put(ATTR_SESSION_TOKEN, token);
   }
 
+  /**
+   * whether user is authenticated or not.
+   * @return
+   */
   public boolean isAuthenticated() {
     // TODO: need to support thirdparty login.
     String sessionToken = getSessionToken();
     return !StringUtil.isEmpty(sessionToken);
   }
 
+  /**
+   * sign up(blocking).
+   */
   public void signUp() {
     signUpInBackground().blockingSubscribe();
   }
 
+  /**
+   * sign up in background.
+   * @return
+   */
   public Observable<AVUser> signUpInBackground() {
     JSONObject paramData = generateChangedParam();
     logger.d("signup param: " + paramData.toJSONString());
@@ -129,10 +201,83 @@ public class AVUser extends AVObject {
     });
   }
 
+  /**
+   * signUpOrLoginByMobilePhone
+   *
+   * @param mobilePhoneNumber
+   * @param smsCode
+   * @return
+   */
+  public static AVUser signUpOrLoginByMobilePhone(String mobilePhoneNumber, String smsCode) {
+    return signUpOrLoginByMobilePhone(mobilePhoneNumber, smsCode, AVUser.class);
+  }
+
+  /**
+   * signUpOrLoginByMobilePhone
+   * @param mobilePhoneNumber
+   * @param smsCode
+   * @param clazz
+   * @param <T>
+   * @return
+   */
+  public static <T extends AVUser> T signUpOrLoginByMobilePhone(String mobilePhoneNumber, String smsCode, Class<T> clazz) {
+    return signUpOrLoginByMobilePhoneInBackground(mobilePhoneNumber, smsCode, clazz).blockingSingle();
+  }
+
+  /**
+   * signUpOrLoginByMobilePhoneInBackground
+   * @param mobilePhoneNumber
+   * @param smsCode
+   * @return
+   */
+  public static Observable<AVUser> signUpOrLoginByMobilePhoneInBackground(String mobilePhoneNumber, String smsCode) {
+    return signUpOrLoginByMobilePhoneInBackground(mobilePhoneNumber, smsCode, AVUser.class);
+  }
+
+  /**
+   * signUpOrLoginByMobilePhoneInBackground
+   *
+   * @param mobilePhoneNumber
+   * @param smsCode
+   * @param clazz
+   * @param <T>
+   * @return
+   */
+  public static <T extends AVUser> Observable<T> signUpOrLoginByMobilePhoneInBackground(String mobilePhoneNumber, String smsCode, Class<T> clazz) {
+    if (StringUtil.isEmpty(mobilePhoneNumber)) {
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "mobilePhoneNumber")));
+    }
+    if (StringUtil.isEmpty(smsCode)) {
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "smsCode")));
+    }
+    if (null == clazz) {
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "clazz")));
+    }
+    Map<String, Object> params = createUserMap(null, null, null, mobilePhoneNumber, smsCode);
+    JSONObject data = new JSONObject(params);
+    return PaasClient.getStorageClient().signUpOrLoginByMobilephone(data, clazz);
+  }
+
+  /**
+   * logIn in background
+   *
+   * @param username
+   * @param password
+   * @return
+   */
   public static Observable<AVUser> logIn(String username, String password) {
     return logIn(username, password, AVUser.class);
   }
 
+  /**
+   * logIn in background
+   *
+   * @param username
+   * @param password
+   * @param clazz
+   * @param <T>
+   * @return
+   */
   public static <T extends AVUser> Observable<T> logIn(String username, String password, final Class<T> clazz) {
     Map<String, Object> params = createUserMap(username, password, null, null, null);
     JSONObject data = new JSONObject(params);
@@ -180,6 +325,28 @@ public class AVUser extends AVObject {
     }
     if (!StringUtil.isEmpty(smsCode)) {
       map.put(ATTR_SMSCODE, smsCode);
+    }
+    return map;
+  }
+
+  private static Map<String, String> createUserMapAFAP(String username, String password, String email,
+                                                       String phoneNumber, String smsCode) {
+    Map<String, String> map = new HashMap<String, String>();
+
+    if (!StringUtil.isEmpty(username)) {
+      map.put("username", username);
+    }
+    if (!StringUtil.isEmpty(password)) {
+      map.put("password", password);
+    }
+    if (!StringUtil.isEmpty(email)) {
+      map.put("email", email);
+    }
+    if (!StringUtil.isEmpty(phoneNumber)) {
+      map.put("mobilePhoneNumber", phoneNumber);
+    }
+    if (!StringUtil.isEmpty(smsCode)) {
+      map.put("smsCode", smsCode);
     }
     return map;
   }
@@ -235,6 +402,54 @@ public class AVUser extends AVObject {
       authData.put(AUTHDATA_ATTR_MAIN_ACCOUNT, asMainAccount);
     }
     return loginWithAuthData(clazz, authData, platform);
+  }
+
+  public Observable<AVUser> loginWithAuthData(final Map<String, Object> authData, final String platform,
+                                              final boolean failOnNotExist) {
+    if (null == authData || authData.isEmpty()) {
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "authData")));
+    }
+    if (StringUtil.isEmpty(platform)) {
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "platform")));
+    }
+
+    Map<String, String> userData = createUserMapAFAP(getUsername(), null, getEmail(), getMobilePhoneNumber(), null);
+    Map<String, Object> data = new HashMap<>();
+    Map<String, Object> authMap = new HashMap<String, Object>();
+    authMap.put(platform, authData);
+    if(!userData.isEmpty()) {
+      data.putAll(userData);
+    }
+    data.put(AUTHDATA_TAG, authMap);
+    JSONObject param = new JSONObject(data);
+    return PaasClient.getStorageClient().signUpWithFlag(param, failOnNotExist).map(new Function<AVUser, AVUser>() {
+      @Override
+      public AVUser apply(AVUser avUser) throws Exception {
+        AVUser.this.resetByRawData(avUser);
+        AVUser.changeCurrentUser(AVUser.this, true);
+        return AVUser.this;
+      }
+    });
+  }
+
+  public Observable<AVUser> loginWithAuthData(final Map<String, Object> authData, final String platform,
+                                              final String unionId, final String unionIdPlatform,
+                                              final boolean asMainAccount, final boolean failOnNotExist) {
+    if (null == authData || authData.isEmpty()) {
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "authData")));
+    }
+    if (StringUtil.isEmpty(unionId)) {
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "unionId")));
+    }
+    if (StringUtil.isEmpty(unionIdPlatform)) {
+      return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "unionIdPlatform")));
+    }
+    authData.put(AUTHDATA_ATTR_UNIONID, unionId);
+    authData.put(AUTHDATA_ATTR_UNIONID_PLATFORM, unionIdPlatform);
+    if (asMainAccount) {
+      authData.put(AUTHDATA_ATTR_MAIN_ACCOUNT, asMainAccount);
+    }
+    return loginWithAuthData(authData, platform, failOnNotExist);
   }
 
   public Observable<AVUser> associateWithAuthData(Map<String, Object> authData, String platform) {

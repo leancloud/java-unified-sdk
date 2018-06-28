@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.alibaba.fastjson.parser.Feature.IgnoreAutoType;
+import static com.alibaba.fastjson.parser.Feature.IgnoreNotMatch;
 import static com.alibaba.fastjson.parser.Feature.SupportAutoType;
 
 public class ArchivedRequests {
@@ -176,7 +177,7 @@ public class ArchivedRequests {
     content.put(ATTR_INTERNAL_ID, object.internalId());
     content.put(ATTR_OBJECT, JSON.toJSONString(object));
     content.put(ATTR_OPERATION, JSON.toJSONString(object.operations.values(), ObjectValueFilter.instance,
-            SerializerFeature.WriteClassName, SerializerFeature.QuoteFieldNames,
+            /*SerializerFeature.WriteClassName, */SerializerFeature.QuoteFieldNames,
             SerializerFeature.DisableCircularReferenceDetect));
 
     return JSON.toJSONString(content);
@@ -227,7 +228,7 @@ public class ArchivedRequests {
     }
     if (!StringUtil.isEmpty(operationJSON)) {
       List<BaseOperation> ops = JSON.parseObject(operationJSON,
-              new TypeReference<List<BaseOperation>>() {}, IgnoreAutoType);
+              new TypeReference<List<BaseOperation>>() {}, IgnoreNotMatch);
       for (BaseOperation op: ops) {
         resultObj.addNewOperation(op);
       }

@@ -107,6 +107,9 @@ public interface APIService {
 
   @POST("/1.1/users")
   Observable<AVUser> signup(@Body JSONObject object);
+  @POST("/1.1/users")
+  Observable<AVUser> signup(@Body JSONObject object, @Path("failOnNotExist") boolean failOnNotExist);
+
 
   @POST("/1.1/usersByMobilePhone")
   Observable<AVUser> signupByMobilePhone(@Body JSONObject object);
