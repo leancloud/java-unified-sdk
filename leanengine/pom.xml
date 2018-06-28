@@ -10,7 +10,7 @@
   <groupId>cn.leancloud</groupId>
   <artifactId>leanengine</artifactId>
   <version>5.0.0-SNAPSHOT</version>
-  <name>leanengine sdk</name>
+  <name>leanengine library</name>
   <url>http://maven.apache.org</url>
 
   <properties>

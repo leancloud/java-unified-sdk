@@ -10,7 +10,7 @@
   <artifactId>storage-core</artifactId>
   <packaging>jar</packaging>
   <version>5.0.0-SNAPSHOT</version>
-  <name>storage-core</name>
+  <name>storage core library</name>
   <url>http://maven.apache.org</url>
 
   <licenses>
