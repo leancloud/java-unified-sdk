@@ -30,7 +30,7 @@ SDK 中所有 API 接口与 LeanCloud 云端交互严格遵循 LeanCloud REST AP
 
 
 ## Bugs and Feedback
-大家使用中发现 Bug、或者有任何疑问或建议，请使用  [Github Issues](https://github.com/leancloud/java-sdk-all/issues) 来告知我们，非常感谢大家的反馈。
+大家使用中发现 Bug、或者有任何疑问或建议，请使用  [GitHub Issues](https://github.com/leancloud/java-sdk-all/issues) 来告知我们，非常感谢大家的反馈。
 
 ## License
 
