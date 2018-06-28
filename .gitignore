@@ -4,4 +4,7 @@
 .idea/
 *.class
 **/target/**
-
+**/PaasKeyValueCache/**
+**/data/**
+**/file/**
+android-sdk/app/src/main/assets/*.file
