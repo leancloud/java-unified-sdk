@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "cn.leancloud"
+        applicationId "cn.leancloud.sample"
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
