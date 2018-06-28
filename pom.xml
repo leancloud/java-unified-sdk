@@ -10,7 +10,7 @@
   <modules>
     <module>core</module>
     <module>realtime</module>
-    <module>leanengine-sdk</module>
+    <module>leanengine</module>
   </modules>
 
   <licenses>
