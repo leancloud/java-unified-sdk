@@ -1,1 +1,1 @@
-include ':storage-sdk', ':push-sdk', ':app'
+include ':storage-android', ':realtime-android', ':storage-sample-app'
