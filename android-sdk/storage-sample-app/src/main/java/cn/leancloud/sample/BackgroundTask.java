@@ -1,4 +1,4 @@
-package cn.leancloud;
+package cn.leancloud.sample;
 
 import android.os.AsyncTask;
 

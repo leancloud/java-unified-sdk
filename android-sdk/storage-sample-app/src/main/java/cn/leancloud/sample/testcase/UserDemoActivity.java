@@ -1,11 +1,11 @@
-package cn.leancloud.testcase;
+package cn.leancloud.sample.testcase;
 
 import cn.leancloud.AVAnonymousUtils;
 import cn.leancloud.AVException;
 import cn.leancloud.AVQuery;
 import cn.leancloud.AVUser;
-import cn.leancloud.DemoBaseActivity;
-import cn.leancloud.DemoUtils;
+import cn.leancloud.sample.DemoBaseActivity;
+import cn.leancloud.sample.DemoUtils;
 import cn.leancloud.callback.LogInCallback;
 import cn.leancloud.callback.MobilePhoneVerifyCallback;
 import cn.leancloud.callback.RequestMobileCodeCallback;

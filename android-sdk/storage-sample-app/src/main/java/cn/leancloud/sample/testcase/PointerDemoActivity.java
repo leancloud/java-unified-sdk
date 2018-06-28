@@ -1,12 +1,12 @@
-package cn.leancloud.testcase;
+package cn.leancloud.sample.testcase;
 
 import java.util.List;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVQuery;
-import cn.leancloud.DemoBaseActivity;
-import cn.leancloud.Post;
-import cn.leancloud.Student;
+import cn.leancloud.sample.DemoBaseActivity;
+import cn.leancloud.sample.Post;
+import cn.leancloud.sample.Student;
 
 /**
  * Created by fengjunwen on 2018/5/10.

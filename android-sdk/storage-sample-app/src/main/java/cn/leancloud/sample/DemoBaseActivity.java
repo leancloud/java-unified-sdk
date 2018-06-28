@@ -1,4 +1,4 @@
-package cn.leancloud;
+package cn.leancloud.sample;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,10 +22,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSONObject;
-
-import org.json.JSONException;
-
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -38,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import cn.leancloud.*;
 
 /**
  * Created by fengjunwen on 2018/3/22.
@@ -57,7 +55,7 @@ public class DemoBaseActivity extends ListActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);    //To change body of overridden methods use File | Settings | File Templates.
     requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-    setContentView(R.layout.demo_base);
+    setContentView(cn.leancloud.sample.R.layout.demo_base);
     setupAdapter();
   }
 
@@ -176,13 +174,13 @@ public class DemoBaseActivity extends ListActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_demo_group, menu);
+    getMenuInflater().inflate(cn.leancloud.sample.R.menu.menu_demo_group, menu);
     return true;
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    if (item.getItemId() == R.id.action_source) {
+    if (item.getItemId() == cn.leancloud.sample.R.id.action_source) {
       showSourceCode();
     }
     return super.onOptionsItemSelected(item);
@@ -288,10 +286,10 @@ public class DemoBaseActivity extends ListActivity {
       public void run() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(demoRunActivity);
         LayoutInflater inflater = LayoutInflater.from(demoRunActivity);
-        final LinearLayout layout = (LinearLayout) inflater.inflate(cn.leancloud.R.layout.login_dialog, null);
+        final LinearLayout layout = (LinearLayout) inflater.inflate(cn.leancloud.sample.R.layout.login_dialog, null);
 
-        final EditText userNameET = (EditText) layout.findViewById(R.id.usernameInput);
-        final EditText passwordET = (EditText) layout.findViewById(R.id.passwordInput);
+        final EditText userNameET = (EditText) layout.findViewById(cn.leancloud.sample.R.id.usernameInput);
+        final EditText passwordET = (EditText) layout.findViewById(cn.leancloud.sample.R.id.passwordInput);
         builder.setView(layout);
         builder.setTitle(title).setPositiveButton(title, new DialogInterface.OnClickListener() {
           @Override
@@ -354,7 +352,7 @@ public class DemoBaseActivity extends ListActivity {
   }
 
   public byte[] getAvatarBytes() {
-    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
+    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), cn.leancloud.sample.R.drawable.avatar);
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     bitmap.compress(Bitmap.CompressFormat.JPEG, 80, output);
     byte[] bytes = output.toByteArray();

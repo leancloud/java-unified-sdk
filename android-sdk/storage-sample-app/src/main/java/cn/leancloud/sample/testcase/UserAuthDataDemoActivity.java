@@ -1,4 +1,4 @@
-package cn.leancloud.testcase;
+package cn.leancloud.sample.testcase;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -11,14 +11,12 @@ import java.util.Map;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVUser;
-import cn.leancloud.DemoBaseActivity;
-import cn.leancloud.R;
+import cn.leancloud.sample.DemoBaseActivity;
+import cn.leancloud.sample.R;
 import cn.leancloud.callback.LogInCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.callback.SignUpCallback;
 import cn.leancloud.convertor.ObserverBuilder;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
 
 /**
  * Created by fengjunwen on 2018/5/10.
@@ -34,7 +32,7 @@ public class UserAuthDataDemoActivity extends DemoBaseActivity {
       public void run() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(demoRunActivity);
         LayoutInflater inflater = LayoutInflater.from(demoRunActivity);
-        final LinearLayout layout = (LinearLayout) inflater.inflate(cn.leancloud.R.layout.login_dialog, null);
+        final LinearLayout layout = (LinearLayout) inflater.inflate(cn.leancloud.sample.R.layout.login_dialog, null);
 
         final EditText userNameET = (EditText) layout.findViewById(R.id.usernameInput);
         final EditText passwordET = (EditText) layout.findViewById(R.id.passwordInput);

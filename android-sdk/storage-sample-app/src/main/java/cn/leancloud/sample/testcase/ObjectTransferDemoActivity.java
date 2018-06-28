@@ -1,11 +1,11 @@
-package cn.leancloud.testcase;
+package cn.leancloud.sample.testcase;
 
 import android.content.Intent;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVObject;
 import cn.leancloud.AVParcelableObject;
-import cn.leancloud.DemoBaseActivity;
+import cn.leancloud.sample.DemoBaseActivity;
 
 /**
  * Created by fengjunwen on 2018/6/27.

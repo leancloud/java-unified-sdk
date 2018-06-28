@@ -1,4 +1,7 @@
-package cn.leancloud;
+package cn.leancloud.sample;
+
+import cn.leancloud.AVObject;
+import cn.leancloud.AVUser;
 
 /**
  * Created by fengjunwen on 2018/5/10.

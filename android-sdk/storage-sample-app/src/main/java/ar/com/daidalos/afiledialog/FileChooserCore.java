@@ -36,7 +36,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import ar.com.daidalos.afiledialog.view.FileItem;
-import cn.leancloud.R;
+import cn.leancloud.sample.R;
 
 /**
  * This class implements the common features of a file chooser.

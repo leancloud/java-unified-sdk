@@ -1,35 +1,23 @@
-package cn.leancloud;
+package cn.leancloud.sample;
 
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.leancloud.AVObject;
-import cn.leancloud.AVOSCloud;
+import cn.leancloud.*;
 
 public class DemoGroupActivity extends ListActivity {
 
@@ -39,7 +27,7 @@ public class DemoGroupActivity extends ListActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.main);
+    setContentView(cn.leancloud.sample.R.layout.main);
 
     setupAVOSCloud(false);
     setupGroupAdapter();
@@ -52,17 +40,17 @@ public class DemoGroupActivity extends ListActivity {
       return;
     }
     final Dialog dialog = new Dialog(this);
-    dialog.setContentView(R.layout.cloud);
+    dialog.setContentView(cn.leancloud.sample.R.layout.cloud);
     dialog.setTitle("Setup AVOS Cloud");
 
     // set the custom dialog components - text, image and button
-    Button dialogButton = (Button) dialog.findViewById(R.id.btn_ok);
+    Button dialogButton = (Button) dialog.findViewById(cn.leancloud.sample.R.id.btn_ok);
     dialogButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         dialog.dismiss();
-        EditText appId = (EditText) dialog.findViewById(R.id.editViewClientKey);
-        EditText clientKey = (EditText) dialog.findViewById(R.id.editTextClientKey);
+        EditText appId = (EditText) dialog.findViewById(cn.leancloud.sample.R.id.editViewClientKey);
+        EditText clientKey = (EditText) dialog.findViewById(cn.leancloud.sample.R.id.editTextClientKey);
         if (appId.getText().length() <= 0 || clientKey.getText().length() <= 0) {
           Toast.makeText(DemoGroupActivity.this, "Empty key.", Toast.LENGTH_LONG).show();
           return;
@@ -73,7 +61,7 @@ public class DemoGroupActivity extends ListActivity {
       }
     });
 
-    dialogButton = (Button) dialog.findViewById(R.id.btn_cancel);
+    dialogButton = (Button) dialog.findViewById(cn.leancloud.sample.R.id.btn_cancel);
     dialogButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -87,13 +75,13 @@ public class DemoGroupActivity extends ListActivity {
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.menu_main, menu);
+    getMenuInflater().inflate(cn.leancloud.sample.R.menu.menu_main, menu);
     return true;
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    if (item.getItemId() == R.id.action_settings) {
+    if (item.getItemId() == cn.leancloud.sample.R.id.action_settings) {
       setupAVOSCloud(true);
     }
     return super.onOptionsItemSelected(item);
@@ -125,7 +113,7 @@ public class DemoGroupActivity extends ListActivity {
   }
 
   private String getActivityClassName(String demo) {
-    return "cn.leancloud.testcase." + demo + "DemoActivity";
+    return "cn.leancloud.sample.testcase." + demo + "DemoActivity";
   }
 
   private void startActivityByName(final String className) {

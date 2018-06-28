@@ -1,7 +1,7 @@
-package cn.leancloud.testcase;
+package cn.leancloud.sample.testcase;
 
 import cn.leancloud.AVQuery;
-import cn.leancloud.DemoBaseActivity;
+import cn.leancloud.sample.DemoBaseActivity;
 import cn.leancloud.query.AVCloudQueryResult;
 
 /**

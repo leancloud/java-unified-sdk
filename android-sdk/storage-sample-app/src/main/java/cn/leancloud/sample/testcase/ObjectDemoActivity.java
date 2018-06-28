@@ -1,4 +1,4 @@
-package cn.leancloud.testcase;
+package cn.leancloud.sample.testcase;
 
 import android.content.Intent;
 
@@ -15,9 +15,9 @@ import cn.leancloud.AVObject;
 import cn.leancloud.AVParcelableObject;
 import cn.leancloud.AVQuery;
 import cn.leancloud.AVSaveOption;
-import cn.leancloud.DemoBaseActivity;
+import cn.leancloud.sample.DemoBaseActivity;
 import cn.leancloud.AVException;
-import cn.leancloud.Student;
+import cn.leancloud.sample.Student;
 import cn.leancloud.callback.GetCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;

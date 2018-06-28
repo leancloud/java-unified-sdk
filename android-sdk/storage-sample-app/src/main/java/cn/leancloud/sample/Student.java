@@ -1,9 +1,12 @@
-package cn.leancloud;
+package cn.leancloud.sample;
 
 import android.os.Parcelable;
 
 import java.util.List;
 
+import cn.leancloud.AVFile;
+import cn.leancloud.AVObject;
+import cn.leancloud.AVObjectCreator;
 import cn.leancloud.annotation.AVClassName;
 
 /**

@@ -28,7 +28,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import cn.leancloud.R;
+import cn.leancloud.sample.R;
 
 /**
  * A file chooser implemented in an Activity. 

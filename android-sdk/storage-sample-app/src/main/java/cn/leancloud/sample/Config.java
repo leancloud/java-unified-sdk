@@ -1,4 +1,4 @@
-package cn.leancloud;
+package cn.leancloud.sample;
 
 /**
  * Created by fengjunwen on 2018/3/22.

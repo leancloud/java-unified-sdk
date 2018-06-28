@@ -1,6 +1,10 @@
-package cn.leancloud;
+package cn.leancloud.sample;
 
 import android.app.Application;
+
+import cn.leancloud.AVLogger;
+import cn.leancloud.AVOSCloud;
+import cn.leancloud.AVObject;
 
 /**
  * Created by fengjunwen on 2018/3/22.

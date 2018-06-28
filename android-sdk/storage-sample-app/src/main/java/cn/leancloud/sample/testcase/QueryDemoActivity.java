@@ -1,4 +1,4 @@
-package cn.leancloud.testcase;
+package cn.leancloud.sample.testcase;
 
 import junit.framework.Assert;
 
@@ -15,9 +15,9 @@ import cn.leancloud.AVObject;
 import cn.leancloud.AVQuery;
 import cn.leancloud.AVRelation;
 import cn.leancloud.AVUser;
-import cn.leancloud.DemoBaseActivity;
-import cn.leancloud.DemoUtils;
-import cn.leancloud.Student;
+import cn.leancloud.sample.DemoBaseActivity;
+import cn.leancloud.sample.DemoUtils;
+import cn.leancloud.sample.Student;
 import cn.leancloud.callback.FindCallback;
 import cn.leancloud.convertor.ObserverBuilder;
 

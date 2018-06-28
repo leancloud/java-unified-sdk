@@ -1,12 +1,12 @@
-package cn.leancloud.testcase;
+package cn.leancloud.sample.testcase;
 
 import java.util.HashMap;
 
 import cn.leancloud.AVCloud;
 import cn.leancloud.AVException;
 import cn.leancloud.AVObject;
-import cn.leancloud.DemoBaseActivity;
-import cn.leancloud.Student;
+import cn.leancloud.sample.DemoBaseActivity;
+import cn.leancloud.sample.Student;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 

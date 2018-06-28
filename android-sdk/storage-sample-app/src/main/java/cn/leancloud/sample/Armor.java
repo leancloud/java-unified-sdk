@@ -1,5 +1,6 @@
-package cn.leancloud;
+package cn.leancloud.sample;
 
+import cn.leancloud.AVObject;
 import cn.leancloud.annotation.AVClassName;
 
 /**

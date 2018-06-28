@@ -1,4 +1,4 @@
-package cn.leancloud.testcase;
+package cn.leancloud.sample.testcase;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -6,7 +6,7 @@ import android.view.Window;
 
 import cn.leancloud.AVObject;
 import cn.leancloud.AVParcelableObject;
-import cn.leancloud.R;
+import cn.leancloud.sample.R;
 
 public class ObjectTransferTargetActivity extends AppCompatActivity {
   private AVObject attached = null;

@@ -1,4 +1,4 @@
-package cn.leancloud.testcase;
+package cn.leancloud.sample.testcase;
 
 import android.app.Dialog;
 import android.graphics.Bitmap;
@@ -18,11 +18,10 @@ import cn.leancloud.AVException;
 import cn.leancloud.AVFile;
 import cn.leancloud.AVObject;
 import cn.leancloud.AVQuery;
-import cn.leancloud.DemoBaseActivity;
-import cn.leancloud.DemoUtils;
-import cn.leancloud.R;
+import cn.leancloud.sample.DemoBaseActivity;
+import cn.leancloud.sample.DemoUtils;
+import cn.leancloud.sample.R;
 import cn.leancloud.callback.FindCallback;
-import cn.leancloud.callback.ProgressCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.types.AVNull;

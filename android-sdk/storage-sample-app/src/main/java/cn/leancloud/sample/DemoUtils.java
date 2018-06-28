@@ -1,4 +1,4 @@
-package cn.leancloud;
+package cn.leancloud.sample;
 
 import android.content.Context;
 import android.text.Html;
