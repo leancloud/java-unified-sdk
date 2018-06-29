@@ -24,6 +24,9 @@ buildscript {
 }
 
 allprojects {
+    group = GROUP
+    version = VERSION_NAME
+
     repositories {
         jcenter()
         def home = System.getenv("HOME")
