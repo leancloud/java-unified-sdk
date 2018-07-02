@@ -6,6 +6,7 @@ import cn.leancloud.cache.SystemSetting;
 import cn.leancloud.network.DNSDetoxicant;
 import cn.leancloud.service.AppAccessEndpoint;
 import cn.leancloud.service.AppRouterService;
+import cn.leancloud.service.RTMConnectionServerResponse;
 import cn.leancloud.utils.LogUtil;
 
 import cn.leancloud.utils.StringUtil;
@@ -14,6 +15,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -26,6 +28,9 @@ public class AppRouter {
   private static final AVLogger LOGGER = LogUtil.getLogger(AppRouter.class);
   private static final String APP_ROUTER_HOST = "https://app-router.leancloud.cn";
   private static final AppRouter INSTANCE = new AppRouter();
+  public static AppRouter getInstance() {
+    return INSTANCE;
+  }
 
   /**
    * 华北区 app router 请求与结果
@@ -77,13 +82,12 @@ public class AppRouter {
   }
 
   private OkHttpClient httpClient = null;
-  private AppRouterService service = null;
   private Retrofit retrofit = null;
   private AppAccessEndpoint appAccessEndpoint = null;
 
   protected AppRouter() {
     httpClient = new OkHttpClient.Builder()
-            .connectTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
             .addInterceptor(new LoggingInterceptor())
@@ -95,7 +99,6 @@ public class AppRouter {
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(httpClient)
             .build();
-    service = retrofit.create(AppRouterService.class);
   }
 
   protected AppAccessEndpoint buildDefaultEndpoint(String appId) {
@@ -122,23 +125,57 @@ public class AppRouter {
     result.setPushServer(String.format(DEFAULT_SERVER_HOST_FORMAT, appIdPrefix, DEFAULT_SERVER_PUSH, lastHost));
     result.setRtmRouterServer(String.format(DEFAULT_SERVER_HOST_FORMAT, appIdPrefix, DEFAULT_SERVER_RTM_ROUTER, lastHost));
     result.setStatServer(String.format(DEFAULT_SERVER_HOST_FORMAT, appIdPrefix, DEFAULT_SERVER_STAT, lastHost));
-    result.setTtl(36000);
+    result.setTtl(36000 + System.currentTimeMillis() / 1000);
     return result;
   }
 
-  public String getEndpoint(final String appId, AVOSServices service, boolean forceUpdate) {
+  private Observable<String> fetchServerFromRemote(final String appId, final AVOSServices service) {
+    return fetchServerHostsInBackground(appId).map(new Function<AppAccessEndpoint, String>() {
+      @Override
+      public String apply(AppAccessEndpoint appAccessEndpoint) throws Exception {
+        String result = "";
+        switch (service) {
+          case API:
+            result = appAccessEndpoint.getApiServer();
+            break;
+          case ENGINE:
+            result = appAccessEndpoint.getEngineServer();
+            break;
+          case PUSH:
+            result = appAccessEndpoint.getPushServer();
+            break;
+          case RTM:
+            result = appAccessEndpoint.getRtmRouterServer();
+            break;
+          case STATS:
+            result = appAccessEndpoint.getStatServer();
+            break;
+          default:
+            break;
+        }
+        return result;
+      }
+    });
+  }
+
+  public Observable<String> getEndpoint(final String appId, final AVOSServices service, boolean forceUpdate) {
     if (forceUpdate) {
       // force to update from server.
-      fetchServerHosts(appId);
+      return fetchServerFromRemote(appId, service);
     }
+
     if (null == this.appAccessEndpoint) {
       SystemSetting setting = AppConfiguration.getDefaultSetting();
       String cachedResult = null;
       if (null != setting) {
-        cachedResult = setting.getString(getAppRouterSPName(appId), appId, "");
+        cachedResult = setting.getString(getPersistenceKeyZone(appId, true), appId, "");
       }
-      if (StringUtil.isEmpty(cachedResult)) {
+      if (!StringUtil.isEmpty(cachedResult)) {
         appAccessEndpoint = JSON.parseObject(cachedResult, AppAccessEndpoint.class);
+        long currentSeconds = System.currentTimeMillis() / 1000;
+        if (currentSeconds > appAccessEndpoint.getTtl()) {
+          appAccessEndpoint = null;
+        }
       } else {
         appAccessEndpoint = buildDefaultEndpoint(appId);
       }
@@ -164,53 +201,101 @@ public class AppRouter {
           default:
             break;
       }
+      return Observable.just(result);
+    } else {
+      return fetchServerFromRemote(appId, service);
     }
-    return result;
   }
 
-  public Observable<AppAccessEndpoint> fetchServerHostsInBackground(String appId) {
+  public Observable<AppAccessEndpoint> fetchServerHostsInBackground(final String appId) {
+    AppRouterService service = retrofit.create(AppRouterService.class);
     Observable<AppAccessEndpoint> result = service.getRouter(appId);
     if (AppConfiguration.isAsynchronized()) {
       result = result.subscribeOn(Schedulers.io());
     }
     AppConfiguration.SchedulerCreator creator = AppConfiguration.getDefaultScheduler();
     if (null != creator) {
-      result = result.subscribeOn(creator.create());
+      result = result.observeOn(creator.create());
     }
-    return result;
-  }
-
-  public void fetchServerHosts(final String appId) {
-    fetchServerHostsInBackground(appId).subscribe(new Observer<AppAccessEndpoint>() {
+    return result.map(new Function<AppAccessEndpoint, AppAccessEndpoint>() {
       @Override
-      public void onSubscribe(Disposable disposable) {
-      }
-
-      @Override
-      public void onNext(AppAccessEndpoint appAccessEndpoint) {
+      public AppAccessEndpoint apply(AppAccessEndpoint appAccessEndpoint) throws Exception {
         // save result to local cache.
         LOGGER.d(appAccessEndpoint.toString());
         AppRouter.this.appAccessEndpoint = appAccessEndpoint;
-        String endPoints = JSON.toJSONString(appAccessEndpoint);
+        AppRouter.this.appAccessEndpoint.setTtl(appAccessEndpoint.getTtl() + System.currentTimeMillis() / 1000);
         SystemSetting setting = AppConfiguration.getDefaultSetting();
         if (null != setting) {
-          setting.saveString(getAppRouterSPName(appId), appId, endPoints);
+          String endPoints = JSON.toJSONString(AppRouter.this.appAccessEndpoint);
+          setting.saveString(getPersistenceKeyZone(appId, true), appId, endPoints);
         }
-      }
-
-      @Override
-      public void onError(Throwable throwable) {
-        LOGGER.w("failed to retrieve app router data.", throwable);
-      }
-
-      @Override
-      public void onComplete() {
+        return AppRouter.this.appAccessEndpoint;
       }
     });
   }
 
-  protected String getAppRouterSPName(String appId) {
-    return "com.avos.avoscloud.approuter." + appId;
+  private Observable<RTMConnectionServerResponse> fetchRTMServerFromRemote(final String routerHost, final String appId,
+                                                                           final String installationId, int secure) {
+    Retrofit tmpRetrofit = retrofit.newBuilder().baseUrl(routerHost).build();
+    AppRouterService tmpService = tmpRetrofit.create(AppRouterService.class);
+    Observable<RTMConnectionServerResponse> result = tmpService.getRTMConnectionServer(appId, installationId, secure);
+    if (AppConfiguration.isAsynchronized()) {
+      result = result.subscribeOn(Schedulers.io());
+    }
+    AppConfiguration.SchedulerCreator creator = AppConfiguration.getDefaultScheduler();
+    if (null != creator) {
+      result = result.observeOn(creator.create());
+    }
+    return result.map(new Function<RTMConnectionServerResponse, RTMConnectionServerResponse>() {
+      @Override
+      public RTMConnectionServerResponse apply(RTMConnectionServerResponse rtmConnectionServerResponse) throws Exception {
+        SystemSetting setting = AppConfiguration.getDefaultSetting();
+        if (null != rtmConnectionServerResponse && null != setting) {
+          rtmConnectionServerResponse.setTtl(rtmConnectionServerResponse.getTtl() + System.currentTimeMillis() / 1000);
+          String cacheResult = JSON.toJSONString(rtmConnectionServerResponse);
+          setting.saveString(getPersistenceKeyZone(appId, false), routerHost, cacheResult);
+        }
+        return rtmConnectionServerResponse;
+      }
+    });
+  }
+
+  public Observable<RTMConnectionServerResponse> fetchRTMConnectionServer(final String routerHost, final String appId,
+                                                                          final String installationId, int secure,
+                                                                          boolean forceUpdate) {
+    if (!forceUpdate) {
+      RTMConnectionServerResponse cachedResponse = null;
+      SystemSetting setting = AppConfiguration.getDefaultSetting();
+      if (null != setting) {
+        String cacheServer = setting.getString(getPersistenceKeyZone(appId, false), routerHost, "");
+        if (!StringUtil.isEmpty(cacheServer)) {
+          try {
+            cachedResponse = JSON.parseObject(cacheServer, RTMConnectionServerResponse.class);
+            long currentSeconds = System.currentTimeMillis()/1000;
+            if (currentSeconds > cachedResponse.getTtl()) {
+              // cache is out of date.
+              setting.removeKey(getPersistenceKeyZone(appId, false), routerHost);
+              cachedResponse = null;
+            }
+            if (null != cachedResponse) {
+              return Observable.just(cachedResponse);
+            }
+          } catch (Exception ex) {
+            cachedResponse = null;
+            setting.removeKey(getPersistenceKeyZone(appId, false), routerHost);
+          }
+        }
+      }
+    }
+    return fetchRTMServerFromRemote(routerHost, appId, installationId, secure);
+  }
+
+  protected String getPersistenceKeyZone(String appId, boolean forAPIEndpoints) {
+    if (forAPIEndpoints) {
+      return "com.avos.avoscloud.approuter." + appId;
+    } else {
+      return "com.avos.push.router.server.cache" + appId;
+    }
   }
 
 }

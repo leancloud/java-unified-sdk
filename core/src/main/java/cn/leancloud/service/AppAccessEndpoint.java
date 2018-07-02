@@ -6,7 +6,7 @@ import com.alibaba.fastjson.annotation.JSONType;
 @JSONType
 public class AppAccessEndpoint {
   @JSONField(name = "ttl")
-  private int ttl;
+  private long ttl;
 
   @JSONField(name = "stats_server")
   private String statServer;
@@ -23,11 +23,11 @@ public class AppAccessEndpoint {
   @JSONField(name = "engine_server")
   private String engineServer;
 
-  public int getTtl() {
+  public long getTtl() {
     return ttl;
   }
 
-  public void setTtl(int ttl) {
+  public void setTtl(long ttl) {
     this.ttl = ttl;
   }
 
