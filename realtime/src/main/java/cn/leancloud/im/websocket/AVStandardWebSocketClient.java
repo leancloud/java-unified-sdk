@@ -2,8 +2,8 @@ package cn.leancloud.im.websocket;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
-import cn.leancloud.im.Messages;
-import cn.leancloud.im.command.CommandPacket;
+import cn.leancloud.Messages;
+import cn.leancloud.command.CommandPacket;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import org.java_websocket.WebSocket;

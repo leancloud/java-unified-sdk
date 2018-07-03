@@ -1,6 +1,6 @@
-package cn.leancloud.im.command;
+package cn.leancloud.command;
 
-import cn.leancloud.im.Messages;
+import cn.leancloud.Messages;
 import cn.leancloud.utils.StringUtil;
 
 public class CommandPacket {

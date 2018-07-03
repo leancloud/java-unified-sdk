@@ -1,7 +1,7 @@
 package cn.leancloud.im.websocket;
 
 import cn.leancloud.AVLogger;
-import cn.leancloud.im.Messages;
+import cn.leancloud.Messages;
 import cn.leancloud.utils.LogUtil;
 import okhttp3.*;
 import okio.ByteString;

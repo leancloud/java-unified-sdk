@@ -3,15 +3,13 @@ package cn.leancloud.im.websocket;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Configure;
 import cn.leancloud.core.AVOSCloud;
-import cn.leancloud.im.command.LoginPacket;
-import cn.leancloud.im.command.SessionControlPacket;
+import cn.leancloud.command.LoginPacket;
+import cn.leancloud.command.SessionControlPacket;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.java_websocket.WebSocketImpl;
-import org.java_websocket.server.DefaultSSLWebSocketServerFactory;
 
-import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import java.net.URI;

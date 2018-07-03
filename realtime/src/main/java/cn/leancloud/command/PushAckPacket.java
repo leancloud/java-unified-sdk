@@ -1,21 +1,18 @@
-package cn.leancloud.im.command;
+package cn.leancloud.command;
 
-import cn.leancloud.im.Messages;
+import cn.leancloud.Messages;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class SessionAckPacket extends PeerBasedCommandPacket {
-
+public class PushAckPacket extends CommandPacket {
   List<String> ids;
 
-  public SessionAckPacket() {
+  public PushAckPacket() {
     this.setCmd("ack");
   }
 
-  public void setMessageId(String id) {
-    ids = new ArrayList<String>(1);
-    ids.add(id);
+  public void setMessageIds(List<String> ids) {
+    this.ids = ids;
   }
 
   @Override
@@ -27,9 +24,7 @@ public class SessionAckPacket extends PeerBasedCommandPacket {
 
   protected Messages.AckCommand getAckCommand() {
     Messages.AckCommand.Builder builder = Messages.AckCommand.newBuilder();
-    if (null != ids && ids.size() > 0) {
-      builder.addAllIds(ids);
-    }
+    builder.addAllIds(ids);
     return builder.build();
   }
 }

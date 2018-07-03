@@ -1,6 +1,6 @@
 package cn.leancloud.im.websocket;
 
-import cn.leancloud.im.Messages;
+import cn.leancloud.Messages;
 
 public interface AVConnectionListener {
   void onWebSocketOpen();
