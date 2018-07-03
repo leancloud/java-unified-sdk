@@ -1,4 +1,4 @@
-package cn.leancloud.im.websocket;
+package cn.leancloud.websocket;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
