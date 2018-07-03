@@ -1,15 +1,15 @@
 package cn.leancloud.im;
 
 public class InternalConfiguration {
-  private static EventBoardcast eventBoardcast = null;
+  private static EventBroadcast eventBroadcast = null;
   private static CommandCarrier commandCarrier = null;
 
-  public static EventBoardcast getEventBoardcast() {
-    return eventBoardcast;
+  public static EventBroadcast getEventBroadcast() {
+    return eventBroadcast;
   }
 
-  public static void setEventBoardcast(EventBoardcast eventBoardcast) {
-    InternalConfiguration.eventBoardcast = eventBoardcast;
+  public static void setEventBroadcast(EventBroadcast eventBroadcast) {
+    InternalConfiguration.eventBroadcast = eventBroadcast;
   }
 
   public static CommandCarrier getCommandCarrier() {

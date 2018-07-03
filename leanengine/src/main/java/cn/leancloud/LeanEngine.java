@@ -43,7 +43,7 @@ public class LeanEngine {
 
     appConf = EngineAppConfiguration.instance(applicationId, clientKey, masterKey);
     appRouter = new EnvFirstAppRouter();
-    appRouter.fetchServerHosts(applicationId);
+    appRouter.fetchServerHostsInBackground(applicationId).blockingSingle();
   }
 
   private static Map<String, EngineHandlerInfo> funcs = new HashMap<String, EngineHandlerInfo>();
