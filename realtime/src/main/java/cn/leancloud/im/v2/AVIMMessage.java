@@ -154,11 +154,11 @@ public class AVIMMessage {
     return deliveredAt;
   }
 
-  void setReadAt(long readAt) {
+  public void setReadAt(long readAt) {
     this.readAt = readAt;
   }
 
-  long getReadAt() {
+  public long getReadAt() {
     return readAt;
   }
 
@@ -320,7 +320,7 @@ public class AVIMMessage {
     this.uniqueToken = uniqueToken;
   }
 
-  protected String getUniqueToken() {
+  public String getUniqueToken() {
     return uniqueToken;
   }
 

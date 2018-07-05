@@ -1,6 +1,11 @@
 package cn.leancloud.im.v2;
 
 import cn.leancloud.AVUser;
+import cn.leancloud.im.MessageBridge;
+import cn.leancloud.im.v2.callback.AVIMClientCallback;
+import cn.leancloud.im.v2.callback.AVIMClientStatusCallback;
+import cn.leancloud.im.v2.callback.AVIMConversationCreatedCallback;
+import cn.leancloud.im.v2.callback.AVIMOnlineClientsCallback;
 import cn.leancloud.utils.StringUtil;
 
 import java.util.List;
@@ -9,18 +14,110 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AVIMClient {
   private static final int REALTIME_TOKEN_WINDOW_INSECONDS = 300;
-  static ConcurrentHashMap<String, AVIMClient> clients =
+  private static ConcurrentHashMap<String, AVIMClient> clients =
           new ConcurrentHashMap<String, AVIMClient>();
+  private static AVIMClientEventHandler clientEventHandler;
+
+  /**
+   * 当前client的状态
+   */
+  public enum AVIMClientStatus {
+    /**
+     * 当前client尚未open，或者已经close
+     */
+    AVIMClientStatusNone(110),
+    /**
+     * 当前client已经打开，连接正常
+     */
+    AVIMClientStatusOpened(111),
+    /**
+     * 当前client由于网络因素导致的连接中断
+     */
+    AVIMClientStatusPaused(120);
+
+    int code;
+
+    AVIMClientStatus(int code) {
+      this.code = code;
+    }
+
+    public int getCode() {
+      return code;
+    }
+
+    static AVIMClientStatus getClientStatus(int code) {
+      switch (code) {
+        case 110:
+          return AVIMClientStatusNone;
+        case 111:
+          return AVIMClientStatusOpened;
+        case 120:
+          return AVIMClientStatusPaused;
+        default:
+          return null;
+      }
+    };
+  }
+
+  // client id
   private String clientId = null;
+  // client tag
   private String tag = null;
+  // AVUser authentication session token
   private String userSessionToken = null;
+  // realtime session token
   private String realtimeSessionToken = null;
+  // realtime session token expired timestamp.
   private long realtimeSessionTokenExpired = 0l;
-  private boolean isAutoOpen = true;
+
+  private AVIMMessageStorage storage;
+  private ConcurrentHashMap<String, AVIMConversation> conversationCache =
+          new ConcurrentHashMap<String, AVIMConversation>();
 
   private AVIMClient(String clientId) {
     this.clientId = clientId;
+    this.storage = AVIMMessageStorage.getInstance(clientId);
   }
+
+  /**
+   * 设置AVIMClient的事件处理单元，
+   *
+   * 包括Client断开链接和重连成功事件
+   *
+   * @param handler
+   */
+  public static void setClientEventHandler(AVIMClientEventHandler handler) {
+    AVIMClient.clientEventHandler = handler;
+  }
+
+  public static AVIMClientEventHandler getClientEventHandler() {
+    return AVIMClient.clientEventHandler;
+  }
+
+  /**
+   * 设置离线消息推送模式
+   * @param isOnlyCount true 为仅推送离线消息数量，false 为推送离线消息
+   * @deprecated Please use {@link #setUnreadNotificationEnabled(boolean)}
+   */
+  public static void setOfflineMessagePush(boolean isOnlyCount) {
+    setUnreadNotificationEnabled(isOnlyCount);
+  }
+
+  /**
+   * Set the mode of offline message push
+   * @param enabled if the value is true，the number of unread messages will be pushed when the client open.
+   *                if the value is false, the unread messages will be pushed when the client open.
+   */
+  public static void setUnreadNotificationEnabled(boolean enabled) {
+    // TODO:fix me!
+    // AVSession.setUnreadNotificationEnabled(enabled);
+  }
+
+  /**
+   * get AVIMClient instance by clientId.
+   * @param clientId
+   * @return
+   */
   public static AVIMClient getInstance(String clientId) {
     if (StringUtil.isEmpty(clientId)) {
       return null;
@@ -35,20 +132,43 @@ public class AVIMClient {
     }
     return client;
   }
+
+  /**
+   * count used clients.
+   * @return
+   */
   public static int getClientsCount() {
     return clients.size();
   }
+
+  /**
+   * get default clientId.
+   * @return
+   */
   public static String getDefaultClient() {
     if (getClientsCount() == 1) {
       return clients.keys().nextElement();
     }
     return "";
   }
+
+  /**
+   * get AVIMClient instance by clientId and tag.
+   * @param clientId
+   * @param tag
+   * @return
+   */
   public static AVIMClient getInstance(String clientId, String tag) {
     AVIMClient client = getInstance(clientId);
     client.tag = tag;
     return client;
   }
+
+  /**
+   * get AVIMClient instance by AVUser
+   * @param user
+   * @return
+   */
   public static AVIMClient getInstance(AVUser user) {
     if (null == user) {
       return null;
@@ -68,72 +188,129 @@ public class AVIMClient {
     return client;
   }
 
-  public void open() {
-    ;
-  }
-  public void open(AVIMClientOpenOption option) {
-    ;
+  public void getClientStatus(final AVIMClientStatusCallback callback) {
+    MessageBridge.getInstance().queryClientStatus(this.clientId, callback);
   }
 
-  public void getOnlineClients(List<String> clients) {
-    ;
+  public void open(final AVIMClientCallback callback) {
+    this.open(null, callback);
+  }
+
+  public void open(AVIMClientOpenOption option, final AVIMClientCallback callback) {
+    boolean reConnect = null == option? false : option.isReconnect();
+    MessageBridge.getInstance().openClient(clientId, tag, userSessionToken, reConnect, callback);
+  }
+
+  public void getOnlineClients(List<String> clients, final AVIMOnlineClientsCallback callback) {
+    MessageBridge.getInstance().queryOnlineClients(this.clientId, clients, callback);
   }
 
   public void createConversation(final List<String> conversationMembers,
-                                 final Map<String, Object> attributes) {
-    ;
+                                 final Map<String, Object> attributes, final AVIMConversationCreatedCallback callback) {
+    this.createConversation(conversationMembers, null, attributes, false, callback);
   }
 
   public void createConversation(final List<String> conversationMembers, String name,
-                                 final Map<String, Object> attributes) {
-    ;
+                                 final Map<String, Object> attributes, final AVIMConversationCreatedCallback callback) {
+    this.createConversation(conversationMembers, name, attributes, false, callback);
   }
 
-  public void createConversation(final List<String> members, final String name,
-                                 final Map<String, Object> attributes, final boolean isTransient) {
-    ;
+  public void createConversation(final List<String> members, final String name, final Map<String, Object> attributes,
+                                 final boolean isTransient, final AVIMConversationCreatedCallback callback) {
+    this.createConversation(members, name, attributes, isTransient, false, callback);
   }
 
-  public void createConversation(final List<String> members, final String name,
-                                 final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique) {
-    ;
+  public void createConversation(final List<String> members, final String name, final Map<String, Object> attributes,
+                                 final boolean isTransient, final boolean isUnique, final AVIMConversationCreatedCallback callback) {
+    this.createConversation(members, name, attributes, isTransient, isUnique, false, 0, callback);
   }
 
-  public void createTemporaryConversation(final List<String> conversationMembers) {
-    ;
+  public void createTemporaryConversation(final List<String> conversationMembers, final AVIMConversationCreatedCallback callback) {
+    this.createTemporaryConversation(conversationMembers, 86400*3, callback);
   }
 
-  public void createTemporaryConversation(final List<String> conversationMembers, int ttl) {
-    ;
+  public void createTemporaryConversation(final List<String> conversationMembers, int ttl, final AVIMConversationCreatedCallback callback) {
+    this.createConversation(conversationMembers, null, null, false, true, true, ttl, callback);
   }
 
-  public void createChatRoom(final List<String> conversationMembers, String name,
-                             final Map<String, Object> attributes, final boolean isUnique) {
-    ;
+  public void createChatRoom(final List<String> conversationMembers, String name, final Map<String, Object> attributes,
+                             final boolean isUnique, final AVIMConversationCreatedCallback callback) {
+    this.createConversation(conversationMembers, name, attributes, true, isUnique, callback);
+  }
+
+  private void createServiceConversation(String name, final Map<String, Object> attributes,
+                                         final AVIMConversationCreatedCallback callback) {
+    throw new UnsupportedOperationException("can't invoke createServiceConversation within SDK.");
+  }
+
+  private void createConversation(final List<String> members, final String name,
+                                  final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
+                                  final boolean isTemp, int tempTTL, final AVIMConversationCreatedCallback callback) {
+    MessageBridge.getInstance().createConversation(members, name, attributes, isTransient, isUnique, isTemp, tempTTL, callback);
   }
 
   public AVIMConversation getConversation(String conversationId) {
-    return null;
+    if (StringUtil.isEmpty(conversationId)) {
+      return null;
+    }
+    return this.getConversation(conversationId, false, conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX));
   }
 
   public AVIMConversation getConversation(String conversationId, int convType) {
-    return null;
+    AVIMConversation result = null;
+    switch (convType) {
+      case Conversation.CONV_TYPE_SYSTEM:
+        result = getServiceConversation(conversationId);
+        break;
+      case Conversation.CONV_TYPE_TEMPORARY:
+        result = getTemporaryConversation(conversationId);
+        break;
+      case Conversation.CONV_TYPE_TRANSIENT:
+        result = getChatRoom(conversationId);
+        break;
+      default:
+        result = getConversation(conversationId);
+        break;
+    }
+    return result;
   }
 
   public AVIMConversation getConversation(String conversationId, boolean isTransient, boolean isTemporary) {
-    return null;
+    return this.getConversation(conversationId, isTransient, isTemporary,false);
   }
 
   public AVIMConversation getChatRoom(String conversationId) {
-    return null;
+    return this.getConversation(conversationId, true, false);
   }
 
   public AVIMConversation getServiceConversation(String conversationId) {
-    return null;
+    return this.getConversation(conversationId, false, false, true);
   }
 
   public AVIMConversation getTemporaryConversation(String conversationId) {
-    return null;
+    return this.getConversation(conversationId, false, true);
+  }
+
+  private AVIMConversation getConversation(String conversationId, boolean isTransient, boolean isTemporary, boolean isSystem) {
+    if (StringUtil.isEmpty(conversationId)) {
+      return null;
+    }
+    AVIMConversation conversation = conversationCache.get(conversationId);
+    if (null != conversation) {
+      return conversation;
+    } else {
+      if (isSystem) {
+        conversation = new AVIMServiceConversation(this, conversationId);
+      } else if (isTemporary || conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX)) {
+        conversation = new AVIMTemporaryConversation(this, conversationId);
+      } else if (isTransient) {
+        conversation = new AVIMChatRoom(this, conversationId);
+      } else {
+        conversation = new AVIMConversation(this, conversationId);
+      }
+      AVIMConversation elder = conversationCache.putIfAbsent(conversationId, conversation);
+      return null == elder? conversation : elder;
+    }
   }
 
   /**
@@ -175,8 +352,25 @@ public class AVIMClient {
     return query;
   }
 
-  public void close() {
-    ;
+  public void close(final AVIMClientCallback callback) {
+    final AVIMClientCallback internalCallback = new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        if (null == e) {
+          AVIMClient.this.localClose();
+        }
+        if (null != callback) {
+          callback.done(client, e);
+        }
+      }
+    };
+    MessageBridge.getInstance().closeClient(this.clientId, internalCallback);
+  }
+
+  protected void localClose() {
+    clients.remove(this.clientId);
+    conversationCache.clear();
+    storage.deleteClientData();
   }
 
   /**
@@ -199,6 +393,10 @@ public class AVIMClient {
   boolean realtimeSessionTokenExpired() {
     long now = System.currentTimeMillis()/1000;
     return (now + REALTIME_TOKEN_WINDOW_INSECONDS) >= this.realtimeSessionTokenExpired;
+  }
+
+  AVIMMessageStorage getStorage() {
+    return this.storage;
   }
 
 }

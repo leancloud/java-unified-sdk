@@ -17,6 +17,7 @@ public class AVIMConversationsQuery {
     this.client = client;
     this.conditions = new AVIMConversationQueryConditions();
   }
+
   /**
    * 增加查询条件，指定聊天室的组员条件满足条件的才返回
    *

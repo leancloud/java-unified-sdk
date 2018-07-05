@@ -50,7 +50,7 @@ public abstract class AVIMClientEventHandler extends AVIMEventHandler {
         break;
       case Conversation.STATUS_ON_CLIENT_OFFLINE:
         onClientOffline((AVIMClient) eventScene, (Integer) operand);
-        ((AVIMClient) eventScene).close();
+        ((AVIMClient) eventScene).close(null); // TODO: FIXME
         break;
       default:
         LOGGER.d("Not supported operation:" + operand);

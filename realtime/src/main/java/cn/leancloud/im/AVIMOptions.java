@@ -6,6 +6,7 @@ public class AVIMOptions {
   private SignatureFactory signatureFactory = null;
   private int timeoutInSecs = 15;
   private boolean isAutoOpen = true;
+  private boolean messageQueryCacheEnabled = true;
 
   /**
    * get global options instance.
@@ -69,6 +70,14 @@ public class AVIMOptions {
 
   public void setAutoOpen(boolean autoOpen) {
     isAutoOpen = autoOpen;
+  }
+
+  public boolean isMessageQueryCacheEnabled() {
+    return messageQueryCacheEnabled;
+  }
+
+  public void setMessageQueryCacheEnabled(boolean messageQueryCacheEnabled) {
+    this.messageQueryCacheEnabled = messageQueryCacheEnabled;
   }
 
   private AVIMOptions() {

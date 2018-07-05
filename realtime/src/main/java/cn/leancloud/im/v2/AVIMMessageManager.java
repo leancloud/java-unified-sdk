@@ -1,6 +1,7 @@
 package cn.leancloud.im.v2;
 
 import cn.leancloud.AVLogger;
+import cn.leancloud.im.AVIMOptions;
 import cn.leancloud.im.v2.annotation.AVIMMessageType;
 import cn.leancloud.im.v2.messages.*;
 import cn.leancloud.utils.LogUtil;
@@ -120,13 +121,13 @@ public class AVIMMessageManager {
   protected static void processMessage(AVIMMessage message, int convType, AVIMClient client, boolean hasMore,
                                        boolean isTransient) {
     // 如果已经通过拉获得了消息，则推的消息不回调
-    if (client.storage.containMessage(message)) {
+    if (client.getStorage().containMessage(message)) {
       return;
     }
     // hasMore 才设为 breakpoint
     // LogUtil.log.i("hasMore = " + hasMore);\
-    if (!isTransient && AVIMClient.messageQueryCacheEnabled) {
-      client.storage.insertMessage(message, hasMore);
+    if (!isTransient && AVIMOptions.getGlobalOptions().isMessageQueryCacheEnabled()) {
+      client.getStorage().insertMessage(message, hasMore);
     }
     message = parseTypedMessage(message);
     final AVIMConversation conversation = client.getConversation(message.getConversationId(), convType);
@@ -140,7 +141,7 @@ public class AVIMMessageManager {
   }
 
   protected static void processMessageReceipt(AVIMMessage message, AVIMClient client) {
-    client.storage.updateMessage(message, message.getMessageId());
+    client.getStorage().updateMessage(message, message.getMessageId());
     message = parseTypedMessage(message);
     final AVIMMessage finalMessageObject = message;
     final AVIMConversation conversation = client.getConversation(message.getConversationId());
