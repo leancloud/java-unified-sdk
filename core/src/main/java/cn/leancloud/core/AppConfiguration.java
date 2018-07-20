@@ -24,7 +24,9 @@ public class AppConfiguration {
   private static boolean asynchronized = false;
   private static SchedulerCreator defaultScheduler = null;
   private static NetworkingDetector globalNetworkingDetector = new SimpleNetworkingDetector();
+  private static String applicationPackagename = "";
 
+  private static String importantFileDir = "./persistFiles/";
   private static String documentDir = "./data/";
   private static String fileCacheDir = "./file/";
   private static String commandCacheDir = "./command/";
@@ -81,6 +83,7 @@ public class AppConfiguration {
   }
 
   public static void makeSureCacheDirWorkable() {
+    makeSureDirExist(importantFileDir);
     makeSureDirExist(documentDir);
     makeSureDirExist(fileCacheDir);
     makeSureDirExist(queryResultCacheDir);
@@ -97,6 +100,7 @@ public class AppConfiguration {
 
   /**
    * config local cache setting.
+   * @param imFileDir
    * @param docDir
    * @param fileDir
    * @param queryResultDir
@@ -104,9 +108,14 @@ public class AppConfiguration {
    * @param analyticsDir
    * @param setting
    */
-  public static void configCacheSettings(String docDir, String fileDir, String queryResultDir,
+  public static void configCacheSettings(String imFileDir, String docDir, String fileDir, String queryResultDir,
          String commandDir, String analyticsDir,
          SystemSetting setting) {
+    importantFileDir = imFileDir;
+    if (!importantFileDir.endsWith("/")) {
+      importantFileDir += "/";
+    }
+
     documentDir = docDir;
     if (!documentDir.endsWith("/")) {
       documentDir += "/";
@@ -146,6 +155,11 @@ public class AppConfiguration {
     return commandCacheDir;
   }
 
+  public static String getImportantFileDir() {
+    makeSureDirExist(importantFileDir);
+    return importantFileDir;
+  }
+
   public static String getDocumentDir() {
     makeSureDirExist(documentDir);
     return documentDir;
@@ -159,6 +173,14 @@ public class AppConfiguration {
   public static String getQueryResultCacheDir() {
     makeSureDirExist(queryResultCacheDir);
     return queryResultCacheDir;
+  }
+
+  public static String getApplicationPackagename() {
+    return applicationPackagename;
+  }
+
+  public static void setApplicationPackagename(String applicationPackagename) {
+    AppConfiguration.applicationPackagename = applicationPackagename;
   }
 
   public static SystemSetting getDefaultSetting() {

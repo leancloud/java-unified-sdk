@@ -15,6 +15,7 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
   public static void initialize(Context context, String appId, String appKey) {
     AppConfiguration.setLogAdapter(new DefaultLoggerAdapter());
 
+    String importantFileDir = context.getFilesDir();
     String baseDir = context.getCacheDir().getAbsolutePath();
     String documentDir = context.getDir("PaaS", Context.MODE_PRIVATE).getAbsolutePath();
     String fileCacheDir = baseDir + "/avfile/";
@@ -24,6 +25,7 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
     AndroidSystemSetting defaultSetting = new AndroidSystemSetting(context);
     AppConfiguration.configCacheSettings(documentDir, fileCacheDir, queryResultCacheDir,
         commandCacheDir, analyticsDir, defaultSetting);
+    AppConfiguration.setApplicationPackagename(context.getPackageName());
 
     LogUtil.getLogger(AVOSCloud.class).d("docDir=" + documentDir + ", fileDir=" + fileCacheDir
         + ", cmdDir=" + commandCacheDir + ", statDir=" + analyticsDir);

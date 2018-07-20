@@ -40,6 +40,7 @@ public class AVObject {
 
   protected String className;
   protected static final AVLogger logger = LogUtil.getLogger(AVObject.class);
+  protected static final int UUID_LEN = UUID.randomUUID().toString().length();
 
   protected String objectId = "";
   protected Map<String, Object> serverData = new ConcurrentHashMap<String, Object>();
