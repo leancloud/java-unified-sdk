@@ -36,7 +36,15 @@ public final class AVInstallation extends AVObject {
 
   public AVInstallation() {
     super(INSTALLATION_AVNAME);
+    this.totallyOverwrite = true;
     initialize();
+  }
+
+  protected AVInstallation(AVObject obj) {
+    this.objectId = obj.getObjectId();
+    this.acl = obj.getACL();
+    this.serverData = obj.getServerData();
+    this.totallyOverwrite = true;
   }
 
   public static AVInstallation getCurrentInstallation() {
@@ -57,8 +65,14 @@ public final class AVInstallation extends AVObject {
       String json = PersistenceUtil.sharedInstance().readContentFromFile(installationFile);
       if (!StringUtil.isEmpty(json)) {
         if (json.indexOf("{") >= 0) {
-          currentInstallation = (AVInstallation) JSON.parse(json);
-          needWriteback = false;
+          try {
+            currentInstallation = new AVInstallation(JSON.parseObject(json, AVInstallation.class));
+            currentInstallation.totallyOverwrite = true;
+            needWriteback = false;
+          } catch (Exception ex) {
+            LOGGER.w("failed to parse local installation data.", ex);
+            needWriteback = true;
+          }
         } else {
           if (json.length() == UUID_LEN) {
             // old sdk version.
@@ -99,6 +113,11 @@ public final class AVInstallation extends AVObject {
     }
     this.put(DEVICETYPETAG, deviceType());
     this.put(TIMEZONE, timezone());
+    File installationFile = new File(AppConfiguration.getImportantFileDir(), INSTALLATION);
+    String jsonString = JSON.toJSONString(this, ObjectValueFilter.instance,
+            SerializerFeature.WriteClassName,
+            SerializerFeature.DisableCircularReferenceDetect);
+    PersistenceUtil.sharedInstance().saveContentToFile(jsonString, installationFile);
   }
 
   private static String genInstallationId() {

@@ -20,4 +20,14 @@ public class AVInstallationTest extends TestCase {
     assertTrue(currentInstall != null);
     assertTrue(install.getInstallationId().equals(currentInstall.getInstallationId()));
   }
+
+  public void testSaveInstallation() {
+    AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
+    currentInstall.saveInBackground().blockingFirst();
+  }
+  public void testSaveInstallationWithCustomProp() {
+    AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
+    currentInstall.put("chan", "Chan");
+    currentInstall.saveInBackground().blockingFirst();
+  }
 }

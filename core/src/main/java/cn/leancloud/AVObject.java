@@ -48,6 +48,7 @@ public class AVObject {
   protected AVACL acl = null;
   private String uuid = null;
   private volatile boolean fetchWhenSave = false;
+  protected volatile boolean totallyOverwrite = false;
 
   public AVObject() {
     this.className = Transformer.getSubClassName(this.getClass());
@@ -381,11 +382,17 @@ public class AVObject {
     if (null == op) {
       return;
     }
-    ObjectFieldOperation previous = null;
-    if (this.operations.containsKey(op.getField())) {
-      previous = this.operations.get(op.getField());
+    if (totallyOverwrite) {
+      Object oldValue = this.serverData.get(op.getField());
+      Object newValue = op.apply(oldValue);
+      this.serverData.put(op.getField(), newValue);
+    } else {
+      ObjectFieldOperation previous = null;
+      if (this.operations.containsKey(op.getField())) {
+        previous = this.operations.get(op.getField());
+      }
+      this.operations.put(op.getField(), op.merge(previous));
     }
-    this.operations.put(op.getField(), op.merge(previous));
   }
 
   private boolean needBatchMode() {
@@ -401,6 +408,10 @@ public class AVObject {
    * save/update with server.
    */
   protected JSONObject generateChangedParam() {
+    if (totallyOverwrite) {
+      return new JSONObject(this.serverData);
+    }
+
     Map<String, Object> params = new HashMap<String, Object>();
     Set<Map.Entry<String, ObjectFieldOperation>> entries = operations.entrySet();
     for (Map.Entry<String, ObjectFieldOperation> entry: entries) {
