@@ -1,7 +1,7 @@
 package cn.leancloud.im.v2;
 
 import cn.leancloud.AVUser;
-import cn.leancloud.im.MessageBridge;
+import cn.leancloud.im.MessageBus;
 import cn.leancloud.im.v2.callback.AVIMClientCallback;
 import cn.leancloud.im.v2.callback.AVIMClientStatusCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationCreatedCallback;
@@ -189,7 +189,7 @@ public class AVIMClient {
   }
 
   public void getClientStatus(final AVIMClientStatusCallback callback) {
-    MessageBridge.getInstance().queryClientStatus(this.clientId, callback);
+    MessageBus.getInstance().queryClientStatus(this.clientId, callback);
   }
 
   public void open(final AVIMClientCallback callback) {
@@ -198,11 +198,11 @@ public class AVIMClient {
 
   public void open(AVIMClientOpenOption option, final AVIMClientCallback callback) {
     boolean reConnect = null == option? false : option.isReconnect();
-    MessageBridge.getInstance().openClient(clientId, tag, userSessionToken, reConnect, callback);
+    MessageBus.getInstance().openClient(clientId, tag, userSessionToken, reConnect, callback);
   }
 
   public void getOnlineClients(List<String> clients, final AVIMOnlineClientsCallback callback) {
-    MessageBridge.getInstance().queryOnlineClients(this.clientId, clients, callback);
+    MessageBus.getInstance().queryOnlineClients(this.clientId, clients, callback);
   }
 
   public void createConversation(final List<String> conversationMembers,
@@ -246,7 +246,7 @@ public class AVIMClient {
   private void createConversation(final List<String> members, final String name,
                                   final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
                                   final boolean isTemp, int tempTTL, final AVIMConversationCreatedCallback callback) {
-    MessageBridge.getInstance().createConversation(members, name, attributes, isTransient, isUnique, isTemp, tempTTL, callback);
+    MessageBus.getInstance().createConversation(members, name, attributes, isTransient, isUnique, isTemp, tempTTL, callback);
   }
 
   public AVIMConversation getConversation(String conversationId) {
@@ -364,7 +364,7 @@ public class AVIMClient {
         }
       }
     };
-    MessageBridge.getInstance().closeClient(this.clientId, internalCallback);
+    MessageBus.getInstance().closeClient(this.clientId, internalCallback);
   }
 
   protected void localClose() {

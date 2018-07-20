@@ -1,5 +1,7 @@
 package cn.leancloud.livequery;
 
+import java.util.ArrayList;
+
 public class AVLiveQuery {
   public enum EventType {
     CREATE("create"), UPDATE("update"), ENTER("enter"), LEAVE("leave"), DELETE("delete"), LOGIN("login"), UNKONWN("unknown");
@@ -30,5 +32,9 @@ public class AVLiveQuery {
     public String getContent() {
       return event;
     }
+  }
+
+  public static void processData(ArrayList<String> dataList) {
+    ;
   }
 }

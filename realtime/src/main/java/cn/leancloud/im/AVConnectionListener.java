@@ -1,4 +1,4 @@
-package cn.leancloud.websocket;
+package cn.leancloud.im;
 
 import cn.leancloud.Messages;
 

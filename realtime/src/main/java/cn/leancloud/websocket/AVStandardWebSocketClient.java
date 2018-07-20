@@ -35,12 +35,14 @@ public class AVStandardWebSocketClient extends WebSocketClient {
 
   private SSLSocketFactory socketFactory;
   private HeartBeatPolicy heartBeatPolicy;
+  private WebSocketClientMonitor socketClientMonitor;
   private static ArrayList<IProtocol> protocols = new ArrayList<IProtocol>();
   static {
     protocols.add(new Protocol(SUB_PROTOCOL_2_3));
   }
 
-  public AVStandardWebSocketClient(URI serverUrl, final String subProtocol, boolean secEnabled, boolean sniEnabled, SSLSocketFactory socketFactory) {
+  public AVStandardWebSocketClient(URI serverUrl, final String subProtocol, boolean secEnabled, boolean sniEnabled,
+                                   SSLSocketFactory socketFactory, WebSocketClientMonitor monitor) {
     super(serverUrl, new Draft_6455(Collections.<IExtension>emptyList(), protocols), new HashMap<String, String>() {
       {
         put(HEADER_SUB_PROTOCOL, subProtocol);
@@ -58,6 +60,7 @@ public class AVStandardWebSocketClient extends WebSocketClient {
         ping();
       }
     };
+    this.socketClientMonitor = monitor;
     if (secEnabled) {
       setSocket(sniEnabled);
     }
@@ -118,6 +121,9 @@ public class AVStandardWebSocketClient extends WebSocketClient {
   public void onOpen(ServerHandshake var1) {
     gLogger.d("onOpen status=" + var1.getHttpStatus() + ", statusMsg=" + var1.getHttpStatusMessage());
     this.heartBeatPolicy.start();
+    if (null != this.socketClientMonitor) {
+      this.socketClientMonitor.onOpen();
+    }
   }
 
   public void onMessage(String var1) {
@@ -125,22 +131,31 @@ public class AVStandardWebSocketClient extends WebSocketClient {
   }
 
   public void onMessage(ByteBuffer bytes) {
-    try {
-      Messages.GenericCommand command = Messages.GenericCommand.parseFrom(bytes.array());
-      gLogger.d("downLink: " + command.toString());
-    } catch (Exception ex) {
-      gLogger.d("onMessage " + bytes.toString());
+    if (null != this.socketClientMonitor) {
+      this.socketClientMonitor.onMessage(bytes);
     }
   }
 
   public void onClose(int var1, String var2, boolean var3) {
     gLogger.d("onClose code=" + var1 + ", message=" + var2);
     this.heartBeatPolicy.stop();
+    if (null != this.socketClientMonitor) {
+      this.socketClientMonitor.onClose(var1, var2, var3);
+    }
   }
 
   public void onError(Exception var1) {
     gLogger.w("onError ", var1);
+    if (null != this.socketClientMonitor) {
+      this.socketClientMonitor.onError(var1);
+    }
   }
   // end of WebSocketClient interfaces.
 
+  public interface WebSocketClientMonitor {
+    void onOpen();
+    void onClose(int var1, String var2, boolean var3);
+    void onMessage(ByteBuffer bytes);
+    void onError(Exception exception);
+  }
 }

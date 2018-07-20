@@ -2,15 +2,13 @@ package cn.leancloud.im.v2;
 
 import cn.leancloud.AVException;
 import cn.leancloud.callback.SaveCallback;
-import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.im.AVIMOptions;
-import cn.leancloud.im.MessageBridge;
+import cn.leancloud.im.MessageBus;
 import cn.leancloud.im.v2.callback.AVIMConversationCallback;
 import cn.leancloud.im.v2.callback.AVIMMessageRecalledCallback;
 import cn.leancloud.im.v2.callback.AVIMMessageUpdatedCallback;
 import cn.leancloud.im.v2.messages.AVIMFileMessage;
 import cn.leancloud.im.v2.messages.AVIMFileMessageAccessor;
-import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.StringUtil;
 
 import java.util.*;
@@ -480,12 +478,12 @@ public class AVIMConversation {
               callback.internalDone(e);
             }
           } else {
-            MessageBridge.getInstance().sendMessage(message, messageOption, callback);
+            MessageBus.getInstance().sendMessage(message, messageOption, callback);
           }
         }
       });
     } else {
-      MessageBridge.getInstance().sendMessage(message, messageOption, callback);
+      MessageBus.getInstance().sendMessage(message, messageOption, callback);
     }
   }
 
@@ -496,7 +494,7 @@ public class AVIMConversation {
    * @param callback
    */
   public void updateMessage(AVIMMessage oldMessage, AVIMMessage newMessage, AVIMMessageUpdatedCallback callback) {
-    MessageBridge.getInstance().updateMessage(oldMessage, newMessage, callback);
+    MessageBus.getInstance().updateMessage(oldMessage, newMessage, callback);
   }
 
   /**
@@ -505,7 +503,7 @@ public class AVIMConversation {
    * @param callback
    */
   public void recallMessage(AVIMMessage message, AVIMMessageRecalledCallback callback) {
-    MessageBridge.getInstance().recallMessage(message, callback);
+    MessageBus.getInstance().recallMessage(message, callback);
   }
 
   /**
