@@ -37,7 +37,6 @@ public class AVIMException extends AVException {
 
   public AVIMException(int appCode, AVException error) {
     super(error.getMessage(), error.getCause());
-    this.code = error.getCode();
     this.appCode = appCode;
   }
 

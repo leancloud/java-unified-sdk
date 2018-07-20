@@ -4,14 +4,28 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.command.CommandPacket;
 import cn.leancloud.command.LiveQueryLoginPacket;
+import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.AVOSServices;
+import cn.leancloud.core.AppRouter;
 import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.livequery.AVLiveQuery;
 import cn.leancloud.push.AVInstallation;
+import cn.leancloud.service.RTMConnectionServerResponse;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.websocket.AVStandardWebSocketClient;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import java.net.URI;
 import java.nio.ByteBuffer;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +35,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private static AVConnectionManager instance = null;
   private AVStandardWebSocketClient webSocketClient = null;
   private AVConnectionListener connectionListener = null;
+  private String currentRTMConnectionServer = null;
+  private int retryConnectionCount = 0;
+  private boolean connectionEstablished = false;
 
   public synchronized static AVConnectionManager getInstance() {
     if (instance == null) {
@@ -30,9 +47,85 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   private AVConnectionManager() {
-    ;
+    initConnection();
   }
 
+  private void reConnectionRTMServer() {
+    retryConnectionCount++;
+    if (retryConnectionCount <= 3) {
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          long sleepMS = (long)Math.pow(2, retryConnectionCount) * 1000;
+          try {
+            Thread.sleep(sleepMS);
+            initConnection();
+          } catch (InterruptedException ex) {
+            ;
+          }
+        }
+      }).start();
+    }
+  }
+  private String updateTargetServer(RTMConnectionServerResponse rtmConnectionServerResponse) {
+    String primaryServer = rtmConnectionServerResponse.getServer();
+    String secondary = rtmConnectionServerResponse.getSecondary();
+    if (null == this.currentRTMConnectionServer || this.currentRTMConnectionServer.equalsIgnoreCase(secondary)) {
+      this.currentRTMConnectionServer = primaryServer;
+    } else {
+      this.currentRTMConnectionServer = secondary;
+    }
+    return this.currentRTMConnectionServer;
+  }
+  private void initConnection() {
+    final AppRouter appRouter = AppRouter.getInstance();
+    final String installationId = AVInstallation.getCurrentInstallation().getInstallationId();
+    appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSServices.RTM, retryConnectionCount < 1)
+            .map(new Function<String, RTMConnectionServerResponse>() {
+              @Override
+              public RTMConnectionServerResponse apply(@NonNull String var1) throws Exception {
+                return appRouter.fetchRTMConnectionServer(var1, AVOSCloud.getApplicationId(), installationId,
+                        1, retryConnectionCount < 1).blockingFirst();
+              }
+            }).subscribe(new Observer<RTMConnectionServerResponse>() {
+              @Override
+              public void onSubscribe(Disposable disposable) {
+              }
+
+              @Override
+              public void onNext(RTMConnectionServerResponse rtmConnectionServerResponse) {
+                String targetServer = updateTargetServer(rtmConnectionServerResponse);
+                SSLSocketFactory sf = null;
+                try {
+                  SSLContext sslContext = SSLContext.getDefault();
+                  sf = sslContext.getSocketFactory();
+                } catch (NoSuchAlgorithmException exception) {
+                  LOGGER.e("failed to get SSLContext, cause: " + exception.getMessage());
+                }
+                if (null != webSocketClient) {
+                  try {
+                    webSocketClient.close();
+                  } catch (Exception ex) {
+                    LOGGER.e("failed to close websocket client.", ex);
+                  } finally {
+                    webSocketClient = null;
+                  }
+                }
+                webSocketClient = new AVStandardWebSocketClient(URI.create(targetServer), AVStandardWebSocketClient.SUB_PROTOCOL_2_3,
+                        true, true, sf, AVConnectionManager.this);
+              }
+
+              @Override
+              public void onError(Throwable throwable) {
+                LOGGER.e("failed to query RTM Connection Server. cause: " + throwable.getMessage());
+                reConnectionRTMServer();
+              }
+
+              @Override
+              public void onComplete() {
+              }
+            });
+  }
   public AVConnectionListener getConnectionListener() {
     return connectionListener;
   }
@@ -45,16 +138,23 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     this.webSocketClient.send(packet);
   }
 
+  public boolean isConnectionEstablished() {
+    return this.connectionEstablished;
+  }
+
   /**
    * WebSocketClientMonitor interfaces
    */
   public void onOpen() {
+    connectionEstablished = true;
+    retryConnectionCount = 0;
     if (null != this.connectionListener) {
       this.connectionListener.onWebSocketOpen();
     }
   }
 
   public void onClose(int var1, String var2, boolean var3) {
+    connectionEstablished = false;
     if (null != this.connectionListener) {
       this.connectionListener.onWebSocketClose();
     }
@@ -133,6 +233,8 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public void onError(Exception exception) {
+    connectionEstablished = false;
+    reConnectionRTMServer();
     if (null != this.connectionListener) {
       this.connectionListener.onError(null, null);
     }

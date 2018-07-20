@@ -13,8 +13,10 @@ import org.java_websocket.WebSocketImpl;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import java.net.URI;
+import java.nio.ByteBuffer;
 
 public class AVStandardWebSocketClientTest extends TestCase {
+  private AVStandardWebSocketClient.WebSocketClientMonitor monitor;
 
   public AVStandardWebSocketClientTest(String testname) {
     super(testname);
@@ -22,6 +24,27 @@ public class AVStandardWebSocketClientTest extends TestCase {
     AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
     AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
     AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    this.monitor = new AVStandardWebSocketClient.WebSocketClientMonitor() {
+      @Override
+      public void onOpen() {
+
+      }
+
+      @Override
+      public void onClose(int var1, String var2, boolean var3) {
+
+      }
+
+      @Override
+      public void onMessage(ByteBuffer bytes) {
+
+      }
+
+      @Override
+      public void onError(Exception exception) {
+
+      }
+    };
   }
 
   public static Test suite()
@@ -35,7 +58,7 @@ public class AVStandardWebSocketClientTest extends TestCase {
     SSLSocketFactory sf = sslContext.getSocketFactory();
     AVStandardWebSocketClient client = new AVStandardWebSocketClient(URI.create(wsUrl),
             AVStandardWebSocketClient.SUB_PROTOCOL_2_3,
-            true, true, sf);
+            true, true, sf, this.monitor);
     boolean rst = client.connectBlocking();
     assertTrue(rst);
     final int requestId = 100;
