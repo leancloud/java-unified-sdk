@@ -11,8 +11,11 @@ import java.util.Map;
 public class SimpleCommandCourier implements CommandCourier {
   public void openClient(String clientId, String tag, String userSessionToken,
                   boolean reConnect, AVIMClientCallback callback) {
+    long lastNotifyTime = 0;
+    long lastPatchTime = 0;
     WindTalker windTalker = WindTalker.getInstance();
-    CommandPacket packet = windTalker.assembleSessionOpenPacket();
+    CommandPacket packet = windTalker.assembleSessionOpenPacket(clientId, tag, null, lastNotifyTime,
+            lastPatchTime, reConnect);
     AVConnectionManager connectionManager = AVConnectionManager.getInstance();
 
   }

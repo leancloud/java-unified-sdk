@@ -4,15 +4,18 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.command.CommandPacket;
 import cn.leancloud.command.PushAckPacket;
+import cn.leancloud.command.SessionControlPacket;
 import cn.leancloud.utils.LogUtil;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class WindTalker {
   private static final AVLogger LOGGER = LogUtil.getLogger(WindTalker.class);
   private static WindTalker instance = null;
+  static AtomicInteger acu = new AtomicInteger(-65536);
   public static WindTalker getInstance() {
     if (null == instance) {
       instance = new WindTalker();
@@ -23,8 +26,28 @@ public class WindTalker {
     ;
   }
 
-  public CommandPacket assembleSessionOpenPacket() {
-    return null;
+  public static int getNextIMRequestId() {
+    int val = acu.incrementAndGet();
+    if (val > 65535) {
+      while (val > 65535 && !acu.compareAndSet(val, -65536)) {
+        val = acu.get();
+      }
+      return val;
+    } else {
+      return val;
+    }
+  }
+
+  public CommandPacket assembleSessionOpenPacket(String clientId, String tag, Signature signature, long lastNotifyTime,
+                                                 long lastPatchTime, boolean reConnect) {
+    int requestId = getNextIMRequestId();
+    SessionControlPacket scp = SessionControlPacket.genSessionCommand(
+            clientId, null,
+            SessionControlPacket.SessionControlOp.OPEN, signature,
+            lastNotifyTime, lastPatchTime, requestId);
+    scp.setTag(tag);
+    scp.setReconnectionRequest(reConnect);
+    return scp;
   }
 
   public CommandPacket assemblePushAckPacket(String installationId, List<String> messageIds) {
