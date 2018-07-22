@@ -3,6 +3,8 @@ package cn.leancloud.im;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Configure;
 import cn.leancloud.Messages;
+import cn.leancloud.command.LoginPacket;
+import cn.leancloud.command.SessionControlPacket;
 import cn.leancloud.core.AVOSCloud;
 import junit.framework.TestCase;
 
@@ -13,12 +15,13 @@ public class AVConnectionManagerTest extends TestCase {
   private AVConnectionListener listener = new AVConnectionListener() {
     @Override
     public void onWebSocketOpen() {
+      System.out.println("ConnectionListener - WebSocket opened.");
       countDownLatch.countDown();
     }
 
     @Override
     public void onWebSocketClose() {
-      ;
+      System.out.println("ConnectionListener - WebSocket closed.");
     }
 
     @Override
@@ -28,7 +31,7 @@ public class AVConnectionManagerTest extends TestCase {
 
     @Override
     public void onSessionCommand(String op, Integer requestId, Messages.SessionCommand command) {
-
+      System.out.println("ConnectionListener - onSessionCommand: op=" + op + ", requestId=" + requestId);
     }
 
     @Override
@@ -106,7 +109,46 @@ public class AVConnectionManagerTest extends TestCase {
 
   public void testInitConnection() throws Exception {
     AVConnectionManager manager = AVConnectionManager.getInstance();
+    manager.setConnectionListener(this.listener);
     this.countDownLatch.await();
     assertTrue(manager.isConnectionEstablished());
+  }
+
+  public void testSwitchConnection() throws Exception {
+    ;
+  }
+
+  public void testAutoReconnection() throws Exception {
+    ;
+  }
+
+  public void testLogin() throws Exception {
+    AVConnectionManager manager = AVConnectionManager.getInstance();
+    manager.setConnectionListener(this.listener);
+    this.countDownLatch.await();
+    assertTrue(manager.isConnectionEstablished());
+
+    final int requestId = 100;
+    final String installation = "d45304813cf37c6c1a2177f84aee0bb8";
+
+    LoginPacket lp = new LoginPacket();
+    lp.setAppId(Configure.TEST_APP_ID);
+    lp.setInstallationId(installation);
+    lp.setRequestId(requestId - 1);
+    manager.sendPacket(lp);
+    Thread.sleep(3000);
+
+    SessionControlPacket scp = SessionControlPacket.genSessionCommand(
+            "fengjunwen", null,
+            SessionControlPacket.SessionControlOp.OPEN, null,
+            0, 0, requestId);
+    scp.setTag("mobile");
+    scp.setAppId(Configure.TEST_APP_ID);
+    scp.setInstallationId(installation);
+    scp.setReconnectionRequest(false);
+    manager.sendPacket(scp);
+
+    Thread.sleep(3000);
+
   }
 }

@@ -76,6 +76,7 @@ public class AVStandardWebSocketClient extends WebSocketClient {
   public void onWebsocketPong(WebSocket conn, Framedata f) {
     super.onWebsocketPong(conn, f);
     heartBeatPolicy.onPong();
+    gLogger.d("onWebsocketPong()");
   }
 
   private void setSocket(boolean sniEnabled) {

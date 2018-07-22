@@ -84,7 +84,8 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
             .map(new Function<String, RTMConnectionServerResponse>() {
               @Override
               public RTMConnectionServerResponse apply(@NonNull String var1) throws Exception {
-                return appRouter.fetchRTMConnectionServer(var1, AVOSCloud.getApplicationId(), installationId,
+                String routerHost = var1.startsWith("http")? var1 : "https://" + var1;
+                return appRouter.fetchRTMConnectionServer(routerHost, AVOSCloud.getApplicationId(), installationId,
                         1, retryConnectionCount < 1).blockingFirst();
               }
             }).subscribe(new Observer<RTMConnectionServerResponse>() {
@@ -95,6 +96,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
               @Override
               public void onNext(RTMConnectionServerResponse rtmConnectionServerResponse) {
                 String targetServer = updateTargetServer(rtmConnectionServerResponse);
+                LOGGER.d("try to connect server: " + targetServer);
                 SSLSocketFactory sf = null;
                 try {
                   SSLContext sslContext = SSLContext.getDefault();
@@ -113,6 +115,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
                 }
                 webSocketClient = new AVStandardWebSocketClient(URI.create(targetServer), AVStandardWebSocketClient.SUB_PROTOCOL_2_3,
                         true, true, sf, AVConnectionManager.this);
+                webSocketClient.connect();
               }
 
               @Override
@@ -146,6 +149,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
    * WebSocketClientMonitor interfaces
    */
   public void onOpen() {
+    LOGGER.d("webSocket established...");
     connectionEstablished = true;
     retryConnectionCount = 0;
     if (null != this.connectionListener) {
@@ -154,6 +158,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public void onClose(int var1, String var2, boolean var3) {
+    LOGGER.d("webSocket closed...");
     connectionEstablished = false;
     if (null != this.connectionListener) {
       this.connectionListener.onWebSocketClose();
@@ -167,13 +172,17 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
       return;
     }
 
+    LOGGER.d("downlink: " + command.toString());
+
     String peerId = command.getPeerId();
     Integer requestKey = command.hasI() ? command.getI() : null;
     if (StringUtil.isEmpty(peerId)) {
       peerId = AVIMClient.getDefaultClient();
     }
     if (command.getCmd().getNumber() == Messages.CommandType.loggedin_VALUE) {
-      ;
+      if (LiveQueryLoginPacket.SERVICE_LIVE_QUERY == command.getService()) {
+        processLoggedinCommand(requestKey);
+      }
     } else if (command.getCmd().getNumber() == Messages.CommandType.data_VALUE) {
       switch (command.getCmd().getNumber()) {
         case Messages.CommandType.data_VALUE:
@@ -240,6 +249,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
   }
 
+  private void processLoggedinCommand(Integer requestKey) {
+    ;
+  }
   private void processDataCommand(Messages.DataCommand dataCommand) {
     List<String> messageIds = dataCommand.getIdsList();
     List<Messages.JsonObjectMessage> messages = dataCommand.getMsgList();
@@ -272,7 +284,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
   private void processSessionCommand(String peerId, String op, Integer requestId,
                                      Messages.SessionCommand command) {
-    ;
+    if (null != this.connectionListener) {
+      this.connectionListener.onSessionCommand(op, requestId, command);
+    }
   }
   private void processAckCommand(String peerId, Integer requestKey, Messages.AckCommand command) {
     ;
