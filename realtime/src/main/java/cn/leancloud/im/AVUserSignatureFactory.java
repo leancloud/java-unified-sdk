@@ -3,6 +3,11 @@ package cn.leancloud.im;
 import java.util.List;
 
 public class AVUserSignatureFactory implements SignatureFactory {
+  private String sessionToken;
+  public AVUserSignatureFactory(String sessionToken) {
+    this.sessionToken = sessionToken;
+  }
+
   public Signature createSignature(String peerId, List<String> watchIds) throws SignatureException {
     return null;
   }

@@ -1,9 +1,16 @@
 package cn.leancloud.im;
 
 import cn.leancloud.AVException;
-import cn.leancloud.command.ConversationAckPacket;
+import cn.leancloud.AVLogger;
+import cn.leancloud.command.*;
 import cn.leancloud.core.AppConfiguration;
+import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.im.v2.AVIMMessage;
+import cn.leancloud.im.v2.Conversation;
+import cn.leancloud.im.v2.Conversation.AVIMOperation;
+import cn.leancloud.im.AVIMOperationQueue.Operation;
+import cn.leancloud.session.MessageReceiptCache;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
 import java.util.ArrayList;
@@ -14,6 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class AVSession {
+  private static final AVLogger LOGGER = LogUtil.getLogger(AVSession.class);
+
   static final int OPERATION_OPEN_SESSION = 10004;
   static final int OPERATION_CLOSE_SESSION = 10005;
   static final int OPERATION_UNKNOW = -1;
@@ -64,6 +73,10 @@ public class AVSession {
    */
   private static boolean onlyPushCount = false;
 
+  public AVConnectionListener getWebsocketListener() {
+    return websocketListener;
+  }
+
   public AVSession(String selfId, AVSessionListener sessionListener) {
     this.selfId = selfId;
     this.sessionListener = sessionListener;
@@ -73,62 +86,263 @@ public class AVSession {
   }
 
   public void open(final String clientTag, final String sessionToken, boolean isReconnection, final int requestId) {
-    ;
+    this.tag = clientTag;
+    updateUserSessionToken(sessionToken);
+    try {
+      boolean connectionEstablished = AVConnectionManager.getInstance().isConnectionEstablished();
+      if (!connectionEstablished) {
+        sessionListener.onError(AVSession.this, new IllegalStateException(
+                "Connection Lost"), OPERATION_OPEN_SESSION, requestId);
+        return;
+      }
+      if (sessionOpened.get()) {
+        sessionListener.onSessionOpen(AVSession.this, requestId);
+        return;
+      }
+      openWithSignature(requestId, isReconnection, true);
+    } catch (Exception ex) {
+      sessionListener.onError(AVSession.this, ex, OPERATION_OPEN_SESSION, requestId);
+    }
   }
+
   void reopen() {
-    ;
+    String rtmSessionToken = AVSessionCacheHelper.IMSessionTokenCache.getIMSessionToken(getSelfPeerId());
+    if (!StringUtil.isEmpty(rtmSessionToken)) {
+      openWithSessionToken(rtmSessionToken);
+    } else {
+      int requestId = WindTalker.getNextIMRequestId();
+      openWithSignature(requestId, true, false);
+    }
   }
+
   public void renewRealtimeSesionToken(final int requestId) {
-    ;
+    final SignatureCallback callback = new SignatureCallback() {
+      @Override
+      public void onSignatureReady(Signature sig, AVException exception) {
+        if (null != exception) {
+          LOGGER.d("failed to generate signaure. cause:", exception);
+        } else {
+          SessionControlPacket scp = SessionControlPacket.genSessionCommand(
+                  getSelfPeerId(), null,
+                  SessionControlPacket.SessionControlOp.RENEW_RTMTOKEN, sig,
+                  getLastNotifyTime(), getLastPatchTime(), requestId);
+          scp.setTag(tag);
+          scp.setSessionToken(realtimeSessionToken);
+          AVConnectionManager.getInstance().sendPacket(scp);
+        }
+      }
+
+      @Override
+      public Signature computeSignature() throws SignatureFactory.SignatureException {
+        SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
+        if (null == signatureFactory && !StringUtil.isEmpty(getUserSessionToken())) {
+          signatureFactory = new AVUserSignatureFactory(getUserSessionToken());
+        }
+        if (null != signatureFactory) {
+          return signatureFactory.createSignature(getSelfPeerId(), new ArrayList<String>());
+        }
+        return null;
+      }
+    };
+    new SignatureTask(callback, getSelfPeerId()).start();
   }
+
   void updateRealtimeSessionToken(String sessionToken, int expireInSec) {
-    ;
+    this.realtimeSessionToken = sessionToken;
+    this.realtimeSessionTokenExpired = System.currentTimeMillis() + expireInSec * 1000;
+    AVIMClient client = AVIMClient.getInstance(this.selfId);
+    if (null != client) {
+      client.updateRealtimeSessionToken(sessionToken, realtimeSessionTokenExpired);
+    }
+    if (StringUtil.isEmpty(sessionToken)) {
+      AVSessionCacheHelper.IMSessionTokenCache.removeIMSessionToken(getSelfPeerId());
+    } else {
+      AVSessionCacheHelper.IMSessionTokenCache.addIMSessionToken(getSelfPeerId(), sessionToken,
+              realtimeSessionTokenExpired);
+    }
   }
+
   private void openWithSessionToken(String rtmSessionToken) {
-    ;
+    SessionControlPacket scp = SessionControlPacket.genSessionCommand(
+            this.getSelfPeerId(), null, SessionControlPacket.SessionControlOp.OPEN,
+            null, this.getLastNotifyTime(), this.getLastPatchTime(), null);
+    scp.setSessionToken(rtmSessionToken);
+    scp.setReconnectionRequest(true);
+    AVConnectionManager.getInstance().sendPacket(scp);
   }
   private void openWithSignature(final int requestId, final boolean reconnectionFlag,
                                  final boolean notifyListener) {
-    ;
+    final SignatureCallback callback = new SignatureCallback() {
+      @Override
+      public void onSignatureReady(Signature sig, AVException exception) {
+        if (null != exception) {
+          if (notifyListener) {
+            sessionListener.onError(AVSession.this, exception,
+                    OPERATION_OPEN_SESSION, requestId);
+          }
+          LOGGER.d("failed to generate signaure. cause:", exception);
+        } else {
+          conversationOperationCache.offer(AVIMOperationQueue.Operation.getOperation(
+                  Conversation.AVIMOperation.CLIENT_OPEN.getCode(), getSelfPeerId(), null, requestId));
+          SessionControlPacket scp = SessionControlPacket.genSessionCommand(
+                  getSelfPeerId(), null,
+                  SessionControlPacket.SessionControlOp.OPEN, sig,
+                  getLastNotifyTime(), getLastPatchTime(), requestId);
+          scp.setTag(tag);
+          scp.setReconnectionRequest(reconnectionFlag);
+          AVConnectionManager.getInstance().sendPacket(scp);
+        }
+      }
+
+      @Override
+      public Signature computeSignature() throws SignatureFactory.SignatureException {
+        SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
+        if (null == signatureFactory && !StringUtil.isEmpty(getUserSessionToken())) {
+          signatureFactory = new AVUserSignatureFactory(getUserSessionToken());
+        }
+        if (null != signatureFactory) {
+          return signatureFactory.createSignature(getSelfPeerId(), new ArrayList<String>());
+        }
+        return null;
+      }
+    };
+    new SignatureTask(callback, getSelfPeerId()).start();
   }
   public void close() {
-    ;
+    close(CommandPacket.UNSUPPORTED_OPERATION);
   }
   public void cleanUp() {
-    ;
+    updateRealtimeSessionToken("", 0);
+    if (pendingMessages != null) {
+      pendingMessages.clear();
+    }
+    if (conversationOperationCache != null) {
+      this.conversationOperationCache.clear();
+    }
+    this.conversationHolderCache.clear();
+    MessageReceiptCache.clean(this.getSelfPeerId());
   }
   protected void close(int requestId) {
-    ;
+    try {
+      // 都关掉了，我们需要去除Session记录
+      AVSessionCacheHelper.getTagCacheInstance().removeSession(getSelfPeerId());
+      AVSessionCacheHelper.IMSessionTokenCache.removeIMSessionToken(getSelfPeerId());
+
+      // 如果session都已不在，缓存消息静静地等到桑田沧海
+      this.cleanUp();
+
+      if (!sessionOpened.compareAndSet(true, false)) {
+        this.sessionListener.onSessionClose(this, requestId);
+        return;
+      }
+      if (!sessionPaused.getAndSet(false)) {
+        conversationOperationCache.offer(Operation.getOperation(
+                AVIMOperation.CLIENT_DISCONNECT.getCode(), selfId, null, requestId));
+        SessionControlPacket scp = SessionControlPacket.genSessionCommand(this.selfId, null,
+                SessionControlPacket.SessionControlOp.CLOSE, null, requestId);
+        AVConnectionManager.getInstance().sendPacket(scp);
+      } else {
+        // 如果网络已经断开的时候，我们就不要管它了，直接强制关闭吧
+        this.sessionListener.onSessionClose(this, requestId);
+      }
+    } catch (Exception e) {
+      sessionListener.onError(this, e,
+              OPERATION_CLOSE_SESSION, requestId);
+    }
   }
   protected void storeMessage(PendingMessageCache.Message cacheMessage, int requestId) {
-    ;
+    pendingMessages.offer(cacheMessage);
+    conversationOperationCache.offer(Operation.getOperation(
+            AVIMOperation.CONVERSATION_SEND_MESSAGE.getCode(), getSelfPeerId(), cacheMessage.cid,
+            requestId));
   }
   public String getSelfPeerId() {
     return this.selfId;
   }
   protected void setServerAckReceived(long lastAckReceivedTimestamp) {
-    ;
+    lastServerAckReceived.set(lastAckReceivedTimestamp);
   }
   protected void queryOnlinePeers(List<String> peerIds, int requestId) {
-    ;
+    SessionControlPacket scp =
+            SessionControlPacket.genSessionCommand(this.selfId, peerIds,
+                    SessionControlPacket.SessionControlOp.QUERY, null, requestId);
+    AVConnectionManager.getInstance().sendPacket(scp);
   }
   protected void conversationQuery(Map<String, Object> params, int requestId) {
-    ;
+    if (sessionPaused.get()) {
+      RuntimeException se = new RuntimeException("Connection Lost");
+//      BroadcastUtil.sendIMLocalBroadcast(getSelfPeerId(), null, requestId, se,
+//              AVIMOperation.CONVERSATION_QUERY);
+      return;
+    }
+
+    conversationOperationCache.offer(Operation.getOperation(
+            AVIMOperation.CONVERSATION_QUERY.getCode(), selfId, null, requestId));
+
+    AVConnectionManager.getInstance().sendPacket(ConversationQueryPacket.getConversationQueryPacket(getSelfPeerId(),
+            params, requestId));
   }
   public AVException checkSessionStatus() {
-    return null;
+    if (!sessionOpened.get()) {
+      return new AVException(AVException.OPERATION_FORBIDDEN,
+              "Please call AVIMClient.open() first");
+    } else if (sessionPaused.get()) {
+      return new AVException(new RuntimeException("Connection Lost"));
+    } else if (sessionResume.get()) {
+      return new AVException(new RuntimeException("Connecting to server"));
+    } else {
+      return null;
+    }
   }
   public AVConversationHolder getConversationHolder(String conversationId, int convType) {
-    return null;
+    AVConversationHolder conversation = conversationHolderCache.get(conversationId);
+    if (conversation != null) {
+      return conversation;
+    } else {
+      conversation = new AVConversationHolder(conversationId, this, convType);
+      AVConversationHolder elderObject =
+              conversationHolderCache.putIfAbsent(conversationId, conversation);
+      return elderObject == null ? conversation : elderObject;
+    }
   }
   protected void removeConversation(String conversationId) {
-    ;
+    conversationHolderCache.remove(conversationId);
   }
   protected void createConversation(final List<String> members,
                                     final Map<String, Object> attributes,
                                     final boolean isTransient, final boolean isUnique, final boolean isTemp, final int tempTTL,
                                     final boolean isSystem, final int requestId) {
-    ;
+    if (sessionPaused.get()) {
+      RuntimeException se = new RuntimeException("Connection Lost");
+      sessionListener.onError(this, se, Conversation.AVIMOperation.CONVERSATION_CREATION.getCode(),
+              requestId);
+      return;
+    }
+    SignatureCallback callback = new SignatureCallback() {
+      @Override
+      public Signature computeSignature() throws SignatureFactory.SignatureException {
+        SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
+        if (signatureFactory != null) {
+          return signatureFactory.createSignature(selfId, members);
+        }
+        return null;
+      }
+
+      @Override
+      public void onSignatureReady(Signature sig, AVException e) {
+        if (e == null) {
+          conversationOperationCache.offer(Operation.getOperation(
+                  AVIMOperation.CONVERSATION_CREATION.getCode(), getSelfPeerId(), null, requestId));
+          AVConnectionManager.getInstance().sendPacket(ConversationControlPacket.genConversationCommand(selfId, null,
+                  members, ConversationControlPacket.ConversationControlOp.START, attributes, sig,
+                  isTransient, isUnique, isTemp, tempTTL, isSystem, requestId));
+        } else {
+//          BroadcastUtil.sendIMLocalBroadcast(getSelfPeerId(), null, requestId, e,
+//                  AVIMOperation.CONVERSATION_CREATION);
+        }
+      }
+    };
+    new SignatureTask(callback, getSelfPeerId()).start();
   }
 
   public static void setUnreadNotificationEnabled(boolean isOnlyCount) {
