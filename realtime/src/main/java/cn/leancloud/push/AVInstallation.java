@@ -28,6 +28,7 @@ public final class AVInstallation extends AVObject {
   private static final String TIMEZONE = "timeZone";
   public static final String REGISTRATION_ID = "registrationId";
   public static final String VENDOR = "vendor";
+  private static String DEFAULT_DEVICETYPE = "android";
   private static volatile AVInstallation currentInstallation;
 
   static {
@@ -96,8 +97,12 @@ public final class AVInstallation extends AVObject {
     return currentInstallation;
   }
 
+  public static void changeDeviceType(String deviceType) {
+    DEFAULT_DEVICETYPE = deviceType;
+  }
+
   private static String deviceType() {
-    return "android";
+    return DEFAULT_DEVICETYPE;
   }
   private static String timezone() {
     TimeZone defaultTimezone = TimeZone.getDefault();
