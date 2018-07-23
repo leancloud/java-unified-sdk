@@ -54,6 +54,19 @@ public interface APIService {
   Observable<JSONArray> batchCreate(@Body JSONObject param);
 
   /**
+   * AVInstalltion methods.
+   */
+
+  @POST("/1.1/{endpointClass}")
+  Observable<AVObject> saveWholeObject(@Path("endpointClass") String endpointClass, @Body JSONObject object,
+                                       @Query("fetchWhenSave") boolean fetchFlag,
+                                       @Query("where") JSONObject where);
+  @GET("/1.1/{endpointClass}/{objectId}")
+  Observable<AVObject> getWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId);
+  @DELETE("/1.1/{endpointClass}/{objectId}")
+  Observable<AVNull> deleteWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId);
+
+  /**
    * request format:
    *    requests: [unit, unit]
    * unit format:

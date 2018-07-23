@@ -38,6 +38,7 @@ public final class AVInstallation extends AVObject {
     super(INSTALLATION_AVNAME);
     this.totallyOverwrite = true;
     initialize();
+    this.endpointClassName = "installations";
   }
 
   protected AVInstallation(AVObject obj) {
@@ -45,6 +46,7 @@ public final class AVInstallation extends AVObject {
     this.acl = obj.getACL();
     this.serverData = obj.getServerData();
     this.totallyOverwrite = true;
+    this.endpointClassName = "installations";
   }
 
   public static AVInstallation getCurrentInstallation() {

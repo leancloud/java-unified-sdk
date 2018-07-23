@@ -39,6 +39,7 @@ public class AVObject {
           Arrays.asList(KEY_CREATED_AT, KEY_UPDATED_AT, KEY_OBJECT_ID, KEY_ACL));
 
   protected String className;
+  protected String endpointClassName = null;
   protected static final AVLogger logger = LogUtil.getLogger(AVObject.class);
   protected static final int UUID_LEN = UUID.randomUUID().toString().length();
 
@@ -65,6 +66,7 @@ public class AVObject {
     this.serverData.putAll(other.serverData);
     this.operations.putAll(other.operations);
     this.acl = other.acl;
+    this.endpointClassName = other.endpointClassName;
   }
 
   public String getClassName() {
@@ -533,7 +535,9 @@ public class AVObject {
         Map<String, Object> whereOperationMap = option.matchQuery.conditions.compileWhereOperationMap();
         whereCondition = new JSONObject(whereOperationMap);
       }
-      if (StringUtil.isEmpty(currentObjectId)) {
+      if (totallyOverwrite) {
+        return PaasClient.getStorageClient().saveWholeObject(this.getClass(), endpointClassName, paramData, needFetch, whereCondition);
+      } else if (StringUtil.isEmpty(currentObjectId)) {
         return PaasClient.getStorageClient().createObject(this.className, paramData, needFetch, whereCondition)
                 .map(new Function<AVObject, AVObject>() {
                   @Override
@@ -702,6 +706,9 @@ public class AVObject {
     }
   }
   public Observable<AVNull> deleteInBackground() {
+    if (totallyOverwrite) {
+      return PaasClient.getStorageClient().deleteWholeObject(this.endpointClassName, getObjectId());
+    }
     return PaasClient.getStorageClient().deleteObject(this.className, getObjectId());
   }
 
@@ -749,6 +756,17 @@ public class AVObject {
   }
 
   public Observable<AVObject> refreshInBackground(String includeKeys) {
+    if (totallyOverwrite) {
+      return PaasClient.getStorageClient().getWholeObject(this.endpointClassName, getObjectId())
+              .map(new Function<AVObject, AVObject>() {
+                @Override
+                public AVObject apply(AVObject avObject) throws Exception {
+                  AVObject.this.serverData.clear();
+                  AVObject.this.serverData.putAll(avObject.serverData);
+                  return AVObject.this;
+                }
+              });
+    }
     return PaasClient.getStorageClient().fetchObject(this.className, getObjectId(), includeKeys)
             .map(new Function<AVObject, AVObject>() {
               public AVObject apply(AVObject avObject) throws Exception {

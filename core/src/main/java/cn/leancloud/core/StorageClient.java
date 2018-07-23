@@ -223,6 +223,27 @@ public class StorageClient {
     });
   }
 
+  public <E extends AVObject> Observable<E> saveWholeObject(final Class<E> clazz, final String endpointClass, JSONObject object, boolean fetchFlag, JSONObject where) {
+    Observable<AVObject> result = wrappObservable(apiService.saveWholeObject(endpointClass, object, fetchFlag, where));
+    if (null == result) {
+      return null;
+    }
+    return result.map(new Function<AVObject, E>() {
+      @Override
+      public E apply(AVObject avObject) throws Exception {
+        return Transformer.transform(avObject, clazz);
+      }
+    });
+  }
+
+  public Observable<AVObject> getWholeObject(final String endpointClass, String objectId) {
+    return wrappObservable(apiService.getWholeObject(endpointClass, objectId));
+  }
+
+  public Observable<AVNull> deleteWholeObject(final String endpointClass, String objectId) {
+    return wrappObservable(apiService.deleteWholeObject(endpointClass, objectId));
+  }
+
   public Observable<AVFile> fetchFile(String objectId) {
     Observable<AVFile> object = wrappObservable(apiService.fetchFile(objectId));
     if (null == object) {
