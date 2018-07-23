@@ -1,7 +1,9 @@
 package cn.leancloud.im;
 
+import cn.leancloud.AVLogger;
 import cn.leancloud.cache.SystemSetting;
 import cn.leancloud.core.AppConfiguration;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -11,15 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AVSessionCacheHelper {
+  private static final AVLogger LOGGER = LogUtil.getLogger(AVSessionCacheHelper.class);
   private static final String SESSION_KEY = "sessionids";
   private static SessionTagCache tagCacheInstance;
-
-  // FIXME
-  static {
-    AppConfiguration.getDefaultSetting().removeKey("com.avos.avoscloud.session.version", SESSION_KEY);
-    AppConfiguration.getDefaultSetting().removeKey("com.avos.avoscloud.session", SESSION_KEY);
-    AppConfiguration.getDefaultSetting().removeKey("com.avos.avoscloud.session.tag", SESSION_KEY);
-  }
 
   static synchronized SessionTagCache getTagCacheInstance() {
     if (null == tagCacheInstance) {
@@ -76,8 +72,7 @@ public class AVSessionCacheHelper {
       Map<String, Signature> signatureMap = getSessionSignatures();
       signatureMap.put(clientId, signature);
       SystemSetting setting = AppConfiguration.getDefaultSetting();
-      setting.saveString(SESSION_SIGNATURE_KEY,
-              SESSION_KEY,
+      setting.saveString(SESSION_SIGNATURE_KEY, SESSION_KEY,
               JSON.toJSONString(signatureMap, SerializerFeature.WriteClassName));
     }
 
@@ -87,12 +82,12 @@ public class AVSessionCacheHelper {
     }
     private static Map<String, Signature> getSessionSignatures() {
       SystemSetting setting = AppConfiguration.getDefaultSetting();
-      String sessionSignatureString = setting.getString(SESSION_SIGNATURE_KEY,
-                      SESSION_KEY, "{}");
+      String sessionSignatureString = setting.getString(SESSION_SIGNATURE_KEY, SESSION_KEY, "{}");
       Map<String, Signature> signatureMap = JSON.parseObject(sessionSignatureString, Map.class);
       return signatureMap;
     }
   }
+
   static class IMSessionTokenCache {
     private static final String SESSION_TOKEN_KEY = "com.avos.avoscloud.session.token";
 
@@ -104,10 +99,8 @@ public class AVSessionCacheHelper {
     static String getIMSessionToken(String clientId) {
       if (AVIMOptions.getGlobalOptions().isAutoOpen()) {
         SystemSetting setting = AppConfiguration.getDefaultSetting();
-        String token = setting.getString(SESSION_TOKEN_KEY, clientId,
-                        null);
-        String expiredAt = setting.getString(SESSION_TOKEN_KEY,
-                        getSessionTokenExpiredAtKey(clientId), null);
+        String token = setting.getString(SESSION_TOKEN_KEY, clientId, null);
+        String expiredAt = setting.getString(SESSION_TOKEN_KEY, getSessionTokenExpiredAtKey(clientId), null);
         if (!StringUtil.isEmpty(token) && !StringUtil.isEmpty(expiredAt)) {
           try {
             long expiredAtInLong = Long.parseLong(expiredAt);
@@ -115,7 +108,7 @@ public class AVSessionCacheHelper {
               return token;
             }
           } catch (Exception e) {
-
+            LOGGER.w(e);
           }
         }
       } else {
