@@ -19,7 +19,7 @@ public class AVSessionCacheHelper {
   private static final String SESSION_KEY = "sessionids";
   private static SessionTagCache tagCacheInstance;
 
-  static synchronized SessionTagCache getTagCacheInstance() {
+  public static synchronized SessionTagCache getTagCacheInstance() {
     if (null == tagCacheInstance) {
       tagCacheInstance = new SessionTagCache();
     }
@@ -61,7 +61,7 @@ public class AVSessionCacheHelper {
          }
        }
      }
-    Map<String, String> getAllSession() {
+    public Map<String, String> getAllSession() {
       HashMap<String, String> sessionMap = new HashMap<>();
       sessionMap.putAll(cachedTagMap);
       return sessionMap;

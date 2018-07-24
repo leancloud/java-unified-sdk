@@ -1,9 +1,10 @@
 package cn.leancloud.im;
 
-import cn.leancloud.command.CommandPacket;
 import cn.leancloud.im.v2.AVIMMessage;
 import cn.leancloud.im.v2.AVIMMessageOption;
 import cn.leancloud.im.v2.callback.*;
+import cn.leancloud.session.AVConnectionManager;
+import cn.leancloud.session.AVSession;
 
 import java.util.List;
 import java.util.Map;
@@ -11,13 +12,9 @@ import java.util.Map;
 public class SimpleCommandCourier implements CommandCourier {
   public void openClient(String clientId, String tag, String userSessionToken,
                   boolean reConnect, AVIMClientCallback callback) {
-    long lastNotifyTime = 0;
-    long lastPatchTime = 0;
-    WindTalker windTalker = WindTalker.getInstance();
-    CommandPacket packet = windTalker.assembleSessionOpenPacket(clientId, tag, null, lastNotifyTime,
-            lastPatchTime, reConnect);
-    AVConnectionManager connectionManager = AVConnectionManager.getInstance();
-
+    int requestId = WindTalker.getNextIMRequestId();
+    AVSession session = AVConnectionManager.getInstance().getOrCreateSession(clientId);
+    session.open(tag, userSessionToken, reConnect, requestId);
   }
 
   public void queryClientStatus(String clientId, final AVIMClientStatusCallback callback) {}

@@ -5,8 +5,7 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
-import cn.leancloud.im.AVConnectionListener;
-import cn.leancloud.im.AVConnectionManager;
+import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.im.v2.*;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -16,6 +15,7 @@ import cn.leancloud.im.v2.Conversation.AVIMOperation;
 
 import com.google.protobuf.ByteString;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,10 +51,9 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
             Message m = session.pendingMessages.poll();
             if (!StringUtil.isEmpty(m.cid)) {
               AVConversationHolder conversation = session.getConversationHolder(m.cid, Conversation.CONV_TYPE_NORMAL);
-//              BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(),
-//                      conversation.conversationId, Integer.parseInt(m.id), new RuntimeException(
-//                              "Connection Lost"),
-//                      Conversation.AVIMOperation.CONVERSATION_SEND_MESSAGE);
+              InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversation.conversationId,
+                      Integer.parseInt(m.id), Conversation.AVIMOperation.CONVERSATION_SEND_MESSAGE,
+                      new RuntimeException("Connection Lost"));
             }
           }
         }
@@ -63,9 +62,8 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
           for (Map.Entry<Integer, Operation> entry : session.conversationOperationCache.cache.entrySet()) {
             int requestId = entry.getKey();
             Operation op = session.conversationOperationCache.poll(requestId);
-//            BroadcastUtil.sendIMLocalBroadcast(op.sessionId, op.conversationId, requestId,
-//                    new IllegalStateException("Connection Lost"),
-//                    Conversation.AVIMOperation.getAVIMOperation(op.operation));
+            InternalConfiguration.getEventBroadcast().onOperationCompleted(op.sessionId, op.conversationId, requestId,
+                    Conversation.AVIMOperation.getAVIMOperation(op.operation), new IllegalStateException("Connection Lost"));
           }
         }
       } catch (Exception e) {
@@ -178,8 +176,8 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     int appCode = (command.hasAppCode() ? command.getAppCode() : 0);
     String reason = command.getReason();
     AVException error = new AVIMException(code, appCode, reason);
-//    BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), op.conversationId,
-//            requestKey, error, operation);
+    InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), op.conversationId,
+            requestKey, operation, error);
   }
 
   @Override
@@ -292,10 +290,10 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
           result.toArray(resultArray);
         }
         String cid = blacklistCommand.getSrcCid();
-//        Bundle bundle = new Bundle();
-//        bundle.putStringArray(Conversation.callbackData, resultArray);
-//        BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), cid, requestKey,
-//                bundle, AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY);
+        Map<String, Object> bundle = new HashMap<>();
+        bundle.put(Conversation.callbackData, resultArray);
+        InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), cid, requestKey,
+                AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, bundle);
       }
     } else if (BlacklistCommandPacket.BlacklistCommandOp.BLOCKED.equals(operation)
             || BlacklistCommandPacket.BlacklistCommandOp.UNBLOCKED.equals(operation)){
@@ -317,11 +315,10 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       Operation op = session.conversationOperationCache.poll(requestKey);
       if (null != op && op.operation == AVIMOperation.CONVERSATION_QUERY.getCode()) {
         String result = convCommand.getResults().getData();
-//        Bundle bundle = new Bundle();
-//        bundle.putString(Conversation.callbackData, result);
-//        BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey,
-//                bundle, AVIMOperation.CONVERSATION_QUERY);
-        // verified: it's not need to update local cache?
+        Map<String, Object> bundle = new HashMap<>();
+        bundle.put(Conversation.callbackData, result);
+        InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
+                AVIMOperation.CONVERSATION_QUERY, bundle);
       } else {
         LOGGER.w("not found requestKey: " + requestKey);
       }
@@ -333,10 +330,10 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
         if (null != result) {
           result.toArray(resultMembers);
         }
-//        Bundle bundle = new Bundle();
-//        bundle.putStringArray(Conversation.callbackData, resultMembers);
-//        BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey,
-//                bundle, AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY);
+        Map<String, Object> bundle = new HashMap<>();
+        bundle.put(Conversation.callbackData, resultMembers);
+        InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
+                AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, bundle);
       } else {
         LOGGER.w("not found requestKey: " + requestKey);
       }
@@ -401,8 +398,8 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       int appCode = (errorCommand.hasAppCode() ? errorCommand.getAppCode() : 0);
       String reason = errorCommand.getReason();
       AVIMOperation operation = (null != op)? AVIMOperation.getAVIMOperation(op.operation): null;
-//      BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey,
-//              new AVIMException(code, appCode, reason), operation);
+      InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), null, requestKey,
+              operation, new AVIMException(code, appCode, reason));
     }
 
     // 如果遇到signature failure的异常,清除缓存
@@ -477,7 +474,8 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     if (isModify) {
       if (patchCommand.getPatchesCount() > 0) {
         for (Messages.PatchItem patchItem : patchCommand.getPatchesList()) {
-          AVIMMessage message = AVIMTypedMessage.getMessage(patchItem.getCid(), patchItem.getMid(), patchItem.getData(), patchItem.getFrom(), patchItem.getTimestamp(), 0, 0);
+          AVIMMessage message = AVIMTypedMessage.getMessage(patchItem.getCid(), patchItem.getMid(), patchItem.getData(),
+                  patchItem.getFrom(), patchItem.getTimestamp(), 0, 0);
           message.setUpdateAt(patchItem.getPatchTimestamp());
           AVConversationHolder conversation = session.getConversationHolder(patchItem.getCid(), Conversation.CONV_TYPE_NORMAL);
           conversation.onMessageUpdateEvent(message, patchItem.getRecall());
@@ -486,9 +484,10 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     } else {
       Operation op = session.conversationOperationCache.poll(requestKey);
       AVIMOperation operation = AVIMOperation.getAVIMOperation(op.operation);
-//      Bundle bundle = new Bundle();
-//      bundle.putLong(Conversation.PARAM_MESSAGE_PATCH_TIME, patchCommand.getLastPatchTime());
-//      BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(), null, requestKey, bundle, operation);
+      Map<String, Object> bundle = new HashMap<>();
+      bundle.put(Conversation.PARAM_MESSAGE_PATCH_TIME, patchCommand.getLastPatchTime());
+      InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
+              operation, bundle);
     }
   }
 

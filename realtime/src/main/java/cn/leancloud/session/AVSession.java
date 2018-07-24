@@ -45,7 +45,7 @@ public class AVSession {
   private final String AVUSER_SESSION_TOKEN = "avuserSessionToken";
 
   private final String selfId;
-  String tag;
+  public String tag;
   private String userSessionToken = null;
   private String realtimeSessionToken = null;
   private long realtimeSessionTokenExpired = 0l;
@@ -55,7 +55,7 @@ public class AVSession {
   final AtomicBoolean sessionOpened = new AtomicBoolean(false);
   final AtomicBoolean sessionPaused = new AtomicBoolean(false);
   // 标识是否需要从缓存恢复
-  final AtomicBoolean sessionResume = new AtomicBoolean(false);
+  public final AtomicBoolean sessionResume = new AtomicBoolean(false);
 
   private final AtomicLong lastServerAckReceived = new AtomicLong(0);
 
@@ -67,7 +67,7 @@ public class AVSession {
   final AVSessionListener sessionListener;
   private final AVConnectionListener websocketListener;
 
-  public AVConnectionListener getWebsocketListener() {
+  public AVConnectionListener getWebSocketListener() {
     return websocketListener;
   }
 

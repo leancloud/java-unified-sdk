@@ -1,4 +1,4 @@
-package cn.leancloud.im;
+package cn.leancloud.session;
 
 import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
@@ -7,6 +7,8 @@ import cn.leancloud.command.LiveQueryLoginPacket;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AVOSServices;
 import cn.leancloud.core.AppRouter;
+import cn.leancloud.im.AVIMOptions;
+import cn.leancloud.im.WindTalker;
 import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.livequery.AVLiveQuery;
 import cn.leancloud.push.AVInstallation;
@@ -14,11 +16,9 @@ import cn.leancloud.service.RTMConnectionServerResponse;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.websocket.AVStandardWebSocketClient;
-import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
 import javax.net.ssl.SSLContext;
@@ -26,8 +26,7 @@ import javax.net.ssl.SSLSocketFactory;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketClientMonitor {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVConnectionManager.class);
@@ -39,6 +38,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private int retryConnectionCount = 0;
   private boolean connectionEstablished = false;
 
+  private static final Map<String, AVSession> peerIdEnabledSessions = Collections
+          .synchronizedMap(new HashMap<String, AVSession>());
+
   public synchronized static AVConnectionManager getInstance() {
     if (instance == null) {
       instance = new AVConnectionManager();
@@ -47,6 +49,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   private AVConnectionManager() {
+    initSessionsIfExists();
     initConnection();
   }
 
@@ -77,6 +80,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
     return this.currentRTMConnectionServer;
   }
+
   private void initWebSocketClient(String targetServer) {
     LOGGER.d("try to connect server: " + targetServer);
 
@@ -106,6 +110,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
     webSocketClient.connect();
   }
+
   private void initConnection() {
     String specifiedServer = AVIMOptions.getGlobalOptions().getRtmServer();
     if (!StringUtil.isEmpty(specifiedServer)) {
@@ -144,6 +149,42 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
               }
             });
   }
+
+  private void initSessionsIfExists() {
+    Map<String, String> cachedSessions = AVSessionCacheHelper.getTagCacheInstance().getAllSession();
+    for (Map.Entry<String, String> entry : cachedSessions.entrySet()) {
+      AVSession s = this.getOrCreateSession(entry.getKey());
+      s.sessionResume.set(true);
+      s.tag = entry.getValue();
+    }
+  }
+
+  public AVSession getOrCreateSession(String peerId) {
+    try {
+      // 据说这行有NPE，所以不得不catch起来避免app崩溃
+      boolean newAdded = !peerIdEnabledSessions.containsKey(peerId);
+      AVSession session = null;
+      if (newAdded) {
+        session = new AVSession(peerId, new AVDefaultSessionListener());
+        peerIdEnabledSessions.put(peerId, session);
+        session.getWebSocketListener().onListenerAdded(
+                (this.webSocketClient != null && webSocketClient.isOpen()));
+      } else {
+        session = peerIdEnabledSessions.get(peerId);
+      }
+      return session;
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  public void removeSession(String peerId) {
+    AVSession session = peerIdEnabledSessions.remove(peerId);
+    if (session != null && session.getWebSocketListener() != null) {
+      session.getWebSocketListener().onListenerRemoved();
+    }
+  }
+
   public AVConnectionListener getConnectionListener() {
     return connectionListener;
   }
