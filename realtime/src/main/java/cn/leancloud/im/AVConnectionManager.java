@@ -77,7 +77,41 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
     return this.currentRTMConnectionServer;
   }
+  private void initWebSocketClient(String targetServer) {
+    LOGGER.d("try to connect server: " + targetServer);
+
+    SSLSocketFactory sf = null;
+    try {
+      SSLContext sslContext = SSLContext.getDefault();
+      sf = sslContext.getSocketFactory();
+    } catch (NoSuchAlgorithmException exception) {
+      LOGGER.e("failed to get SSLContext, cause: " + exception.getMessage());
+    }
+    if (null != webSocketClient) {
+      try {
+        webSocketClient.close();
+      } catch (Exception ex) {
+        LOGGER.e("failed to close websocket client.", ex);
+      } finally {
+        webSocketClient = null;
+      }
+    }
+    int connectTimeout = AVIMOptions.getGlobalOptions().getTimeoutInSecs();
+    if (AVIMOptions.getGlobalOptions().isOnlyPushCount()) {
+      webSocketClient = new AVStandardWebSocketClient(URI.create(targetServer), AVStandardWebSocketClient.SUB_PROTOCOL_2_3,
+              true, true, sf, connectTimeout, AVConnectionManager.this);
+    } else {
+      webSocketClient = new AVStandardWebSocketClient(URI.create(targetServer), AVStandardWebSocketClient.SUB_PROTOCOL_2_1,
+              true, true, sf, connectTimeout, AVConnectionManager.this);
+    }
+    webSocketClient.connect();
+  }
   private void initConnection() {
+    String specifiedServer = AVIMOptions.getGlobalOptions().getRtmServer();
+    if (!StringUtil.isEmpty(specifiedServer)) {
+      initWebSocketClient(specifiedServer);
+      return;
+    }
     final AppRouter appRouter = AppRouter.getInstance();
     final String installationId = AVInstallation.getCurrentInstallation().getInstallationId();
     appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSServices.RTM, retryConnectionCount < 1)
@@ -96,26 +130,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
               @Override
               public void onNext(RTMConnectionServerResponse rtmConnectionServerResponse) {
                 String targetServer = updateTargetServer(rtmConnectionServerResponse);
-                LOGGER.d("try to connect server: " + targetServer);
-                SSLSocketFactory sf = null;
-                try {
-                  SSLContext sslContext = SSLContext.getDefault();
-                  sf = sslContext.getSocketFactory();
-                } catch (NoSuchAlgorithmException exception) {
-                  LOGGER.e("failed to get SSLContext, cause: " + exception.getMessage());
-                }
-                if (null != webSocketClient) {
-                  try {
-                    webSocketClient.close();
-                  } catch (Exception ex) {
-                    LOGGER.e("failed to close websocket client.", ex);
-                  } finally {
-                    webSocketClient = null;
-                  }
-                }
-                webSocketClient = new AVStandardWebSocketClient(URI.create(targetServer), AVStandardWebSocketClient.SUB_PROTOCOL_2_3,
-                        true, true, sf, AVConnectionManager.this);
-                webSocketClient.connect();
+                initWebSocketClient(targetServer);
               }
 
               @Override

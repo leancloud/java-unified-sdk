@@ -67,12 +67,6 @@ public class AVSession {
   final AVSessionListener sessionListener;
   private final AVConnectionListener websocketListener;
 
-  /**
-   * 离线消息推送模式
-   * true 为仅推送数量，false 为推送具体消息
-   */
-  private static boolean onlyPushCount = false;
-
   public AVConnectionListener getWebsocketListener() {
     return websocketListener;
   }
@@ -356,18 +350,6 @@ public class AVSession {
     new SignatureTask(callback, getSelfPeerId()).start();
   }
 
-  public static void setUnreadNotificationEnabled(boolean isOnlyCount) {
-    onlyPushCount = isOnlyCount;
-  }
-
-  /**
-   * 是否被设置为离线消息仅推送数量
-   * @return
-   */
-  public static boolean isOnlyPushCount() {
-    return onlyPushCount;
-  }
-
   long getLastNotifyTime() {
     if (lastNotifyTime <= 0) {
       lastNotifyTime = AppConfiguration.getDefaultSetting().getLong(selfId,
@@ -433,7 +415,7 @@ public class AVSession {
    * @param conversationId
    */
   public void sendUnreadMessagesAck(ArrayList<AVIMMessage> messages, String conversationId) {
-    if (onlyPushCount && null != messages && messages.size() > 0) {
+    if (AVIMOptions.getGlobalOptions().isOnlyPushCount() && null != messages && messages.size() > 0) {
       Long largestTimeStamp = 0L;
       for (AVIMMessage message : messages) {
         if (largestTimeStamp < message.getTimestamp()) {

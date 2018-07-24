@@ -4,9 +4,14 @@ public class AVIMOptions {
   private static final AVIMOptions globalOptions = new AVIMOptions();
   private String rtmConnectionServer = "";
   private SignatureFactory signatureFactory = null;
-  private int timeoutInSecs = 15;
+  private int timeoutInSecs = 10;
   private boolean isAutoOpen = true;
   private boolean messageQueryCacheEnabled = true;
+  /**
+   * 离线消息推送模式
+   * true 为仅推送数量，false 为推送具体消息
+   */
+  private boolean onlyPushCount = false;
 
   /**
    * get global options instance.
@@ -78,6 +83,21 @@ public class AVIMOptions {
 
   public void setMessageQueryCacheEnabled(boolean messageQueryCacheEnabled) {
     this.messageQueryCacheEnabled = messageQueryCacheEnabled;
+  }
+  /**
+   * 设置离线消息推送模式
+   * @param isOnlyCount
+   */
+  public void setUnreadNotificationEnabled(boolean isOnlyCount) {
+    onlyPushCount = isOnlyCount;
+  }
+
+  /**
+   * 是否被设置为离线消息仅推送数量
+   * @return
+   */
+  public boolean isOnlyPushCount() {
+    return onlyPushCount;
   }
 
   private AVIMOptions() {

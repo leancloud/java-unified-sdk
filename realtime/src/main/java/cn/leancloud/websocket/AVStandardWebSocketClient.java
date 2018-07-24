@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class AVStandardWebSocketClient extends WebSocketClient {
+  public static final String SUB_PROTOCOL_2_1 = "lc.protobuf2.1";
   public static final String SUB_PROTOCOL_2_3 = "lc.protobuf2.3";
 
   private static final AVLogger gLogger = LogUtil.getLogger(AVStandardWebSocketClient.class);
@@ -42,12 +43,12 @@ public class AVStandardWebSocketClient extends WebSocketClient {
   }
 
   public AVStandardWebSocketClient(URI serverUrl, final String subProtocol, boolean secEnabled, boolean sniEnabled,
-                                   SSLSocketFactory socketFactory, WebSocketClientMonitor monitor) {
+                                   SSLSocketFactory socketFactory, int connectTimeout, WebSocketClientMonitor monitor) {
     super(serverUrl, new Draft_6455(Collections.<IExtension>emptyList(), protocols), new HashMap<String, String>() {
       {
         put(HEADER_SUB_PROTOCOL, subProtocol);
       }
-    }, 10);
+    }, connectTimeout);
     this.socketFactory = socketFactory;
     this.heartBeatPolicy = new HeartBeatPolicy() {
       @Override

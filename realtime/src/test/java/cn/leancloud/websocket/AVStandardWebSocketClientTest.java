@@ -58,7 +58,7 @@ public class AVStandardWebSocketClientTest extends TestCase {
     SSLSocketFactory sf = sslContext.getSocketFactory();
     AVStandardWebSocketClient client = new AVStandardWebSocketClient(URI.create(wsUrl),
             AVStandardWebSocketClient.SUB_PROTOCOL_2_3,
-            true, true, sf, this.monitor);
+            true, true, sf, 0, this.monitor);
     boolean rst = client.connectBlocking();
     assertTrue(rst);
     final int requestId = 100;
