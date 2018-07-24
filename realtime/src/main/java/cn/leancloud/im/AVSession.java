@@ -208,9 +208,11 @@ public class AVSession {
     };
     new SignatureTask(callback, getSelfPeerId()).start();
   }
+
   public void close() {
     close(CommandPacket.UNSUPPORTED_OPERATION);
   }
+
   public void cleanUp() {
     updateRealtimeSessionToken("", 0);
     if (pendingMessages != null) {
@@ -222,6 +224,7 @@ public class AVSession {
     this.conversationHolderCache.clear();
     MessageReceiptCache.clean(this.getSelfPeerId());
   }
+
   protected void close(int requestId) {
     try {
       // 都关掉了，我们需要去除Session记录
@@ -256,23 +259,27 @@ public class AVSession {
             AVIMOperation.CONVERSATION_SEND_MESSAGE.getCode(), getSelfPeerId(), cacheMessage.cid,
             requestId));
   }
+
   public String getSelfPeerId() {
     return this.selfId;
   }
+
   protected void setServerAckReceived(long lastAckReceivedTimestamp) {
     lastServerAckReceived.set(lastAckReceivedTimestamp);
   }
+
   protected void queryOnlinePeers(List<String> peerIds, int requestId) {
     SessionControlPacket scp =
             SessionControlPacket.genSessionCommand(this.selfId, peerIds,
                     SessionControlPacket.SessionControlOp.QUERY, null, requestId);
     AVConnectionManager.getInstance().sendPacket(scp);
   }
+
   protected void conversationQuery(Map<String, Object> params, int requestId) {
     if (sessionPaused.get()) {
       RuntimeException se = new RuntimeException("Connection Lost");
-//      BroadcastUtil.sendIMLocalBroadcast(getSelfPeerId(), null, requestId, se,
-//              AVIMOperation.CONVERSATION_QUERY);
+      InternalConfiguration.getEventBroadcast().onOperationCompleted(getSelfPeerId(), null, requestId,
+              AVIMOperation.CONVERSATION_QUERY, se);
       return;
     }
 
@@ -282,6 +289,7 @@ public class AVSession {
     AVConnectionManager.getInstance().sendPacket(ConversationQueryPacket.getConversationQueryPacket(getSelfPeerId(),
             params, requestId));
   }
+
   public AVException checkSessionStatus() {
     if (!sessionOpened.get()) {
       return new AVException(AVException.OPERATION_FORBIDDEN,
@@ -294,6 +302,7 @@ public class AVSession {
       return null;
     }
   }
+
   public AVConversationHolder getConversationHolder(String conversationId, int convType) {
     AVConversationHolder conversation = conversationHolderCache.get(conversationId);
     if (conversation != null) {
@@ -305,9 +314,11 @@ public class AVSession {
       return elderObject == null ? conversation : elderObject;
     }
   }
+
   protected void removeConversation(String conversationId) {
     conversationHolderCache.remove(conversationId);
   }
+
   protected void createConversation(final List<String> members,
                                     final Map<String, Object> attributes,
                                     final boolean isTransient, final boolean isUnique, final boolean isTemp, final int tempTTL,
@@ -337,8 +348,8 @@ public class AVSession {
                   members, ConversationControlPacket.ConversationControlOp.START, attributes, sig,
                   isTransient, isUnique, isTemp, tempTTL, isSystem, requestId));
         } else {
-//          BroadcastUtil.sendIMLocalBroadcast(getSelfPeerId(), null, requestId, e,
-//                  AVIMOperation.CONVERSATION_CREATION);
+          InternalConfiguration.getEventBroadcast().onOperationCompleted(getSelfPeerId(), null, requestId,
+                  AVIMOperation.CONVERSATION_CREATION, e);
         }
       }
     };

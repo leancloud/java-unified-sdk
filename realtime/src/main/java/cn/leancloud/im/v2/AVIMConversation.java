@@ -2,14 +2,18 @@ package cn.leancloud.im.v2;
 
 import cn.leancloud.AVException;
 import cn.leancloud.callback.SaveCallback;
+import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.AVIMOptions;
 import cn.leancloud.im.MessageBus;
 import cn.leancloud.im.v2.callback.AVIMConversationCallback;
 import cn.leancloud.im.v2.callback.AVIMMessageRecalledCallback;
 import cn.leancloud.im.v2.callback.AVIMMessageUpdatedCallback;
+import cn.leancloud.im.v2.callback.AVIMMessagesQueryCallback;
 import cn.leancloud.im.v2.messages.AVIMFileMessage;
 import cn.leancloud.im.v2.messages.AVIMFileMessageAccessor;
 import cn.leancloud.utils.StringUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import java.util.*;
 
@@ -30,13 +34,17 @@ public class AVIMConversation {
   private static final String ATTR_PERFIX = Conversation.ATTRIBUTE + ".";
 
   String conversationId;
-  Set<String> members;
-  Map<String, Object> attributes;
-  Map<String, Object> pendingAttributes;
-  AVIMClient client;
-  String creator;
-  boolean isTransient;
+  Set<String> members; // 成员
+  Map<String, Object> attributes; // 用户自定义属性
+  Map<String, Object> pendingAttributes; // 修改中的属性
+  AVIMClient client;  // AVIMClient 引用
+  String creator;     // 创建者
+  boolean isTransient; // 是否为临时对话
 
+  AVIMMessageStorage storage;
+
+  // 注意，sqlite conversation 表中的 lastMessageAt、lastMessage 的来源是 AVIMConversationQuery
+  // 所以并不一定是最新的，返回时要与 message 表中的数据比较，然后返回最新的，
   Date lastMessageAt;
   AVIMMessage lastMessage;
 
@@ -45,8 +53,6 @@ public class AVIMConversation {
 
   Map<String, Object> instanceData = new HashMap<>();
   Map<String, Object> pendingInstanceData = new HashMap<>();
-
-  AVIMMessageStorage storage;
 
   // 是否与数据库中同步了 lastMessage，避免多次走 sqlite 查询
   private boolean isSyncLastMessage = false;
@@ -122,6 +128,57 @@ public class AVIMConversation {
 
   void setTransientForInit(boolean isTransient) {
     this.isTransient = isTransient;
+  }
+
+  /**
+   * 获取Conversation的创建时间
+   *
+   * @return
+   */
+  public Date getCreatedAt() {
+    return StringUtil.dateFromString(createdAt);
+  }
+
+  void setCreatedAt(String createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  /**
+   * 获取Conversation的更新时间
+   *
+   * @return
+   */
+  public Date getUpdatedAt() {
+    return StringUtil.dateFromString(updatedAt);
+  }
+
+  void setUpdatedAt(String updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  /**
+   * 超时的时间间隔设置为一个小时，即 fetch 操作并且返回了错误，则一个小时内 sdk 不再进行调用 fetch
+   */
+  int FETCH_TIME_INTERVEL = 3600 * 1000;
+
+  /**
+   * 最近的 sdk 调用的 fetch 操作的时间
+   */
+  long latestConversationFetch = 0;
+
+  /**
+   * 判断当前 Conversation 是否有效，因为 AVIMConversation 为客户端创建，有可能因为没有同步造成数据丢失
+   * 可以根据此函数来判断，如果无效，则需要调用 fetchInfoInBackground 同步数据
+   * 如果 fetchInfoInBackground 出错（比如因为 acl 问题造成 Forbidden to find by class permissions ），
+   * 客户端就会在收到消息后一直做 fetch 操作，所以这里加了一个判断，如果在 FETCH_TIME_INTERVEL 内有业务类型的
+   * error code 返回，则不在请求
+   */
+  public boolean isShouldFetch() {
+    return null == getCreatedAt() || (System.currentTimeMillis() - latestConversationFetch > FETCH_TIME_INTERVEL);
+  }
+
+  public void setMustFetch() {
+    latestConversationFetch = 0;
   }
 
   protected int getType() {
@@ -459,7 +516,7 @@ public class AVIMConversation {
     message.setFrom(client.getClientId());
     message.generateUniqueToken();
     message.setTimestamp(System.currentTimeMillis());
-    if (false) {
+    if (!AppConfiguration.getGlobalNetworkingDetector().isConnected()) {
       // judge network status.
       message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed);
       if (callback != null) {
@@ -494,6 +551,12 @@ public class AVIMConversation {
    * @param callback
    */
   public void updateMessage(AVIMMessage oldMessage, AVIMMessage newMessage, AVIMMessageUpdatedCallback callback) {
+    if (null == oldMessage || null == newMessage) {
+      if (null != callback) {
+        callback.internalDone(new AVException(new IllegalArgumentException("oldMessage/newMessage shouldn't be null")));
+      }
+      return;
+    }
     MessageBus.getInstance().updateMessage(oldMessage, newMessage, callback);
   }
 
@@ -503,6 +566,12 @@ public class AVIMConversation {
    * @param callback
    */
   public void recallMessage(AVIMMessage message, AVIMMessageRecalledCallback callback) {
+    if (null == message) {
+      if (null != callback) {
+        callback.internalDone(new AVException(new IllegalArgumentException("message shouldn't be null")));
+      }
+      return;
+    }
     MessageBus.getInstance().recallMessage(message, callback);
   }
 
@@ -526,5 +595,464 @@ public class AVIMConversation {
     this.storage.removeLocalMessage(message);
   }
 
+  public void fetchReceiptTimestamps(AVIMConversationCallback callback) {
+    boolean ret = MessageBus.getInstance().fetchReceiptTimestamps(client.getClientId(), getConversationId(),
+            Conversation.AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, callback);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't send request in background."));
+    }
+  }
 
+  /**
+   * 查询最近的20条消息记录
+   *
+   * @param callback
+   */
+  public void queryMessages(final AVIMMessagesQueryCallback callback) {
+    this.queryMessages(20, callback);
+  }
+
+  /**
+   * 从服务器端拉取最新消息
+   * @param limit
+   * @param callback
+   */
+  public void queryMessagesFromServer(int limit, final AVIMMessagesQueryCallback callback) {
+    queryMessagesFromServer(null, 0, limit, null, 0, new AVIMMessagesQueryCallback() {
+      @Override
+      public void done(List<AVIMMessage> messages, AVIMException e) {
+        if (null == e) {
+          if (AVIMOptions.getGlobalOptions().isMessageQueryCacheEnabled()) {
+            processContinuousMessages(messages);
+          }
+          callback.internalDone(messages, null);
+        } else {
+          callback.internalDone(null, e);
+        }
+      }
+    });
+  }
+
+  /**
+   * 从本地缓存中拉取消息
+   * @param limit
+   * @param callback
+   */
+  public void queryMessagesFromCache(int limit, AVIMMessagesQueryCallback callback) {
+    queryMessagesFromCache(null, 0, limit, callback);
+  }
+
+  private void processContinuousMessages(List<AVIMMessage> messages) {
+    if (null != messages && !messages.isEmpty()) {
+      Collections.sort(messages, messageComparator);
+      setLastMessage(messages.get(messages.size() - 1));
+      storage.insertContinuousMessages(messages, conversationId);
+    }
+  }
+  private void queryMessagesFromServer(String msgId, long timestamp, int limit,
+                                       String toMsgId, long toTimestamp, AVIMMessagesQueryCallback callback) {
+    queryMessagesFromServer(msgId, timestamp, false, toMsgId, toTimestamp, false,
+            AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld, limit, callback);
+  }
+
+  /**
+   * 获取特停类型的历史消息。
+   * 注意：这个操作总是会从云端获取记录。
+   * 另，该函数和 queryMessagesByType(type, msgId, timestamp, limit, callback) 配合使用可以实现翻页效果。
+   *
+   * @param msgType     消息类型，可以参看  `AVIMMessageType` 里的定义。
+   * @param limit       本批次希望获取的消息数量。
+   * @param callback    结果回调函数
+   */
+  public void queryMessagesByType(int msgType, int limit, final AVIMMessagesQueryCallback callback) {
+    queryMessagesByType(msgType, null, 0, limit, callback);
+  }
+
+  /**
+   * 获取特定类型的历史消息。
+   * 注意：这个操作总是会从云端获取记录。
+   * 另，如果不指定 msgId 和 timestamp，则该函数效果等同于 queryMessageByType(type, limit, callback)
+   *
+   * @param msgType     消息类型，可以参看  `AVIMMessageType` 里的定义。
+   * @param msgId       消息id，从特定消息 id 开始向前查询（结果不会包含该记录）
+   * @param timestamp   查询起始的时间戳，返回小于这个时间的记录，必须配合 msgId 一起使用。
+   *                    要从最新消息开始获取时，请用 0 代替客户端的本地当前时间（System.currentTimeMillis()）
+   * @param limit       返回条数限制
+   * @param callback    结果回调函数
+   */
+  public void queryMessagesByType(int msgType, final String msgId, final long timestamp, final int limit,
+                                  final AVIMMessagesQueryCallback callback) {
+    if (null == callback) {
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_MESSAGE_QUERY_MSGID, msgId);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP, timestamp);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_STARTCLOSED, false);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID, "");
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP, 0);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED, false);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld.getCode());
+    params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, msgType);
+    boolean ret = MessageBus.getInstance().queryMessages(this.client.getClientId(), getConversationId(),
+            getType(), JSON.toJSONString(params),
+            Conversation.AVIMOperation.CONVERSATION_MESSAGE_QUERY, callback);
+    if (!ret) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't send request in background."));
+    }
+  }
+
+  private void queryMessagesFromServer(String msgId, long timestamp, boolean startClosed,
+                                       String toMsgId, long toTimestamp, boolean toClosed,
+                                       AVIMMessageQueryDirection direction, int limit,
+                                       AVIMMessagesQueryCallback cb) {
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_MESSAGE_QUERY_MSGID, msgId);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP, timestamp);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_STARTCLOSED, startClosed);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID, toMsgId);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP, toTimestamp);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED, toClosed);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, direction.getCode());
+    params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
+    params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, 0);
+    boolean ret = MessageBus.getInstance().queryMessages(this.client.getClientId(), getConversationId(),
+            getType(), JSON.toJSONString(params),
+            Conversation.AVIMOperation.CONVERSATION_MESSAGE_QUERY, cb);
+    if (!ret && null != cb) {
+      cb.internalDone(null,
+              new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
+  }
+
+  private void queryMessagesFromCache(final String msgId, final long timestamp, final int limit,
+                                      final AVIMMessagesQueryCallback callback) {
+    if (null != callback) {
+      storage.getMessages(msgId, timestamp, limit, conversationId,
+              new AVIMMessageStorage.StorageQueryCallback() {
+                @Override
+                public void done(List<AVIMMessage> messages, List<Boolean> breakpoints) {
+                  Collections.reverse(messages);
+                  callback.internalDone(messages, null);
+                }
+              });
+    }
+  }
+
+  /**
+   * 获取最新的消息记录
+   *
+   * @param limit
+   * @param callback
+   */
+  public void queryMessages(final int limit, final AVIMMessagesQueryCallback callback) {
+    if (limit <= 0 || limit > 1000) {
+      if (callback != null) {
+        callback.internalDone(null, new AVException(new IllegalArgumentException(
+                "limit should be in [1, 1000]")));
+      }
+    }
+    // 如果屏蔽了本地缓存则全部走网络
+    if (!AVIMOptions.getGlobalOptions().isMessageQueryCacheEnabled()) {
+      queryMessagesFromServer(null, 0, limit, null, 0, new AVIMMessagesQueryCallback() {
+
+        @Override
+        public void done(List<AVIMMessage> messages, AVIMException e) {
+          if (callback != null) {
+            if (e != null) {
+              callback.internalDone(e);
+            } else {
+              callback.internalDone(messages, null);
+            }
+          }
+        }
+      });
+      return;
+    }
+    if (!AppConfiguration.getGlobalNetworkingDetector().isConnected()) {
+      queryMessagesFromCache(null, 0, limit, callback);
+    } else {
+      // 选择最后一条有 breakpoint 为 false 的消息做截断，因为是 true 的话，会造成两次查询。
+      // 在 queryMessages 还是遇到 breakpoint，再次查询了
+      long cacheMessageCount = storage.getMessageCount(conversationId);
+      long toTimestamp = 0;
+      String toMsgId = null;
+      // 如果本地的缓存的量都不够的情况下，应该要去服务器查询，以免第一次查询的时候出现limit跟返回值不一致让用户认为聊天记录已经到头的问题
+      if (cacheMessageCount >= limit) {
+        final AVIMMessage latestMessage =
+                storage.getLatestMessageWithBreakpoint(conversationId, false);
+
+        if (latestMessage != null) {
+          toMsgId = latestMessage.getMessageId();
+          toTimestamp = latestMessage.getTimestamp();
+        }
+      }
+
+      // 去服务器查询最新消息，看是否在其它终端产生过消息。为省流量，服务器会截断至 toMsgId 、toTimestamp
+      queryMessagesFromServer(null, 0, limit, toMsgId, toTimestamp,
+              new AVIMMessagesQueryCallback() {
+                @Override
+                public void done(List<AVIMMessage> messages, AVIMException e) {
+                  if (e != null) {
+                    // 如果遇到本地错误或者网络错误，直接返回缓存数据
+                    if (e.getCode() == AVIMException.TIMEOUT || e.getCode() == 0 || e.getCode() == 3000) {
+                      queryMessagesFromCache(null, 0, limit, callback);
+                    } else {
+                      if (callback != null) {
+                        callback.internalDone(e);
+                      }
+                    }
+                  } else {
+                    if (null == messages || messages.size() < 1) {
+                      // 这种情况就说明我们的本地消息缓存是最新的
+                    } else {
+                      /*
+                       * 1.messages.size()<=limit && messages.contains(latestMessage)
+                       * 这种情况就说明在本地客户端退出后，该用户在其他客户端也产生了聊天记录而没有缓存到本地来,且产生了小于一页的聊天记录
+                       * 2.messages==limit && !messages.contains(latestMessage)
+                       * 这种情况就说明在本地客户端退出后，该用户在其他客户端也产生了聊天记录而没有缓存到本地来,且产生了大于一页的聊天记录
+                       */
+
+                      processContinuousMessages(messages);
+                    }
+                    queryMessagesFromCache(null, 0, limit, callback);
+                  }
+                }
+              });
+    }
+  }
+
+  /**
+   * 查询消息记录，上拉时使用。
+   *
+   * @param msgId 消息id，从消息id开始向前查询
+   * @param timestamp 查询起始的时间戳，返回小于这个时间的记录。
+   *          客户端时间不可靠，请用 0 代替 System.currentTimeMillis()
+   * @param limit 返回条数限制
+   * @param callback
+   */
+  public void queryMessages(final String msgId, final long timestamp, final int limit,
+                            final AVIMMessagesQueryCallback callback) {
+    if (StringUtil.isEmpty(msgId) && timestamp == 0) {
+      this.queryMessages(limit, callback);
+      return;
+    }
+    // 如果屏蔽了本地缓存则全部走网络
+    if (!AVIMOptions.getGlobalOptions().isMessageQueryCacheEnabled()) {
+      queryMessagesFromServer(msgId, timestamp, limit, null, 0, new AVIMMessagesQueryCallback() {
+
+        @Override
+        public void done(List<AVIMMessage> messages, AVIMException e) {
+          if (callback != null) {
+            if (e != null) {
+              callback.internalDone(e);
+            } else {
+              callback.internalDone(messages, null);
+            }
+          }
+        }
+      });
+      return;
+    }
+
+    // 先去本地缓存查询消息
+    storage.getMessage(msgId, timestamp, conversationId,
+            new AVIMMessageStorage.StorageMessageCallback() {
+
+              @Override
+              public void done(final AVIMMessage indicatorMessage,
+                               final boolean isIndicateMessageBreakPoint) {
+                if (indicatorMessage == null || isIndicateMessageBreakPoint) {
+                  String startMsgId = msgId;
+                  long startTS = timestamp;
+                  int requestLimit = limit;
+                  queryMessagesFromServer(startMsgId, startTS, requestLimit, null, 0,
+                          new AVIMMessagesQueryCallback() {
+                            @Override
+                            public void done(List<AVIMMessage> messages, AVIMException e) {
+                              if (e != null) {
+                                callback.internalDone(e);
+                              } else {
+                                List<AVIMMessage> cachedMsgs = new LinkedList<AVIMMessage>();
+                                if (indicatorMessage != null) {
+                                  // add indicatorMessage to remove breakpoint.
+                                  cachedMsgs.add(indicatorMessage);
+                                }
+                                if (messages != null) {
+                                  cachedMsgs.addAll(messages);
+                                }
+                                processContinuousMessages(cachedMsgs);
+                                queryMessagesFromCache(msgId, timestamp, limit, callback);
+                              }
+                            }
+                          });
+                } else {
+                  // 本地缓存过而且不是breakPoint
+                  storage.getMessages(msgId, timestamp, limit, conversationId,
+                          new AVIMMessageStorage.StorageQueryCallback() {
+                            @Override
+                            public void done(List<AVIMMessage> messages, List<Boolean> breakpoints) {
+                              processStorageQueryResult(messages, breakpoints, msgId, timestamp, limit,
+                                      callback);
+                            }
+                          });
+                }
+              }
+            });
+  }
+
+  /**
+   * 若发现有足够的连续消息，则直接返回。否则去服务器查询消息，同时消除断点。
+   * */
+  private void processStorageQueryResult(List<AVIMMessage> cachedMessages,
+                                         List<Boolean> breakpoints, String originMsgId, long originMsgTS, int limit,
+                                         final AVIMMessagesQueryCallback callback) {
+
+    final List<AVIMMessage> continuousMessages = new ArrayList<AVIMMessage>();
+    int firstBreakPointIndex = -1;
+    for (int index = 0; index < cachedMessages.size(); index++) {
+      if (breakpoints.get(index)) {
+        firstBreakPointIndex = index;
+        break;
+      } else {
+        continuousMessages.add(cachedMessages.get(index));
+      }
+    }
+    final boolean connected = AppConfiguration.getGlobalNetworkingDetector().isConnected();
+    // 如果只是最后一个消息是breakPoint，那还走啥网络
+    if (!connected || continuousMessages.size() >= limit/* - 1*/) {
+      // in case of wifi is invalid, and thre query list contain breakpoint, the result is error.
+      Collections.sort(continuousMessages, messageComparator);
+      callback.internalDone(continuousMessages, null);
+    } else {
+      final int restCount;
+      final AVIMMessage startMessage;
+      if (!continuousMessages.isEmpty()) {
+        // 这里是缓存里面没有breakPoint，但是limit不够的情况下
+        restCount = limit - continuousMessages.size();
+        startMessage = continuousMessages.get(continuousMessages.size() - 1);
+      } else {
+        startMessage = null;
+        restCount = limit;
+      }
+      queryMessagesFromServer(startMessage == null ? originMsgId : startMessage.messageId,
+              startMessage == null ? originMsgTS : startMessage.timestamp, restCount, null, 0,
+              new AVIMMessagesQueryCallback() {
+                @Override
+                public void done(List<AVIMMessage> serverMessages, AVIMException e) {
+                  if (e != null) {
+                    // 不管如何，先返回缓存里面已有的有效数据
+                    if (continuousMessages.size() > 0) {
+                      callback.internalDone(continuousMessages, null);
+                    } else {
+                      callback.internalDone(e);
+                    }
+                  } else {
+                    if (serverMessages == null) {
+                      serverMessages = new ArrayList<AVIMMessage>();
+                    }
+                    continuousMessages.addAll(serverMessages);
+                    processContinuousMessages(continuousMessages);
+                    callback.internalDone(continuousMessages, null);
+                  }
+                }
+              });
+    }
+  }
+
+  /**
+   * 根据指定的区间来查询历史消息，可以指定区间开闭、查询方向以及最大条目限制
+   * @param interval  - 区间，由起止 AVIMMessageIntervalBound 组成
+   * @param direction - 查询方向，支持向前（AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld）
+   *                    或向后（AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromOldToNew）查询
+   * @param limit     - 结果最大条目限制
+   * @param callback  - 结果回调函数
+   */
+  public void queryMessages(final AVIMMessageInterval interval, AVIMMessageQueryDirection direction, final int limit,
+                            final AVIMMessagesQueryCallback callback) {
+    if (null == interval || limit < 0) {
+      if (null != callback) {
+        callback.internalDone(null,
+                new AVException(new IllegalArgumentException("interval must not null, or limit must great than 0.")));
+      }
+      return;
+    }
+    String mid = null;
+    long ts = 0;
+    boolean startClosed = false;
+    String tmid = null;
+    long tts = 0;
+    boolean endClosed = false;
+    if (null != interval.startIntervalBound) {
+      mid = interval.startIntervalBound.messageId;
+      ts = interval.startIntervalBound.timestamp;
+      startClosed = interval.startIntervalBound.closed;
+    }
+    if (null != interval.endIntervalBound) {
+      tmid = interval.endIntervalBound.messageId;
+      tts = interval.endIntervalBound.timestamp;
+      endClosed = interval.endIntervalBound.closed;
+    }
+    queryMessagesFromServer(mid, ts, startClosed, tmid, tts, endClosed, direction, limit, callback);
+  }
+
+  public static void mergeConversationFromJsonObject(AVIMConversation conversation, JSONObject jsonObj) {
+    if (null == conversation || null == jsonObj) {
+      return;
+    }
+    // Notice: cannot update deleted attr.
+    HashMap<String, Object> attributes = new HashMap<String, Object>();
+    if (jsonObj.containsKey(Conversation.NAME)) {
+      attributes.put(Conversation.NAME, jsonObj.getString(Conversation.NAME));
+    }
+    if (jsonObj.containsKey(Conversation.ATTRIBUTE)) {
+      JSONObject moreAttributes = jsonObj.getJSONObject(Conversation.ATTRIBUTE);
+      if (moreAttributes != null) {
+        Map<String, Object> moreAttributesMap = JSON.toJavaObject(moreAttributes, Map.class);
+        attributes.putAll(moreAttributesMap);
+      }
+    }
+    conversation.attributes.putAll(attributes);
+    Set<String> keySet = jsonObj.keySet();
+    if (!keySet.isEmpty()) {
+      for (String key : keySet) {
+        if (!Arrays.asList(Conversation.CONVERSATION_COLUMNS).contains(key)) {
+          conversation.instanceData.put(key, jsonObj.get(key));
+        }
+      }
+    }
+    // conversation.latestConversationFetch = System.currentTimeMillis();
+  }
+
+  public Map<String, Object> getFetchRequestParams() {
+    Map<String, Object> params = new HashMap<String, Object>();
+    if (conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX)) {
+      params.put(Conversation.QUERY_PARAM_TEMPCONV, conversationId);
+    } else {
+      Map<String, Object> whereMap = new HashMap<String, Object>();
+      whereMap.put("objectId", conversationId);
+      params.put(Conversation.QUERY_PARAM_WHERE, whereMap);
+    }
+    return params;
+  }
+
+  static Comparator<AVIMMessage> messageComparator = new Comparator<AVIMMessage>() {
+    @Override
+    public int compare(AVIMMessage m1, AVIMMessage m2) {
+      if (m1.getTimestamp() < m2.getTimestamp()) {
+        return -1;
+      } else if (m1.getTimestamp() > m2.getTimestamp()) {
+        return 1;
+      } else {
+        return m1.messageId.compareTo(m2.messageId);
+      }
+    }
+  };
+
+  interface OperationCompleteCallback {
+    void onComplete();
+
+    void onFailure();
+  }
 }

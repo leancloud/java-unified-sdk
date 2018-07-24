@@ -2,6 +2,7 @@ package cn.leancloud.im;
 
 import cn.leancloud.im.v2.AVIMMessage;
 import cn.leancloud.im.v2.AVIMMessageOption;
+import cn.leancloud.im.v2.Conversation;
 import cn.leancloud.im.v2.callback.*;
 
 import java.util.List;
@@ -10,23 +11,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MessageBus {
   private static final MessageBus gInstance = new MessageBus();
-  private static AtomicInteger acu = new AtomicInteger(-65536);
   private MessageBus() {}
 
   public static MessageBus getInstance() {
     return MessageBus.gInstance;
-  }
-
-  public static int getNextRequestId() {
-    int val = acu.incrementAndGet();
-    if (val > 65535) {
-      while (val > 65535 && !acu.compareAndSet(val, -65536)) {
-        val = acu.get();
-      }
-      return val;
-    } else {
-      return val;
-    }
   }
 
   public void openClient(String clientId, String tag, String userSessionToken,
@@ -86,5 +74,13 @@ public class MessageBus {
     if (null != carrier) {
       carrier.recallMessage(message, callback);
     }
+  }
+  public boolean fetchReceiptTimestamps(String clientId, String conversationId, final Conversation.AVIMOperation operation, AVIMConversationCallback callback) {
+    return false;
+  }
+
+  public boolean queryMessages(String clientId, String conversationId, int conversationType, String query,
+                               Conversation.AVIMOperation operation, AVIMMessagesQueryCallback callback) {
+    return false;
   }
 }
