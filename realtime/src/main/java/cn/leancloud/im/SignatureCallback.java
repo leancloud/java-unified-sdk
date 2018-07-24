@@ -3,7 +3,7 @@ package cn.leancloud.im;
 import cn.leancloud.AVException;
 import cn.leancloud.im.SignatureFactory.SignatureException;
 
-abstract class SignatureCallback {
+public abstract class SignatureCallback {
 
   public abstract Signature computeSignature() throws SignatureException;
 

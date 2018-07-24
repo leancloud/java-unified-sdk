@@ -1,17 +1,17 @@
-package cn.leancloud.im;
+package cn.leancloud.session;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
+import cn.leancloud.im.AVConnectionListener;
+import cn.leancloud.im.AVConnectionManager;
 import cn.leancloud.im.v2.*;
-import cn.leancloud.session.MessageReceiptCache;
-import cn.leancloud.session.StaleMessageDepot;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import cn.leancloud.im.PendingMessageCache.Message;
-import cn.leancloud.im.AVIMOperationQueue.Operation;
+import cn.leancloud.session.PendingMessageCache.Message;
+import cn.leancloud.session.AVIMOperationQueue.Operation;
 import cn.leancloud.im.v2.Conversation.AVIMOperation;
 
 import com.google.protobuf.ByteString;
@@ -48,7 +48,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
         // 这里给所有的消息发送失败消息
         if (session.pendingMessages != null && !session.pendingMessages.isEmpty()) {
           while (!session.pendingMessages.isEmpty()) {
-            PendingMessageCache.Message m = session.pendingMessages.poll();
+            Message m = session.pendingMessages.poll();
             if (!StringUtil.isEmpty(m.cid)) {
               AVConversationHolder conversation = session.getConversationHolder(m.cid, Conversation.CONV_TYPE_NORMAL);
 //              BroadcastUtil.sendIMLocalBroadcast(session.getSelfPeerId(),
@@ -62,7 +62,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
                 && !session.conversationOperationCache.isEmpty()) {
           for (Map.Entry<Integer, Operation> entry : session.conversationOperationCache.cache.entrySet()) {
             int requestId = entry.getKey();
-            AVIMOperationQueue.Operation op = session.conversationOperationCache.poll(requestId);
+            Operation op = session.conversationOperationCache.poll(requestId);
 //            BroadcastUtil.sendIMLocalBroadcast(op.sessionId, op.conversationId, requestId,
 //                    new IllegalStateException("Connection Lost"),
 //                    Conversation.AVIMOperation.getAVIMOperation(op.operation));
@@ -167,8 +167,8 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     }
   }
 
-  private void onAckError(Integer requestKey, Messages.AckCommand command, PendingMessageCache.Message m) {
-    AVIMOperationQueue.Operation op = session.conversationOperationCache.poll(requestKey);
+  private void onAckError(Integer requestKey, Messages.AckCommand command, Message m) {
+    Operation op = session.conversationOperationCache.poll(requestKey);
     if (op.operation == Conversation.AVIMOperation.CLIENT_OPEN.getCode()) {
       session.sessionOpened.set(false);
       session.sessionResume.set(false);
@@ -282,7 +282,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
   @Override
   public void onBlacklistCommand(String operation, Integer requestKey, Messages.BlacklistCommand blacklistCommand) {
     if (BlacklistCommandPacket.BlacklistCommandOp.QUERY_RESULT.equals(operation)) {
-      AVIMOperationQueue.Operation op = session.conversationOperationCache.poll(requestKey);
+      Operation op = session.conversationOperationCache.poll(requestKey);
       if (null == op || op.operation != Conversation.AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode()) {
         LOGGER.w("not found requestKey: " + requestKey);
       } else {

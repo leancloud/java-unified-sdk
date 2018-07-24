@@ -1,7 +1,6 @@
-package cn.leancloud.im;
+package cn.leancloud.session;
 
 import cn.leancloud.command.CommandPacket;
-import cn.leancloud.session.MessageQueue;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

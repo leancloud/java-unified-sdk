@@ -1,6 +1,8 @@
 package cn.leancloud.im;
 
-class SignatureTask implements Runnable {
+import cn.leancloud.session.AVSessionCacheHelper;
+
+public class SignatureTask implements Runnable {
   private final SignatureCallback callback;
   private final String clientId;
   public SignatureTask(SignatureCallback callback, String clientId) {

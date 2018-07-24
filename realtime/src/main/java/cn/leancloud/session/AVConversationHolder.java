@@ -1,4 +1,4 @@
-package cn.leancloud.im;
+package cn.leancloud.session;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
@@ -6,9 +6,10 @@ import cn.leancloud.Messages;
 import cn.leancloud.codec.Base64Decoder;
 import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
+import cn.leancloud.im.*;
 import cn.leancloud.im.v2.*;
 import cn.leancloud.im.v2.Conversation.AVIMOperation;
-import cn.leancloud.im.AVIMOperationQueue.Operation;
+import cn.leancloud.session.AVIMOperationQueue.Operation;
 import cn.leancloud.im.v2.callback.AVIMOperationFailure;
 import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
 import cn.leancloud.im.v2.conversation.ConversationMemberRole;
@@ -63,7 +64,7 @@ public class AVConversationHolder {
       }
 
       @Override
-      public Signature computeSignature() throws SignatureFactory.SignatureException {
+      public Signature computeSignature() throws SignatureException {
         final SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
         if (null != signatureFactory) {
           // 服务器端为了兼容老版本，这里需要使用group的invite

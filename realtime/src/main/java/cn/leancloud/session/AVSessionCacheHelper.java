@@ -1,8 +1,10 @@
-package cn.leancloud.im;
+package cn.leancloud.session;
 
 import cn.leancloud.AVLogger;
 import cn.leancloud.cache.SystemSetting;
 import cn.leancloud.core.AppConfiguration;
+import cn.leancloud.im.AVIMOptions;
+import cn.leancloud.im.Signature;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
@@ -24,7 +26,7 @@ public class AVSessionCacheHelper {
     return tagCacheInstance;
   }
 
-  static class SessionTagCache {
+  public static class SessionTagCache {
     private final String SESSION_TAG_CACHE_KEY = "session_tag_cache_key";
     Map<String, String> cachedTagMap = Collections.synchronizedMap(new HashMap<String, String>());
     private SessionTagCache() {
@@ -66,9 +68,9 @@ public class AVSessionCacheHelper {
     }
   }
 
-  static class SignatureCache {
+  public static class SignatureCache {
     private static final String SESSION_SIGNATURE_KEY = "com.avos.avoscloud.session.signature";
-    static void addSessionSignature(String clientId, Signature signature) {
+    public static void addSessionSignature(String clientId, Signature signature) {
       Map<String, Signature> signatureMap = getSessionSignatures();
       signatureMap.put(clientId, signature);
       SystemSetting setting = AppConfiguration.getDefaultSetting();
@@ -76,7 +78,7 @@ public class AVSessionCacheHelper {
               JSON.toJSONString(signatureMap, SerializerFeature.WriteClassName));
     }
 
-    static Signature getSessionSignature(String clientId) {
+    public static Signature getSessionSignature(String clientId) {
       Map<String, Signature> signatureMap = getSessionSignatures();
       return signatureMap.get(clientId);
     }

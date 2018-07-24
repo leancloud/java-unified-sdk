@@ -1,4 +1,4 @@
-package cn.leancloud.im;
+package cn.leancloud.session;
 
 import cn.leancloud.session.MessageQueue;
 import cn.leancloud.utils.StringUtil;

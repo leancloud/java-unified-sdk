@@ -1,15 +1,15 @@
-package cn.leancloud.im;
+package cn.leancloud.session;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.command.*;
 import cn.leancloud.core.AppConfiguration;
+import cn.leancloud.im.*;
 import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.im.v2.AVIMMessage;
 import cn.leancloud.im.v2.Conversation;
 import cn.leancloud.im.v2.Conversation.AVIMOperation;
-import cn.leancloud.im.AVIMOperationQueue.Operation;
-import cn.leancloud.session.MessageReceiptCache;
+import cn.leancloud.session.AVIMOperationQueue.Operation;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
