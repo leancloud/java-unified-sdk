@@ -37,6 +37,7 @@ public class ObjectUnitTest extends TestCase {
     avObject.put("name", "testSaveGetDeleteGet");
     Date date = new Date();
     avObject.put("now", date);
+    avObject.setFetchWhenSave(true);
     avObject.save();
     assertFalse(avObject.getObjectId().isEmpty());
 

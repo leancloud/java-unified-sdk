@@ -792,7 +792,7 @@ public class AVObject {
   }
 
   public Observable<AVObject> fetchIfNeededInBackground() {
-    if (!StringUtil.isEmpty(getObjectId()) && !this.serverData.isEmpty()) {
+    if (!StringUtil.isEmpty(getObjectId()) && this.serverData.size() > 1) {
       return Observable.just(this);
     } else {
       return refreshInBackground();
