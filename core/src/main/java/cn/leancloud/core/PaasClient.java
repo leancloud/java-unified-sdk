@@ -1,8 +1,8 @@
 package cn.leancloud.core;
 
-import cn.leancloud.AVACL;
 import cn.leancloud.network.DNSDetoxicant;
 import cn.leancloud.service.APIService;
+import io.reactivex.functions.Consumer;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.fastjson.*;
@@ -47,6 +47,27 @@ public class PaasClient {
               .build();
     }
     return globalHttpClient;
+  }
+
+  public static void initializeGlobalClient() {
+    if (null == apiService) {
+      OkHttpClient okHttpClient = getGlobalOkHttpClient();
+      AppRouter appRouter = AppRouter.getInstance();
+      appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.API, false).subscribe(
+              new Consumer<String>() {
+                @Override
+                public void accept(String apiHost) throws Exception {
+                  Retrofit retrofit = new Retrofit.Builder()
+                          .baseUrl(apiHost)
+                          .addConverterFactory(FastJsonConverterFactory.create())
+                          .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                          .client(okHttpClient)
+                          .build();
+                  apiService = retrofit.create(APIService.class);
+                  storageClient = new StorageClient(apiService, asynchronized, defaultScheduler);
+                }
+              });
+    }
   }
 
   public static StorageClient getStorageClient () {

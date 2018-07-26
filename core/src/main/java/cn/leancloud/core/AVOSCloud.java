@@ -38,6 +38,7 @@ public class AVOSCloud {
     applicationId = appId;
     applicationKey = appKey;
     AVObject.registerSubclass(AVStatus.class);
+    PaasClient.initializeGlobalClient();
   }
 
   public static void setServer(AVOSService service, String host) {
