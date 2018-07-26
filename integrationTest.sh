@@ -13,8 +13,8 @@ cd core && mvn clean test
 
 echo "test NorthChina Staging..."
 
-export APP_ID=ohqhxu3mgoj2eyj6ed02yliytmbes3mwhha8ylnc215h0bgk
-export APP_KEY=6j8fuggqkbc5m86b8mp4pf2no170i5m7vmax5iypmi72wldc
+export APP_ID=chMXhjHowqib03mMJENf1scX-null
+export APP_KEY=BFa7sv5KAlEaWA7tM0lMcMsC
 export APP_REGION=NorthChina
 export API_HOST=https://cn-stg1.leancloud.cn
 
