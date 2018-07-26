@@ -17,9 +17,7 @@ public class AVObjectSerializerTest extends TestCase {
   private String studentId = null;
   public AVObjectSerializerTest(String name) {
     super(name);
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    Configure.initializeRuntime();
   }
   public static Test suite() {
     return new TestSuite(AVObjectSerializerTest.class);

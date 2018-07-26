@@ -40,6 +40,11 @@ public class AVOSCloud {
     AVObject.registerSubclass(AVStatus.class);
   }
 
+  public static void setServer(AVOSService service, String host) {
+    AppRouter appRouter = AppRouter.getInstance();
+    appRouter.freezeEndpoint(service, host);
+  }
+
   @Deprecated
   public static void setLastModifyEnabled(boolean val) {
     AppConfiguration.setLastModifyEnabled(val);

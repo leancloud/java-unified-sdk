@@ -23,9 +23,7 @@ public class AVCloudQueryTest extends TestCase {
   public AVCloudQueryTest(String name) {
     super(name);
     AVObject.registerSubclass(Student.class);
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    Configure.initializeRuntime();
   }
 
   public static Test suite() {

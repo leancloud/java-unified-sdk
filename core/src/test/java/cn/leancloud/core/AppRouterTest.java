@@ -8,22 +8,20 @@ import junit.framework.TestCase;
 public class AppRouterTest extends TestCase {
   public AppRouterTest(String name) {
     super(name);
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    Configure.initializeRuntime();
   }
 
   public void testFetchApiEndpoint() {
     AppRouter router = AppRouter.getInstance();
-    String apiHost = router.getEndpoint(Configure.TEST_APP_ID, AVOSServices.API, false).blockingSingle();
+    String apiHost = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.API, false).blockingSingle();
     assertEquals("https://ohqhxu3m.api.lncld.net", apiHost);
-    String pushHost = router.getEndpoint(Configure.TEST_APP_ID, AVOSServices.PUSH, true).blockingSingle();
-    assertEquals("https://ohqhxu3m.push.lncld.net", apiHost);
+    String pushHost = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.PUSH, true).blockingSingle();
+    assertEquals("https://ohqhxu3m.push.lncld.net", pushHost);
   }
 
   public void testFetchRTMEndpoint() {
     AppRouter router = AppRouter.getInstance();
-    String rtmRouterServer = router.getEndpoint(Configure.TEST_APP_ID, AVOSServices.RTM, false).blockingSingle();
+    String rtmRouterServer = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.RTM, false).blockingSingle();
     RTMConnectionServerResponse response = router.fetchRTMConnectionServer(rtmRouterServer, Configure.TEST_APP_ID,
             null, 1, false).blockingSingle();
     assertNotNull(response.getServer());

@@ -14,9 +14,7 @@ import java.util.Arrays;
 public class AVObjectTest extends TestCase {
   public AVObjectTest(String testName) {
     super(testName);
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    Configure.initializeRuntime();
   }
   public static Test suite() {
     return new TestSuite(AVObjectTest.class);

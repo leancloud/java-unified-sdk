@@ -16,10 +16,9 @@ import java.util.concurrent.CyclicBarrier;
 public class ObjectUnitTest extends TestCase {
   public ObjectUnitTest(String testName) {
     super(testName);
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
+
     AVObject.registerSubclass(Armor.class);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    Configure.initializeRuntime();
   }
   public static Test suite() {
     return new TestSuite(ObjectUnitTest.class);

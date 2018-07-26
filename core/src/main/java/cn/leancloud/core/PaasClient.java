@@ -52,8 +52,10 @@ public class PaasClient {
   public static StorageClient getStorageClient () {
     if (null == apiService) {
       OkHttpClient okHttpClient = getGlobalOkHttpClient();
+      AppRouter appRouter = AppRouter.getInstance();
+      String apiHost = appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.API, false).blockingFirst();
       Retrofit retrofit = new Retrofit.Builder()
-              .baseUrl("https://api.leancloud.cn")
+              .baseUrl(apiHost)
               .addConverterFactory(FastJsonConverterFactory.create())
               .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
               .client(okHttpClient)

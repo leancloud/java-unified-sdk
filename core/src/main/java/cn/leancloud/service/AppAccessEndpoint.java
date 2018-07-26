@@ -1,5 +1,6 @@
 package cn.leancloud.service;
 
+import cn.leancloud.core.AVOSService;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 
@@ -69,5 +70,47 @@ public class AppAccessEndpoint {
 
   public void setEngineServer(String engineServer) {
     this.engineServer = engineServer;
+  }
+
+  public String getServerHost(AVOSService service) {
+    String result = "";
+    switch (service) {
+      case API:
+        result = getApiServer();
+        break;
+      case ENGINE:
+        result = getEngineServer();
+        break;
+      case PUSH:
+        result = getPushServer();
+        break;
+      case RTM:
+        result = getRtmRouterServer();
+        break;
+      case STATS:
+        result = getStatServer();
+        break;
+    }
+    return result;
+  }
+
+  public void freezeEndpoint(AVOSService service, String host) {
+    switch (service) {
+      case API:
+        this.setApiServer(host);
+        break;
+      case ENGINE:
+        this.setEngineServer(host);
+        break;
+      case PUSH:
+        this.setPushServer(host);
+        break;
+      case RTM:
+        this.setRtmRouterServer(host);
+        break;
+      case STATS:
+        this.setStatServer(host);
+        break;
+    }
   }
 }

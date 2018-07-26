@@ -21,8 +21,7 @@ public class SetOperationTests extends TestCase {
         return Schedulers.newThread();
       }
     });
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    Configure.initializeRuntime();
   }
 
   public void testSetACL() {

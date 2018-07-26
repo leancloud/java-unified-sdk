@@ -25,9 +25,7 @@ public class AddOperationTests extends TestCase {
         return Schedulers.newThread();
       }
     });
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVObject.registerSubclass(Student.class);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    Configure.initializeRuntime();
   }
 
   public void testAddObject() {

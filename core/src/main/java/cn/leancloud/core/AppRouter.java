@@ -12,9 +12,7 @@ import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
 
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
@@ -22,6 +20,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.fastjson.FastJsonConverterFactory;
 
+import java.net.PasswordAuthentication;
 import java.util.concurrent.TimeUnit;
 
 public class AppRouter {
@@ -67,11 +66,11 @@ public class AppRouter {
    * }
    */
   private static final String DEFAULT_SERVER_HOST_FORMAT = "https://%s.%s.%s";
-  private static final String DEFAULT_SERVER_API = AVOSServices.API.toString();
-  private static final String DEFAULT_SERVER_STAT = AVOSServices.STATS.toString();
-  private static final String DEFAULT_SERVER_ENGINE = AVOSServices.ENGINE.toString();
-  private static final String DEFAULT_SERVER_PUSH = AVOSServices.PUSH.toString();
-  private static final String DEFAULT_SERVER_RTM_ROUTER = AVOSServices.RTM.toString();
+  private static final String DEFAULT_SERVER_API = AVOSService.API.toString();
+  private static final String DEFAULT_SERVER_STAT = AVOSService.STATS.toString();
+  private static final String DEFAULT_SERVER_ENGINE = AVOSService.ENGINE.toString();
+  private static final String DEFAULT_SERVER_PUSH = AVOSService.PUSH.toString();
+  private static final String DEFAULT_SERVER_RTM_ROUTER = AVOSService.RTM.toString();
 
   private static final String DEFAULT_REGION_EAST_CHINA = "lncldapi.com";
   private static final String DEFAULT_REGION_NORTH_CHINA = "lncld.net";
@@ -81,18 +80,12 @@ public class AppRouter {
     return AVOSCloud.REGION.NorthChina;
   }
 
-  private OkHttpClient httpClient = null;
   private Retrofit retrofit = null;
   private AppAccessEndpoint appAccessEndpoint = null;
+  private AppAccessEndpoint fixedAccessEndpoint = new AppAccessEndpoint();
 
   protected AppRouter() {
-    httpClient = new OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .addInterceptor(new LoggingInterceptor())
-            .dns(new DNSDetoxicant())
-            .build();
+    OkHttpClient httpClient = PaasClient.getGlobalOkHttpClient();
     retrofit = new Retrofit.Builder()
             .baseUrl(APP_ROUTER_HOST)
             .addConverterFactory(FastJsonConverterFactory.create())
@@ -129,7 +122,7 @@ public class AppRouter {
     return result;
   }
 
-  private Observable<String> fetchServerFromRemote(final String appId, final AVOSServices service) {
+  private Observable<String> fetchServerFromRemote(final String appId, final AVOSService service) {
     return fetchServerHostsInBackground(appId).map(new Function<AppAccessEndpoint, String>() {
       @Override
       public String apply(AppAccessEndpoint appAccessEndpoint) throws Exception {
@@ -153,12 +146,24 @@ public class AppRouter {
           default:
             break;
         }
+        if (!StringUtil.isEmpty(result) && !result.startsWith("http")) {
+          result = "https://" + result;
+        }
         return result;
       }
     });
   }
 
-  public Observable<String> getEndpoint(final String appId, final AVOSServices service, boolean forceUpdate) {
+  public void freezeEndpoint(final AVOSService service, String host) {
+    this.fixedAccessEndpoint.freezeEndpoint(service, host);
+  }
+
+  public Observable<String> getEndpoint(final String appId, final AVOSService service, boolean forceUpdate) {
+    String fixedHost = this.fixedAccessEndpoint.getServerHost(service);
+    if (!StringUtil.isEmpty(fixedHost)) {
+      return Observable.just(fixedHost);
+    }
+
     if (forceUpdate) {
       // force to update from server.
       return fetchServerFromRemote(appId, service);
@@ -201,6 +206,9 @@ public class AppRouter {
           default:
             break;
       }
+      if (!StringUtil.isEmpty(result) && !result.startsWith("http")) {
+        result = "https://" + result;
+      }
       return Observable.just(result);
     } else {
       return fetchServerFromRemote(appId, service);
@@ -236,6 +244,7 @@ public class AppRouter {
 
   private Observable<RTMConnectionServerResponse> fetchRTMServerFromRemote(final String routerHost, final String appId,
                                                                            final String installationId, int secure) {
+    LOGGER.d("fetchRTMServerFromRemote. router=" + routerHost + ", appId=" + appId);
     Retrofit tmpRetrofit = retrofit.newBuilder().baseUrl(routerHost).build();
     AppRouterService tmpService = tmpRetrofit.create(AppRouterService.class);
     Observable<RTMConnectionServerResponse> result = tmpService.getRTMConnectionServer(appId, installationId, secure);

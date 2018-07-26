@@ -24,9 +24,7 @@ public class AVObjectSubClassTest extends TestCase {
   public AVObjectSubClassTest(String testName) {
     super(testName);
     AVObject.registerSubclass(Student.class);
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    Configure.initializeRuntime();
   }
   public static Test suite() {
     return new TestSuite(AVObjectSubClassTest.class);

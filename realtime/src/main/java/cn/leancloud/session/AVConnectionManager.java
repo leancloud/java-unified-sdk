@@ -5,7 +5,7 @@ import cn.leancloud.Messages;
 import cn.leancloud.command.CommandPacket;
 import cn.leancloud.command.LiveQueryLoginPacket;
 import cn.leancloud.core.AVOSCloud;
-import cn.leancloud.core.AVOSServices;
+import cn.leancloud.core.AVOSService;
 import cn.leancloud.core.AppRouter;
 import cn.leancloud.im.AVIMOptions;
 import cn.leancloud.im.WindTalker;
@@ -36,9 +36,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private AVConnectionListener connectionListener = null;
   private String currentRTMConnectionServer = null;
   private int retryConnectionCount = 0;
-  private boolean connectionEstablished = false;
+  private Boolean connectionEstablished = false;
 
-  private static final Map<String, AVSession> peerIdEnabledSessions = Collections
+  private final Map<String, AVSession> peerIdEnabledSessions = Collections
           .synchronizedMap(new HashMap<String, AVSession>());
 
   public synchronized static AVConnectionManager getInstance() {
@@ -119,7 +119,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
     final AppRouter appRouter = AppRouter.getInstance();
     final String installationId = AVInstallation.getCurrentInstallation().getInstallationId();
-    appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSServices.RTM, retryConnectionCount < 1)
+    appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.RTM, retryConnectionCount < 1)
             .map(new Function<String, RTMConnectionServerResponse>() {
               @Override
               public RTMConnectionServerResponse apply(@NonNull String var1) throws Exception {
@@ -153,7 +153,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private void initSessionsIfExists() {
     Map<String, String> cachedSessions = AVSessionCacheHelper.getTagCacheInstance().getAllSession();
     for (Map.Entry<String, String> entry : cachedSessions.entrySet()) {
-      AVSession s = this.getOrCreateSession(entry.getKey());
+      AVSession s = getOrCreateSession(entry.getKey());
       s.sessionResume.set(true);
       s.tag = entry.getValue();
     }
@@ -198,6 +198,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public boolean isConnectionEstablished() {
+    if (!this.connectionEstablished) {
+      ;
+    }
     return this.connectionEstablished;
   }
 

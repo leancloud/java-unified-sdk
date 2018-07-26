@@ -13,9 +13,7 @@ import junit.framework.TestSuite;
 public class AVSMSTest extends TestCase {
   public AVSMSTest(String name) {
     super(name);
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    Configure.initializeRuntime();
   }
 
   public static Test suite() {
