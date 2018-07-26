@@ -49,7 +49,7 @@ public class PaasClient {
     return globalHttpClient;
   }
 
-  public static void initializeGlobalClient() {
+  static void initializeGlobalClient() {
     if (null == apiService) {
       OkHttpClient okHttpClient = getGlobalOkHttpClient();
       AppRouter appRouter = AppRouter.getInstance();
