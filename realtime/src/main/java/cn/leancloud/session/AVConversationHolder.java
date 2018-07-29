@@ -58,7 +58,7 @@ public class AVConversationHolder {
                   session.getSelfPeerId(), conversationId, members,
                   ConversationControlPacket.ConversationControlOp.ADD, null, sig, requestId));
         } else {
-          InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversationId,
+          InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId,
                   requestId, AVIMOperation.CONVERSATION_ADD_MEMBER, e);
         }
       }
@@ -93,7 +93,7 @@ public class AVConversationHolder {
                   session.getSelfPeerId(), conversationId, members,
                   ConversationControlOp.REMOVE, null, sig, requestId));
         } else {
-          InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversationId,
+          InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId,
                   requestId, AVIMOperation.CONVERSATION_RM_MEMBER, e);
         }
       }
@@ -152,7 +152,7 @@ public class AVConversationHolder {
                   session.getSelfPeerId(), conversationId,
                   BlacklistCommandPacket.BlacklistCommandOp.BLOCK, members, sig, requestId));
         } else {
-          InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversationId,
+          InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId,
                   requestId, AVIMOperation.CONVERSATION_BLOCK_MEMBER, e);
         }
       }
@@ -186,7 +186,7 @@ public class AVConversationHolder {
                   session.getSelfPeerId(), conversationId,
                   BlacklistCommandPacket.BlacklistCommandOp.UNBLOCK, members, sig, requestId));
         } else {
-          InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversationId,
+          InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId,
                   requestId, AVIMOperation.CONVERSATION_UNBLOCK_MEMBER, e);
         }
       }
@@ -217,7 +217,7 @@ public class AVConversationHolder {
                   session.getSelfPeerId(), conversationId, Arrays.asList(session.getSelfPeerId()),
                   ConversationControlOp.ADD, null, sig, requestId));
         } else {
-          InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversationId,
+          InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId,
                   requestId, AVIMOperation.CONVERSATION_JOIN, e);
         }
       }
@@ -434,9 +434,9 @@ public class AVConversationHolder {
   }
 
   private boolean checkSessionStatus(Conversation.AVIMOperation operation, int requestId) {
-    if (session.sessionPaused.get()) {
+    if (session.getCurrentStatus() == AVSession.Status.Closed) {
       RuntimeException se = new RuntimeException("Connection Lost");
-      InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversationId,
+      InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId,
               requestId, operation, se);
       return false;
     } else {
@@ -656,7 +656,7 @@ public class AVConversationHolder {
     List<String> allowedList = blacklistCommand.getAllowedPidsList();
     List<Messages.ErrorCommand> errorCommandList = blacklistCommand.getFailedPidsList();
     Map<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
-    InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), blacklistCommand.getSrcCid(),
+    InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), blacklistCommand.getSrcCid(),
             reqeustId, imop, bundle);
   }
 
@@ -667,7 +667,7 @@ public class AVConversationHolder {
     List<String> allowedList = convCommand.getAllowedPidsList();
     List<Messages.ErrorCommand> errorCommandList = convCommand.getFailedPidsList();
     Map<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
-    InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
             imop, bundle);
   }
 
@@ -747,34 +747,34 @@ public class AVConversationHolder {
     bundle.put(Conversation.callbackCreatedAt, createdAt);
     bundle.put(Conversation.callbackConversationKey, cid);
     bundle.put(Conversation.callbackTemporaryTTL, tempTTL);
-    InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_CREATION, bundle);
   }
 
   void onJoined(int requestId) {
-    InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_JOIN, null);
   }
   void onInvited(int requestId) {
-    InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_ADD_MEMBER, null);
   }
   void onKicked(int requestId) {
-    InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_RM_MEMBER, null);
   }
   void onQuit(int requestId) {
-    InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_QUIT, null);
   }
   private void onInfoUpdated(int requestId, String updatedAt) {
     Map<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackUpdatedAt, updatedAt);
-    InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_UPDATE, bundle);
   }
   private void onMemberUpdated(int requestId) {
-    InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_PROMOTE_MEMBER, null);
   }
   private void onMemberChanged(final String operator, Messages.ConvMemberInfo member) {
@@ -796,24 +796,24 @@ public class AVConversationHolder {
     }
   }
   void onMuted(int requestId) {
-    InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_MUTE, null);
   }
   void onUnmuted(int requestId) {
-    InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_UNMUTE, null);
   }
   void onMemberCount(int count, int requestId) {
     Map<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackMemberCount, count);
-    InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, bundle);
   }
   void onMessageSent(int requestId, String msgId, long timestamp) {
     Map<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackMessageTimeStamp, timestamp);
     bundle.put(Conversation.callbackMessageId, msgId);
-    InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_SEND_MESSAGE, bundle);
   }
   void onHistoryMessageQuery(ArrayList<AVIMMessage> messages, int requestId, long deliveredAt, long readAt) {
@@ -821,7 +821,7 @@ public class AVConversationHolder {
     bundle.put(Conversation.callbackHistoryMessages, messages);
     bundle.put(Conversation.callbackDeliveredAt, deliveredAt);
     bundle.put(Conversation.callbackReadAt, readAt);
-    InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_MESSAGE_QUERY, bundle);
     session.sendUnreadMessagesAck(messages, conversationId);
   }
@@ -830,7 +830,7 @@ public class AVConversationHolder {
     Map<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackReadAt, readAt);
     bundle.put(Conversation.callbackDeliveredAt, deliveredAt);
-    InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
+    InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, bundle);
   }
   void onInvitedToConversation(final String invitedBy, Messages.ConvCommand convCommand) {

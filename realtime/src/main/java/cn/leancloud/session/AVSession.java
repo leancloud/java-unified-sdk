@@ -5,7 +5,6 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.command.*;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.*;
-import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.im.v2.AVIMMessage;
 import cn.leancloud.im.v2.Conversation;
 import cn.leancloud.im.v2.Conversation.AVIMOperation;
@@ -27,7 +26,7 @@ public class AVSession {
   static final int OPERATION_CLOSE_SESSION = 10005;
   static final int OPERATION_UNKNOW = -1;
 
-  public static final String ERROR_INVALID_SESSION_ID = "Null id in session id list.";
+  private static final String ERROR_INVALID_SESSION_ID = "Null id in session id list.";
 
   /**
    * 用于 read 的多端同步
@@ -44,18 +43,43 @@ public class AVSession {
    */
   private final String AVUSER_SESSION_TOKEN = "avuserSessionToken";
 
+  /**
+   * client id
+   */
   private final String selfId;
-  public String tag;
+  /**
+   * client tag(optional)
+   */
+  private String tag;
+  /**
+   * AVUser session token(only for AVIMClient.open with AVUser)
+   */
   private String userSessionToken = null;
+  /**
+   * RTM sessionToken(only available after AVIMClient.open)
+   */
   private String realtimeSessionToken = null;
+  /**
+   * RTM sessionToken expired timestamp.
+   */
   private long realtimeSessionTokenExpired = 0l;
+
+  /**
+   * last notified time.
+   */
   private long lastNotifyTime = 0;
+  /**
+   * last patch time.
+   */
   private long lastPatchTime = 0;
 
-  final AtomicBoolean sessionOpened = new AtomicBoolean(false);
-  final AtomicBoolean sessionPaused = new AtomicBoolean(false);
+  enum Status{
+    Opened, Closed, Resuming
+  }
+  private volatile Status currentStatus = Status.Closed;
+
   // 标识是否需要从缓存恢复
-  public final AtomicBoolean sessionResume = new AtomicBoolean(false);
+  private final AtomicBoolean sessionResume = new AtomicBoolean(false);
 
   private final AtomicLong lastServerAckReceived = new AtomicLong(0);
 
@@ -79,6 +103,26 @@ public class AVSession {
     this.websocketListener = new AVDefaultConnectionListener(this);
   }
 
+  public boolean setSessionResume(boolean flag) {
+    return this.sessionResume.getAndSet(flag);
+  }
+
+  public void setSessionStatue(Status curStatus) {
+    this.currentStatus = curStatus;
+  }
+
+  public boolean isResume() {
+    return this.sessionResume.get();
+  }
+
+  public String getTag() {
+    return tag;
+  }
+
+  public void setTag(String tag) {
+    this.tag = tag;
+  }
+
   public void open(final String clientTag, final String sessionToken, boolean isReconnection, final int requestId) {
     this.tag = clientTag;
     updateUserSessionToken(sessionToken);
@@ -89,7 +133,7 @@ public class AVSession {
                 "Connection Lost"), OPERATION_OPEN_SESSION, requestId);
         return;
       }
-      if (sessionOpened.get()) {
+      if (Status.Opened == currentStatus) {
         sessionListener.onSessionOpen(AVSession.this, requestId);
         return;
       }
@@ -144,10 +188,7 @@ public class AVSession {
   void updateRealtimeSessionToken(String sessionToken, int expireInSec) {
     this.realtimeSessionToken = sessionToken;
     this.realtimeSessionTokenExpired = System.currentTimeMillis() + expireInSec * 1000;
-    AVIMClient client = AVIMClient.getInstance(this.selfId);
-    if (null != client) {
-      client.updateRealtimeSessionToken(sessionToken, realtimeSessionTokenExpired);
-    }
+
     if (StringUtil.isEmpty(sessionToken)) {
       AVSessionCacheHelper.IMSessionTokenCache.removeIMSessionToken(getSelfPeerId());
     } else {
@@ -228,11 +269,11 @@ public class AVSession {
       // 如果session都已不在，缓存消息静静地等到桑田沧海
       this.cleanUp();
 
-      if (!sessionOpened.compareAndSet(true, false)) {
+      if (Status.Closed == currentStatus) {
         this.sessionListener.onSessionClose(this, requestId);
         return;
       }
-      if (!sessionPaused.getAndSet(false)) {
+      if (AVConnectionManager.getInstance().isConnectionEstablished()) {
         conversationOperationCache.offer(Operation.getOperation(
                 AVIMOperation.CLIENT_DISCONNECT.getCode(), selfId, null, requestId));
         SessionControlPacket scp = SessionControlPacket.genSessionCommand(this.selfId, null,
@@ -270,9 +311,9 @@ public class AVSession {
   }
 
   protected void conversationQuery(Map<String, Object> params, int requestId) {
-    if (sessionPaused.get()) {
+    if (Status.Closed == currentStatus) {
       RuntimeException se = new RuntimeException("Connection Lost");
-      InternalConfiguration.getEventBroadcast().onOperationCompleted(getSelfPeerId(), null, requestId,
+      InternalConfiguration.getOperationTube().onOperationCompleted(getSelfPeerId(), null, requestId,
               AVIMOperation.CONVERSATION_QUERY, se);
       return;
     }
@@ -285,16 +326,20 @@ public class AVSession {
   }
 
   public AVException checkSessionStatus() {
-    if (!sessionOpened.get()) {
+    if (Status.Closed == currentStatus) {
       return new AVException(AVException.OPERATION_FORBIDDEN,
               "Please call AVIMClient.open() first");
-    } else if (sessionPaused.get()) {
-      return new AVException(new RuntimeException("Connection Lost"));
-    } else if (sessionResume.get()) {
+    } else if (Status.Resuming == currentStatus) {
       return new AVException(new RuntimeException("Connecting to server"));
+    } else if (!AVConnectionManager.getInstance().isConnectionEstablished()) {
+      return new AVException(new RuntimeException("Connection Lost"));
     } else {
       return null;
     }
+  }
+
+  public Status getCurrentStatus() {
+    return this.currentStatus;
   }
 
   public AVConversationHolder getConversationHolder(String conversationId, int convType) {
@@ -317,7 +362,7 @@ public class AVSession {
                                     final Map<String, Object> attributes,
                                     final boolean isTransient, final boolean isUnique, final boolean isTemp, final int tempTTL,
                                     final boolean isSystem, final int requestId) {
-    if (sessionPaused.get()) {
+    if (!AVConnectionManager.getInstance().isConnectionEstablished()) {
       RuntimeException se = new RuntimeException("Connection Lost");
       sessionListener.onError(this, se, Conversation.AVIMOperation.CONVERSATION_CREATION.getCode(),
               requestId);
@@ -342,7 +387,7 @@ public class AVSession {
                   members, ConversationControlPacket.ConversationControlOp.START, attributes, sig,
                   isTransient, isUnique, isTemp, tempTTL, isSystem, requestId));
         } else {
-          InternalConfiguration.getEventBroadcast().onOperationCompleted(getSelfPeerId(), null, requestId,
+          InternalConfiguration.getOperationTube().onOperationCompleted(getSelfPeerId(), null, requestId,
                   AVIMOperation.CONVERSATION_CREATION, e);
         }
       }

@@ -1,7 +1,8 @@
 package cn.leancloud.im.v2;
 
 import cn.leancloud.AVUser;
-import cn.leancloud.im.MessageBus;
+import cn.leancloud.im.InternalConfiguration;
+import cn.leancloud.im.OperationTube;
 import cn.leancloud.im.v2.callback.AVIMClientCallback;
 import cn.leancloud.im.v2.callback.AVIMClientStatusCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationCreatedCallback;
@@ -95,25 +96,6 @@ public class AVIMClient {
   }
 
   /**
-   * 设置离线消息推送模式
-   * @param isOnlyCount true 为仅推送离线消息数量，false 为推送离线消息
-   * @deprecated Please use {@link #setUnreadNotificationEnabled(boolean)}
-   */
-  public static void setOfflineMessagePush(boolean isOnlyCount) {
-    setUnreadNotificationEnabled(isOnlyCount);
-  }
-
-  /**
-   * Set the mode of offline message push
-   * @param enabled if the value is true，the number of unread messages will be pushed when the client open.
-   *                if the value is false, the unread messages will be pushed when the client open.
-   */
-  public static void setUnreadNotificationEnabled(boolean enabled) {
-    // TODO:fix me!
-    // AVSession.setUnreadNotificationEnabled(enabled);
-  }
-
-  /**
    * get AVIMClient instance by clientId.
    * @param clientId
    * @return
@@ -189,7 +171,16 @@ public class AVIMClient {
   }
 
   public void getClientStatus(final AVIMClientStatusCallback callback) {
-    MessageBus.getInstance().queryClientStatus(this.clientId, callback);
+    OperationTube operationTube = InternalConfiguration.getOperationTube();
+    operationTube.queryClientStatus(this.clientId, callback);
+  }
+
+  /**
+   * 获取当前用户的 clientId
+   * @return 返回clientId
+   */
+  public String getClientId() {
+    return this.clientId;
   }
 
   public void open(final AVIMClientCallback callback) {
@@ -198,11 +189,12 @@ public class AVIMClient {
 
   public void open(AVIMClientOpenOption option, final AVIMClientCallback callback) {
     boolean reConnect = null == option? false : option.isReconnect();
-    MessageBus.getInstance().openClient(clientId, tag, userSessionToken, reConnect, callback);
+    OperationTube operationTube = InternalConfiguration.getOperationTube();
+    operationTube.openClient(clientId, tag, userSessionToken, reConnect, callback);
   }
 
   public void getOnlineClients(List<String> clients, final AVIMOnlineClientsCallback callback) {
-    MessageBus.getInstance().queryOnlineClients(this.clientId, clients, callback);
+    InternalConfiguration.getOperationTube().queryOnlineClients(this.clientId, clients, callback);
   }
 
   public void createConversation(final List<String> conversationMembers,
@@ -246,7 +238,7 @@ public class AVIMClient {
   private void createConversation(final List<String> members, final String name,
                                   final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
                                   final boolean isTemp, int tempTTL, final AVIMConversationCreatedCallback callback) {
-    MessageBus.getInstance().createConversation(members, name, attributes, isTransient, isUnique, isTemp, tempTTL, callback);
+    InternalConfiguration.getOperationTube().createConversation(members, name, attributes, isTransient, isUnique, isTemp, tempTTL, callback);
   }
 
   public AVIMConversation getConversation(String conversationId) {
@@ -364,35 +356,13 @@ public class AVIMClient {
         }
       }
     };
-    MessageBus.getInstance().closeClient(this.clientId, internalCallback);
+    InternalConfiguration.getOperationTube().closeClient(this.clientId, internalCallback);
   }
 
   protected void localClose() {
     clients.remove(this.clientId);
     conversationCache.clear();
     storage.deleteClientData();
-  }
-
-  /**
-   * 获取当前用户的 clientId
-   * @return 返回clientId
-   */
-  public String getClientId() {
-    return this.clientId;
-  }
-
-  public void updateRealtimeSessionToken(String sessionToken, long expireInSec) {
-    this.realtimeSessionToken = sessionToken;
-    this.realtimeSessionTokenExpired = expireInSec;
-  }
-
-  public String getRealtimeSessionToken() {
-    return this.realtimeSessionToken;
-  }
-
-  boolean realtimeSessionTokenExpired() {
-    long now = System.currentTimeMillis()/1000;
-    return (now + REALTIME_TOKEN_WINDOW_INSECONDS) >= this.realtimeSessionTokenExpired;
   }
 
   AVIMMessageStorage getStorage() {

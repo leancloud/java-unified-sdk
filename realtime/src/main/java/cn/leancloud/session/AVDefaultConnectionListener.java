@@ -6,7 +6,10 @@ import cn.leancloud.Messages;
 import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
 import cn.leancloud.im.InternalConfiguration;
+import cn.leancloud.im.WindTalker;
 import cn.leancloud.im.v2.*;
+import cn.leancloud.livequery.AVLiveQuery;
+import cn.leancloud.push.AVInstallation;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.session.PendingMessageCache.Message;
@@ -15,6 +18,7 @@ import cn.leancloud.im.v2.Conversation.AVIMOperation;
 
 import com.google.protobuf.ByteString;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,14 +39,14 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
   @Override
   public void onWebSocketOpen() {
     LOGGER.d("web socket opened, send session open.");
-    if (session.sessionOpened.get() || session.sessionResume.get()) {
+    if (AVSession.Status.Closed == session.getCurrentStatus()) {
       session.reopen();
     }
   }
 
   @Override
   public void onWebSocketClose() {
-    if (!session.sessionPaused.getAndSet(true)) {
+    if (AVSession.Status.Closed != session.getCurrentStatus()) {
       try {
         session.sessionListener.onSessionPaused(session);
         // 这里给所有的消息发送失败消息
@@ -51,7 +55,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
             Message m = session.pendingMessages.poll();
             if (!StringUtil.isEmpty(m.cid)) {
               AVConversationHolder conversation = session.getConversationHolder(m.cid, Conversation.CONV_TYPE_NORMAL);
-              InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), conversation.conversationId,
+              InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversation.conversationId,
                       Integer.parseInt(m.id), Conversation.AVIMOperation.CONVERSATION_SEND_MESSAGE,
                       new RuntimeException("Connection Lost"));
             }
@@ -62,7 +66,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
           for (Map.Entry<Integer, Operation> entry : session.conversationOperationCache.cache.entrySet()) {
             int requestId = entry.getKey();
             Operation op = session.conversationOperationCache.poll(requestId);
-            InternalConfiguration.getEventBroadcast().onOperationCompleted(op.sessionId, op.conversationId, requestId,
+            InternalConfiguration.getOperationTube().onOperationCompleted(op.sessionId, op.conversationId, requestId,
                     Conversation.AVIMOperation.getAVIMOperation(op.operation), new IllegalStateException("Connection Lost"));
           }
         }
@@ -73,7 +77,136 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
   }
 
   @Override
-  public void onDirectCommand(Messages.DirectCommand directCommand) {
+  public void onError(Integer requestKey, Messages.ErrorCommand errorCommand) {
+    if (null != requestKey && requestKey != CommandPacket.UNSUPPORTED_OPERATION) {
+      Operation op = session.conversationOperationCache.poll(requestKey);
+      if (null != op && op.operation == AVIMOperation.CLIENT_OPEN.getCode()) {
+        session.setSessionStatue(AVSession.Status.Closed);
+      }
+      int code = errorCommand.getCode();
+      int appCode = (errorCommand.hasAppCode() ? errorCommand.getAppCode() : 0);
+      String reason = errorCommand.getReason();
+      AVIMOperation operation = (null != op)? AVIMOperation.getAVIMOperation(op.operation): null;
+      InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestKey,
+              operation, new AVIMException(code, appCode, reason));
+    }
+
+    // 如果遇到signature failure的异常,清除缓存
+    if (null == requestKey) {
+      int code = errorCommand.getCode();
+      // 如果遇到signature failure的异常,清除缓存
+      if (CODE_SESSION_SIGNATURE_FAILURE == code) {
+        AVSessionCacheHelper.getTagCacheInstance().removeSession(session.getSelfPeerId());
+      } else if (CODE_SESSION_TOKEN_FAILURE == code) {
+        // 如果遇到session token 失效或者过期的情况，先是清理缓存，然后再重新触发一次自动登录
+        session.updateRealtimeSessionToken("", 0);
+        this.onWebSocketOpen();
+      }
+    }
+  }
+
+  public void onMessageArriving(String peerId, Integer requestKey, Messages.GenericCommand command) {
+    if (null == command) {
+      return;
+    }
+    if (command.getCmd().getNumber() == Messages.CommandType.loggedin_VALUE) {
+      if (LiveQueryLoginPacket.SERVICE_LIVE_QUERY == command.getService()) {
+        processLoggedinCommand(requestKey);
+      }
+    } else if (command.getCmd().getNumber() == Messages.CommandType.data_VALUE) {
+      switch (command.getCmd().getNumber()) {
+        case Messages.CommandType.data_VALUE:
+          if (!command.hasService()) {
+            processDataCommand(command.getDataMessage());
+          } else {
+            final int service = command.getService();
+            if (LiveQueryLoginPacket.SERVICE_PUSH == service) {
+              processDataCommand(command.getDataMessage());
+            } else if (LiveQueryLoginPacket.SERVICE_LIVE_QUERY == service) {
+              processLiveQueryData(command.getDataMessage());
+            }
+          }
+          break;
+        case Messages.CommandType.direct_VALUE:
+          processDirectCommand(peerId, command.getDirectMessage());
+          break;
+        case Messages.CommandType.session_VALUE:
+          processSessionCommand(peerId, command.getOp().name(), requestKey,
+                  command.getSessionMessage());
+          break;
+        case Messages.CommandType.ack_VALUE:
+          processAckCommand(peerId, requestKey, command.getAckMessage());
+          break;
+        case Messages.CommandType.rcp_VALUE:
+          processRcpCommand(peerId, command.getRcpMessage());
+          break;
+        case Messages.CommandType.conv_VALUE:
+          processConvCommand(peerId, command.getOp().name(), requestKey,
+                  command.getConvMessage());
+          break;
+        case Messages.CommandType.error_VALUE:
+          processErrorCommand(peerId, requestKey, command.getErrorMessage());
+          break;
+        case Messages.CommandType.logs_VALUE:
+          processLogsCommand(peerId, requestKey, command.getLogsMessage());
+          break;
+        case Messages.CommandType.unread_VALUE:
+          processUnreadCommand(peerId, command.getUnreadMessage());
+          break;
+        case Messages.CommandType.blacklist_VALUE:
+          processBlacklistCommand(peerId, command.getOp().name(), requestKey, command.getBlacklistMessage());
+          break;
+        case Messages.CommandType.patch_VALUE:
+          if(command.getOp().equals(Messages.OpType.modify)) {
+            // modify 为服务器端主动推送的 patch 消息
+            processPatchCommand(peerId, true, requestKey, command.getPatchMessage());
+          } else if (command.getOp().equals(Messages.OpType.modified)) {
+            // modified 代表的是服务器端对于客户端请求的相应
+            processPatchCommand(peerId, false, requestKey, command.getPatchMessage());
+          }
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+
+  private void processLoggedinCommand(Integer requestKey) {
+    if (null != requestKey) {
+      InternalConfiguration.getOperationTube().onLiveQueryCompleted(requestKey, null);
+    }
+  }
+
+  private void processDataCommand(Messages.DataCommand dataCommand) {
+    List<String> messageIds = dataCommand.getIdsList();
+    List<Messages.JsonObjectMessage> messages = dataCommand.getMsgList();
+    for (int i = 0; i < messages.size() && i < messageIds.size(); i++) {
+      if (null != messages.get(i)) {
+        InternalConfiguration.getOperationTube().onPushMessage(messages.get(i).getData(),
+                messageIds.get(i));
+      }
+    }
+    WindTalker windTalker = WindTalker.getInstance();
+    CommandPacket packet = windTalker.assemblePushAckPacket(AVInstallation.getCurrentInstallation().getInstallationId(), messageIds);
+    AVConnectionManager.getInstance().sendPacket(packet);
+  }
+
+  private void processLiveQueryData(Messages.DataCommand dataCommand) {
+    List<String> messageIds = dataCommand.getIdsList();
+    List<Messages.JsonObjectMessage> messages = dataCommand.getMsgList();
+
+    ArrayList<String> dataList = new ArrayList<>();
+    for (int i = 0; i < messages.size() && i < messageIds.size(); i++) {
+      Messages.JsonObjectMessage message = messages.get(i);
+      if (null != message) {
+        dataList.add(message.getData());
+      }
+    };
+    AVLiveQuery.processData(dataList);
+  }
+
+  private void processDirectCommand(String peerId, Messages.DirectCommand directCommand) {
     final String msg = directCommand.getMsg();
     final ByteString binaryMsg = directCommand.getBinaryMsg();
     final String fromPeerId = directCommand.getFromPeerId();
@@ -117,17 +250,17 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       session.sessionListener.onError(session, e);
     }
   }
-
-  @Override
-  public void onSessionCommand(String op, Integer requestKey, Messages.SessionCommand command) {
+  private void processSessionCommand(String peerId, String op, Integer requestKey,
+                                     Messages.SessionCommand command) {
     int requestId = (null != requestKey ? requestKey : CommandPacket.UNSUPPORTED_OPERATION);
 
     if (op.equals(SessionControlPacket.SessionControlOp.OPENED)) {
       try {
-        session.sessionOpened.set(true);
-        session.sessionResume.set(false);
+        AVSession.Status prevStatus = session.getCurrentStatus();
+        session.setSessionStatue(AVSession.Status.Opened);
 
-        if (!session.sessionPaused.getAndSet(false)) {
+
+        if (AVSession.Status.Closed == prevStatus) {
           if (requestId != CommandPacket.UNSUPPORTED_OPERATION) {
             session.conversationOperationCache.poll(requestId);
           }
@@ -164,24 +297,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       }
     }
   }
-
-  private void onAckError(Integer requestKey, Messages.AckCommand command, Message m) {
-    Operation op = session.conversationOperationCache.poll(requestKey);
-    if (op.operation == Conversation.AVIMOperation.CLIENT_OPEN.getCode()) {
-      session.sessionOpened.set(false);
-      session.sessionResume.set(false);
-    }
-    Conversation.AVIMOperation operation = Conversation.AVIMOperation.getAVIMOperation(op.operation);
-    int code = command.getCode();
-    int appCode = (command.hasAppCode() ? command.getAppCode() : 0);
-    String reason = command.getReason();
-    AVException error = new AVIMException(code, appCode, reason);
-    InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), op.conversationId,
-            requestKey, operation, error);
-  }
-
-  @Override
-  public void onAckCommand(Integer requestKey, Messages.AckCommand ackCommand) {
+  private void processAckCommand(String peerId, Integer requestKey, Messages.AckCommand ackCommand) {
     session.setServerAckReceived(System.currentTimeMillis() / 1000);
     long timestamp = ackCommand.getT();
     final Message m = session.pendingMessages.poll(String.valueOf(requestKey));
@@ -202,22 +318,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       }
     }
   }
-
-  @Override
-  public void onListenerAdded(boolean open) {
-    if (open) {
-      LOGGER.d("web socket opened, send session open.");
-      this.onWebSocketOpen();
-    }
-  }
-
-  @Override
-  public void onListenerRemoved() {
-
-  }
-
-  @Override
-  public void onMessageReceipt(Messages.RcpCommand rcpCommand) {
+  private void processRcpCommand(String peerId, Messages.RcpCommand rcpCommand) {
     try {
       if (rcpCommand.hasT()) {
         final Long timestamp = rcpCommand.getT();
@@ -234,90 +335,15 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       session.sessionListener.onError(session, e);
     }
   }
-
-  /**
-   * 处理 v2 版本中 conversation 的 deliveredAt 事件
-   * @param conversationId
-   * @param timestamp
-   */
-  private void processConversationDeliveredAt(String conversationId, int convType, long timestamp) {
-    AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
-    conversation.onConversationDeliveredAtEvent(timestamp);
-  }
-
-  /**
-   * 处理 v2 版本中 message 的 rcp 消息
-   * @param msgId
-   * @param conversationId
-   * @param timestamp
-   */
-  private void processMessageReceipt(String msgId, String conversationId, int convType, long timestamp) {
-    Object messageCache =
-            MessageReceiptCache.get(session.getSelfPeerId(), msgId);
-    if (messageCache == null) {
-      return;
-    }
-    Message m = (Message) messageCache;
-    AVIMMessage msg =
-            new AVIMMessage(conversationId, session.getSelfPeerId(), m.timestamp, timestamp);
-    msg.setMessageId(m.id);
-    msg.setContent(m.msg);
-    msg.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusReceipt);
-    AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
-    conversation.onMessageReceipt(msg);
-  }
-
-  @Override
-  public void onReadCmdReceipt(Messages.RcpCommand rcpCommand) {
-    if (rcpCommand.hasRead() && rcpCommand.hasCid()) {
-      final Long timestamp = rcpCommand.getT();
-      String conversationId = rcpCommand.getCid();
-      AVConversationHolder conversation = session.getConversationHolder(conversationId, Conversation.CONV_TYPE_NORMAL);
-      conversation.onConversationReadAtEvent(timestamp);
-    }
-  }
-
-  @Override
-  public void onBlacklistCommand(String operation, Integer requestKey, Messages.BlacklistCommand blacklistCommand) {
-    if (BlacklistCommandPacket.BlacklistCommandOp.QUERY_RESULT.equals(operation)) {
-      Operation op = session.conversationOperationCache.poll(requestKey);
-      if (null == op || op.operation != Conversation.AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode()) {
-        LOGGER.w("not found requestKey: " + requestKey);
-      } else {
-        List<String> result = blacklistCommand.getBlockedPidsList();
-        String[] resultArray = new String[null == result ? 0: result.size()];
-        if (null != result) {
-          result.toArray(resultArray);
-        }
-        String cid = blacklistCommand.getSrcCid();
-        Map<String, Object> bundle = new HashMap<>();
-        bundle.put(Conversation.callbackData, resultArray);
-        InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), cid, requestKey,
-                AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, bundle);
-      }
-    } else if (BlacklistCommandPacket.BlacklistCommandOp.BLOCKED.equals(operation)
-            || BlacklistCommandPacket.BlacklistCommandOp.UNBLOCKED.equals(operation)){
-      // response for block/unblock reqeust.
-      String conversationId = blacklistCommand.getSrcCid();
-      AVConversationHolder internalConversation = session.getConversationHolder(conversationId, Conversation.CONV_TYPE_NORMAL);
-      Operation op = session.conversationOperationCache.poll(requestKey);
-      if (null == op || null == internalConversation) {
-        // warning.
-      } else {
-        Conversation.AVIMOperation originOperation = Conversation.AVIMOperation.getAVIMOperation(op.operation);
-        internalConversation.onResponse4MemberBlock(originOperation, operation, requestKey, blacklistCommand);
-      }
-    }
-  }
-  @Override
-  public void onConversationCommand(String operation, Integer requestKey, Messages.ConvCommand convCommand) {
+  private void processConvCommand(String peerId, String operation, Integer requestKey,
+                                  Messages.ConvCommand convCommand) {
     if (ConversationControlPacket.ConversationControlOp.QUERY_RESULT.equals(operation)) {
       Operation op = session.conversationOperationCache.poll(requestKey);
       if (null != op && op.operation == AVIMOperation.CONVERSATION_QUERY.getCode()) {
         String result = convCommand.getResults().getData();
         Map<String, Object> bundle = new HashMap<>();
         bundle.put(Conversation.callbackData, result);
-        InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
+        InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
                 AVIMOperation.CONVERSATION_QUERY, bundle);
       } else {
         LOGGER.w("not found requestKey: " + requestKey);
@@ -332,7 +358,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
         }
         Map<String, Object> bundle = new HashMap<>();
         bundle.put(Conversation.callbackData, resultMembers);
-        InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
+        InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
                 AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, bundle);
       } else {
         LOGGER.w("not found requestKey: " + requestKey);
@@ -375,30 +401,18 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       }
     }
   }
-
-  private SessionAckPacket genSessionAckPacket(String messageId) {
-    SessionAckPacket sap = new SessionAckPacket();
-    sap.setPeerId(session.getSelfPeerId());
-    if (!StringUtil.isEmpty(messageId)) {
-      sap.setMessageId(messageId);
-    }
-
-    return sap;
-  }
-
-  @Override
-  public void onError(Integer requestKey, Messages.ErrorCommand errorCommand) {
+  private void processErrorCommand(String peerId, Integer requestKey,
+                                   Messages.ErrorCommand errorCommand) {
     if (null != requestKey && requestKey != CommandPacket.UNSUPPORTED_OPERATION) {
       Operation op = session.conversationOperationCache.poll(requestKey);
       if (null != op && op.operation == AVIMOperation.CLIENT_OPEN.getCode()) {
-        session.sessionOpened.set(false);
-        session.sessionResume.set(false);
+        session.setSessionStatue(AVSession.Status.Closed);
       }
       int code = errorCommand.getCode();
       int appCode = (errorCommand.hasAppCode() ? errorCommand.getAppCode() : 0);
       String reason = errorCommand.getReason();
       AVIMOperation operation = (null != op)? AVIMOperation.getAVIMOperation(op.operation): null;
-      InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), null, requestKey,
+      InternalConfiguration.getOperationTube().onOperationCompleted(peerId, null, requestKey,
               operation, new AVIMException(code, appCode, reason));
     }
 
@@ -416,24 +430,23 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     }
   }
 
-  @Override
-  public void onHistoryMessageQuery(Integer requestKey, Messages.LogsCommand command) {
+  private void processLogsCommand(String peerId, Integer requestKey,
+                                  Messages.LogsCommand logsCommand) {
     if (null != requestKey && requestKey != CommandPacket.UNSUPPORTED_OPERATION) {
       Operation op = session.conversationOperationCache.poll(requestKey);
       int convType = Conversation.CONV_TYPE_NORMAL;
-      if (command.getLogsCount() > 0) {
-        Messages.LogItem item = command.getLogs(0);
+      if (logsCommand.getLogsCount() > 0) {
+        Messages.LogItem item = logsCommand.getLogs(0);
         if (null != item && item.hasConvType()) {
           convType = item.getConvType();
         }
       }
       AVConversationHolder conversation = session.getConversationHolder(op.conversationId, convType);
-      conversation.processMessages(requestKey, command.getLogsList());
+      conversation.processMessages(requestKey, logsCommand.getLogsList());
     }
   }
 
-  @Override
-  public void onUnreadMessagesCommand(Messages.UnreadCommand unreadCommand) {
+  private void processUnreadCommand(String peerId, Messages.UnreadCommand unreadCommand) {
     session.updateLastNotifyTime(unreadCommand.getNotifTime());
     if (unreadCommand.getConvsCount() > 0) {
 
@@ -467,9 +480,39 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       }
     }
   }
-
-  @Override
-  public void onMessagePatchCommand(boolean isModify, Integer requestKey, Messages.PatchCommand patchCommand) {
+  private void processBlacklistCommand(String peerId, String operation, Integer requestKey,
+                                       Messages.BlacklistCommand blacklistCommand) {
+    if (BlacklistCommandPacket.BlacklistCommandOp.QUERY_RESULT.equals(operation)) {
+      Operation op = session.conversationOperationCache.poll(requestKey);
+      if (null == op || op.operation != Conversation.AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode()) {
+        LOGGER.w("not found requestKey: " + requestKey);
+      } else {
+        List<String> result = blacklistCommand.getBlockedPidsList();
+        String[] resultArray = new String[null == result ? 0: result.size()];
+        if (null != result) {
+          result.toArray(resultArray);
+        }
+        String cid = blacklistCommand.getSrcCid();
+        Map<String, Object> bundle = new HashMap<>();
+        bundle.put(Conversation.callbackData, resultArray);
+        InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), cid, requestKey,
+                AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, bundle);
+      }
+    } else if (BlacklistCommandPacket.BlacklistCommandOp.BLOCKED.equals(operation)
+            || BlacklistCommandPacket.BlacklistCommandOp.UNBLOCKED.equals(operation)){
+      // response for block/unblock reqeust.
+      String conversationId = blacklistCommand.getSrcCid();
+      AVConversationHolder internalConversation = session.getConversationHolder(conversationId, Conversation.CONV_TYPE_NORMAL);
+      Operation op = session.conversationOperationCache.poll(requestKey);
+      if (null == op || null == internalConversation) {
+        // warning.
+      } else {
+        Conversation.AVIMOperation originOperation = Conversation.AVIMOperation.getAVIMOperation(op.operation);
+        internalConversation.onResponse4MemberBlock(originOperation, operation, requestKey, blacklistCommand);
+      }
+    }
+  }
+  private void processPatchCommand(String peerId, boolean isModify, Integer requestKey, Messages.PatchCommand patchCommand) {
     updateLocalPatchTime(isModify, patchCommand);
     if (isModify) {
       if (patchCommand.getPatchesCount() > 0) {
@@ -486,9 +529,74 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       AVIMOperation operation = AVIMOperation.getAVIMOperation(op.operation);
       Map<String, Object> bundle = new HashMap<>();
       bundle.put(Conversation.PARAM_MESSAGE_PATCH_TIME, patchCommand.getLastPatchTime());
-      InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
+      InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
               operation, bundle);
     }
+  }
+
+  private void onAckError(Integer requestKey, Messages.AckCommand command, Message m) {
+    Operation op = session.conversationOperationCache.poll(requestKey);
+    if (op.operation == Conversation.AVIMOperation.CLIENT_OPEN.getCode()) {
+      session.setSessionStatue(AVSession.Status.Closed);
+    }
+    Conversation.AVIMOperation operation = Conversation.AVIMOperation.getAVIMOperation(op.operation);
+    int code = command.getCode();
+    int appCode = (command.hasAppCode() ? command.getAppCode() : 0);
+    String reason = command.getReason();
+    AVException error = new AVIMException(code, appCode, reason);
+    InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), op.conversationId,
+            requestKey, operation, error);
+  }
+
+  /**
+   * 处理 v2 版本中 conversation 的 deliveredAt 事件
+   * @param conversationId
+   * @param timestamp
+   */
+  private void processConversationDeliveredAt(String conversationId, int convType, long timestamp) {
+    AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
+    conversation.onConversationDeliveredAtEvent(timestamp);
+  }
+
+  /**
+   * 处理 v2 版本中 message 的 rcp 消息
+   * @param msgId
+   * @param conversationId
+   * @param timestamp
+   */
+  private void processMessageReceipt(String msgId, String conversationId, int convType, long timestamp) {
+    Object messageCache =
+            MessageReceiptCache.get(session.getSelfPeerId(), msgId);
+    if (messageCache == null) {
+      return;
+    }
+    Message m = (Message) messageCache;
+    AVIMMessage msg =
+            new AVIMMessage(conversationId, session.getSelfPeerId(), m.timestamp, timestamp);
+    msg.setMessageId(m.id);
+    msg.setContent(m.msg);
+    msg.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusReceipt);
+    AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
+    conversation.onMessageReceipt(msg);
+  }
+
+  public void onReadCmdReceipt(Messages.RcpCommand rcpCommand) {
+    if (rcpCommand.hasRead() && rcpCommand.hasCid()) {
+      final Long timestamp = rcpCommand.getT();
+      String conversationId = rcpCommand.getCid();
+      AVConversationHolder conversation = session.getConversationHolder(conversationId, Conversation.CONV_TYPE_NORMAL);
+      conversation.onConversationReadAtEvent(timestamp);
+    }
+  }
+
+  private SessionAckPacket genSessionAckPacket(String messageId) {
+    SessionAckPacket sap = new SessionAckPacket();
+    sap.setPeerId(session.getSelfPeerId());
+    if (!StringUtil.isEmpty(messageId)) {
+      sap.setMessageId(messageId);
+    }
+
+    return sap;
   }
 
   private void updateLocalPatchTime(boolean isModify, Messages.PatchCommand patchCommand) {

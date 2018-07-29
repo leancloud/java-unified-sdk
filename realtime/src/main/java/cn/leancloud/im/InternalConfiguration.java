@@ -1,25 +1,16 @@
 package cn.leancloud.im;
 
 public class InternalConfiguration {
-  private static EventBroadcast eventBroadcast = new SimpleEventBroadcast();
-  private static CommandCourier commandCourier = new SimpleCommandCourier(true);
+  private static OperationTube operationTube = new DirectlyOperationTube(true);
   private static FileMetaAccessor fileMetaAccessor = new SimpleFileMetaAccessor();
   private static DatabaseDelegate databaseDelegate = null;
 
-  public static EventBroadcast getEventBroadcast() {
-    return eventBroadcast;
+  public static OperationTube getOperationTube() {
+    return operationTube;
   }
 
-  public static void setEventBroadcast(EventBroadcast eventBroadcast) {
-    InternalConfiguration.eventBroadcast = eventBroadcast;
-  }
-
-  public static CommandCourier getCommandCourier() {
-    return commandCourier;
-  }
-
-  public static void setCommandCourier(CommandCourier commandCarrier) {
-    InternalConfiguration.commandCourier = commandCarrier;
+  public static void setOperationTube(OperationTube commandCarrier) {
+    InternalConfiguration.operationTube = commandCarrier;
   }
 
   public static FileMetaAccessor getFileMetaAccessor() {

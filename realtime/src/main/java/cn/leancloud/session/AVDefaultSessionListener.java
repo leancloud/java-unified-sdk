@@ -25,10 +25,10 @@ public class AVDefaultSessionListener extends AVSessionListener {
   @Override
   public void onSessionOpen(AVSession session, int requestId) {
     // 既然已经成功了，就往缓存里面添加一条记录
-    AVSessionCacheHelper.getTagCacheInstance().addSession(session.getSelfPeerId(), session.tag);
+    AVSessionCacheHelper.getTagCacheInstance().addSession(session.getSelfPeerId(), session.getTag());
     // 这里需要给AVIMClient那边发一个LocalBoardcastMessage
     if (requestId > CommandPacket.UNSUPPORTED_OPERATION) {
-      InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), null, requestId,
+      InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
               AVIMOperation.CLIENT_OPEN, null);
     }
   }
@@ -44,7 +44,7 @@ public class AVDefaultSessionListener extends AVSessionListener {
   @Override
   public void onSessionTokenRenewed(AVSession session, int requestId) {
     if (requestId > CommandPacket.UNSUPPORTED_OPERATION) {
-      InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), null, requestId,
+      InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
               AVIMOperation.CLIENT_REFRESH_TOKEN, null);
     }
   }
@@ -75,16 +75,16 @@ public class AVDefaultSessionListener extends AVSessionListener {
     if (requestId > CommandPacket.UNSUPPORTED_OPERATION) {
       switch (sessionOperation) {
         case AVSession.OPERATION_OPEN_SESSION:
-          InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), null, requestId,
+          InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
                   Conversation.AVIMOperation.CLIENT_OPEN, e);
           break;
         case AVSession.OPERATION_CLOSE_SESSION:
-          InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), null, requestId,
+          InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
                   Conversation.AVIMOperation.CLIENT_DISCONNECT, e);
           break;
       }
       if (sessionOperation == AVIMOperation.CONVERSATION_CREATION.getCode()) {
-        InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), null, requestId,
+        InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
                 Conversation.AVIMOperation.CONVERSATION_CREATION, e);
       }
     }
@@ -92,19 +92,19 @@ public class AVDefaultSessionListener extends AVSessionListener {
 
   @Override
   public void onSessionClose(AVSession session, int requestId) {
-    AVConnectionManager.getInstance().removeSession(session.getSelfPeerId());
+    AVSessionManager.getInstance().removeSession(session.getSelfPeerId());
     if (requestId > CommandPacket.UNSUPPORTED_OPERATION) {
-      InternalConfiguration.getEventBroadcast().onOperationCompleted(session.getSelfPeerId(), null, requestId,
+      InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
               AVIMOperation.CLIENT_DISCONNECT, null);
     }
   }
 
   private void cleanSession(AVSession session) {
     AVSessionCacheHelper.getTagCacheInstance().removeSession(session.getSelfPeerId());
-    session.sessionOpened.set(false);
+    session.setSessionStatue(AVSession.Status.Closed);
     // 如果session都已不在，缓存消息静静地等到桑田沧海
     session.cleanUp();
-    AVConnectionManager.getInstance().removeSession(session.getSelfPeerId());
+    AVSessionManager.getInstance().removeSession(session.getSelfPeerId());
   }
 
   @Override
@@ -114,7 +114,7 @@ public class AVDefaultSessionListener extends AVSessionListener {
       Map<String, Object> bundle = new HashMap<>();
       bundle.put(Conversation.callbackOnlineClients, new ArrayList<String>(
               onlinePeerIds));
-      InternalConfiguration.getEventBroadcast().onOperationCompletedEx(session.getSelfPeerId(), null, requestCode,
+      InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestCode,
               AVIMOperation.CLIENT_ONLINE_QUERY, bundle);
     }
   }

@@ -4,7 +4,7 @@ import cn.leancloud.AVException;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.AVIMOptions;
-import cn.leancloud.im.MessageBus;
+import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.im.v2.callback.AVIMConversationCallback;
 import cn.leancloud.im.v2.callback.AVIMMessageRecalledCallback;
 import cn.leancloud.im.v2.callback.AVIMMessageUpdatedCallback;
@@ -535,12 +535,12 @@ public class AVIMConversation {
               callback.internalDone(e);
             }
           } else {
-            MessageBus.getInstance().sendMessage(message, messageOption, callback);
+            InternalConfiguration.getOperationTube().sendMessage(message, messageOption, callback);
           }
         }
       });
     } else {
-      MessageBus.getInstance().sendMessage(message, messageOption, callback);
+      InternalConfiguration.getOperationTube().sendMessage(message, messageOption, callback);
     }
   }
 
@@ -557,7 +557,7 @@ public class AVIMConversation {
       }
       return;
     }
-    MessageBus.getInstance().updateMessage(oldMessage, newMessage, callback);
+    InternalConfiguration.getOperationTube().updateMessage(oldMessage, newMessage, callback);
   }
 
   /**
@@ -572,7 +572,7 @@ public class AVIMConversation {
       }
       return;
     }
-    MessageBus.getInstance().recallMessage(message, callback);
+    InternalConfiguration.getOperationTube().recallMessage(message, callback);
   }
 
   /**
@@ -596,7 +596,7 @@ public class AVIMConversation {
   }
 
   public void fetchReceiptTimestamps(AVIMConversationCallback callback) {
-    boolean ret = MessageBus.getInstance().fetchReceiptTimestamps(client.getClientId(), getConversationId(),
+    boolean ret = InternalConfiguration.getOperationTube().fetchReceiptTimestamps(client.getClientId(), getConversationId(),
             Conversation.AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, callback);
     if (!ret && null != callback) {
       callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't send request in background."));
@@ -695,7 +695,7 @@ public class AVIMConversation {
     params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld.getCode());
     params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
     params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, msgType);
-    boolean ret = MessageBus.getInstance().queryMessages(this.client.getClientId(), getConversationId(),
+    boolean ret = InternalConfiguration.getOperationTube().queryMessages(this.client.getClientId(), getConversationId(),
             getType(), JSON.toJSONString(params),
             Conversation.AVIMOperation.CONVERSATION_MESSAGE_QUERY, callback);
     if (!ret) {
@@ -717,7 +717,7 @@ public class AVIMConversation {
     params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, direction.getCode());
     params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
     params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, 0);
-    boolean ret = MessageBus.getInstance().queryMessages(this.client.getClientId(), getConversationId(),
+    boolean ret = InternalConfiguration.getOperationTube().queryMessages(this.client.getClientId(), getConversationId(),
             getType(), JSON.toJSONString(params),
             Conversation.AVIMOperation.CONVERSATION_MESSAGE_QUERY, cb);
     if (!ret && null != cb) {

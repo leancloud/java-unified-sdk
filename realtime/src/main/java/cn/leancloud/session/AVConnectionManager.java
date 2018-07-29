@@ -3,14 +3,12 @@ package cn.leancloud.session;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.command.CommandPacket;
-import cn.leancloud.command.LiveQueryLoginPacket;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AVOSService;
 import cn.leancloud.core.AppRouter;
 import cn.leancloud.im.AVIMOptions;
 import cn.leancloud.im.WindTalker;
 import cn.leancloud.im.v2.AVIMClient;
-import cn.leancloud.livequery.AVLiveQuery;
 import cn.leancloud.push.AVInstallation;
 import cn.leancloud.service.RTMConnectionServerResponse;
 import cn.leancloud.utils.LogUtil;
@@ -27,19 +25,18 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketClientMonitor {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVConnectionManager.class);
 
   private static AVConnectionManager instance = null;
   private AVStandardWebSocketClient webSocketClient = null;
-  private AVConnectionListener connectionListener = null;
   private String currentRTMConnectionServer = null;
   private int retryConnectionCount = 0;
   private Boolean connectionEstablished = false;
 
-  private final Map<String, AVSession> peerIdEnabledSessions = Collections
-          .synchronizedMap(new HashMap<String, AVSession>());
+  private Map<String, AVConnectionListener> connectionListeners = new ConcurrentHashMap<>(1);
 
   public synchronized static AVConnectionManager getInstance() {
     if (instance == null) {
@@ -49,7 +46,6 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   private AVConnectionManager() {
-    initSessionsIfExists();
     initConnection();
   }
 
@@ -150,47 +146,13 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
             });
   }
 
-  private void initSessionsIfExists() {
-    Map<String, String> cachedSessions = AVSessionCacheHelper.getTagCacheInstance().getAllSession();
-    for (Map.Entry<String, String> entry : cachedSessions.entrySet()) {
-      AVSession s = getOrCreateSession(entry.getKey());
-      s.sessionResume.set(true);
-      s.tag = entry.getValue();
+  public void subscribeConnectionListener(String clientId, AVConnectionListener listener) {
+    if (null != listener) {
+      this.connectionListeners.put(clientId, listener);
     }
   }
-
-  public AVSession getOrCreateSession(String peerId) {
-    try {
-      // 据说这行有NPE，所以不得不catch起来避免app崩溃
-      boolean newAdded = !peerIdEnabledSessions.containsKey(peerId);
-      AVSession session = null;
-      if (newAdded) {
-        session = new AVSession(peerId, new AVDefaultSessionListener());
-        peerIdEnabledSessions.put(peerId, session);
-        session.getWebSocketListener().onListenerAdded(
-                (this.webSocketClient != null && webSocketClient.isOpen()));
-      } else {
-        session = peerIdEnabledSessions.get(peerId);
-      }
-      return session;
-    } catch (Exception e) {
-      return null;
-    }
-  }
-
-  public void removeSession(String peerId) {
-    AVSession session = peerIdEnabledSessions.remove(peerId);
-    if (session != null && session.getWebSocketListener() != null) {
-      session.getWebSocketListener().onListenerRemoved();
-    }
-  }
-
-  public AVConnectionListener getConnectionListener() {
-    return connectionListener;
-  }
-
-  public void setConnectionListener(AVConnectionListener connectionListener) {
-    this.connectionListener = connectionListener;
+  public void unsubscribeConnectionListener(String clientId) {
+    this.connectionListeners.remove(clientId);
   }
 
   public void sendPacket(CommandPacket packet) {
@@ -211,16 +173,16 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     LOGGER.d("webSocket established...");
     connectionEstablished = true;
     retryConnectionCount = 0;
-    if (null != this.connectionListener) {
-      this.connectionListener.onWebSocketOpen();
+    for (AVConnectionListener listener: connectionListeners.values()) {
+      listener.onWebSocketOpen();
     }
   }
 
   public void onClose(int var1, String var2, boolean var3) {
     LOGGER.d("webSocket closed...");
     connectionEstablished = false;
-    if (null != this.connectionListener) {
-      this.connectionListener.onWebSocketClose();
+    for (AVConnectionListener listener: connectionListeners.values()) {
+      listener.onWebSocketClose();
     }
   }
 
@@ -238,141 +200,20 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     if (StringUtil.isEmpty(peerId)) {
       peerId = AVIMClient.getDefaultClient();
     }
-    if (command.getCmd().getNumber() == Messages.CommandType.loggedin_VALUE) {
-      if (LiveQueryLoginPacket.SERVICE_LIVE_QUERY == command.getService()) {
-        processLoggedinCommand(requestKey);
-      }
-    } else if (command.getCmd().getNumber() == Messages.CommandType.data_VALUE) {
-      switch (command.getCmd().getNumber()) {
-        case Messages.CommandType.data_VALUE:
-          if (!command.hasService()) {
-            processDataCommand(command.getDataMessage());
-          } else {
-            final int service = command.getService();
-            if (LiveQueryLoginPacket.SERVICE_PUSH == service) {
-              processDataCommand(command.getDataMessage());
-            } else if (LiveQueryLoginPacket.SERVICE_LIVE_QUERY == service) {
-              processLiveQueryData(command.getDataMessage());
-            }
-          }
-          break;
-        case Messages.CommandType.direct_VALUE:
-          processDirectCommand(peerId, command.getDirectMessage());
-          break;
-        case Messages.CommandType.session_VALUE:
-          processSessionCommand(peerId, command.getOp().name(), requestKey,
-                  command.getSessionMessage());
-          break;
-        case Messages.CommandType.ack_VALUE:
-          processAckCommand(peerId, requestKey, command.getAckMessage());
-          break;
-        case Messages.CommandType.rcp_VALUE:
-          processRpcCommand(peerId, command.getRcpMessage());
-          break;
-        case Messages.CommandType.conv_VALUE:
-          processConvCommand(peerId, command.getOp().name(), requestKey,
-                  command.getConvMessage());
-          break;
-        case Messages.CommandType.error_VALUE:
-          processErrorCommand(peerId, requestKey, command.getErrorMessage());
-          break;
-        case Messages.CommandType.logs_VALUE:
-          processLogsCommand(peerId, requestKey, command.getLogsMessage());
-          break;
-        case Messages.CommandType.unread_VALUE:
-          processUnreadCommand(peerId, command.getUnreadMessage());
-          break;
-        case Messages.CommandType.blacklist_VALUE:
-          processBlacklistCommand(peerId, command.getOp().name(), requestKey, command.getBlacklistMessage());
-          break;
-        case Messages.CommandType.patch_VALUE:
-          if(command.getOp().equals(Messages.OpType.modify)) {
-            // modify 为服务器端主动推送的 patch 消息
-            processPatchCommand(peerId, true, requestKey, command.getPatchMessage());
-          } else if (command.getOp().equals(Messages.OpType.modified)) {
-            // modified 代表的是服务器端对于客户端请求的相应
-            processPatchCommand(peerId, false, requestKey, command.getPatchMessage());
-          }
-          break;
-        default:
-          break;
-      }
+    AVConnectionListener listener = this.connectionListeners.get(peerId);
+    if (null != listener) {
+      listener.onMessageArriving(peerId, requestKey, command);
+    } else {
+      LOGGER.w("");
     }
   }
 
   public void onError(Exception exception) {
     connectionEstablished = false;
     reConnectionRTMServer();
-    if (null != this.connectionListener) {
-      this.connectionListener.onError(null, null);
+    for (AVConnectionListener listener: connectionListeners.values()) {
+      listener.onError(null, null);
     }
   }
 
-  private void processLoggedinCommand(Integer requestKey) {
-    ;
-  }
-  private void processDataCommand(Messages.DataCommand dataCommand) {
-    List<String> messageIds = dataCommand.getIdsList();
-    List<Messages.JsonObjectMessage> messages = dataCommand.getMsgList();
-    for (int i = 0; i < messages.size() && i < messageIds.size(); i++) {
-      if (null != messages.get(i)) {
-        // TODO
-        // AVNotificationManager.getInstance().processPushMessage(messages.get(i).getData(), messageIds.get(i));
-      }
-    }
-    WindTalker windTalker = WindTalker.getInstance();
-    CommandPacket packet = windTalker.assemblePushAckPacket(AVInstallation.getCurrentInstallation().getInstallationId(), messageIds);
-    sendPacket(packet);
-  }
-  private void processLiveQueryData(Messages.DataCommand dataCommand) {
-    List<String> messageIds = dataCommand.getIdsList();
-    List<Messages.JsonObjectMessage> messages = dataCommand.getMsgList();
-
-    ArrayList<String> dataList = new ArrayList<>();
-    for (int i = 0; i < messages.size() && i < messageIds.size(); i++) {
-      Messages.JsonObjectMessage message = messages.get(i);
-      if (null != message) {
-        dataList.add(message.getData());
-      }
-    };
-    AVLiveQuery.processData(dataList);
-  }
-
-  private void processDirectCommand(String peerId, Messages.DirectCommand directCommand) {
-    ;
-  }
-  private void processSessionCommand(String peerId, String op, Integer requestId,
-                                     Messages.SessionCommand command) {
-    if (null != this.connectionListener) {
-      this.connectionListener.onSessionCommand(op, requestId, command);
-    }
-  }
-  private void processAckCommand(String peerId, Integer requestKey, Messages.AckCommand command) {
-    ;
-  }
-  private void processRpcCommand(String peerId, Messages.RcpCommand command) {
-    ;
-  }
-  private void processConvCommand(String peerId, String operation, Integer requestKey,
-                                  Messages.ConvCommand convCommand) {
-    ;
-  }
-  private void processErrorCommand(String peerId, Integer requestKey,
-                                   Messages.ErrorCommand errorCommand) {
-    ;
-  }
-  private void processLogsCommand(String peerId, Integer requestKey,
-                                  Messages.LogsCommand logsCommand) {
-    ;
-  }
-  private void processUnreadCommand(String peerId, Messages.UnreadCommand unreadCommand) {
-    ;
-  }
-  private void processBlacklistCommand(String peerId, String operation, Integer requestKey,
-                                       Messages.BlacklistCommand blacklistCommand) {
-    ;
-  }
-  private void processPatchCommand(String peerId, boolean isModify, Integer requestKey, Messages.PatchCommand patchCommand) {
-    ;
-  }
 }
