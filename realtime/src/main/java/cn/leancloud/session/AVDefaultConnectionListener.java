@@ -107,14 +107,17 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
   }
 
   public void onMessageArriving(String peerId, Integer requestKey, Messages.GenericCommand command) {
+    LOGGER.d("new message arriving. peerId=" + peerId + ", requestId=" + requestKey + ", command=" + command.getCmd().getNumber());
     if (null == command) {
       return;
     }
     if (command.getCmd().getNumber() == Messages.CommandType.loggedin_VALUE) {
       if (LiveQueryLoginPacket.SERVICE_LIVE_QUERY == command.getService()) {
         processLoggedinCommand(requestKey);
+      } else {
+        LOGGER.w("ignore loggedin command bcz invalid service.");
       }
-    } else if (command.getCmd().getNumber() == Messages.CommandType.data_VALUE) {
+    } else {
       switch (command.getCmd().getNumber()) {
         case Messages.CommandType.data_VALUE:
           if (!command.hasService()) {
@@ -167,6 +170,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
           }
           break;
         default:
+          LOGGER.w("unknown command. Cmd:" + command.getCmd().getNumber());
           break;
       }
     }
@@ -253,6 +257,8 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
   }
   private void processSessionCommand(String peerId, String op, Integer requestKey,
                                      Messages.SessionCommand command) {
+    LOGGER.d("processSessionCommand. op=" + op + ",requestKey=" + requestKey);
+
     int requestId = (null != requestKey ? requestKey : CommandPacket.UNSUPPORTED_OPERATION);
 
     if (op.equals(SessionControlPacket.SessionControlOp.OPENED)) {
@@ -296,6 +302,8 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
         }
         session.sessionListener.onSessionClose(session, requestId);
       }
+    } else {
+      LOGGER.w("unknown operation: " + op);
     }
   }
   private void processAckCommand(String peerId, Integer requestKey, Messages.AckCommand ackCommand) {
