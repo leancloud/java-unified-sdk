@@ -51,6 +51,17 @@ public class DirectlyOperationTube implements OperationTube {
     return true;
   }
 
+  public boolean renewSessionToken(String clientId, AVIMClientCallback callback) {
+    LOGGER.d("renewSessionToken...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
+    }
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    session.renewRealtimeSesionToken(requestId);
+    return true;
+  }
+
   public boolean closeClient(String self, AVIMClientCallback callback) {
     LOGGER.d("openClient...");
     int requestId = WindTalker.getNextIMRequestId();
@@ -132,6 +143,19 @@ public class DirectlyOperationTube implements OperationTube {
     return true;
   }
 
+  public boolean updateMembers(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
+                                AVCallback callback) {
+    LOGGER.d("updateMembers...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
+    }
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
+    holder.processConversationCommandFromClient(op, JSON.parseObject(params, Map.class), requestId);
+    return true;
+  }
+
   public boolean queryMessages(String clientId, String conversationId, int convType, String params,
                         Conversation.AVIMOperation operation, AVIMMessagesQueryCallback callback) {
     LOGGER.d("recallMessage...");
@@ -158,6 +182,7 @@ public class DirectlyOperationTube implements OperationTube {
     switch (operation) {
       case CLIENT_OPEN:
       case CLIENT_DISCONNECT:
+      case CLIENT_REFRESH_TOKEN:
         callback.internalDone(AVIMClient.getInstance(clientId), AVIMException.wrapperAVException(throwable));
         break;
       case CONVERSATION_UPDATE_MESSAGE:
@@ -167,6 +192,7 @@ public class DirectlyOperationTube implements OperationTube {
         callback.internalDone(AVIMException.wrapperAVException(throwable));
         break;
       case CONVERSATION_SEND_MESSAGE:
+
         callback.internalDone(AVIMException.wrapperAVException(throwable));
         break;
       default:

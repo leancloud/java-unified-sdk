@@ -5,6 +5,7 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.command.*;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.*;
+import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.im.v2.AVIMMessage;
 import cn.leancloud.im.v2.Conversation;
 import cn.leancloud.im.v2.Conversation.AVIMOperation;
@@ -21,6 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class AVSession {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVSession.class);
+  public static final int REALTIME_TOKEN_WINDOW_INSECONDS = 300;
 
   static final int OPERATION_OPEN_SESSION = 10004;
   static final int OPERATION_CLOSE_SESSION = 10005;
@@ -190,6 +192,8 @@ public class AVSession {
     this.realtimeSessionToken = sessionToken;
     this.realtimeSessionTokenExpired = System.currentTimeMillis() + expireInSec * 1000;
 
+    AVIMClient.getInstance(this.getSelfPeerId()).updateRealtimeSessionToken(sessionToken, this.realtimeSessionTokenExpired/1000);
+
     if (StringUtil.isEmpty(sessionToken)) {
       AVSessionCacheHelper.IMSessionTokenCache.removeIMSessionToken(getSelfPeerId());
     } else {
@@ -197,6 +201,11 @@ public class AVSession {
               realtimeSessionTokenExpired);
     }
   }
+
+  public boolean realtimeSessionTokenExpired() {
+    long now = System.currentTimeMillis()/1000;
+    return (now + REALTIME_TOKEN_WINDOW_INSECONDS) >= this.realtimeSessionTokenExpired;
+  };
 
   private void openWithSessionToken(String rtmSessionToken) {
     SessionControlPacket scp = SessionControlPacket.genSessionCommand(

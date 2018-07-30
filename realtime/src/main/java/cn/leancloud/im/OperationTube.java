@@ -1,6 +1,7 @@
 package cn.leancloud.im;
 
 import cn.leancloud.Messages;
+import cn.leancloud.callback.AVCallback;
 import cn.leancloud.im.v2.AVIMMessage;
 import cn.leancloud.im.v2.AVIMMessageOption;
 import cn.leancloud.im.v2.Conversation;
@@ -15,6 +16,7 @@ public interface OperationTube {
                   boolean reConnect, AVIMClientCallback callback);
   boolean queryClientStatus(String clientId, final AVIMClientStatusCallback callback);
   boolean closeClient(String self, AVIMClientCallback callback);
+  boolean renewSessionToken(String clientId, AVIMClientCallback callback);
   boolean queryOnlineClients(String self, List<String> clients, final AVIMOnlineClientsCallback callback);
 
   boolean createConversation(final String self, final List<String> members,
@@ -29,6 +31,8 @@ public interface OperationTube {
   boolean queryMessages(String clientId, String conversationId, int convType, String params,
                         Conversation.AVIMOperation operation, AVIMMessagesQueryCallback callback);
 
+  boolean updateMembers(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
+                         AVCallback callback);
   // response notifier
   void onOperationCompleted(String clientId, String conversationId, int requestId,
                             Conversation.AVIMOperation operation, Throwable throwable);

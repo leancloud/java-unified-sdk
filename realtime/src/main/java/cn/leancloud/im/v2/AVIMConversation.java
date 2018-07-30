@@ -5,12 +5,13 @@ import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.AVIMOptions;
 import cn.leancloud.im.InternalConfiguration;
-import cn.leancloud.im.v2.callback.AVIMConversationCallback;
-import cn.leancloud.im.v2.callback.AVIMMessageRecalledCallback;
-import cn.leancloud.im.v2.callback.AVIMMessageUpdatedCallback;
-import cn.leancloud.im.v2.callback.AVIMMessagesQueryCallback;
+import cn.leancloud.im.v2.callback.*;
+import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
+import cn.leancloud.im.v2.conversation.ConversationMemberRole;
 import cn.leancloud.im.v2.messages.AVIMFileMessage;
 import cn.leancloud.im.v2.messages.AVIMFileMessageAccessor;
+import cn.leancloud.query.QueryConditions;
+import cn.leancloud.query.QueryOperation;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -999,6 +1000,191 @@ public class AVIMConversation {
     queryMessagesFromServer(mid, ts, startClosed, tmid, tts, endClosed, direction, limit, callback);
   }
 
+
+  /**
+   * 获取当前对话的所有角色信息
+   * @param offset    查询结果的起始点
+   * @param limit     查询结果集上限
+   * @param callback  结果回调函数
+   */
+  public void getAllMemberInfo(int offset, int limit, final AVIMConversationMemberQueryCallback callback) {
+    QueryConditions conditions = new QueryConditions();
+    conditions.addWhereItem("cid", QueryOperation.EQUAL_OP, this.conversationId);
+    conditions.setSkip(offset);
+    conditions.setLimit(limit);
+    queryMemberInfo(conditions, callback);
+  }
+
+  /**
+   * 获取对话内指定成员的角色信息
+   * @param memberId  成员的 clientid
+   * @param callback  结果回调函数
+   */
+  public void getMemberInfo(final String memberId, final AVIMConversationMemberQueryCallback callback) {
+    QueryConditions conditions = new QueryConditions();
+    conditions.addWhereItem("cid", QueryOperation.EQUAL_OP, this.conversationId);
+    conditions.addWhereItem("peerId", QueryOperation.EQUAL_OP, memberId);
+    queryMemberInfo(conditions, callback);
+  }
+
+  private void queryMemberInfo(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback callback) {
+    if (null == queryConditions || null == callback) {
+      return;
+    }
+    client.queryConversationMemberInfo(queryConditions, callback);
+  }
+
+  /**
+   * 更新成员的角色信息
+   * @param memberId  成员的 client id
+   * @param role      角色
+   * @param callback  结果回调函数
+   */
+  public void updateMemberRole(final String memberId, final ConversationMemberRole role, final AVIMConversationCallback callback) {
+    AVIMConversationMemberInfo info = new AVIMConversationMemberInfo(this.conversationId, memberId, role);
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS, info.getUpdateAttrs());
+    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_PROMOTE_MEMBER, callback);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
+  }
+
+  /**
+   * 将部分成员禁言
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void muteMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_MUTE_MEMBER, callback);
+    if (!ret && null != callback) {
+      callback.internalDone(null,
+              new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
+  }
+
+  /**
+   * 将部分成员解除禁言
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void unmuteMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_UNMUTE_MEMBER, callback);
+    if (!ret && null != callback) {
+      callback.internalDone(null,
+              new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
+  }
+
+  /**
+   * 查询被禁言的成员列表
+   * @param offset    查询结果的起始点
+   * @param limit     查询结果集上限
+   * @param callback  结果回调函数
+   */
+  public void queryMutedMembers(int offset, int limit, final AVIMConversationSimpleResultCallback callback) {
+    if (null == callback) {
+      return;
+    } else if (offset < 0 || limit > 100) {
+      callback.internalDone(null, new AVIMException(new IllegalArgumentException("offset/limit is illegal.")));
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.QUERY_PARAM_LIMIT, limit);
+    params.put(Conversation.QUERY_PARAM_OFFSET, offset);
+    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, callback);
+    if (!ret) {
+      callback.internalDone(null,
+              new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
+  }
+
+  /**
+   * 将部分成员加入黑名单
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void blockMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_BLOCK_MEMBER, callback);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
+  }
+
+  /**
+   * 将部分成员从黑名单移出来
+   * @param memberIds  成员列表
+   * @param callback   结果回调函数
+   */
+  public void unblockMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_UNBLOCK_MEMBER, callback);
+    if (!ret && null != callback) {
+      callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
+  }
+
+  /**
+   * 查询黑名单的成员列表
+   * @param offset    查询结果的起始点
+   * @param limit     查询结果集上限
+   * @param callback  结果回调函数
+   */
+  public void queryBlockedMembers(int offset, int limit, final AVIMConversationSimpleResultCallback callback) {
+    if (null == callback) {
+      return;
+    } else if (offset < 0 || limit > 100) {
+      callback.internalDone(null, new AVIMException(new IllegalArgumentException("offset/limit is illegal.")));
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.QUERY_PARAM_LIMIT, limit);
+    params.put(Conversation.QUERY_PARAM_OFFSET, offset);
+    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, callback);
+    if (!ret) {
+      callback.internalDone(null,
+              new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
+  }
+
   public static void mergeConversationFromJsonObject(AVIMConversation conversation, JSONObject jsonObj) {
     if (null == conversation || null == jsonObj) {
       return;
@@ -1024,7 +1210,7 @@ public class AVIMConversation {
         }
       }
     }
-    // conversation.latestConversationFetch = System.currentTimeMillis();
+    conversation.latestConversationFetch = System.currentTimeMillis();
   }
 
   public Map<String, Object> getFetchRequestParams() {

@@ -1,22 +1,26 @@
 package cn.leancloud.im.v2;
 
+import cn.leancloud.AVException;
+import cn.leancloud.AVLogger;
+import cn.leancloud.AVQuery;
 import cn.leancloud.AVUser;
+import cn.leancloud.callback.GenericObjectCallback;
 import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.im.OperationTube;
-import cn.leancloud.im.v2.callback.AVIMClientCallback;
-import cn.leancloud.im.v2.callback.AVIMClientStatusCallback;
-import cn.leancloud.im.v2.callback.AVIMConversationCreatedCallback;
-import cn.leancloud.im.v2.callback.AVIMOnlineClientsCallback;
+import cn.leancloud.im.v2.callback.*;
+import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
+import cn.leancloud.query.QueryConditions;
+import cn.leancloud.session.AVSession;
+import cn.leancloud.session.AVSessionManager;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AVIMClient {
-  private static final int REALTIME_TOKEN_WINDOW_INSECONDS = 300;
+  private static final AVLogger LOGGER = LogUtil.getLogger(AVIMClient.class);
+
   private static ConcurrentHashMap<String, AVIMClient> clients =
           new ConcurrentHashMap<String, AVIMClient>();
   private static AVIMClientEventHandler clientEventHandler;
@@ -378,6 +382,79 @@ public class AVIMClient {
       }
     };
     InternalConfiguration.getOperationTube().closeClient(this.clientId, internalCallback);
+  }
+
+  public void updateRealtimeSessionToken(String token, long expiredInSec) {
+    this.realtimeSessionToken = token;
+    this.realtimeSessionTokenExpired = expiredInSec;
+  }
+
+  private boolean realtimeSessionTokenExpired() {
+    long now = System.currentTimeMillis()/1000;
+    return (now + AVSession.REALTIME_TOKEN_WINDOW_INSECONDS) >= this.realtimeSessionTokenExpired;
+  }
+
+  void queryConversationMemberInfo(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback cb) {
+    if (null == queryConditions || null == cb) {
+      return;
+    }
+    if (!realtimeSessionTokenExpired()) {
+      queryConvMemberThroughNetwork(queryConditions, cb);
+    } else {
+      // refresh realtime session token.
+      LOGGER.d("realtime session token expired, start to refresh...");
+      boolean ret = InternalConfiguration.getOperationTube().renewSessionToken(this.getClientId(), new AVIMClientCallback() {
+        @Override
+        public void done(AVIMClient client, AVIMException e) {
+          if (null != e) {
+            cb.internalDone(null, AVIMException.wrapperAVException(e));
+          } else {
+            queryConvMemberThroughNetwork(queryConditions, cb);
+          }
+        }
+      });
+      if (!ret) {
+        cb.internalDone(null, new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+      }
+    }
+  }
+
+
+  private void queryConvMemberThroughNetwork(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback callback) {
+//    String queryPath = AVPowerfulUtils.getEndpoint("_ConversationMemberInfo");
+//
+//    queryConditions.assembleParameters();
+//    Map<String, String> queryParams = queryConditions.getParameters();
+//    queryParams.put("client_id", this.clientId);
+//    AVRequestParams params = new AVRequestParams(queryParams);
+//
+//    Map<String, String> additionalHeader = new HashMap<>();
+//    additionalHeader.put("X-LC-IM-Session-Token", this.getRealtimeSessionToken());
+//
+//    PaasClient.storageInstance().getObject(queryPath, params, false, additionalHeader, new GenericObjectCallback() {
+//      @Override
+//      public void onSuccess(String content, AVException e) {
+//        try {
+//          List<AVIMConversationMemberInfo> result = processResults(content);
+//          if (callback != null) {
+//            callback.internalDone(result, null);
+//          }
+//        } catch (Exception ex) {
+//          LOGGER.e("failed to parse ConversationMemberInfo result, cause: " + ex.getMessage());
+//          if (callback != null) {
+//            callback.internalDone(null, new AVIMException(ex));
+//          }
+//        }
+//      }
+//
+//      @Override
+//      public void onFailure(Throwable error, String content) {
+//        LOGGER.e("failed to fetch ConversationMemberInfo, cause: " + error.getMessage());
+//        if (callback != null) {
+//          callback.internalDone(null, new AVIMException(content, error));
+//        }
+//      }
+//    }, AVQuery.CachePolicy.NETWORK_ONLY, 86400000);
   }
 
   protected void localClose() {
