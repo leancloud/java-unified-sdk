@@ -34,7 +34,19 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public boolean queryClientStatus(String clientId, final AVIMClientStatusCallback callback) {
-    return false;
+    LOGGER.d("queryClientStatus...");
+
+    AVIMClient.AVIMClientStatus status = AVIMClient.AVIMClientStatus.AVIMClientStatusNone;
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    if (AVSession.Status.Opened == session.getCurrentStatus()) {
+      status = AVIMClient.AVIMClientStatus.AVIMClientStatusOpened;
+    } else {
+      status = AVIMClient.AVIMClientStatus.AVIMClientStatusPaused;
+    }
+    if (null != callback) {
+      callback.internalDone(status, null);
+    }
+    return true;
   }
 
   public boolean closeClient(String self, AVIMClientCallback callback) {
@@ -49,7 +61,14 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public boolean queryOnlineClients(String self, List<String> clients, final AVIMOnlineClientsCallback callback) {
-    return false;
+    LOGGER.d("queryOnlineClients...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(self, null, requestId, callback);
+    }
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(self);
+    session.queryOnlinePeers(clients, requestId);
+    return true;
   }
 
   public boolean createConversation(final List<String> members, final String name,
@@ -81,7 +100,6 @@ public class DirectlyOperationTube implements OperationTube {
     return false;
   }
 
-
   public void onOperationCompleted(String clientId, String conversationId, int requestId,
                                    Conversation.AVIMOperation operation, Throwable throwable) {
     LOGGER.d("enter onOperationCompleted with clientId=" + clientId + ", convId=" + conversationId + ", requestId="
@@ -107,7 +125,22 @@ public class DirectlyOperationTube implements OperationTube {
 
   public void onOperationCompletedEx(String clientId, String conversationId, int requestId,
                                      Conversation.AVIMOperation operation, Map<String, Object> resultData) {
-    ;
+    LOGGER.d("enter onOperationCompletedEx with clientId=" + clientId + ", convId=" + conversationId + ", requestId="
+            + requestId + ", operation=" + operation);
+    AVCallback callback = RequestCache.getInstance().getRequestCallback(clientId, conversationId, requestId);
+    if (null == callback) {
+      LOGGER.w("encounter illegal response, ignore it: clientId=" + clientId + ", convId=" + conversationId + ", requestId=" + requestId);
+      return;
+    }
+    switch (operation) {
+      case CLIENT_ONLINE_QUERY:
+        callback.internalDone(resultData, null);
+        break;
+      case CLIENT_REFRESH_TOKEN:
+        break;
+      default:
+        break;
+    }
   }
   public void onMessageArrived(String clientId, String conversationId, int requestId,
                                Conversation.AVIMOperation operation, Messages.GenericCommand command) {

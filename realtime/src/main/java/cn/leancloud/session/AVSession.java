@@ -73,7 +73,7 @@ public class AVSession {
    */
   private long lastPatchTime = 0;
 
-  enum Status{
+  public enum Status{
     Opened, Closed, Resuming
   }
 
@@ -304,7 +304,7 @@ public class AVSession {
     lastServerAckReceived.set(lastAckReceivedTimestamp);
   }
 
-  protected void queryOnlinePeers(List<String> peerIds, int requestId) {
+  public void queryOnlinePeers(List<String> peerIds, int requestId) {
     SessionControlPacket scp =
             SessionControlPacket.genSessionCommand(this.selfId, peerIds,
                     SessionControlPacket.SessionControlOp.QUERY, null, requestId);
