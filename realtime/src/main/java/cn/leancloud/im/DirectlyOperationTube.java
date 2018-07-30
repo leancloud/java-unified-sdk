@@ -6,9 +6,11 @@ import cn.leancloud.callback.AVCallback;
 import cn.leancloud.im.v2.*;
 import cn.leancloud.im.v2.callback.*;
 import cn.leancloud.session.AVConnectionManager;
+import cn.leancloud.session.AVConversationHolder;
 import cn.leancloud.session.AVSession;
 import cn.leancloud.session.AVSessionManager;
 import cn.leancloud.utils.LogUtil;
+import com.alibaba.fastjson.JSON;
 
 import java.util.List;
 import java.util.Map;
@@ -71,23 +73,58 @@ public class DirectlyOperationTube implements OperationTube {
     return true;
   }
 
-  public boolean createConversation(final List<String> members, final String name,
-                          final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
+  public boolean createConversation(final String self, final List<String> memberList,
+                          final Map<String, Object> attribute, final boolean isTransient, final boolean isUnique,
                           final boolean isTemp, int tempTTL, final AVIMConversationCreatedCallback callback) {
-    return false;
+    LOGGER.d("createConversation...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(self, null, requestId, callback);
+    }
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(self);
+    session.createConversation(memberList, attribute, isTransient, isUnique, isTemp, tempTTL, false, requestId);
+    return true;
   }
 
 
-  public boolean sendMessage(final AVIMMessage message, final AVIMMessageOption messageOption, final AVIMConversationCallback callback) {
+  public boolean sendMessage(String clientId, String conversationId, int convType, final AVIMMessage message,
+                             final AVIMMessageOption messageOption, final AVIMConversationCallback callback) {
+    LOGGER.d("updateMessage...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
+    }
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
+    message.setFrom(clientId);
+    holder.sendMessage(message, requestId, messageOption);
     return false;
   }
 
-  public boolean updateMessage(AVIMMessage oldMessage, AVIMMessage newMessage, AVIMMessageUpdatedCallback callback) {
-    return false;
+  public boolean updateMessage(String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage, AVIMMessageUpdatedCallback callback) {
+    LOGGER.d("updateMessage...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(clientId, oldMessage.getConversationId(), requestId, callback);
+    }
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(oldMessage.getConversationId(), convType);
+    holder.patchMessage(oldMessage, newMessage, null, Conversation.AVIMOperation.CONVERSATION_UPDATE_MESSAGE,
+            requestId);
+    return true;
   }
 
-  public boolean recallMessage(AVIMMessage message, AVIMMessageRecalledCallback callback) {
-    return false;
+  public boolean recallMessage(String clientId, int convType, AVIMMessage message, AVIMMessageRecalledCallback callback) {
+    LOGGER.d("recallMessage...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(clientId, message.getConversationId(), requestId, callback);
+    }
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(message.getConversationId(), convType);
+    holder.patchMessage(null, null, message, Conversation.AVIMOperation.CONVERSATION_RECALL_MESSAGE,
+            requestId);
+    return true;
   }
 
   public boolean fetchReceiptTimestamps(String clientId, String conversationId, Conversation.AVIMOperation operation,
@@ -97,7 +134,16 @@ public class DirectlyOperationTube implements OperationTube {
 
   public boolean queryMessages(String clientId, String conversationId, int convType, String params,
                         Conversation.AVIMOperation operation, AVIMMessagesQueryCallback callback) {
-    return false;
+    LOGGER.d("recallMessage...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
+    }
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
+    Map<String, Object> queryParam = JSON.parseObject(params, Map.class);
+    holder.processConversationCommandFromClient(operation, queryParam, requestId);
+    return true;
   }
 
   public void onOperationCompleted(String clientId, String conversationId, int requestId,
@@ -114,8 +160,15 @@ public class DirectlyOperationTube implements OperationTube {
       case CLIENT_DISCONNECT:
         callback.internalDone(AVIMClient.getInstance(clientId), AVIMException.wrapperAVException(throwable));
         break;
-      case CLIENT_ONLINE_QUERY:
-      case CLIENT_REFRESH_TOKEN:
+      case CONVERSATION_UPDATE_MESSAGE:
+      case CONVERSATION_RECALL_MESSAGE:
+      case CONVERSATION_CREATION:
+      case CONVERSATION_MESSAGE_QUERY:
+        callback.internalDone(AVIMException.wrapperAVException(throwable));
+        break;
+      case CONVERSATION_SEND_MESSAGE:
+        callback.internalDone(AVIMException.wrapperAVException(throwable));
+        break;
       default:
         LOGGER.w("no operation matched, ignore response.");
         break;
@@ -137,6 +190,13 @@ public class DirectlyOperationTube implements OperationTube {
         callback.internalDone(resultData, null);
         break;
       case CLIENT_REFRESH_TOKEN:
+        break;
+      case CONVERSATION_UPDATE_MESSAGE:
+      case CONVERSATION_RECALL_MESSAGE:
+        break;
+      case CONVERSATION_CREATION:
+        break;
+      case CONVERSATION_MESSAGE_QUERY:
         break;
       default:
         break;

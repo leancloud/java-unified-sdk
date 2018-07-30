@@ -17,13 +17,13 @@ public interface OperationTube {
   boolean closeClient(String self, AVIMClientCallback callback);
   boolean queryOnlineClients(String self, List<String> clients, final AVIMOnlineClientsCallback callback);
 
-  boolean createConversation(final List<String> members, final String name,
-                          final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
-                          final boolean isTemp, int tempTTL, final AVIMConversationCreatedCallback callback);
+  boolean createConversation(final String self, final List<String> members,
+                             final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
+                             final boolean isTemp, int tempTTL, final AVIMConversationCreatedCallback callback);
 
-  boolean sendMessage(final AVIMMessage message, final AVIMMessageOption messageOption, final AVIMConversationCallback callback);
-  boolean updateMessage(AVIMMessage oldMessage, AVIMMessage newMessage, AVIMMessageUpdatedCallback callback);
-  boolean recallMessage(AVIMMessage message, AVIMMessageRecalledCallback callback);
+  boolean sendMessage(String clientId, String conversationId, int convType, final AVIMMessage message, final AVIMMessageOption messageOption, final AVIMConversationCallback callback);
+  boolean updateMessage(String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage, AVIMMessageUpdatedCallback callback);
+  boolean recallMessage(String clientId, int convType, AVIMMessage message, AVIMMessageRecalledCallback callback);
   boolean fetchReceiptTimestamps(String clientId, String conversationId, Conversation.AVIMOperation operation,
                                  AVIMConversationCallback callback);
   boolean queryMessages(String clientId, String conversationId, int convType, String params,

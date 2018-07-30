@@ -50,12 +50,15 @@ public class AVIMClientTest extends TestCase {
           e.printStackTrace();
         } else {
           System.out.println("succeed open client.");
+          client.close(null);
+          opersationSucceed = true;
         }
         countDownLatch.countDown();
       }
     });
     countDownLatch.await();
-    client.close(null);
+    assertTrue(opersationSucceed);
+
   }
 
   public void testCloseClient() throws Exception {

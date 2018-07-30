@@ -535,12 +535,14 @@ public class AVIMConversation {
               callback.internalDone(e);
             }
           } else {
-            InternalConfiguration.getOperationTube().sendMessage(message, messageOption, callback);
+            InternalConfiguration.getOperationTube().sendMessage(client.getClientId(), getConversationId(), getType(),
+                    message, messageOption, callback);
           }
         }
       });
     } else {
-      InternalConfiguration.getOperationTube().sendMessage(message, messageOption, callback);
+      InternalConfiguration.getOperationTube().sendMessage(client.getClientId(), getConversationId(), getType(),
+              message, messageOption, callback);
     }
   }
 
@@ -557,7 +559,7 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().updateMessage(oldMessage, newMessage, callback);
+    InternalConfiguration.getOperationTube().updateMessage(client.getClientId(), getType(), oldMessage, newMessage, callback);
   }
 
   /**
@@ -572,7 +574,7 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().recallMessage(message, callback);
+    InternalConfiguration.getOperationTube().recallMessage(client.getClientId(), getType(), message, callback);
   }
 
   /**

@@ -9,6 +9,8 @@ import cn.leancloud.im.v2.callback.AVIMConversationCreatedCallback;
 import cn.leancloud.im.v2.callback.AVIMOnlineClientsCallback;
 import cn.leancloud.utils.StringUtil;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -238,7 +240,26 @@ public class AVIMClient {
   private void createConversation(final List<String> members, final String name,
                                   final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
                                   final boolean isTemp, int tempTTL, final AVIMConversationCreatedCallback callback) {
-    InternalConfiguration.getOperationTube().createConversation(members, name, attributes, isTransient, isUnique, isTemp, tempTTL, callback);
+    if (null == members || members.size() < 1) {
+      if (callback != null) {
+        callback.internalDone(null, AVIMException.wrapperAVException(new IllegalArgumentException("members should not be empty")));
+      }
+      return;
+    }
+    final HashMap<String, Object> conversationAttributes = new HashMap<String, Object>();
+    if (attributes != null) {
+      conversationAttributes.putAll(attributes);
+    }
+    if (!StringUtil.isEmpty(name)) {
+      conversationAttributes.put(Conversation.NAME, name);
+    }
+    final List<String> conversationMembers = new ArrayList<String>();
+    conversationMembers.addAll(members);
+    if (!conversationMembers.contains(clientId)) {
+      conversationMembers.add(clientId);
+    }
+    InternalConfiguration.getOperationTube().createConversation(getClientId(), conversationMembers, conversationAttributes,
+            isTransient, isUnique, isTemp, tempTTL, callback);
   }
 
   public AVIMConversation getConversation(String conversationId) {

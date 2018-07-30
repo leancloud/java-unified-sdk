@@ -355,11 +355,11 @@ public class AVSession {
     }
   }
 
-  protected void removeConversation(String conversationId) {
+  public void removeConversation(String conversationId) {
     conversationHolderCache.remove(conversationId);
   }
 
-  protected void createConversation(final List<String> members,
+  public void createConversation(final List<String> members,
                                     final Map<String, Object> attributes,
                                     final boolean isTransient, final boolean isUnique, final boolean isTemp, final int tempTTL,
                                     final boolean isSystem, final int requestId) {

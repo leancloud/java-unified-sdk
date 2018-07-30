@@ -310,7 +310,7 @@ public class AVConversationHolder {
 
   public void patchMessage(AVIMMessage oldMessage, AVIMMessage newMessage, AVIMMessage recallMessage,
                            Conversation.AVIMOperation operation, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_RECALL_MESSAGE, requestId)) {
+    if (!checkSessionStatus(operation, requestId)) {
       return;
     }
 
@@ -443,6 +443,7 @@ public class AVConversationHolder {
       return true;
     }
   }
+
   public void processConversationCommandFromClient(Conversation.AVIMOperation imop, Map<String, Object> params,
                                                    int requestId) {
     List<String> members = null != params ? ((List<String>) params.get(Conversation.PARAM_CONVERSATION_MEMBER)) : null;
