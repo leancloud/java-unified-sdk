@@ -76,6 +76,7 @@ public class AVSession {
   enum Status{
     Opened, Closed, Resuming
   }
+
   private volatile Status currentStatus = Status.Closed;
 
   // 标识是否需要从缓存恢复

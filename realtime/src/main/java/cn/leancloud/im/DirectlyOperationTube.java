@@ -77,6 +77,8 @@ public class DirectlyOperationTube implements OperationTube {
 
   public void onOperationCompleted(String clientId, String conversationId, int requestId,
                                    Conversation.AVIMOperation operation, Throwable throwable) {
+    LOGGER.d("enter onOperationCompleted with clientId=" + clientId + ", convId=" + conversationId + ", requestId="
+      + requestId + ", operation=" + operation);
     AVCallback callback = RequestCache.getInstance().getRequestCallback(clientId, conversationId, requestId);
     if (null == callback) {
       LOGGER.w("encounter illegal response, ignore it: clientId=" + clientId + ", convId=" + conversationId + ", requestId=" + requestId);
@@ -86,8 +88,13 @@ public class DirectlyOperationTube implements OperationTube {
       case CLIENT_OPEN:
         callback.internalDone(AVIMClient.getInstance(clientId), AVIMException.wrapperAVException(throwable));
         break;
+      default:
+        LOGGER.w("no operation matched, ignore response.");
+        break;
     }
+    RequestCache.getInstance().cleanRequestCallback(clientId, conversationId, requestId);
   }
+
   public void onOperationCompletedEx(String clientId, String conversationId, int requestId,
                                      Conversation.AVIMOperation operation, Map<String, Object> resultData) {
     ;

@@ -5,6 +5,7 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
+import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.im.WindTalker;
 import cn.leancloud.im.v2.*;

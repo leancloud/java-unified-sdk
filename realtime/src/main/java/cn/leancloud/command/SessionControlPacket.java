@@ -3,6 +3,7 @@ package cn.leancloud.command;
 import cn.leancloud.Messages;
 import cn.leancloud.im.Signature;
 import cn.leancloud.im.v2.AVIMClient;
+import cn.leancloud.push.AVInstallation;
 import cn.leancloud.utils.StringUtil;
 
 import java.util.Collection;
@@ -106,7 +107,7 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
       }
     }
     if (op.equals(SessionControlOp.OPEN) || op.equals(SessionControlOp.CLOSE)) {
-      //builder.setDeviceId(AVInstallation.getCurrentInstallation().getInstallationId());
+      builder.setDeviceId(AVInstallation.getCurrentInstallation().getInstallationId());
     }
 
     if (!StringUtil.isEmpty(signature)) {

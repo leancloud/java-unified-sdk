@@ -3,6 +3,7 @@ package cn.leancloud.session;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.command.CommandPacket;
+import cn.leancloud.command.LoginPacket;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AVOSService;
 import cn.leancloud.core.AppRouter;
@@ -176,6 +177,12 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     for (AVConnectionListener listener: connectionListeners.values()) {
       listener.onWebSocketOpen();
     }
+
+    // auto send login packet.
+    LoginPacket lp = new LoginPacket();
+    lp.setAppId(AVOSCloud.getApplicationId());
+    lp.setInstallationId(AVInstallation.getCurrentInstallation().getInstallationId());
+    this.sendPacket(lp);
   }
 
   public void onClose(int var1, String var2, boolean var3) {
@@ -204,7 +211,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     if (null != listener) {
       listener.onMessageArriving(peerId, requestKey, command);
     } else {
-      LOGGER.w("");
+      LOGGER.w("no peer subscribed message, ignore it. peerId=" + peerId + ", requestKey=" + requestKey);
     }
   }
 

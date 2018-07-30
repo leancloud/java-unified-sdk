@@ -1,10 +1,14 @@
 package cn.leancloud.session;
 
+import cn.leancloud.AVLogger;
+import cn.leancloud.utils.LogUtil;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AVSessionManager {
+  private static final AVLogger LOGGER = LogUtil.getLogger(AVSessionManager.class);
   private static AVSessionManager instance = null;
 
   private final Map<String, AVSession> peerIdEnabledSessions = Collections
@@ -48,6 +52,7 @@ public class AVSessionManager {
       }
       return session;
     } catch (Exception e) {
+      LOGGER.w("failed to create Session instance.", e);
       return null;
     }
   }
@@ -55,7 +60,7 @@ public class AVSessionManager {
   public void removeSession(String peerId) {
     AVSession session = peerIdEnabledSessions.remove(peerId);
     if (session != null && session.getWebSocketListener() != null) {
-//      session.getWebSocketListener().onListenerRemoved();
+      AVConnectionManager.getInstance().unsubscribeConnectionListener(session.getSelfPeerId());
     }
   }
 

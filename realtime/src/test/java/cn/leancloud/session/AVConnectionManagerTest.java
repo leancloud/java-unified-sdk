@@ -26,68 +26,12 @@ public class AVConnectionManagerTest extends TestCase {
       System.out.println("ConnectionListener - WebSocket closed.");
     }
 
-    @Override
-    public void onDirectCommand(Messages.DirectCommand directCommand) {
-
-    }
-
-    @Override
-    public void onSessionCommand(String op, Integer requestId, Messages.SessionCommand command) {
-      System.out.println("ConnectionListener - onSessionCommand: op=" + op + ", requestId=" + requestId);
-    }
-
-    @Override
-    public void onAckCommand(Integer requestKey, Messages.AckCommand ackCommand) {
-
-    }
-
-    @Override
-    public void onMessageReceipt(Messages.RcpCommand rcpCommand) {
-
-    }
-
-    @Override
-    public void onReadCmdReceipt(Messages.RcpCommand rcpCommand) {
-
-    }
-
-    @Override
-    public void onListenerAdded(boolean open) {
-
-    }
-
-    @Override
-    public void onListenerRemoved() {
-
-    }
-
-    @Override
-    public void onBlacklistCommand(String operation, Integer requestKey, Messages.BlacklistCommand blacklistCommand) {
-
-    }
-
-    @Override
-    public void onConversationCommand(String operation, Integer requestKey, Messages.ConvCommand convCommand) {
-
+    public void onMessageArriving(String peerId, Integer requestKey, Messages.GenericCommand genericCommand) {
+      System.out.println("received new message! requestKey=" + requestKey);
     }
 
     @Override
     public void onError(Integer requestKey, Messages.ErrorCommand errorCommand) {
-
-    }
-
-    @Override
-    public void onHistoryMessageQuery(Integer requestKey, Messages.LogsCommand command) {
-
-    }
-
-    @Override
-    public void onUnreadMessagesCommand(Messages.UnreadCommand unreadCommand) {
-
-    }
-
-    @Override
-    public void onMessagePatchCommand(boolean isModify, Integer requestKey, Messages.PatchCommand command) {
 
     }
   };
@@ -111,7 +55,7 @@ public class AVConnectionManagerTest extends TestCase {
 
   public void testInitConnection() throws Exception {
     AVConnectionManager manager = AVConnectionManager.getInstance();
-    manager.setConnectionListener(this.listener);
+    manager.subscribeConnectionListener("", this.listener);
     this.countDownLatch.await();
     assertTrue(manager.isConnectionEstablished());
   }
@@ -126,7 +70,7 @@ public class AVConnectionManagerTest extends TestCase {
 
   public void testLogin() throws Exception {
     AVConnectionManager manager = AVConnectionManager.getInstance();
-    manager.setConnectionListener(this.listener);
+    manager.subscribeConnectionListener("", this.listener);
     this.countDownLatch.await();
     assertTrue(manager.isConnectionEstablished());
 
