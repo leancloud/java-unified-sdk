@@ -261,7 +261,7 @@ public class AVSession {
     MessageReceiptCache.clean(this.getSelfPeerId());
   }
 
-  protected void close(int requestId) {
+  public void close(int requestId) {
     try {
       // 都关掉了，我们需要去除Session记录
       AVSessionCacheHelper.getTagCacheInstance().removeSession(getSelfPeerId());

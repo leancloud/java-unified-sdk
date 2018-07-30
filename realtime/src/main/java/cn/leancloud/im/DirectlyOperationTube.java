@@ -38,7 +38,14 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public boolean closeClient(String self, AVIMClientCallback callback) {
-    return false;
+    LOGGER.d("openClient...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(self, null, requestId, callback);
+    }
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(self);
+    session.close(requestId);
+    return true;
   }
 
   public boolean queryOnlineClients(String self, List<String> clients, final AVIMOnlineClientsCallback callback) {
@@ -86,8 +93,11 @@ public class DirectlyOperationTube implements OperationTube {
     }
     switch (operation) {
       case CLIENT_OPEN:
+      case CLIENT_DISCONNECT:
         callback.internalDone(AVIMClient.getInstance(clientId), AVIMException.wrapperAVException(throwable));
         break;
+      case CLIENT_ONLINE_QUERY:
+      case CLIENT_REFRESH_TOKEN:
       default:
         LOGGER.w("no operation matched, ignore response.");
         break;
