@@ -4,10 +4,10 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.Configure;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.im.v2.AVIMClient;
+import cn.leancloud.im.v2.AVIMConversation;
 import cn.leancloud.im.v2.AVIMException;
-import cn.leancloud.im.v2.callback.AVIMClientCallback;
-import cn.leancloud.im.v2.callback.AVIMClientStatusCallback;
-import cn.leancloud.im.v2.callback.AVIMOnlineClientsCallback;
+import cn.leancloud.im.v2.callback.*;
+import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
 import cn.leancloud.session.AVConnectionManager;
 import junit.framework.TestCase;
 
@@ -157,6 +157,49 @@ public class AVIMClientTest extends TestCase {
       }
     });
     countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testCreateConversation() throws Exception {
+    final AVIMClient client = AVIMClient.getInstance("testUser1");
+    Thread.sleep(2000);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed open client.");
+          e.printStackTrace();
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed open client.");
+          client.createConversation(Arrays.asList("testUser2"), "User1&User2", null, new AVIMConversationCreatedCallback() {
+            @Override
+            public void done(AVIMConversation conversation, AVIMException ex) {
+              if (null != ex) {
+                System.out.println("failed to create Conv");
+                ex.printStackTrace();
+              } else {
+                System.out.println("succeed to create Conv");
+                conversation.getAllMemberInfo(0, 10, new AVIMConversationMemberQueryCallback() {
+                  @Override
+                  public void done(List<AVIMConversationMemberInfo> memberInfoList, AVIMException e3) {
+                    if (null != e3) {
+                      System.out.println("failed to query member info");
+                      e3.printStackTrace();
+                    } else {
+                      System.out.println("succeed to query member info, result=" + memberInfoList);
+                      opersationSucceed = true;
+                    }
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+    });
+    countDownLatch.await();
+    client.close(null);
     assertTrue(opersationSucceed);
   }
 }

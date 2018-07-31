@@ -109,8 +109,7 @@ public class AppConfiguration {
    * @param setting
    */
   public static void configCacheSettings(String imFileDir, String docDir, String fileDir, String queryResultDir,
-         String commandDir, String analyticsDir,
-         SystemSetting setting) {
+         String commandDir, String analyticsDir, SystemSetting setting) {
     importantFileDir = imFileDir;
     if (!importantFileDir.endsWith("/")) {
       importantFileDir += "/";

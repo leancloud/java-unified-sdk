@@ -10,10 +10,13 @@ import cn.leancloud.im.OperationTube;
 import cn.leancloud.im.v2.callback.*;
 import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
 import cn.leancloud.query.QueryConditions;
+import cn.leancloud.service.RealtimeClient;
 import cn.leancloud.session.AVSession;
 import cn.leancloud.session.AVSessionManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -421,40 +424,33 @@ public class AVIMClient {
 
 
   private void queryConvMemberThroughNetwork(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback callback) {
-//    String queryPath = AVPowerfulUtils.getEndpoint("_ConversationMemberInfo");
-//
-//    queryConditions.assembleParameters();
-//    Map<String, String> queryParams = queryConditions.getParameters();
-//    queryParams.put("client_id", this.clientId);
-//    AVRequestParams params = new AVRequestParams(queryParams);
-//
-//    Map<String, String> additionalHeader = new HashMap<>();
-//    additionalHeader.put("X-LC-IM-Session-Token", this.getRealtimeSessionToken());
-//
-//    PaasClient.storageInstance().getObject(queryPath, params, false, additionalHeader, new GenericObjectCallback() {
-//      @Override
-//      public void onSuccess(String content, AVException e) {
-//        try {
-//          List<AVIMConversationMemberInfo> result = processResults(content);
-//          if (callback != null) {
-//            callback.internalDone(result, null);
-//          }
-//        } catch (Exception ex) {
-//          LOGGER.e("failed to parse ConversationMemberInfo result, cause: " + ex.getMessage());
-//          if (callback != null) {
-//            callback.internalDone(null, new AVIMException(ex));
-//          }
-//        }
-//      }
-//
-//      @Override
-//      public void onFailure(Throwable error, String content) {
-//        LOGGER.e("failed to fetch ConversationMemberInfo, cause: " + error.getMessage());
-//        if (callback != null) {
-//          callback.internalDone(null, new AVIMException(content, error));
-//        }
-//      }
-//    }, AVQuery.CachePolicy.NETWORK_ONLY, 86400000);
+    if (null == callback || null == queryConditions) {
+      return;
+    }
+    queryConditions.assembleParameters();
+    Map<String, String> queryParams = queryConditions.getParameters();
+    queryParams.put("client_id", this.clientId);
+    RealtimeClient.getInstance().queryMemberInfo(queryParams, this.realtimeSessionToken)
+            .subscribe(new Observer<List<AVIMConversationMemberInfo>>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+      }
+
+      @Override
+      public void onNext(List<AVIMConversationMemberInfo> avimConversationMemberInfos) {
+        callback.internalDone(avimConversationMemberInfos, null);
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        callback.internalDone(null, AVIMException.wrapperAVException(throwable));
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
   }
 
   protected void localClose() {
