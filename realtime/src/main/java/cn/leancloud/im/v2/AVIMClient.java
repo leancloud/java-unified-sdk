@@ -288,6 +288,7 @@ public class AVIMClient {
           conversation.setUpdatedAt(createdAt);
           conversation.setTemporary(isTemp);
           conversation.setTemporaryExpiredat(System.currentTimeMillis()/1000 + tempTTLFromServer);
+          // fixme: need insert to local database.
         }
         if (null != callback) {
           callback.internalDone(conversation, AVIMException.wrapperAVException(e));

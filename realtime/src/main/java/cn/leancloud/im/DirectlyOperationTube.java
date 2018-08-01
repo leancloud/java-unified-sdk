@@ -100,7 +100,7 @@ public class DirectlyOperationTube implements OperationTube {
 
   public boolean sendMessage(String clientId, String conversationId, int convType, final AVIMMessage message,
                              final AVIMMessageOption messageOption, final AVIMConversationCallback callback) {
-    LOGGER.d("updateMessage...");
+    LOGGER.d("sendMessage...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
@@ -108,8 +108,8 @@ public class DirectlyOperationTube implements OperationTube {
     AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
     AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
     message.setFrom(clientId);
-    holder.sendMessage(message, requestId, messageOption);
-    return false;
+    holder.sendMessage(message, requestId, null == messageOption? new AVIMMessageOption() : messageOption);
+    return true;
   }
 
   public boolean updateMessage(String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage, AVIMMessageUpdatedCallback callback) {

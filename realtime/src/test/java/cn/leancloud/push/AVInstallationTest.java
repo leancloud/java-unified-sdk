@@ -8,9 +8,7 @@ import junit.framework.TestCase;
 public class AVInstallationTest extends TestCase {
   public AVInstallationTest(String testName) {
     super(testName);
-    AVOSCloud.setRegion(Configure.REGION);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    Configure.initialize();
   }
 
   public void testCreateInstallation() {

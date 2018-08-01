@@ -1,6 +1,10 @@
 package cn.leancloud.im;
 
+import cn.leancloud.service.RealtimeClient;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AVUserSignatureFactory implements SignatureFactory {
   private String sessionToken;
@@ -9,7 +13,9 @@ public class AVUserSignatureFactory implements SignatureFactory {
   }
 
   public Signature createSignature(String peerId, List<String> watchIds) throws SignatureException {
-    return null;
+    Map<String, Object> data = new HashMap<String, Object>();
+    data.put("session_token", sessionToken);
+    return RealtimeClient.getInstance().createSignature(data).blockingFirst();
   }
 
   public Signature createConversationSignature(String conversationId, String clientId,

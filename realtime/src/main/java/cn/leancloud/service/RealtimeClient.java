@@ -1,6 +1,7 @@
 package cn.leancloud.service;
 
 import cn.leancloud.core.*;
+import cn.leancloud.im.Signature;
 import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
@@ -64,6 +65,10 @@ public class RealtimeClient {
       observable = observable.observeOn(defaultCreator.create());
     }
     return observable;
+  }
+
+  public Observable<Signature> createSignature(Map<String, Object> params) {
+    return wrappObservable(service.createSignature(new JSONObject(params)));
   }
 
   public Observable<List<AVIMConversationMemberInfo>> queryMemberInfo(Map<String, String> query, String rtmSessionToken) {

@@ -1,6 +1,7 @@
 package cn.leancloud.im;
 
 import cn.leancloud.AVLogger;
+import cn.leancloud.AVUser;
 import cn.leancloud.Configure;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.im.v2.AVIMClient;
@@ -19,12 +20,13 @@ import java.util.concurrent.CountDownLatch;
 public class AVIMClientTest extends TestCase {
   private CountDownLatch countDownLatch = null;
   private boolean opersationSucceed = false;
+  private static final String userName = "JavaSDKUnitUser007";
+  private static final String userEmail = "JavaSDKUnitUser007@lean.cloud";
+  private static final String userPassword = "UnitTest#Password";
 
   public AVIMClientTest(String name) {
     super(name);
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    Configure.initialize();
   }
 
   @Override
@@ -58,7 +60,35 @@ public class AVIMClientTest extends TestCase {
     });
     countDownLatch.await();
     assertTrue(opersationSucceed);
+  }
 
+//  public void testCreateNewUser() throws Exception {
+//    AVUser user = new AVUser();
+//    user.setEmail(userEmail);
+//    user.setUsername(userName);
+//    user.setPassword(userPassword);
+//    user.signUp();
+//  }
+
+  public void testOpenClientThroughAVUser() throws Exception {
+    AVUser currentUser = AVUser.logIn(userName, userPassword).blockingFirst();
+    final AVIMClient client = AVIMClient.getInstance(currentUser);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to open client.");
+          e.printStackTrace();
+        } else {
+          System.out.println("succeed to open client.");
+          opersationSucceed = true;
+        }
+        countDownLatch.countDown();
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+    client.close(null);
   }
 
   public void testCloseClient() throws Exception {
@@ -172,7 +202,8 @@ public class AVIMClientTest extends TestCase {
           countDownLatch.countDown();
         } else {
           System.out.println("succeed open client.");
-          client.createConversation(Arrays.asList("testUser2"), "user1&user2", null, new AVIMConversationCreatedCallback() {
+          client.createConversation(Arrays.asList("testUser2"), "user1&user2", null, false, true,
+                  new AVIMConversationCreatedCallback() {
             @Override
             public void done(AVIMConversation conversation, AVIMException ex) {
               if (null != ex) {
