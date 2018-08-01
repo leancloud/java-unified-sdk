@@ -37,7 +37,7 @@ public class AVQueryResultTest extends TestCase {
     public void setColor(String color) { this.color = color; }
 
   }
-  public void testPOJOParse() {
+  public void testPOJOParse() throws Exception {
     JSONobjectDemo ins = new JSONobjectDemo();
     ins.setColor("red");
     ins.setObj("s");
@@ -49,11 +49,11 @@ public class AVQueryResultTest extends TestCase {
     System.out.println(ins1.getObj());
   }
 
-  public void testGSONParse() {
+  public void testGSONParse() throws Exception {
     AVQueryResult tmp = new AVQueryResult();
     tmp.setCount( 20 );
     AVObject t = new AVObject("className");
-    t.put("objectId", "21wefwearfewr");
+    t.put("ownerId", "21wefwearfewr");
     List<AVObject> tt = new ArrayList<AVObject>(1);
     tt.add(t);
     tmp.setResults(tt);
@@ -70,7 +70,7 @@ public class AVQueryResultTest extends TestCase {
     System.out.println(result.toString());
   }
 
-  public void testAVObjectParse() {
+  public void testAVObjectParse() throws Exception {
     String content = "{\"createdAt\":\"2018-03-26T03:02:53.984Z\",\"objectId\":\"5ab862dd17d0096887852124\",\"updatedAt\":\"2018-03-26T03:02:53.984Z\"}";
     AVObject result = JSON.parseObject(content, AVObject.class);
     System.out.println(result.getCreatedAt());

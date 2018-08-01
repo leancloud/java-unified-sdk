@@ -822,13 +822,14 @@ public class AVObject {
   void mergeRawData(AVObject avObject) {
     if (null != avObject) {
       this.serverData.putAll(avObject.serverData);
-      this.operations.clear();
     }
+    this.operations.clear();
   }
 
   public void resetServerData(Map data) {
     this.serverData.clear();
     this.serverData.putAll(data);
+    this.operations.clear();
   }
 
   public String getRequestRawEndpoint() {

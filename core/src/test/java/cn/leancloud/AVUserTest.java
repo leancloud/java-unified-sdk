@@ -74,7 +74,7 @@ public class AVUserTest extends TestCase {
   public void testCurrentUser() throws Exception {
     AVUser.disableAutomaticUser();
     AVUser currentUser = AVUser.getCurrentUser();
-    assertNull(currentUser);
+    assertNotNull(currentUser);
   }
 
   public void testCurrentUserWithNew() throws Exception {

@@ -61,6 +61,7 @@ public class PersistenceUtil {
     FileOutputStream out = null;
     Lock writeLock = getLock(fileForSave.getAbsolutePath()).writeLock();
     if (writeLock.tryLock()) {
+      gLogger.d("obtained writeLock for file: " + fileForSave.getAbsolutePath());
       try {
         out = new FileOutputStream(fileForSave, false);
         out.write(content);
@@ -70,8 +71,9 @@ public class PersistenceUtil {
         if (out != null) {
           closeQuietly(out);
         }
+        writeLock.unlock();
+        gLogger.d("release writeLock for file: " + fileForSave.getAbsolutePath());
       }
-      writeLock.unlock();
     } else {
       gLogger.w("failed to lock writeLocker, skip save content to file:" + fileForSave.getAbsolutePath());
     }
@@ -98,6 +100,7 @@ public class PersistenceUtil {
     InputStream input = null;
     Lock readLock = getLock(fileForRead.getAbsolutePath()).readLock();
     if (readLock.tryLock()) {
+      gLogger.d("obtained read lock for file: " +fileForRead.getAbsolutePath());
       try {
         byte[] data = null;
         data = new byte[(int) fileForRead.length()];
@@ -112,11 +115,12 @@ public class PersistenceUtil {
         }
         return data;
       } catch (IOException e) {
-        ;
+        gLogger.w(e);
       } finally {
         closeQuietly(input);
+        readLock.unlock();
+        gLogger.d("release read lock for file: " +fileForRead.getAbsolutePath());
       }
-      readLock.unlock();
     } else {
       gLogger.w("failed to lock readLocker, return empty result.");
     }
@@ -229,7 +233,13 @@ public class PersistenceUtil {
     for (File f: files) {
       if (f.isFile()) {
         if (f.lastModified() < lastModified) {
-          deleteFile(f);
+          if (deleteFile(f)) {
+            gLogger.d("succeed to delete file: " + f.getAbsolutePath());
+          } else {
+            gLogger.d("failed to delete file: " + f.getAbsolutePath());
+          }
+        } else {
+          gLogger.d("skip cache file: " + f.getAbsolutePath());
         }
       } else if (f.isDirectory()) {
         clearDir(f.getAbsolutePath(), lastModified);

@@ -32,20 +32,19 @@ public class FileUnitTest extends TestCase {
   }
 
   public void testUploadDownloadAssociateFile() throws Exception {
-    AVFile avFile;
-
-    AVObject avObject = new AVObject("FileUnitTest");
-    avFile = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    AVFile avFile = new AVFile("FileUnitTestFiles", "hello world".getBytes());
     avFile.save();
     assertFalse(avFile.getObjectId().isEmpty());
+
+    AVObject avObject = new AVObject("FileUnitTest");
     avObject.put("applicatName", "steve");
     avObject.put("applicatFile", avFile);
+    avObject.setFetchWhenSave(true);
     avObject.save();
     assertFalse(avObject.getObjectId().isEmpty());
 
     // retrieve file
     AVFile file = AVFile.withObjectIdInBackground(avFile.getObjectId()).blockingFirst();
-
     assertEquals(avFile.getUrl(), file.getUrl());
     assertEquals(avFile.getMetaData(), file.getMetaData());
 
