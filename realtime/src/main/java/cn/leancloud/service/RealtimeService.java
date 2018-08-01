@@ -16,7 +16,7 @@ public interface RealtimeService {
   @POST("/1.1/rtm/sign")
   Observable<Signature> createSignature(@Body JSONObject sessionToken);
 
-  @GET("/1.1/_ConversationMemberInfo")
+  @GET("/1.1/classes/_ConversationMemberInfo")
   Observable<List<JSONObject>> queryMemberInfo(@Header("X-LC-IM-Session-Token") String realtimeSessionToken,
                                                @QueryMap Map<String, String> query);
 }

@@ -86,7 +86,7 @@ public class DirectlyOperationTube implements OperationTube {
 
   public boolean createConversation(final String self, final List<String> memberList,
                           final Map<String, Object> attribute, final boolean isTransient, final boolean isUnique,
-                          final boolean isTemp, int tempTTL, final AVIMConversationCreatedCallback callback) {
+                          final boolean isTemp, int tempTTL, final AVIMCommonJsonCallback callback) {
     LOGGER.d("createConversation...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -205,8 +205,21 @@ public class DirectlyOperationTube implements OperationTube {
   public void onOperationCompletedEx(String clientId, String conversationId, int requestId,
                                      Conversation.AVIMOperation operation, Map<String, Object> resultData) {
     LOGGER.d("enter onOperationCompletedEx with clientId=" + clientId + ", convId=" + conversationId + ", requestId="
-            + requestId + ", operation=" + operation);
-    AVCallback callback = RequestCache.getInstance().getRequestCallback(clientId, conversationId, requestId);
+            + requestId + ", operation=" + operation + ", resultData=" + resultData.toString());
+    AVCallback callback = null;
+    switch (operation) {
+      case CLIENT_DISCONNECT:
+      case CLIENT_ONLINE_QUERY:
+      case CLIENT_OPEN:
+      case CLIENT_STATUS:
+      case CLIENT_REFRESH_TOKEN:
+      case CONVERSATION_CREATION:
+        callback = RequestCache.getInstance().getRequestCallback(clientId, null, requestId);
+        break;
+      default:
+        callback = RequestCache.getInstance().getRequestCallback(clientId, conversationId, requestId);
+        break;
+    }
     if (null == callback) {
       LOGGER.w("encounter illegal response, ignore it: clientId=" + clientId + ", convId=" + conversationId + ", requestId=" + requestId);
       return;
@@ -221,6 +234,7 @@ public class DirectlyOperationTube implements OperationTube {
       case CONVERSATION_RECALL_MESSAGE:
         break;
       case CONVERSATION_CREATION:
+        callback.internalDone(resultData, null);
         break;
       case CONVERSATION_MESSAGE_QUERY:
         break;

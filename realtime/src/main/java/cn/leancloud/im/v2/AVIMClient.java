@@ -265,8 +265,33 @@ public class AVIMClient {
     if (!conversationMembers.contains(clientId)) {
       conversationMembers.add(clientId);
     }
+    final AVIMCommonJsonCallback middleCallback = new AVIMCommonJsonCallback() {
+      @Override
+      public void done(Map<String, Object> result, AVIMException e) {
+        AVIMConversation conversation = null;
+        if (null != result) {
+          String conversationId =
+                  (String) result.get(Conversation.callbackConversationKey);
+          String createdAt = (String) result.get(Conversation.callbackCreatedAt);
+          int tempTTLFromServer = (int)result.getOrDefault(Conversation.callbackTemporaryTTL, 0);
+          conversation = getConversation(conversationId, isTransient, isTemp);
+          conversation.setMembers(conversationMembers);
+          conversation.setAttributesForInit(conversationAttributes);
+          conversation.setTransientForInit(isTransient);
+          conversation.setConversationId(conversationId);
+          conversation.setCreator(clientId);
+          conversation.setCreatedAt(createdAt);
+          conversation.setUpdatedAt(createdAt);
+          conversation.setTemporary(isTemp);
+          conversation.setTemporaryExpiredat(System.currentTimeMillis()/1000 + tempTTLFromServer);
+        }
+        if (null != callback) {
+          callback.internalDone(conversation, AVIMException.wrapperAVException(e));
+        }
+      }
+    };
     InternalConfiguration.getOperationTube().createConversation(getClientId(), conversationMembers, conversationAttributes,
-            isTransient, isUnique, isTemp, tempTTL, callback);
+            isTransient, isUnique, isTemp, tempTTL, middleCallback);
   }
 
   public AVIMConversation getConversation(String conversationId) {

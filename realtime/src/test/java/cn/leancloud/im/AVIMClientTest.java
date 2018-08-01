@@ -172,12 +172,13 @@ public class AVIMClientTest extends TestCase {
           countDownLatch.countDown();
         } else {
           System.out.println("succeed open client.");
-          client.createConversation(Arrays.asList("testUser2"), "User1&User2", null, new AVIMConversationCreatedCallback() {
+          client.createConversation(Arrays.asList("testUser2"), null, null, new AVIMConversationCreatedCallback() {
             @Override
             public void done(AVIMConversation conversation, AVIMException ex) {
               if (null != ex) {
                 System.out.println("failed to create Conv");
                 ex.printStackTrace();
+                countDownLatch.countDown();
               } else {
                 System.out.println("succeed to create Conv");
                 conversation.getAllMemberInfo(0, 10, new AVIMConversationMemberQueryCallback() {
@@ -190,6 +191,7 @@ public class AVIMClientTest extends TestCase {
                       System.out.println("succeed to query member info, result=" + memberInfoList);
                       opersationSucceed = true;
                     }
+                    countDownLatch.countDown();
                   }
                 });
               }
