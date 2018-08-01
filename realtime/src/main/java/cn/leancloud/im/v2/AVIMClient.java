@@ -5,6 +5,7 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.AVQuery;
 import cn.leancloud.AVUser;
 import cn.leancloud.callback.GenericObjectCallback;
+import cn.leancloud.im.AVIMOptions;
 import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.im.OperationTube;
 import cn.leancloud.im.v2.callback.*;
@@ -288,7 +289,9 @@ public class AVIMClient {
           conversation.setUpdatedAt(createdAt);
           conversation.setTemporary(isTemp);
           conversation.setTemporaryExpiredat(System.currentTimeMillis()/1000 + tempTTLFromServer);
-          // fixme: need insert to local database.
+          if (AVIMOptions.getGlobalOptions().isMessageQueryCacheEnabled()) {
+            storage.insertConversations(Arrays.asList(conversation));
+          }
         }
         if (null != callback) {
           callback.internalDone(conversation, AVIMException.wrapperAVException(e));

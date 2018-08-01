@@ -127,6 +127,7 @@ public class AVIMMessageStorage {
 
   private synchronized int insertMessages(List<AVIMMessage> messages, boolean breakpoint) {
     int insertCount = 0;
+
     if (null == this.delegate) {
       return insertCount;
     }

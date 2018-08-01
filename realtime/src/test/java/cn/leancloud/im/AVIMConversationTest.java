@@ -78,6 +78,7 @@ public class AVIMConversationTest extends TestCase {
                 ex.printStackTrace();
               } else {
                 System.out.println("succeed to send message");
+                opersationSucceed = true;
               }
               countDownLatch.countDown();
             }

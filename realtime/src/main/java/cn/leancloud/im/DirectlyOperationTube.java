@@ -99,7 +99,7 @@ public class DirectlyOperationTube implements OperationTube {
 
 
   public boolean sendMessage(String clientId, String conversationId, int convType, final AVIMMessage message,
-                             final AVIMMessageOption messageOption, final AVIMConversationCallback callback) {
+                             final AVIMMessageOption messageOption, final AVIMCommonJsonCallback callback) {
     LOGGER.d("sendMessage...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -189,10 +189,7 @@ public class DirectlyOperationTube implements OperationTube {
       case CONVERSATION_RECALL_MESSAGE:
       case CONVERSATION_CREATION:
       case CONVERSATION_MESSAGE_QUERY:
-        callback.internalDone(AVIMException.wrapperAVException(throwable));
-        break;
       case CONVERSATION_SEND_MESSAGE:
-
         callback.internalDone(AVIMException.wrapperAVException(throwable));
         break;
       default:
@@ -232,8 +229,8 @@ public class DirectlyOperationTube implements OperationTube {
         break;
       case CONVERSATION_UPDATE_MESSAGE:
       case CONVERSATION_RECALL_MESSAGE:
-        break;
       case CONVERSATION_CREATION:
+      case CONVERSATION_SEND_MESSAGE:
         callback.internalDone(resultData, null);
         break;
       case CONVERSATION_MESSAGE_QUERY:

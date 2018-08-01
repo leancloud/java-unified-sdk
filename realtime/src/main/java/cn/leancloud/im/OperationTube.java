@@ -24,7 +24,7 @@ public interface OperationTube {
                              final boolean isTemp, int tempTTL, final AVIMCommonJsonCallback callback);
 
   boolean sendMessage(String clientId, String conversationId, int convType, final AVIMMessage message, final AVIMMessageOption messageOption,
-                      final AVIMConversationCallback callback);
+                      final AVIMCommonJsonCallback callback);
   boolean updateMessage(String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage,
                         AVIMMessageUpdatedCallback callback);
   boolean recallMessage(String clientId, int convType, AVIMMessage message, AVIMMessageRecalledCallback callback);

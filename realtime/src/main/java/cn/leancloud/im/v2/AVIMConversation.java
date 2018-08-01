@@ -1,6 +1,7 @@
 package cn.leancloud.im.v2;
 
 import cn.leancloud.AVException;
+import cn.leancloud.AVLogger;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.AVIMOptions;
@@ -12,6 +13,7 @@ import cn.leancloud.im.v2.messages.AVIMFileMessage;
 import cn.leancloud.im.v2.messages.AVIMFileMessageAccessor;
 import cn.leancloud.query.QueryConditions;
 import cn.leancloud.query.QueryOperation;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -19,6 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import java.util.*;
 
 public class AVIMConversation {
+  private static final AVLogger LOGGER = LogUtil.getLogger(AVIMConversation.class);
   /**
    * 暂存消息
    * <p/>
@@ -525,6 +528,33 @@ public class AVIMConversation {
       }
       return;
     }
+    final AVIMCommonJsonCallback wrapperCallback = new AVIMCommonJsonCallback() {
+      @Override
+      public void done(Map<String, Object> result, AVIMException e) {
+        if (null == e && null != result) {
+          String msgId = (String) result.get(Conversation.callbackMessageId);
+          Long msgTimestamp = (Long) result.get(Conversation.callbackMessageTimeStamp);
+          message.setMessageId(msgId);
+          if (null != msgTimestamp) {
+            message.setTimestamp(msgTimestamp);
+          }
+          message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusSent);
+          if ((null == messageOption || !messageOption.isTransient()) && AVIMOptions.getGlobalOptions().isMessageQueryCacheEnabled()) {
+            setLastMessage(message);
+            storage.insertMessage(message, false);
+          } else {
+            LOGGER.d("skip inserting into local storage.");
+          }
+          AVIMConversation.this.lastMessageAt = new Date(msgTimestamp);
+          storage.updateConversationLastMessageAt(AVIMConversation.this);
+        } else {
+          message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed);
+        }
+        if (null != callback) {
+          callback.internalDone(AVIMException.wrapperAVException(e));
+        }
+      }
+    };
 
     message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusSending);
     if (AVIMFileMessage.class.isAssignableFrom(message.getClass())) {
@@ -537,13 +567,13 @@ public class AVIMConversation {
             }
           } else {
             InternalConfiguration.getOperationTube().sendMessage(client.getClientId(), getConversationId(), getType(),
-                    message, messageOption, callback);
+                    message, messageOption, wrapperCallback);
           }
         }
       });
     } else {
       InternalConfiguration.getOperationTube().sendMessage(client.getClientId(), getConversationId(), getType(),
-              message, messageOption, callback);
+              message, messageOption, wrapperCallback);
     }
   }
 
