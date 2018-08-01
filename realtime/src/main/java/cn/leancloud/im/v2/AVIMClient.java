@@ -260,6 +260,10 @@ public class AVIMClient {
     if (!StringUtil.isEmpty(name)) {
       conversationAttributes.put(Conversation.NAME, name);
     }
+    Map<String, Object> assembledAttributes = null;
+    if (conversationAttributes.size() > 0) {
+      assembledAttributes = AVIMConversation.processAttributes(conversationAttributes, true);
+    }
     final List<String> conversationMembers = new ArrayList<String>();
     conversationMembers.addAll(members);
     if (!conversationMembers.contains(clientId)) {
@@ -290,7 +294,7 @@ public class AVIMClient {
         }
       }
     };
-    InternalConfiguration.getOperationTube().createConversation(getClientId(), conversationMembers, conversationAttributes,
+    InternalConfiguration.getOperationTube().createConversation(getClientId(), conversationMembers, assembledAttributes,
             isTransient, isUnique, isTemp, tempTTL, middleCallback);
   }
 

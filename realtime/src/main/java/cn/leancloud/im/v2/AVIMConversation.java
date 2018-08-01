@@ -1225,6 +1225,72 @@ public class AVIMConversation {
     return params;
   }
 
+  /**
+   * 处理 AVIMConversation attr 列
+   * 因为 sdk 支持增量更新与覆盖更新，而增量更新与覆盖更新需要的结构不一样，所以这里处理一下
+   * 具体格式可参照下边的注释，注意，两种格式不能同时存在，否则 server 会报错
+   * @param attributes
+   * @param isCovered
+   * @return
+   */
+  static Map<String, Object> processAttributes(Map<String, Object> attributes, boolean isCovered) {
+    if (isCovered) {
+      return processAttributesForCovering(attributes);
+    } else {
+      return processAttributesForIncremental(attributes);
+    }
+  }
+
+  /**
+   * 增量更新 attributes
+   * 这里处理完的格式应该类似为 {"attr.key1":"value2", "attr.key2":"value2"}
+   * @param attributes
+   * @return
+   */
+  static Map<String, Object> processAttributesForIncremental(Map<String, Object> attributes) {
+    Map<String, Object> attributeMap = new HashMap<>();
+    if (attributes.containsKey(Conversation.NAME)) {
+      attributeMap.put(Conversation.NAME, attributes.get(Conversation.NAME));
+    }
+    for (String k : attributes.keySet()) {
+      if (!Arrays.asList(Conversation.CONVERSATION_COLUMNS).contains(k)) {
+        attributeMap.put(ATTR_PERFIX + k, attributes.get(k));
+      }
+    }
+    if (attributeMap.isEmpty()) {
+      return null;
+    }
+    return attributeMap;
+  }
+
+  /**
+   * 覆盖更新 attributes
+   * 这里处理完的格式应该类似为 {"attr":{"key1":"value1","key2":"value2"}}
+   * @param attributes
+   * @return
+   */
+  static JSONObject processAttributesForCovering(Map<String, Object> attributes) {
+    HashMap<String, Object> attributeMap = new HashMap<String, Object>();
+    if (attributes.containsKey(Conversation.NAME)) {
+      attributeMap.put(Conversation.NAME,
+              attributes.get(Conversation.NAME));
+    }
+    Map<String, Object> innerAttribute = new HashMap<String, Object>();
+    for (String k : attributes.keySet()) {
+      if (!Arrays.asList(Conversation.CONVERSATION_COLUMNS).contains(k)) {
+        innerAttribute.put(k, attributes.get(k));
+      }
+    }
+    if (!innerAttribute.isEmpty()) {
+      attributeMap.put(Conversation.ATTRIBUTE, innerAttribute);
+    }
+    if (attributeMap.isEmpty()) {
+      return null;
+    }
+    return new JSONObject(attributeMap);
+  }
+
+
   static Comparator<AVIMMessage> messageComparator = new Comparator<AVIMMessage>() {
     @Override
     public int compare(AVIMMessage m1, AVIMMessage m2) {

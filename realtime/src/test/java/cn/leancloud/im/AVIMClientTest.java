@@ -172,7 +172,7 @@ public class AVIMClientTest extends TestCase {
           countDownLatch.countDown();
         } else {
           System.out.println("succeed open client.");
-          client.createConversation(Arrays.asList("testUser2"), null, null, new AVIMConversationCreatedCallback() {
+          client.createConversation(Arrays.asList("testUser2"), "user1&user2", null, new AVIMConversationCreatedCallback() {
             @Override
             public void done(AVIMConversation conversation, AVIMException ex) {
               if (null != ex) {
