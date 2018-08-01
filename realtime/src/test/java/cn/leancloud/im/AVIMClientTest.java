@@ -229,7 +229,7 @@ public class AVIMClientTest extends TestCase {
 
   public void testCreateConversation() throws Exception {
     final AVIMClient client = AVIMClient.getInstance("testUser1");
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -271,5 +271,120 @@ public class AVIMClientTest extends TestCase {
     countDownLatch.await();
     client.close(null);
     assertTrue(opersationSucceed);
+  }
+
+  public void testCreateChatRoom() throws Exception {
+    final AVIMClient client = AVIMClient.getInstance("testUser1");
+    Thread.sleep(4000);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed open client.");
+          e.printStackTrace();
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed open client.");
+          client.createChatRoom(Arrays.asList("testUser2"), null, null, true,
+                  new AVIMConversationCreatedCallback() {
+                    @Override
+                    public void done(AVIMConversation conversation, AVIMException ex) {
+                      if (null != ex) {
+                        System.out.println("failed to create ChatRoom Conv");
+                        ex.printStackTrace();
+                        countDownLatch.countDown();
+                      } else {
+                        System.out.println("succeed to create ChatRoom Conv");
+                        conversation.getAllMemberInfo(0, 10, new AVIMConversationMemberQueryCallback() {
+                          @Override
+                          public void done(List<AVIMConversationMemberInfo> memberInfoList, AVIMException e3) {
+                            if (null != e3) {
+                              System.out.println("failed to query member info");
+                              e3.printStackTrace();
+                            } else {
+                              System.out.println("succeed to query member info, result=" + memberInfoList);
+                              opersationSucceed = true;
+                            }
+                            countDownLatch.countDown();
+                          }
+                        });
+                      }
+                    }
+                  });
+        }
+      }
+    });
+    countDownLatch.await();
+    client.close(null);
+    assertTrue(opersationSucceed);
+  }
+
+  public void testCreateTempConv() throws Exception {
+    final AVIMClient client = AVIMClient.getInstance("testUser1");
+    Thread.sleep(4000);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed open client.");
+          e.printStackTrace();
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed open client.");
+          client.createTemporaryConversation(Arrays.asList("testUser2"),
+                  new AVIMConversationCreatedCallback() {
+                    @Override
+                    public void done(AVIMConversation conversation, AVIMException ex) {
+                      if (null != ex) {
+                        System.out.println("failed to create temp Conv");
+                        ex.printStackTrace();
+                        countDownLatch.countDown();
+                      } else {
+                        System.out.println("succeed to create temp Conv");
+                        conversation.getAllMemberInfo(0, 10, new AVIMConversationMemberQueryCallback() {
+                          @Override
+                          public void done(List<AVIMConversationMemberInfo> memberInfoList, AVIMException e3) {
+                            if (null != e3) {
+                              System.out.println("failed to query member info");
+                              e3.printStackTrace();
+                            } else {
+                              System.out.println("succeed to query member info, result=" + memberInfoList);
+                            }
+                            opersationSucceed = true;
+                            countDownLatch.countDown();
+                          }
+                        });
+                      }
+                    }
+                  });
+        }
+      }
+    });
+    countDownLatch.await();
+    client.close(null);
+    assertTrue(opersationSucceed);
+  }
+
+  public void testGetConversations() throws Exception {
+    final AVIMClient client = AVIMClient.getInstance("testUser1");
+    Thread.sleep(4000);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed open client.");
+          e.printStackTrace();
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed open client.");
+          client.getChatRoom("chatroom");
+          client.getServiceConversation("serviceaccount");
+          client.getTemporaryConversation("temporaryconversation");
+          countDownLatch.countDown();
+        }
+      }
+    });
+    countDownLatch.await();
+    client.close(null);
   }
 }
