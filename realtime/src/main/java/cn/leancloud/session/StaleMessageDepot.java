@@ -3,11 +3,11 @@ package cn.leancloud.session;
 import cn.leancloud.utils.StringUtil;
 
 public class StaleMessageDepot {
-  MessageQueue<String> messageDepot;
+  PersistentQueue<String> messageDepot;
   private static final int MAXLENGTH = 50;
 
   public StaleMessageDepot(String depotName) {
-    this.messageDepot = new MessageQueue<String>(depotName, String.class);
+    this.messageDepot = new PersistentQueue<String>(depotName, String.class);
   }
 
   /**

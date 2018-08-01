@@ -31,11 +31,11 @@ public class AVIMOperationQueue {
   static ConcurrentHashMap<Integer, Runnable> timeoutCache =
           new ConcurrentHashMap<Integer, Runnable>();
   Map<Integer, Operation> cache = new ConcurrentHashMap<>();
-  MessageQueue<Operation> operationQueue;
+  PersistentQueue<Operation> operationQueue;
 
   public AVIMOperationQueue(String key) {
     operationQueue =
-            new MessageQueue<AVIMOperationQueue.Operation>("operation.queue." + key, Operation.class);
+            new PersistentQueue<Operation>("operation.queue." + key, Operation.class);
     setupCache();
   }
 

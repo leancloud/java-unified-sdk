@@ -12,14 +12,14 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class MessageQueue<E> implements Queue<E> {
+public class PersistentQueue<E> implements Queue<E> {
   Queue<E> messages;
   private final String queueKey;
   private static final String MESSAGE_ZONE = "com.avoscloud.chat.message";
   private static final String QUEUE_KEY = "com.avoscloud.chat.message.queue";
   private final Class<E> type;
 
-  public MessageQueue(String peerId, Class<E> clazz) {
+  public PersistentQueue(String peerId, Class<E> clazz) {
     messages = new ConcurrentLinkedQueue<>();
     this.type = clazz;
     queueKey = QUEUE_KEY + "." + peerId;

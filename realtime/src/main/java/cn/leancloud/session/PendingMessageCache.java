@@ -1,13 +1,12 @@
 package cn.leancloud.session;
 
-import cn.leancloud.session.MessageQueue;
 import cn.leancloud.utils.StringUtil;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PendingMessageCache<E extends MessageQueue.HasId> {
-  public static class Message implements MessageQueue.HasId {
+public class PendingMessageCache<E extends PersistentQueue.HasId> {
+  public static class Message implements PersistentQueue.HasId {
     public String msg;
     public String id;
     public long timestamp;
@@ -37,10 +36,10 @@ public class PendingMessageCache<E extends MessageQueue.HasId> {
   }
 
   private Map<String, E> msgMapping;
-  private MessageQueue<E> messages;
+  private PersistentQueue<E> messages;
 
   PendingMessageCache(String peerId, Class<E> type) {
-    this.messages = new MessageQueue<E>(peerId, type);
+    this.messages = new PersistentQueue<E>(peerId, type);
     this.setupMapping();
   }
 
