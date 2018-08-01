@@ -16,6 +16,7 @@ import cn.leancloud.session.AVSession;
 import cn.leancloud.session.AVSessionManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
+import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -428,6 +429,27 @@ public class AVIMClient {
   private boolean realtimeSessionTokenExpired() {
     long now = System.currentTimeMillis()/1000;
     return (now + AVSession.REALTIME_TOKEN_WINDOW_INSECONDS) >= this.realtimeSessionTokenExpired;
+  }
+
+  AVIMConversation mergeConversationCache(AVIMConversation allNewConversation, boolean forceReplace, JSONObject deltaObject) {
+    if (null == allNewConversation || StringUtil.isEmpty(allNewConversation.getConversationId())) {
+      return null;
+    }
+    String convId = allNewConversation.getConversationId();
+    if (forceReplace) {
+      this.conversationCache.put(convId, allNewConversation);
+      return allNewConversation;
+    } else {
+      AVIMConversation origin = this.conversationCache.get(convId);
+      if (null == origin) {
+        this.conversationCache.put(convId, allNewConversation);
+        origin = allNewConversation;
+      } else {
+        // update cache object again.
+        origin = AVIMConversation.updateConversation(origin, deltaObject);
+      }
+      return origin;
+    }
   }
 
   void queryConversationMemberInfo(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback cb) {

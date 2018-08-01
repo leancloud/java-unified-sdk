@@ -97,6 +97,16 @@ public class DirectlyOperationTube implements OperationTube {
     return true;
   }
 
+  public boolean queryConversations(final String clientId, final String queryString, final AVIMCommonJsonCallback callback) {
+    LOGGER.d("createConversation...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
+    }
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    session.queryConversations(JSON.parseObject(queryString, Map.class), requestId);
+    return true;
+  }
 
   public boolean sendMessage(String clientId, String conversationId, int convType, final AVIMMessage message,
                              final AVIMMessageOption messageOption, final AVIMCommonJsonCallback callback) {
@@ -190,6 +200,7 @@ public class DirectlyOperationTube implements OperationTube {
       case CONVERSATION_CREATION:
       case CONVERSATION_MESSAGE_QUERY:
       case CONVERSATION_SEND_MESSAGE:
+      case CONVERSATION_QUERY:
         callback.internalDone(AVIMException.wrapperAVException(throwable));
         break;
       default:
@@ -211,6 +222,7 @@ public class DirectlyOperationTube implements OperationTube {
       case CLIENT_STATUS:
       case CLIENT_REFRESH_TOKEN:
       case CONVERSATION_CREATION:
+      case CONVERSATION_QUERY:
         callback = RequestCache.getInstance().getRequestCallback(clientId, null, requestId);
         break;
       default:
@@ -223,7 +235,7 @@ public class DirectlyOperationTube implements OperationTube {
     }
     switch (operation) {
       case CLIENT_ONLINE_QUERY:
-        callback.internalDone(resultData, null);
+        callback.internalDone((List<String>)resultData.get(Conversation.callbackOnlineClients), null);
         break;
       case CLIENT_REFRESH_TOKEN:
         break;
@@ -231,6 +243,7 @@ public class DirectlyOperationTube implements OperationTube {
       case CONVERSATION_RECALL_MESSAGE:
       case CONVERSATION_CREATION:
       case CONVERSATION_SEND_MESSAGE:
+      case CONVERSATION_QUERY:
         callback.internalDone(resultData, null);
         break;
       case CONVERSATION_MESSAGE_QUERY:

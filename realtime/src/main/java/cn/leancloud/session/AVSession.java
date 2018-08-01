@@ -320,7 +320,7 @@ public class AVSession {
     AVConnectionManager.getInstance().sendPacket(scp);
   }
 
-  protected void conversationQuery(Map<String, Object> params, int requestId) {
+  public void queryConversations(Map<String, Object> params, int requestId) {
     if (Status.Closed == currentStatus) {
       RuntimeException se = new RuntimeException("Connection Lost");
       InternalConfiguration.getOperationTube().onOperationCompleted(getSelfPeerId(), null, requestId,
@@ -331,8 +331,9 @@ public class AVSession {
     conversationOperationCache.offer(Operation.getOperation(
             AVIMOperation.CONVERSATION_QUERY.getCode(), selfId, null, requestId));
 
-    AVConnectionManager.getInstance().sendPacket(ConversationQueryPacket.getConversationQueryPacket(getSelfPeerId(),
-            params, requestId));
+    ConversationQueryPacket packet = ConversationQueryPacket.getConversationQueryPacket(getSelfPeerId(),
+            params, requestId);
+    AVConnectionManager.getInstance().sendPacket(packet);
   }
 
   public AVException checkSessionStatus() {

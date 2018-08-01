@@ -524,6 +524,23 @@ public class AVIMMessageStorage {
     return null;
   }
 
+  public List<AVIMConversation> getCachedConversations(List<String> conversationIds) {
+    List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
+    if (null == this.delegate) {
+      return conversations;
+    }
+    return this.delegate.rawQueryConversations("SELECT * FROM " + CONVERSATION_TABLE + " WHERE " + COLUMN_CONVERSATION_ID
+            + " in ('" + StringUtil.join("','", conversationIds) + "')", null);
+  }
+
+  public void deleteConversation(String conversationId) {
+    if (null == this.delegate) {
+      return;
+    }
+    this.delegate.delete(CONVERSATION_TABLE, getWhereClause(COLUMN_CONVERSATION_ID),
+            new String[] {conversationId});
+  }
+
   boolean updateConversationTimes(AVIMConversation conversation) {
     if (getConversation(conversation.getConversationId()) != null) {
       Map<String, Object> values = new HashMap<>();

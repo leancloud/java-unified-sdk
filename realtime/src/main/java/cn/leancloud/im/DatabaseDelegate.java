@@ -1,5 +1,6 @@
 package cn.leancloud.im;
 
+import cn.leancloud.im.v2.AVIMConversation;
 import cn.leancloud.im.v2.AVIMMessage;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public interface DatabaseDelegate {
             String orderBy);
   List<AVIMMessage> queryMessages(String[] columns, String selection, String[] selectionArgs,
                                   String groupBy, String having, String orderBy, String limit);
-  List<AVIMMessage> queryConversations(String[] columns, String selection, String[] selectionArgs,
-                                  String groupBy, String having, String orderBy, String limit);
+  List<AVIMConversation> queryConversations(String[] columns, String selection, String[] selectionArgs,
+                                            String groupBy, String having, String orderBy, String limit);
+  List<AVIMConversation> rawQueryConversations(String sql, String[] selectionArgs);
 }

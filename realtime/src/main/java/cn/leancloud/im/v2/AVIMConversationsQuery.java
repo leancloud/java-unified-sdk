@@ -1,12 +1,29 @@
 package cn.leancloud.im.v2;
 
+import cn.leancloud.AVException;
+import cn.leancloud.AVObject;
 import cn.leancloud.AVQuery;
+import cn.leancloud.ObjectValueFilter;
+import cn.leancloud.cache.QueryResultCache;
+import cn.leancloud.callback.GenericObjectCallback;
+import cn.leancloud.core.AppConfiguration;
+import cn.leancloud.im.InternalConfiguration;
+import cn.leancloud.im.v2.callback.AVIMCommonJsonCallback;
+import cn.leancloud.im.v2.callback.AVIMConversationQueryCallback;
 import cn.leancloud.query.QueryOperation;
 import cn.leancloud.types.AVGeoPoint;
+import cn.leancloud.utils.StringUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import io.reactivex.functions.Consumer;
 
+import javax.management.Query;
+import java.io.Serializable;
 import java.util.*;
 
 public class AVIMConversationsQuery {
+  private static final String CONVERSATION_CLASS_NAME = "_conversation";
   private AVIMClient client;
   AVIMConversationQueryConditions conditions;
   AVQuery.CachePolicy policy = AVQuery.CachePolicy.CACHE_ELSE_NETWORK;
@@ -486,4 +503,157 @@ public class AVIMConversationsQuery {
   public long getCacheMaxAge(){
     return maxAge/1000;
   }
+
+  public void findInBackground(final AVIMConversationQueryCallback callback) {
+    Map<String, String> queryParams = conditions.assembleParameters();
+
+    switch (policy) {
+      case CACHE_THEN_NETWORK:
+      case CACHE_ELSE_NETWORK:
+        try {
+          queryFromCache(callback, queryParams);
+        } catch (Exception ex) {
+          queryFromNetwork(callback, queryParams);
+        }
+        break;
+      case NETWORK_ELSE_CACHE:
+        if (AppConfiguration.getGlobalNetworkingDetector().isConnected()) {
+          queryFromNetwork(callback, queryParams);
+        } else {
+          queryFromCache(callback, queryParams);
+        }
+        break;
+      case CACHE_ONLY:
+        queryFromCache(callback, queryParams);
+        break;
+      case NETWORK_ONLY:
+      case IGNORE_CACHE:
+        queryFromNetwork(callback, queryParams);
+        break;
+    }
+  }
+
+  private void queryFromCache(final AVIMConversationQueryCallback callback,
+                              final Map<String, String> queryParams) {
+    QueryResultCache.getInstance().getCacheResult(CONVERSATION_CLASS_NAME, queryParams, maxAge, true)
+            .subscribe(new Consumer<List<AVObject>>() {
+              @Override
+              public void accept(List<AVObject> avObjects) throws Exception {
+                List<AVIMConversation> result = new ArrayList<>();
+                for (AVObject obj : avObjects) {
+                  AVIMConversation conv = AVIMConversation.parseFromJson(AVIMConversationsQuery.this.client, obj.toJSONObject());
+                  result.add(conv);
+                }
+                if (null != callback) {
+                  callback.internalDone(result, null);
+                }
+              }
+            });
+  }
+
+  private void queryFromNetwork(final AVIMConversationQueryCallback callback,
+                                final Map<String, String> queryParams) {
+    if (!AppConfiguration.getGlobalNetworkingDetector().isConnected()) {
+      if (callback != null) {
+        callback.internalDone(null, new AVException(AVException.CONNECTION_FAILED,
+                "Connection lost"));
+      }
+      return;
+    }
+
+    final String queryParamsString = JSON.toJSONString(queryParams, ObjectValueFilter.instance);
+    final AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
+      @Override
+      public void done(Map<String, Object> result, AVIMException e) {
+        List<AVIMConversation> conversations = null;
+        if (null != result) {
+          Object callbackData = result.get(Conversation.callbackData);
+          if (callbackData instanceof JSONArray) {
+              JSONArray content = (JSONArray) callbackData;
+              conversations = parseQueryResult(content);
+              if (null != conversations && conversations.size() > 0) {
+                cacheQueryResult(queryParams, conversations);
+              }
+            } else if (callbackData instanceof String) {
+              conversations = parseQueryResult(JSON.parseArray(String.valueOf(callbackData)));
+              if (null != conversations && conversations.size() > 0) {
+                cacheQueryResult(queryParams, conversations);
+              }
+            }
+        }
+        if (null != callback) {
+          callback.internalDone(conversations, e);
+        }
+      }
+    };
+
+    InternalConfiguration.getOperationTube().queryConversations(this.client.getClientId(), queryParamsString, tmpCallback);
+  }
+
+  private void cacheQueryResult(final Map<String, String> queryParams, List<AVIMConversation> conversations) {
+    List<String> conversationList = new LinkedList<String>();
+    AVIMMessageStorage storage = null;
+    for (AVIMConversation conversation : conversations) {
+      conversationList.add(conversation.getConversationId());
+      storage = conversation.storage;
+    }
+    if (storage != null) {
+      storage.insertConversations(conversations);
+    }
+    String cacheKey = QueryResultCache.generateKeyForQueryCondition(CONVERSATION_CLASS_NAME, queryParams);
+    QueryResultCache.getInstance().cacheResult(cacheKey, JSON.toJSONString(conversationList));
+  }
+
+  private List<AVIMConversation> parseQueryResult(JSONArray content) {
+    List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
+    for (int i = 0; i < content.size(); i++) {
+      JSONObject jsonObject = content.getJSONObject(i);
+      AVIMConversation allNewConversation = AVIMConversation.parseFromJson(client, jsonObject);
+      if (null != allNewConversation) {
+        AVIMConversation convResult = client.mergeConversationCache(allNewConversation, false, jsonObject);
+        if (null != convResult) {
+          conversations.add(convResult);
+        }
+      }
+    }
+    return conversations;
+  }
+//
+//  static class CacheConversationQueryCallback extends GenericObjectCallback {
+//    AVIMConversationQueryCallback callback;
+//    AVIMClient client;
+//
+//    public CacheConversationQueryCallback(AVIMClient client, AVIMConversationsQuery query,
+//                                          AVIMConversationQueryCallback callback) {
+//      this.callback = callback;
+//      this.client = client;
+//    }
+//
+//    @Override
+//    public void onSuccess(String content, AVException e) {
+//      if (!StringUtil.isEmpty(content)) {
+//        try {
+//          List<String> conversationList = JSON.parseObject(content, List.class);
+//          List<AVIMConversation> conversations =
+//                  client.getStorage().getCachedConversations(conversationList);
+//          if (conversations == null || conversations.size() < conversationList.size()) {
+//            this.onFailure(new AVException(AVException.CACHE_MISS,
+//                    AVException.CACHE_MISSING_ERROR), null);
+//            return;
+//          } else {
+//            callback.internalDone(conversations, null);
+//          }
+//        } catch (Exception e1) {
+//          callback.internalDone(null, new AVException(e1));
+//        }
+//      } else {
+//        callback.internalDone(new LinkedList<AVIMConversation>(), null);
+//      }
+//    }
+//
+//    @Override
+//    public void onFailure(Throwable error, String content) {
+//      callback.internalDone(null, new AVException(error));
+//    }
+//  }
 }

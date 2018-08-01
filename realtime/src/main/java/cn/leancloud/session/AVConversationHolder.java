@@ -1119,7 +1119,7 @@ public class AVConversationHolder {
       Map<String, Object> params = JSON.parseObject(JSON.toJSONString(fetchParams), Map.class);
 
       final int requestId = WindTalker.getNextIMRequestId();
-      AVIMOperation operation = AVIMOperation.CONVERSATION_QUERY;
+//      AVIMOperation operation = AVIMOperation.CONVERSATION_QUERY;
 //      LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(new AVIMBaseBroadcastReceiver(null) {
 //        @Override
 //        public void execute(Intent intent, Throwable ex) {
@@ -1130,7 +1130,7 @@ public class AVConversationHolder {
 //          callback.done();
 //        }
 //      }, new IntentFilter(operation.getOperation() + requestId));
-      session.conversationQuery(params, requestId);
+      session.queryConversations(params, requestId);
     }
   }
 
