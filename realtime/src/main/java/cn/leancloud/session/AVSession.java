@@ -330,6 +330,7 @@ public class AVSession {
 
     conversationOperationCache.offer(Operation.getOperation(
             AVIMOperation.CONVERSATION_QUERY.getCode(), selfId, null, requestId));
+    LOGGER.d("offer operation with requestId=" + requestId + ", selfId=" + selfId);
 
     ConversationQueryPacket packet = ConversationQueryPacket.getConversationQueryPacket(getSelfPeerId(),
             params, requestId);

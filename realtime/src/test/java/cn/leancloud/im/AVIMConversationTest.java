@@ -4,6 +4,7 @@ import cn.leancloud.Configure;
 import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.im.v2.AVIMConversation;
 import cn.leancloud.im.v2.AVIMException;
+import cn.leancloud.im.v2.AVIMMessageManager;
 import cn.leancloud.im.v2.callback.AVIMClientCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationCreatedCallback;
@@ -12,7 +13,9 @@ import cn.leancloud.session.AVConnectionManager;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class AVIMConversationTest extends TestCase {
@@ -31,6 +34,8 @@ public class AVIMConversationTest extends TestCase {
     } catch (Exception ex) {
       ex.printStackTrace();
     }
+    AVIMClient.setClientEventHandler(new DummyClientEventHandler());
+    AVIMMessageManager.setConversationEventHandler(new DummyConversationEventHandler());
   }
 
   @Override
@@ -88,5 +93,39 @@ public class AVIMConversationTest extends TestCase {
     });
     countDownLatch.await();
     assertTrue(opersationSucceed);
+  }
+
+  public void testJoinedNotification() throws Exception {
+    Map<String, Object> attr = new HashMap<>();
+    attr.put("testTs", System.currentTimeMillis());
+    attr.put("owner", "testUser1");
+    client.createConversation(memebers, convName, attr, false, false, new AVIMConversationCreatedCallback() {
+      @Override
+      public void done(AVIMConversation conversation, AVIMException e) {
+        if (null != e) {
+          e.printStackTrace();
+          countDownLatch.countDown();
+        } else {
+          AVIMTextMessage msg = new AVIMTextMessage();
+          msg.setText("test run @" + System.currentTimeMillis());
+          conversation.sendMessage(msg, new AVIMConversationCallback() {
+            @Override
+            public void done(AVIMException ex) {
+              if (null != ex) {
+                System.out.println("failed to send message");
+                ex.printStackTrace();
+              } else {
+                System.out.println("succeed to send message");
+                opersationSucceed = true;
+              }
+              countDownLatch.countDown();
+            }
+          });
+        }
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+    Thread.sleep(2000);
   }
 }

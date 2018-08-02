@@ -18,8 +18,10 @@ import cn.leancloud.query.QueryOperation;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.Serializable;
 import java.util.*;
 
 public class AVIMConversation {
@@ -1217,6 +1219,10 @@ public class AVIMConversation {
     }
   }
 
+  void updateLocalMessage(AVIMMessage message) {
+    storage.updateMessageForPatch(message);
+  }
+
   public static void mergeConversationFromJsonObject(AVIMConversation conversation, JSONObject jsonObj) {
     if (null == conversation || null == jsonObj) {
       return;
@@ -1426,6 +1432,29 @@ public class AVIMConversation {
     return conversation;
   }
 
+  public Exception processQueryResult(Serializable serializable) {
+    if (null != serializable) {
+      try {
+        String result = (String)serializable;
+        JSONArray jsonArray = JSON.parseArray(String.valueOf(result));
+        if (null != jsonArray && !jsonArray.isEmpty()) {
+          JSONObject jsonObject = jsonArray.getJSONObject(0);
+          updateConversation(this, jsonObject);
+          client.mergeConversationCache(this, true, null);
+          storage.insertConversations(Arrays.asList(this));
+          latestConversationFetch = System.currentTimeMillis();
+        } else {
+          // not found conversation
+          return new AVIMException(9100, "Conversation not found");
+        }
+      } catch (Exception e) {
+        return e;
+      }
+    } else {
+      return new AVIMException(9100, "Conversation not found");
+    }
+    return null;
+  }
   static Comparator<AVIMMessage> messageComparator = new Comparator<AVIMMessage>() {
     @Override
     public int compare(AVIMMessage m1, AVIMMessage m2) {

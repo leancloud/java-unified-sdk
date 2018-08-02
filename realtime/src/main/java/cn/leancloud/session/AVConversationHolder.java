@@ -3,12 +3,14 @@ package cn.leancloud.session;
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
+import cn.leancloud.callback.AVCallback;
 import cn.leancloud.codec.Base64Decoder;
 import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
 import cn.leancloud.im.*;
 import cn.leancloud.im.v2.*;
 import cn.leancloud.im.v2.Conversation.AVIMOperation;
+import cn.leancloud.im.v2.callback.AVIMCommonJsonCallback;
 import cn.leancloud.session.AVIMOperationQueue.Operation;
 import cn.leancloud.im.v2.callback.AVIMOperationFailure;
 import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
@@ -533,6 +535,7 @@ public class AVConversationHolder {
         break;
     }
   }
+
   public void processConversationCommandFromServer(Conversation.AVIMOperation imop, String operation, int requestId, Messages.ConvCommand convCommand) {
     if (ConversationControlOp.STARTED.equals(operation)) {
       // need convCommand to instantiate conversation object.
@@ -541,6 +544,7 @@ public class AVConversationHolder {
       String invitedBy = convCommand.getInitBy();
       // 这里是我自己邀请了我自己，这个事件会被忽略。因为伴随这个消息一起来的还有added消息
       if (invitedBy.equals(session.getSelfPeerId())) {
+        LOGGER.d("ignore command, due to self-invited.");
         return;
       } else if (!invitedBy.equals(session.getSelfPeerId())) {
         // need convCommand to instantiate conversation object.
@@ -1115,22 +1119,20 @@ public class AVConversationHolder {
       callback.done();
     } else {
       LOGGER.d("try to query conversation info for id=" + conversation.getConversationId());
-      Map<String, Object> fetchParams = conversation.getFetchRequestParams();
-      Map<String, Object> params = JSON.parseObject(JSON.toJSONString(fetchParams), Map.class);
 
-      final int requestId = WindTalker.getNextIMRequestId();
-//      AVIMOperation operation = AVIMOperation.CONVERSATION_QUERY;
-//      LocalBroadcastManager.getInstance(AVOSCloud.applicationContext).registerReceiver(new AVIMBaseBroadcastReceiver(null) {
-//        @Override
-//        public void execute(Intent intent, Throwable ex) {
-//          if (null == ex) {
-//            conversation.processQueryResult(intent.getExtras().getSerializable(Conversation.callbackData));
-//            LogUtil.log.d("updated conversation info. id=" + conversation.getConversationId());
-//          }
-//          callback.done();
-//        }
-//      }, new IntentFilter(operation.getOperation() + requestId));
-      session.queryConversations(params, requestId);
+      Map<String, Object> fetchParams = conversation.getFetchRequestParams();
+      InternalConfiguration.getOperationTube().queryConversations(session.getSelfPeerId(), JSON.toJSONString(fetchParams),
+              new AVIMCommonJsonCallback() {
+                @Override
+                public void done(Map<String, Object> result, AVIMException e) {
+                  if (null != result) {
+                    conversation.processQueryResult((String)result.get(Conversation.callbackData));
+                    if (null != callback) {
+                      callback.done();
+                    }
+                  }
+                }
+              });
     }
   }
 

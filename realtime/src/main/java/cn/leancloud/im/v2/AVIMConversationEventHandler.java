@@ -230,25 +230,25 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
         break;
       case Conversation.STATUS_ON_UNREAD_EVENT:
         AbstractMap.SimpleEntry<Integer, Boolean> unreadInfo = (AbstractMap.SimpleEntry<Integer, Boolean>)operand;
-//        conversation.updateUnreadCountAndMessage((AVIMMessage)operator, unreadInfo.getKey(), unreadInfo.getValue());
+        conversation.updateUnreadCountAndMessage((AVIMMessage)operator, unreadInfo.getKey(), unreadInfo.getValue());
         onUnreadMessagesCountUpdated(conversation.client, conversation);
         break;
       case Conversation.STATUS_ON_MESSAGE_READ:
-//        conversation.setLastReadAt((long)operator, true);
+        conversation.setLastReadAt((long)operator, true);
         onLastReadAtUpdated(conversation.client, conversation);
         break;
       case Conversation.STATUS_ON_MESSAGE_DELIVERED:
-//        conversation.setLastDeliveredAt((long)operator, true);
+        conversation.setLastDeliveredAt((long)operator, true);
         onLastDeliveredAtUpdated(conversation.client, conversation);
         break;
       case Conversation.STATUS_ON_MESSAGE_UPDATED:
         AVIMMessage message = (AVIMMessage)operator;
-//        conversation.updateLocalMessage(message);
+        conversation.updateLocalMessage(message);
         onMessageUpdated(conversation.client, conversation, message);
         break;
       case Conversation.STATUS_ON_MESSAGE_RECALLED:
         AVIMMessage recalledMessage = (AVIMMessage)operator;
-//        conversation.updateLocalMessage(recalledMessage);
+        conversation.updateLocalMessage(recalledMessage);
         onMessageRecalled(conversation.client, conversation, recalledMessage);
         break;
       case Conversation.STATUS_ON_MEMBER_INFO_CHANGED:

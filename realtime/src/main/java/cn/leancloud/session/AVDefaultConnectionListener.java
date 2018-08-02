@@ -348,6 +348,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
                                   Messages.ConvCommand convCommand) {
     if (ConversationControlPacket.ConversationControlOp.QUERY_RESULT.equals(operation)) {
       Operation op = session.conversationOperationCache.poll(requestKey);
+      LOGGER.d("poll operation with requestId=" + requestKey + ", result=" + op);
       if (null != op && op.operation == AVIMOperation.CONVERSATION_QUERY.getCode()) {
         String result = convCommand.getResults().getData();
         Map<String, Object> bundle = new HashMap<>();
@@ -355,7 +356,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
         InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
                 AVIMOperation.CONVERSATION_QUERY, bundle);
       } else {
-        LOGGER.w("not found requestKey: " + requestKey);
+        LOGGER.w("not found requestKey: " + requestKey + ", op=" + op);
       }
     } else if (ConversationControlPacket.ConversationControlOp.QUERY_SHUTUP_RESULT.equals(operation)) {
       Operation op = session.conversationOperationCache.poll(requestKey);
