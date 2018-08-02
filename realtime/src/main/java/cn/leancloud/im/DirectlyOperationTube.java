@@ -63,7 +63,7 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public boolean closeClient(String self, AVIMClientCallback callback) {
-    LOGGER.d("openClient...");
+    LOGGER.d("closeClient...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(self, null, requestId, callback);
@@ -98,7 +98,11 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public boolean queryConversations(final String clientId, final String queryString, final AVIMCommonJsonCallback callback) {
-    LOGGER.d("createConversation...");
+    return queryConversationsInternally(clientId, queryString, callback);
+  }
+
+  public boolean queryConversationsInternally(final String clientId, final String queryString, final AVIMCommonJsonCallback callback) {
+    LOGGER.d("queryConversationsInternally...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
@@ -168,7 +172,7 @@ public class DirectlyOperationTube implements OperationTube {
 
   public boolean queryMessages(String clientId, String conversationId, int convType, String params,
                         Conversation.AVIMOperation operation, AVIMMessagesQueryCallback callback) {
-    LOGGER.d("recallMessage...");
+    LOGGER.d("queryMessages...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);

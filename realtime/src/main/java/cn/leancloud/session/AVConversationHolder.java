@@ -1121,7 +1121,7 @@ public class AVConversationHolder {
       LOGGER.d("try to query conversation info for id=" + conversation.getConversationId());
 
       Map<String, Object> fetchParams = conversation.getFetchRequestParams();
-      InternalConfiguration.getOperationTube().queryConversations(session.getSelfPeerId(), JSON.toJSONString(fetchParams),
+      InternalConfiguration.getOperationTube().queryConversationsInternally(session.getSelfPeerId(), JSON.toJSONString(fetchParams),
               new AVIMCommonJsonCallback() {
                 @Override
                 public void done(Map<String, Object> result, AVIMException e) {
