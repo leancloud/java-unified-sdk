@@ -2,6 +2,8 @@ package cn.leancloud;
 
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AVOSService;
+import cn.leancloud.core.AppConfiguration;
+import cn.leancloud.logging.DummyLoggerFactory;
 import cn.leancloud.utils.StringUtil;
 
 public class Configure {
@@ -25,6 +27,7 @@ public class Configure {
   }
 
   public static void initializeRuntime() {
+    AppConfiguration.setLogAdapter(new DummyLoggerFactory());
     AVOSCloud.setRegion(reGion);
     if (!StringUtil.isEmpty(API_HOST)) {
       AVOSCloud.setServer(AVOSService.API, API_HOST);
