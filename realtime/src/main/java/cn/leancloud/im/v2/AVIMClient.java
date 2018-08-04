@@ -194,48 +194,120 @@ public class AVIMClient {
     return this.clientId;
   }
 
+  /**
+   * Open client.
+   * @param callback
+   */
   public void open(final AVIMClientCallback callback) {
     this.open(null, callback);
   }
 
+  /**
+   * Open Client with options.
+   *
+   * @param option
+   * @param callback
+   */
   public void open(AVIMClientOpenOption option, final AVIMClientCallback callback) {
     boolean reConnect = null == option? false : option.isReconnect();
     OperationTube operationTube = InternalConfiguration.getOperationTube();
     operationTube.openClient(clientId, tag, userSessionToken, reConnect, callback);
   }
 
+  /**
+   * Query online clients.
+   *
+   * @param clients
+   * @param callback
+   */
   public void getOnlineClients(List<String> clients, final AVIMOnlineClientsCallback callback) {
     InternalConfiguration.getOperationTube().queryOnlineClients(this.clientId, clients, callback);
   }
 
+  /**
+   * Create a new Conversation
+   *
+   * @param conversationMembers
+   * @param attributes
+   * @param callback
+   */
   public void createConversation(final List<String> conversationMembers,
                                  final Map<String, Object> attributes, final AVIMConversationCreatedCallback callback) {
     this.createConversation(conversationMembers, null, attributes, false, callback);
   }
 
+  /**
+   * Create a new Conversation
+   *
+   * @param conversationMembers
+   * @param name
+   * @param attributes
+   * @param callback
+   */
   public void createConversation(final List<String> conversationMembers, String name,
                                  final Map<String, Object> attributes, final AVIMConversationCreatedCallback callback) {
     this.createConversation(conversationMembers, name, attributes, false, callback);
   }
 
+  /**
+   * Create a new Conversation
+   *
+   * @param members
+   * @param name
+   * @param attributes
+   * @param isTransient
+   * @param callback
+   */
   public void createConversation(final List<String> members, final String name, final Map<String, Object> attributes,
                                  final boolean isTransient, final AVIMConversationCreatedCallback callback) {
     this.createConversation(members, name, attributes, isTransient, false, callback);
   }
 
+  /**
+   * Create a new Conversation
+   *
+   * @param members
+   * @param name
+   * @param attributes
+   * @param isTransient
+   * @param isUnique
+   * @param callback
+   */
   public void createConversation(final List<String> members, final String name, final Map<String, Object> attributes,
                                  final boolean isTransient, final boolean isUnique, final AVIMConversationCreatedCallback callback) {
     this.createConversation(members, name, attributes, isTransient, isUnique, false, 0, callback);
   }
 
+  /**
+   * Create a new temporary Conversation
+   *
+   * @param conversationMembers
+   * @param callback
+   */
   public void createTemporaryConversation(final List<String> conversationMembers, final AVIMConversationCreatedCallback callback) {
     this.createTemporaryConversation(conversationMembers, 86400*3, callback);
   }
 
+  /**
+   * Create a new temporary Conversation
+   *
+   * @param conversationMembers
+   * @param ttl
+   * @param callback
+   */
   public void createTemporaryConversation(final List<String> conversationMembers, int ttl, final AVIMConversationCreatedCallback callback) {
     this.createConversation(conversationMembers, null, null, false, true, true, ttl, callback);
   }
 
+  /**
+   * Create a new Chatroom
+   *
+   * @param conversationMembers
+   * @param name
+   * @param attributes
+   * @param isUnique
+   * @param callback
+   */
   public void createChatRoom(final List<String> conversationMembers, String name, final Map<String, Object> attributes,
                              final boolean isUnique, final AVIMConversationCreatedCallback callback) {
     this.createConversation(conversationMembers, name, attributes, true, isUnique, callback);
@@ -303,6 +375,12 @@ public class AVIMClient {
             isTransient, isUnique, isTemp, tempTTL, middleCallback);
   }
 
+  /**
+   * get conversation by id
+   *
+   * @param conversationId
+   * @return
+   */
   public AVIMConversation getConversation(String conversationId) {
     if (StringUtil.isEmpty(conversationId)) {
       return null;
@@ -310,6 +388,13 @@ public class AVIMClient {
     return this.getConversation(conversationId, false, conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX));
   }
 
+  /**
+   * get conversation by id and type
+   *
+   * @param conversationId
+   * @param convType
+   * @return
+   */
   public AVIMConversation getConversation(String conversationId, int convType) {
     AVIMConversation result = null;
     switch (convType) {
@@ -329,18 +414,43 @@ public class AVIMClient {
     return result;
   }
 
+  /**
+   * get an existed conversation
+   *
+   * @param conversationId
+   * @param isTransient
+   * @param isTemporary
+   * @return
+   */
   public AVIMConversation getConversation(String conversationId, boolean isTransient, boolean isTemporary) {
     return this.getConversation(conversationId, isTransient, isTemporary,false);
   }
 
+  /**
+   * get an existed Chatroom by id
+   * @param conversationId
+   * @return
+   */
   public AVIMConversation getChatRoom(String conversationId) {
     return this.getConversation(conversationId, true, false);
   }
 
+  /**
+   * get an existed Service Conversation
+   *
+   * @param conversationId
+   * @return
+   */
   public AVIMConversation getServiceConversation(String conversationId) {
     return this.getConversation(conversationId, false, false, true);
   }
 
+  /**
+   * get an existed temporary conversation
+   *
+   * @param conversationId
+   * @return
+   */
   public AVIMConversation getTemporaryConversation(String conversationId) {
     return this.getConversation(conversationId, false, true);
   }
@@ -406,6 +516,10 @@ public class AVIMClient {
     return query;
   }
 
+  /**
+   * close client.
+   * @param callback
+   */
   public void close(final AVIMClientCallback callback) {
     final AVIMClientCallback internalCallback = new AVIMClientCallback() {
       @Override
@@ -421,6 +535,13 @@ public class AVIMClient {
     InternalConfiguration.getOperationTube().closeClient(this.clientId, internalCallback);
   }
 
+  /**
+   * [internal use only]
+   * update realtime session token
+   *
+   * @param token
+   * @param expiredInSec
+   */
   public void updateRealtimeSessionToken(String token, long expiredInSec) {
     this.realtimeSessionToken = token;
     this.realtimeSessionTokenExpired = expiredInSec;

@@ -126,7 +126,7 @@ public class DirectlyOperationTube implements OperationTube {
     return true;
   }
 
-  public boolean updateMessage(String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage, AVIMMessageUpdatedCallback callback) {
+  public boolean updateMessage(String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage, AVIMCommonJsonCallback callback) {
     LOGGER.d("updateMessage...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -139,7 +139,7 @@ public class DirectlyOperationTube implements OperationTube {
     return true;
   }
 
-  public boolean recallMessage(String clientId, int convType, AVIMMessage message, AVIMMessageRecalledCallback callback) {
+  public boolean recallMessage(String clientId, int convType, AVIMMessage message, AVIMCommonJsonCallback callback) {
     LOGGER.d("recallMessage...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -184,40 +184,8 @@ public class DirectlyOperationTube implements OperationTube {
     return true;
   }
 
-  public void onOperationCompleted(String clientId, String conversationId, int requestId,
-                                   Conversation.AVIMOperation operation, Throwable throwable) {
-    LOGGER.d("enter onOperationCompleted with clientId=" + clientId + ", convId=" + conversationId + ", requestId="
-      + requestId + ", operation=" + operation);
-    AVCallback callback = RequestCache.getInstance().getRequestCallback(clientId, conversationId, requestId);
-    if (null == callback) {
-      LOGGER.w("encounter illegal response, ignore it: clientId=" + clientId + ", convId=" + conversationId + ", requestId=" + requestId);
-      return;
-    }
-    switch (operation) {
-      case CLIENT_OPEN:
-      case CLIENT_DISCONNECT:
-      case CLIENT_REFRESH_TOKEN:
-        callback.internalDone(AVIMClient.getInstance(clientId), AVIMException.wrapperAVException(throwable));
-        break;
-      case CONVERSATION_UPDATE_MESSAGE:
-      case CONVERSATION_RECALL_MESSAGE:
-      case CONVERSATION_CREATION:
-      case CONVERSATION_MESSAGE_QUERY:
-      case CONVERSATION_SEND_MESSAGE:
-      case CONVERSATION_QUERY:
-        callback.internalDone(AVIMException.wrapperAVException(throwable));
-        break;
-      default:
-        LOGGER.w("no operation matched, ignore response.");
-        break;
-    }
-    RequestCache.getInstance().cleanRequestCallback(clientId, conversationId, requestId);
-  }
-
-  public void onOperationCompletedEx(String clientId, String conversationId, int requestId,
-                                     Conversation.AVIMOperation operation, Map<String, Object> resultData) {
-    LOGGER.d("enter onOperationCompletedEx with clientId=" + clientId + ", convId=" + conversationId + ", requestId="
-            + requestId + ", operation=" + operation + ", resultData=" + resultData.toString());
+  private AVCallback getCachedCallback(final String clientId, final String conversationId, int requestId,
+                                       Conversation.AVIMOperation operation) {
     AVCallback callback = null;
     switch (operation) {
       case CLIENT_DISCONNECT:
@@ -233,26 +201,56 @@ public class DirectlyOperationTube implements OperationTube {
         callback = RequestCache.getInstance().getRequestCallback(clientId, conversationId, requestId);
         break;
     }
+    return callback;
+  }
+
+  public void onOperationCompleted(String clientId, String conversationId, int requestId,
+                                   Conversation.AVIMOperation operation, Throwable throwable) {
+    LOGGER.d("enter onOperationCompleted with clientId=" + clientId + ", convId=" + conversationId + ", requestId="
+      + requestId + ", operation=" + operation);
+    AVCallback callback = getCachedCallback(clientId, conversationId, requestId, operation);
     if (null == callback) {
       LOGGER.w("encounter illegal response, ignore it: clientId=" + clientId + ", convId=" + conversationId + ", requestId=" + requestId);
+      return;
+    }
+    switch (operation) {
+      case CLIENT_OPEN:
+      case CLIENT_DISCONNECT:
+      case CLIENT_REFRESH_TOKEN:
+        callback.internalDone(AVIMClient.getInstance(clientId), AVIMException.wrapperAVException(throwable));
+        break;
+      default:
+        callback.internalDone(AVIMException.wrapperAVException(throwable));
+        break;
+    }
+    RequestCache.getInstance().cleanRequestCallback(clientId, conversationId, requestId);
+  }
+
+  public void onOperationCompletedEx(String clientId, String conversationId, int requestId,
+                                     Conversation.AVIMOperation operation, Map<String, Object> resultData) {
+    LOGGER.d("enter onOperationCompletedEx with clientId=" + clientId + ", convId=" + conversationId + ", requestId="
+            + requestId + ", operation=" + operation + ", resultData=" + resultData.toString());
+    AVCallback callback = getCachedCallback(clientId, conversationId, requestId, operation);
+    if (null == callback) {
+      LOGGER.w("encounter illegal response, ignore it: clientId=" + clientId + ", convId=" + conversationId
+              + ", requestId=" + requestId);
       return;
     }
     switch (operation) {
       case CLIENT_ONLINE_QUERY:
         callback.internalDone((List<String>)resultData.get(Conversation.callbackOnlineClients), null);
         break;
-      case CLIENT_REFRESH_TOKEN:
-        break;
       case CONVERSATION_UPDATE_MESSAGE:
       case CONVERSATION_RECALL_MESSAGE:
       case CONVERSATION_CREATION:
       case CONVERSATION_SEND_MESSAGE:
       case CONVERSATION_QUERY:
+      case CONVERSATION_MUTED_MEMBER_QUERY:
+      case CONVERSATION_BLOCKED_MEMBER_QUERY:
         callback.internalDone(resultData, null);
         break;
-      case CONVERSATION_MESSAGE_QUERY:
-        break;
       default:
+        callback.internalDone(resultData, null);
         break;
     }
   }

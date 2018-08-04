@@ -323,7 +323,9 @@ public class AVConversationHolder {
       String messageId = recallMessage.getMessageId();
       long timeStamp = recallMessage.getTimestamp();
 
-      AVConnectionManager.getInstance().sendPacket(MessagePatchModifyPacket.getMessagePatchPacketForRecall(session.getSelfPeerId(), conversationId, messageId, timeStamp, requestId));
+      AVConnectionManager.getInstance().sendPacket(
+              MessagePatchModifyPacket.getMessagePatchPacketForRecall(session.getSelfPeerId(), conversationId, messageId,
+                      timeStamp, requestId));
     } else if (operation.equals(AVIMOperation.CONVERSATION_UPDATE_MESSAGE)){
       String messageId = oldMessage.getMessageId();
       long timeStamp = oldMessage.getTimestamp();
@@ -335,10 +337,11 @@ public class AVConversationHolder {
         binaryData = ((AVIMBinaryMessage) newMessage).getBytes();
       }
 
-      AVConnectionManager.getInstance().sendPacket(MessagePatchModifyPacket.getMessagePatchPacketForUpdate(session.getSelfPeerId(), conversationId,
-              messageId, data, binaryData, mentionAll, mentionList, timeStamp, requestId));
+      AVConnectionManager.getInstance().sendPacket(MessagePatchModifyPacket.getMessagePatchPacketForUpdate(session.getSelfPeerId(),
+              conversationId, messageId, data, binaryData, mentionAll, mentionList, timeStamp, requestId));
     }
   }
+
   public void quit(final int requestId) {
     if (!checkSessionStatus(AVIMOperation.CONVERSATION_QUIT, requestId)) {
       return;

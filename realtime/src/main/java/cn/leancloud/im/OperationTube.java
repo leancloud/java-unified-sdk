@@ -29,8 +29,8 @@ public interface OperationTube {
   boolean sendMessage(String clientId, String conversationId, int convType, final AVIMMessage message, final AVIMMessageOption messageOption,
                       final AVIMCommonJsonCallback callback);
   boolean updateMessage(String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage,
-                        AVIMMessageUpdatedCallback callback);
-  boolean recallMessage(String clientId, int convType, AVIMMessage message, AVIMMessageRecalledCallback callback);
+                        AVIMCommonJsonCallback callback);
+  boolean recallMessage(String clientId, int convType, AVIMMessage message, AVIMCommonJsonCallback callback);
   boolean fetchReceiptTimestamps(String clientId, String conversationId, Conversation.AVIMOperation operation,
                                  AVIMConversationCallback callback);
   boolean queryMessages(String clientId, String conversationId, int convType, String params,

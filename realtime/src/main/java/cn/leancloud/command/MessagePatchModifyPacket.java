@@ -58,7 +58,8 @@ public class MessagePatchModifyPacket extends PeerBasedCommandPacket {
   }
 
   public static MessagePatchModifyPacket getMessagePatchPacketForUpdate(String peerId, String conversationId,
-                                                                        String messageId, String data, byte[] binaryData, boolean mentionAll, List<String> mentionList,
+                                                                        String messageId, String data, byte[] binaryData,
+                                                                        boolean mentionAll, List<String> mentionList,
                                                                         long timestamp, int requestId) {
     MessagePatchModifyPacket packet = new MessagePatchModifyPacket();
     packet.conversationId = conversationId;
@@ -79,7 +80,8 @@ public class MessagePatchModifyPacket extends PeerBasedCommandPacket {
     return packet;
   }
 
-  public static MessagePatchModifyPacket getMessagePatchPacketForRecall(String peerId, String conversationId, String messageId, long timestamp, int requestId) {
+  public static MessagePatchModifyPacket getMessagePatchPacketForRecall(String peerId, String conversationId, String messageId,
+                                                                        long timestamp, int requestId) {
     MessagePatchModifyPacket packet = new MessagePatchModifyPacket();
     packet.conversationId = conversationId;
     packet.messageId = messageId;

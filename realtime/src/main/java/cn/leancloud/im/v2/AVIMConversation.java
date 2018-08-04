@@ -12,6 +12,7 @@ import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
 import cn.leancloud.im.v2.conversation.ConversationMemberRole;
 import cn.leancloud.im.v2.messages.AVIMFileMessage;
 import cn.leancloud.im.v2.messages.AVIMFileMessageAccessor;
+import cn.leancloud.im.v2.messages.AVIMRecalledMessage;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.query.QueryConditions;
 import cn.leancloud.query.QueryOperation;
@@ -217,10 +218,17 @@ public class AVIMConversation {
 
     this.storage = client.getStorage();
   }
+
   protected AVIMConversation(AVIMClient client, String conversationId) {
     this(client, null, null, false);
     this.conversationId = conversationId;
   }
+
+  /**
+   * get conversation id
+   *
+   * @return
+   */
   public String getConversationId() {
     return this.conversationId;
   }
@@ -336,7 +344,6 @@ public class AVIMConversation {
    * @return
    * @since 3.0
    */
-  @Deprecated
   public Object getAttribute(String key) {
     Object value;
     if (pendingAttributes.containsKey(key)) {
@@ -347,7 +354,6 @@ public class AVIMConversation {
     return value;
   }
 
-  @Deprecated
   public void setAttribute(String key, Object value) {
     if (!StringUtil.isEmpty(key)) {
       // 以往的 sdk 支持 setAttribute("attr.key", "attrValue") 这种格式，这里兼容一下
@@ -365,7 +371,6 @@ public class AVIMConversation {
    * @param attr
    * @since 3.0
    */
-  @Deprecated
   public void setAttributes(Map<String, Object> attr) {
     pendingAttributes.clear();
     pendingAttributes.putAll(attr);
@@ -460,7 +465,6 @@ public class AVIMConversation {
     if (mentioned) {
       unreadMessagesMentioned = mentioned;
     }
-
   }
 
   void updateUnreadCountAndMessage(AVIMMessage lastMessage, int unreadCount, boolean mentioned) {
@@ -581,6 +585,17 @@ public class AVIMConversation {
     }
   }
 
+  private void copyMessageWithoutContent(AVIMMessage oldMessage, AVIMMessage newMessage) {
+    newMessage.setMessageId(oldMessage.getMessageId());
+    newMessage.setConversationId(oldMessage.getConversationId());
+    newMessage.setFrom(oldMessage.getFrom());
+    newMessage.setDeliveredAt(oldMessage.getDeliveredAt());
+    newMessage.setReadAt(oldMessage.getReadAt());
+    newMessage.setTimestamp(oldMessage.getTimestamp());
+    newMessage.setMessageStatus(oldMessage.getMessageStatus());
+    newMessage.setMessageIOType(oldMessage.getMessageIOType());
+  }
+
   /**
    * update message content
    * @param oldMessage the message need to be modified
@@ -594,7 +609,25 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().updateMessage(client.getClientId(), getType(), oldMessage, newMessage, callback);
+    AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
+      @Override
+      public void done(Map<String, Object> result, AVIMException e) {
+        if (null != e || null == result) {
+          if (null != callback) {
+            callback.internalDone(null, e);
+          }
+        } else {
+          long patchTime = (Long)result.getOrDefault(Conversation.PARAM_MESSAGE_PATCH_TIME, 0);
+          copyMessageWithoutContent(oldMessage, newMessage);
+          newMessage.setUpdateAt(patchTime);
+          updateLocalMessage(newMessage);
+          if (null != callback) {
+            callback.internalDone(newMessage, null);
+          }
+        }
+      }
+    };
+    InternalConfiguration.getOperationTube().updateMessage(client.getClientId(), getType(), oldMessage, newMessage, tmpCallback);
   }
 
   /**
@@ -609,7 +642,28 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().recallMessage(client.getClientId(), getType(), message, callback);
+    AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
+      @Override
+      public void done(Map<String, Object> result, AVIMException e) {
+        if (null != e || null == result) {
+          if (null != callback) {
+            callback.internalDone(null, e);
+          }
+        } else {
+          long patchTime = (Long)result.getOrDefault(Conversation.PARAM_MESSAGE_PATCH_TIME, 0);
+          AVIMRecalledMessage recalledMessage = new AVIMRecalledMessage();
+          copyMessageWithoutContent(message, recalledMessage);
+          recalledMessage.setUpdateAt(patchTime);
+          recalledMessage.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusRecalled);
+          updateLocalMessage(recalledMessage);
+
+          if (null != callback) {
+            callback.internalDone(recalledMessage, null);
+          }
+        }
+      }
+    };
+    InternalConfiguration.getOperationTube().recallMessage(client.getClientId(), getType(), message, tmpCallback);
   }
 
   /**
