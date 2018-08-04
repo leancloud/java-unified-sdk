@@ -152,8 +152,16 @@ public class DirectlyOperationTube implements OperationTube {
     return true;
   }
 
-  public boolean fetchReceiptTimestamps(String clientId, String conversationId, Conversation.AVIMOperation operation,
-                                 AVIMConversationCallback callback) {
+  public boolean fetchReceiptTimestamps(String clientId, String conversationId, int convType,
+                                        Conversation.AVIMOperation operation, AVIMCommonJsonCallback callback) {
+    LOGGER.d("fetchReceiptTimestamps...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
+    }
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
+    holder.getReceiptTime(requestId);
     return true;
   }
 

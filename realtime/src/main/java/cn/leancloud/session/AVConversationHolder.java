@@ -410,7 +410,7 @@ public class AVConversationHolder {
 
   }
 
-  private void getReceiptTime(int requestId) {
+  public void getReceiptTime(int requestId) {
     if (!checkSessionStatus(AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, requestId)) {
       return;
     }

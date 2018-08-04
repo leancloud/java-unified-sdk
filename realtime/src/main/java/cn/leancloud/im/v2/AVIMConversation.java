@@ -687,8 +687,27 @@ public class AVIMConversation {
   }
 
   public void fetchReceiptTimestamps(AVIMConversationCallback callback) {
+    final AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
+      @Override
+      public void done(Map<String, Object> result, AVIMException e) {
+        if (null == callback) {
+          return;
+        }
+        if (null != e || null == result) {
+          callback.internalDone(e);
+        } else {
+          long readAt = (Long) result.getOrDefault(Conversation.callbackReadAt, 0l);
+          long deliveredAt = (Long) result.getOrDefault(Conversation.callbackDeliveredAt, 0l);
+          AVIMConversation.this.setLastReadAt(readAt, false);
+          AVIMConversation.this.setLastDeliveredAt(deliveredAt, false);
+          storage.updateConversationTimes(AVIMConversation.this);
+          callback.internalDone(null, e);
+        }
+      }
+    };
     boolean ret = InternalConfiguration.getOperationTube().fetchReceiptTimestamps(client.getClientId(), getConversationId(),
-            Conversation.AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, callback);
+            getType(),
+            Conversation.AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, tmpCallback);
     if (!ret && null != callback) {
       callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't send request in background."));
     }
