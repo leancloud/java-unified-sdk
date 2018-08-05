@@ -5,6 +5,7 @@ import cn.leancloud.Messages;
 import cn.leancloud.callback.AVCallback;
 import cn.leancloud.im.v2.*;
 import cn.leancloud.im.v2.callback.*;
+import cn.leancloud.push.AVNotificationManager;
 import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.session.AVConversationHolder;
 import cn.leancloud.session.AVSession;
@@ -12,6 +13,7 @@ import cn.leancloud.session.AVSessionManager;
 import cn.leancloud.utils.LogUtil;
 import com.alibaba.fastjson.JSON;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -269,7 +271,8 @@ public class DirectlyOperationTube implements OperationTube {
   public void onLiveQueryCompleted(int requestId, Throwable throwable) {
     ;
   }
+
   public void onPushMessage(String message, String messageId) {
-    ;
+    AVNotificationManager.getInstance().processPushMessage(message, messageId);
   }
 }

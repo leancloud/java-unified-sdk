@@ -64,6 +64,14 @@ public class AndroidSystemSetting implements SystemSetting {
     return setting.getString(key, defaultValue);
   }
 
+  public Map<String, Object> getAll(String keyZone) {
+    if (null == this.context) {
+      return null;
+    }
+    SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
+    return settting.getAll();
+  }
+
   public void saveBoolean(String keyZone, String key, boolean value) {
     if (null == this.context) {
       LOGGER.w("application context is null");

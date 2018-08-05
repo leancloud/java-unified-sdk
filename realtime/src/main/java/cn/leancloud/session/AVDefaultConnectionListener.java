@@ -188,8 +188,12 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     List<Messages.JsonObjectMessage> messages = dataCommand.getMsgList();
     for (int i = 0; i < messages.size() && i < messageIds.size(); i++) {
       if (null != messages.get(i)) {
-        InternalConfiguration.getOperationTube().onPushMessage(messages.get(i).getData(),
-                messageIds.get(i));
+        if (depot.putStableMessage(messageIds.get(i))) {
+          InternalConfiguration.getOperationTube().onPushMessage(messages.get(i).getData(),
+                  messageIds.get(i));
+        } else {
+          LOGGER.d("ignore duplicated push message.");
+        }
       }
     }
     WindTalker windTalker = WindTalker.getInstance();

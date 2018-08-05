@@ -42,6 +42,10 @@ public class InMemorySetting implements SystemSetting {
     }
   }
 
+  public Map<String, Object> getAll(String keyZone) {
+    return this.dataMap;
+  }
+
   public void saveBoolean(String keyZone, String key, boolean value) {
     this.dataMap.put(key, value);
   }
