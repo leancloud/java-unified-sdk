@@ -25,7 +25,7 @@ public class AVNotificationManager {
   private static final Random random = new Random();
   private final ConcurrentHashMap<String, String> defaultPushCallback =
           new ConcurrentHashMap<String, String>();
-  private int notificationIcon;
+  private int notificationIcon = 0;
 
   private static AVNotificationManager notificationManager;
 

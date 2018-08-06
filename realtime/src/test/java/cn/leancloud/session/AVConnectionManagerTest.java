@@ -11,6 +11,7 @@ import cn.leancloud.session.AVConnectionManager;
 import junit.framework.TestCase;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class AVConnectionManagerTest extends TestCase {
   private CountDownLatch countDownLatch = null;
@@ -54,7 +55,9 @@ public class AVConnectionManagerTest extends TestCase {
   public void testInitConnection() throws Exception {
     AVConnectionManager manager = AVConnectionManager.getInstance();
     manager.subscribeConnectionListener("", this.listener);
-    this.countDownLatch.await();
+    if (!manager.isConnectionEstablished()) {
+      this.countDownLatch.await(12, TimeUnit.SECONDS);
+    }
     assertTrue(manager.isConnectionEstablished());
   }
 
@@ -69,7 +72,9 @@ public class AVConnectionManagerTest extends TestCase {
   public void testLogin() throws Exception {
     AVConnectionManager manager = AVConnectionManager.getInstance();
     manager.subscribeConnectionListener("", this.listener);
-    this.countDownLatch.await();
+    if (!manager.isConnectionEstablished()) {
+      this.countDownLatch.await(12, TimeUnit.SECONDS);
+    }
     assertTrue(manager.isConnectionEstablished());
 
     final int requestId = 100;

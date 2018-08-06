@@ -115,7 +115,7 @@ public class AVOKWebSocketClientTest extends TestCase {
       }
     }, true);
     client.connect(wsUrl);
-    Thread.sleep(120000);
+    Thread.sleep(12000);
     client.close();
     Thread.sleep(3000);
   }

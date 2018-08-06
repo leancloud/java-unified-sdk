@@ -73,15 +73,14 @@ public class RealtimeClient {
 
   public Observable<List<AVIMConversationMemberInfo>> queryMemberInfo(Map<String, String> query, String rtmSessionToken) {
     return wrappObservable(service.queryMemberInfo(rtmSessionToken, query))
-            .map(new Function<List<JSONObject>, List<AVIMConversationMemberInfo>>() {
+            .map(new Function<Map<String, List<JSONObject>>, List<AVIMConversationMemberInfo>>() {
               @Override
-              public List<AVIMConversationMemberInfo> apply(List<JSONObject> objects) throws Exception {
+              public List<AVIMConversationMemberInfo> apply(Map<String, List<JSONObject>> rawResult) throws Exception {
+                List<JSONObject> objects = rawResult.get("results");
                 List<AVIMConversationMemberInfo> result = new LinkedList<AVIMConversationMemberInfo>();
-                if (null != objects) {
-                  for (JSONObject object: objects) {
-                    AVIMConversationMemberInfo tmp = AVIMConversationMemberInfo.createInstance(object);
-                    result.add(tmp);
-                  }
+                for (JSONObject object: objects) {
+                  AVIMConversationMemberInfo tmp = AVIMConversationMemberInfo.createInstance(object);
+                  result.add(tmp);
                 }
                 return result;
               }

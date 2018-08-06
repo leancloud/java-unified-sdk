@@ -45,7 +45,7 @@ public class AVIMClientTest extends TestCase {
 
   public void testOpenClient() throws Exception {
     AVIMClient client = AVIMClient.getInstance("testUser1");
-    Thread.sleep(2000);
+    Thread.sleep(4000);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -75,6 +75,7 @@ public class AVIMClientTest extends TestCase {
   public void testOpenClientThroughAVUser() throws Exception {
     AVUser currentUser = AVUser.logIn(userName, userPassword).blockingFirst();
     final AVIMClient client = AVIMClient.getInstance(currentUser);
+    Thread.sleep(4000);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -95,7 +96,7 @@ public class AVIMClientTest extends TestCase {
 
   public void testCloseClient() throws Exception {
     final AVIMClient client = AVIMClient.getInstance("testUser1");
-    Thread.sleep(2000);
+    Thread.sleep(4000);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -161,7 +162,7 @@ public class AVIMClientTest extends TestCase {
 
   public void testGetClientStatus() throws Exception {
     final AVIMClient client = AVIMClient.getInstance("testUser1");
-    Thread.sleep(2000);
+    Thread.sleep(4000);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -229,7 +230,7 @@ public class AVIMClientTest extends TestCase {
 
   public void testCreateConversation() throws Exception {
     final AVIMClient client = AVIMClient.getInstance("testUser1");
-    Thread.sleep(3000);
+    Thread.sleep(4000);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
