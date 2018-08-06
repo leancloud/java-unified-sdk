@@ -4,13 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AVIMConversationMemberInfo {
-  public static String ATTR_OJBECTID = "infoId";
-  public static String ATTR_CONVID = "conversationId";
-  public static String ATTR_MEMBERID = "peerId";
-  public static String ATTR_ROLE = "role";
-  private static String ATTR_CREATEDAT = "createdAt";
-  private static String ATTR_NICKNAME = "nickname";
-  private static String ATTR_INVITER = "inviter";
+  public static final String ATTR_OJBECTID = "infoId";
+  public static final String ATTR_CONVID = "conversationId";
+  public static final String ATTR_MEMBERID = "peerId";
+  public static final String ATTR_ROLE = "role";
+  private static final String ATTR_CREATEDAT = "createdAt";
+  private static final String ATTR_NICKNAME = "nickname";
+  private static final String ATTR_INVITER = "inviter";
 
   private String conversationId = null;
   private String memberId = null;

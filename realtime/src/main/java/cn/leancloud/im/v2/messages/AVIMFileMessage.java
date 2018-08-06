@@ -153,7 +153,7 @@ public class AVIMFileMessage extends AVIMTypedMessage {
   public long getSize() {
     Map<String, Object> meta = getFileMetaData();
     if (meta != null && meta.containsKey(FILE_SIZE)) {
-      return Long.valueOf(meta.get(FILE_SIZE).toString());
+      return Long.valueOf(meta.get(FILE_SIZE).toString()).longValue();
     }
     return 0;
   }
