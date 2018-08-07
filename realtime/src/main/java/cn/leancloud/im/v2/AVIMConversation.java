@@ -1151,7 +1151,7 @@ public class AVIMConversation {
     AVIMConversationMemberInfo info = new AVIMConversationMemberInfo(this.conversationId, memberId, role);
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS, info.getUpdateAttrs());
-    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_PROMOTE_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1172,7 +1172,7 @@ public class AVIMConversation {
     }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_MUTE_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
@@ -1194,7 +1194,7 @@ public class AVIMConversation {
     }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_UNMUTE_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
@@ -1218,7 +1218,7 @@ public class AVIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.QUERY_PARAM_LIMIT, limit);
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
-    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, callback);
     if (!ret) {
       callback.internalDone(null,
@@ -1240,7 +1240,7 @@ public class AVIMConversation {
     }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_BLOCK_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1261,7 +1261,7 @@ public class AVIMConversation {
     }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_UNBLOCK_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1284,7 +1284,7 @@ public class AVIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.QUERY_PARAM_LIMIT, limit);
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
-    boolean ret = InternalConfiguration.getOperationTube().updateMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, callback);
     if (!ret) {
       callback.internalDone(null,

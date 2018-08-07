@@ -140,14 +140,14 @@ public class DirectlyOperationTube implements OperationTube {
     return this.fetchReceiptTimestampsDirectly(clientId, conversationId, convType, operation, requestId);
   }
 
-  public boolean updateMembers(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
+  public boolean processMembers(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
                                 AVCallback callback) {
-    LOGGER.d("updateMembers...");
+    LOGGER.d("processMembers...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
     }
-    return this.updateMembersDirectly(clientId, conversationId, convType, params, op, requestId);
+    return this.processMembersDirectly(clientId, conversationId, convType, params, op, requestId);
   }
 
   public boolean queryMessages(String clientId, String conversationId, int convType, String params,
@@ -242,7 +242,7 @@ public class DirectlyOperationTube implements OperationTube {
     return true;
   }
 
-  public boolean updateMembersDirectly(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
+  public boolean processMembersDirectly(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
                                 int requestId) {
     AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
     AVConversationHolder holder = session.getConversationHolder(conversationId, convType);

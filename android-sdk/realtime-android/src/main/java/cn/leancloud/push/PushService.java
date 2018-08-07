@@ -473,23 +473,22 @@ public class PushService extends Service {
         break;
       case CONVERSATION_RM_MEMBER:
         break;
-      case CONVERSATION_BLOCK_MEMBER:
-        break;
-      case CONVERSATION_BLOCKED_MEMBER_QUERY:
-        break;
       case CONVERSATION_MUTE:
         break;
-      case CONVERSATION_MUTE_MEMBER:
-        break;
-      case CONVERSATION_MUTED_MEMBER_QUERY:
-        break;
-      case CONVERSATION_PROMOTE_MEMBER:
-        break;
-      case CONVERSATION_UNBLOCK_MEMBER:
-        break;
       case CONVERSATION_UNMUTE:
+        break;
+      case CONVERSATION_MUTE_MEMBER:
       case CONVERSATION_UNMUTE_MEMBER:
+      case CONVERSATION_UNBLOCK_MEMBER:
+      case CONVERSATION_BLOCK_MEMBER:
+      case CONVERSATION_PROMOTE_MEMBER:
+      case CONVERSATION_BLOCKED_MEMBER_QUERY:
+      case CONVERSATION_MUTED_MEMBER_QUERY:
+        this.directlyOperationTube.processMembersDirectly(clientId, conversationId, convType, keyData,
+            operation, requestId);
+        break;
       case CONVERSATION_UPDATE:
+        break;
       case CONVERSATION_FETCH_RECEIPT_TIME:
         break;
       case CONVERSATION_MEMBER_COUNT_QUERY:

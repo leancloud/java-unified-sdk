@@ -36,7 +36,7 @@ public interface OperationTube {
   boolean queryMessages(String clientId, String conversationId, int convType, String params,
                         Conversation.AVIMOperation operation, AVIMMessagesQueryCallback callback);
 
-  boolean updateMembers(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
+  boolean processMembers(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
                          AVCallback callback);
 
   boolean markConversationRead(String clientId, String conversationId, int convType, Map<String, Object> lastMessageParam);
