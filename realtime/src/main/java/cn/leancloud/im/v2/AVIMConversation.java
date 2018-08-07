@@ -1142,6 +1142,54 @@ public class AVIMConversation {
   }
 
   /**
+   * 在聊天对话中间增加新的参与者
+   *
+   * @param memberIds
+   * @param callback
+   * @since 3.0
+   */
+  public void addMembers(final List<String> memberIds, final AVIMConversationCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")));
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
+            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_ADD_MEMBER, callback);
+    if (!ret && null != callback) {
+      callback.internalDone(null,
+              new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
+  }
+
+  /**
+   * 在聊天对话中间增加新的参与者
+   *
+   * @param memberIds
+   * @param callback
+   * @since 3.0
+   */
+  public void kickMembers(final List<String> memberIds, final AVIMConversationCallback callback) {
+    if (null == memberIds || memberIds.size() < 1) {
+      if (null != callback) {
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")));
+      }
+      return;
+    }
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
+            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_RM_MEMBER, callback);
+    if (!ret && null != callback) {
+      callback.internalDone(null,
+              new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
+  }
+
+  /**
    * 更新成员的角色信息
    * @param memberId  成员的 client id
    * @param role      角色

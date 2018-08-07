@@ -469,14 +469,12 @@ public class PushService extends Service {
         break;
       case CONVERSATION_JOIN:
         break;
-      case CONVERSATION_ADD_MEMBER:
-        break;
-      case CONVERSATION_RM_MEMBER:
-        break;
       case CONVERSATION_MUTE:
         break;
       case CONVERSATION_UNMUTE:
         break;
+      case CONVERSATION_ADD_MEMBER:
+      case CONVERSATION_RM_MEMBER:
       case CONVERSATION_MUTE_MEMBER:
       case CONVERSATION_UNMUTE_MEMBER:
       case CONVERSATION_UNBLOCK_MEMBER:

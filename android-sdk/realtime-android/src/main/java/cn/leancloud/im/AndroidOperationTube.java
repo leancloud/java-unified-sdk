@@ -258,7 +258,7 @@ public class AndroidOperationTube implements OperationTube {
         AVIMOperation.CONVERSATION_MESSAGE_QUERY, receiver);
   }
 
-  public boolean updateMembers(String clientId, String conversationId, int convType, String params,
+  public boolean processMembers(String clientId, String conversationId, int convType, String params,
                                Conversation.AVIMOperation op, AVCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
