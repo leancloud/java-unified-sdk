@@ -6,6 +6,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AVUtils {
@@ -73,4 +74,13 @@ public class AVUtils {
   public static int hash(Object... values) {
     return Arrays.hashCode(values);
   }
+
+  public static void ensureElementsNotNull(List<String> e, String errorLog) {
+    for (String i : e) {
+      if (i == null) {
+        throw new NullPointerException(errorLog);
+      }
+    }
+  }
+
 }

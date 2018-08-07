@@ -38,6 +38,7 @@ public interface OperationTube {
 
   boolean updateMembers(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
                          AVCallback callback);
+  
   // response notifier
   void onOperationCompleted(String clientId, String conversationId, int requestId,
                             Conversation.AVIMOperation operation, Throwable throwable);

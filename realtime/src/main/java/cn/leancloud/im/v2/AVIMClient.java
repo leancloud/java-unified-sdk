@@ -57,7 +57,7 @@ public class AVIMClient {
       return code;
     }
 
-    static AVIMClientStatus getClientStatus(int code) {
+    public static AVIMClientStatus getClientStatus(int code) {
       switch (code) {
         case 110:
           return AVIMClientStatusNone;

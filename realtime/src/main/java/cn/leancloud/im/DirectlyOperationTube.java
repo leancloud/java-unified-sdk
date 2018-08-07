@@ -32,9 +32,7 @@ public class DirectlyOperationTube implements OperationTube {
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
     }
-    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
-    session.open(tag, userSessionToken, reConnect, requestId);
-    return true;
+    return openClientDirectly(clientId, tag, userSessionToken, reConnect, requestId);
   }
 
   public boolean queryClientStatus(String clientId, final AVIMClientStatusCallback callback) {
@@ -59,9 +57,7 @@ public class DirectlyOperationTube implements OperationTube {
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
     }
-    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
-    session.renewRealtimeSesionToken(requestId);
-    return true;
+    return renewSessionTokenDirectly(clientId, requestId);
   }
 
   public boolean closeClient(String self, AVIMClientCallback callback) {
@@ -70,9 +66,7 @@ public class DirectlyOperationTube implements OperationTube {
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(self, null, requestId, callback);
     }
-    AVSession session = AVSessionManager.getInstance().getOrCreateSession(self);
-    session.close(requestId);
-    return true;
+    return closeClientDirectly(self, requestId);
   }
 
   public boolean queryOnlineClients(String self, List<String> clients, final AVIMOnlineClientsCallback callback) {
@@ -81,9 +75,7 @@ public class DirectlyOperationTube implements OperationTube {
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(self, null, requestId, callback);
     }
-    AVSession session = AVSessionManager.getInstance().getOrCreateSession(self);
-    session.queryOnlinePeers(clients, requestId);
-    return true;
+    return queryOnlineClientsDirectly(self, clients, requestId);
   }
 
   public boolean createConversation(final String self, final List<String> memberList,
@@ -94,9 +86,7 @@ public class DirectlyOperationTube implements OperationTube {
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(self, null, requestId, callback);
     }
-    AVSession session = AVSessionManager.getInstance().getOrCreateSession(self);
-    session.createConversation(memberList, attribute, isTransient, isUnique, isTemp, tempTTL, false, requestId);
-    return true;
+    return createConversationDirectly(self, memberList, attribute, isTransient, isUnique, isTemp, tempTTL, requestId);
   }
 
   public boolean queryConversations(final String clientId, final String queryString, final AVIMCommonJsonCallback callback) {
@@ -109,9 +99,7 @@ public class DirectlyOperationTube implements OperationTube {
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
     }
-    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
-    session.queryConversations(JSON.parseObject(queryString, Map.class), requestId);
-    return true;
+    return this.queryConversationsDirectly(clientId, queryString, requestId);
   }
 
   public boolean sendMessage(String clientId, String conversationId, int convType, final AVIMMessage message,
@@ -121,11 +109,7 @@ public class DirectlyOperationTube implements OperationTube {
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
     }
-    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
-    AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
-    message.setFrom(clientId);
-    holder.sendMessage(message, requestId, null == messageOption? new AVIMMessageOption() : messageOption);
-    return true;
+    return this.sendMessageDirectly(clientId, conversationId, convType, message, messageOption, requestId);
   }
 
   public boolean updateMessage(String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage, AVIMCommonJsonCallback callback) {
@@ -134,11 +118,7 @@ public class DirectlyOperationTube implements OperationTube {
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(clientId, oldMessage.getConversationId(), requestId, callback);
     }
-    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
-    AVConversationHolder holder = session.getConversationHolder(oldMessage.getConversationId(), convType);
-    holder.patchMessage(oldMessage, newMessage, null, Conversation.AVIMOperation.CONVERSATION_UPDATE_MESSAGE,
-            requestId);
-    return true;
+    return this.updateMessageDirectly(clientId, convType, oldMessage, newMessage, requestId);
   }
 
   public boolean recallMessage(String clientId, int convType, AVIMMessage message, AVIMCommonJsonCallback callback) {
@@ -147,11 +127,7 @@ public class DirectlyOperationTube implements OperationTube {
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(clientId, message.getConversationId(), requestId, callback);
     }
-    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
-    AVConversationHolder holder = session.getConversationHolder(message.getConversationId(), convType);
-    holder.patchMessage(null, null, message, Conversation.AVIMOperation.CONVERSATION_RECALL_MESSAGE,
-            requestId);
-    return true;
+    return this.recallMessageDirectly(clientId, convType, message, requestId);
   }
 
   public boolean fetchReceiptTimestamps(String clientId, String conversationId, int convType,
@@ -161,10 +137,7 @@ public class DirectlyOperationTube implements OperationTube {
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
     }
-    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
-    AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
-    holder.getReceiptTime(requestId);
-    return true;
+    return this.fetchReceiptTimestampsDirectly(clientId, conversationId, convType, operation, requestId);
   }
 
   public boolean updateMembers(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
@@ -174,10 +147,7 @@ public class DirectlyOperationTube implements OperationTube {
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
     }
-    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
-    AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
-    holder.processConversationCommandFromClient(op, JSON.parseObject(params, Map.class), requestId);
-    return true;
+    return this.updateMembersDirectly(clientId, conversationId, convType, params, op, requestId);
   }
 
   public boolean queryMessages(String clientId, String conversationId, int convType, String params,
@@ -187,10 +157,90 @@ public class DirectlyOperationTube implements OperationTube {
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
     }
+    return this.queryMessagesDirectly(clientId, conversationId, convType, params, operation, requestId);
+  }
+
+  public boolean openClientDirectly(String clientId, String tag, String userSessionToken,
+                             boolean reConnect, int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    session.open(tag, userSessionToken, reConnect, requestId);
+    return true;
+  }
+
+  public boolean closeClientDirectly(String self, int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(self);
+    session.close(requestId);
+    return true;
+  }
+  public boolean renewSessionTokenDirectly(String clientId, int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    session.renewRealtimeSesionToken(requestId);
+    return true;
+  }
+  public boolean queryOnlineClientsDirectly(String self, List<String> clients, int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(self);
+    session.queryOnlinePeers(clients, requestId);
+    return true;
+  }
+
+  public boolean createConversationDirectly(final String self, final List<String> members,
+                                     final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
+                                     final boolean isTemp, int tempTTL, int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(self);
+    session.createConversation(members, attributes, isTransient, isUnique, isTemp, tempTTL, false, requestId);
+    return true;
+  }
+
+  public boolean queryConversationsDirectly(final String clientId, final String queryString, int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    session.queryConversations(JSON.parseObject(queryString, Map.class), requestId);
+    return true;
+  }
+
+  public boolean sendMessageDirectly(String clientId, String conversationId, int convType, final AVIMMessage message,
+                              final AVIMMessageOption messageOption, int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
+    message.setFrom(clientId);
+    holder.sendMessage(message, requestId, null == messageOption? new AVIMMessageOption() : messageOption);
+    return true;
+  }
+  public boolean updateMessageDirectly(String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage,
+                                int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(oldMessage.getConversationId(), convType);
+    holder.patchMessage(oldMessage, newMessage, null, Conversation.AVIMOperation.CONVERSATION_UPDATE_MESSAGE,
+            requestId);
+    return true;
+  }
+  public boolean recallMessageDirectly(String clientId, int convType, AVIMMessage message, int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(message.getConversationId(), convType);
+    holder.patchMessage(null, null, message, Conversation.AVIMOperation.CONVERSATION_RECALL_MESSAGE,
+            requestId);
+    return true;
+  }
+  public boolean fetchReceiptTimestampsDirectly(String clientId, String conversationId, int convType, Conversation.AVIMOperation operation,
+                                         int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
+    holder.getReceiptTime(requestId);
+    return true;
+  }
+  public boolean queryMessagesDirectly(String clientId, String conversationId, int convType, String params,
+                                Conversation.AVIMOperation operation, int requestId) {
     AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
     AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
     Map<String, Object> queryParam = JSON.parseObject(params, Map.class);
     holder.processConversationCommandFromClient(operation, queryParam, requestId);
+    return true;
+  }
+
+  public boolean updateMembersDirectly(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
+                                int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
+    holder.processConversationCommandFromClient(op, JSON.parseObject(params, Map.class), requestId);
     return true;
   }
 

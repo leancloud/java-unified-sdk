@@ -10,13 +10,20 @@ import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.net.ConnectivityManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 
+import com.alibaba.fastjson.JSON;
+
+import org.json.JSONObject;
+
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
@@ -25,14 +32,24 @@ import cn.leancloud.AVObject;
 import cn.leancloud.callback.AVCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.core.AppConfiguration;
+import cn.leancloud.im.DirectlyOperationTube;
 import cn.leancloud.im.InternalConfiguration;
+import cn.leancloud.im.v2.AVIMMessage;
+import cn.leancloud.im.v2.AVIMMessageOption;
 import cn.leancloud.im.v2.Conversation;
+import cn.leancloud.im.v2.Conversation.AVIMOperation;
+import cn.leancloud.im.v2.AVIMClient.AVIMClientStatus;
+import cn.leancloud.livequery.AVLiveQuery;
 import cn.leancloud.session.AVConnectionManager;
+import cn.leancloud.session.AVSession;
+import cn.leancloud.session.AVSessionManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+
+import static cn.leancloud.im.v2.AVIMClient.AVIMClientStatus.AVIMClientStatusNone;
 
 /**
  * <p>
@@ -95,11 +112,14 @@ public class PushService extends Service {
 
   AVConnectivityReceiver connectivityReceiver;
   AVShutdownReceiver shutdownReceiver;
+  DirectlyOperationTube directlyOperationTube;
 
   @Override
   public void onCreate() {
     LOGGER.d("PushService#onCreate");
     super.onCreate();
+    directlyOperationTube = new DirectlyOperationTube(true);
+
     connectionManager = AVConnectionManager.getInstance();
 
     connectivityReceiver = new AVConnectivityReceiver(new AVConnectivityListener() {
@@ -367,7 +387,135 @@ public class PushService extends Service {
   }
 
   private void processIMRequests(Intent intent) {
-    // FIXME
+    if (null == intent) {
+      return;
+    }
+    if (Conversation.AV_CONVERSATION_INTENT_ACTION.equalsIgnoreCase(intent.getAction())) {
+      processIMRequestsFromClient(intent);
+    } else {
+      processLiveQueryRequestsFromClient(intent);
+    }
+  }
+
+  private void processIMRequestsFromClient(Intent intent) {
+    String clientId = intent.getExtras().getString(Conversation.INTENT_KEY_CLIENT);
+
+    int requestId = intent.getExtras().getInt(Conversation.INTENT_KEY_REQUESTID);
+    Conversation.AVIMOperation operation = AVIMOperation.getAVIMOperation(
+        intent.getExtras().getInt(Conversation.INTENT_KEY_OPERATION));
+
+    String keyData = intent.getExtras().getString(Conversation.INTENT_KEY_DATA);
+    Map<String, Object> param = null;
+    if (!StringUtil.isEmpty(keyData)) {
+      param = JSON.parseObject(keyData, Map.class);
+    }
+    String conversationId = intent.getExtras().getString(Conversation.INTENT_KEY_CONVERSATION);
+    int convType = intent.getExtras().getInt(Conversation.INTENT_KEY_CONV_TYPE, 0);
+
+    switch (operation) {
+      case CLIENT_OPEN:
+        String tag = (String) param.get(Conversation.PARAM_CLIENT_TAG);
+        String userSession = (String) param.get(Conversation.PARAM_CLIENT_USERSESSIONTOKEN);
+        boolean reConnection = (boolean) param.get(Conversation.PARAM_CLIENT_RECONNECTION);
+        this.directlyOperationTube.openClientDirectly(clientId, tag, userSession, reConnection, requestId);
+        break;
+      case CLIENT_DISCONNECT:
+        this.directlyOperationTube.closeClientDirectly(clientId, requestId);
+        break;
+      case CLIENT_REFRESH_TOKEN:
+        this.directlyOperationTube.renewSessionTokenDirectly(clientId, requestId);
+        break;
+      case CLIENT_STATUS:
+        AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+        AVIMClientStatus status = AVIMClientStatusNone;
+        if (AVSession.Status.Opened != session.getCurrentStatus()) {
+          status = AVIMClientStatus.AVIMClientStatusPaused;
+        } else {
+          status = AVIMClientStatus.AVIMClientStatusOpened;
+        }
+        Map<String, Object> bundle = new HashMap<>();
+        bundle.put(Conversation.callbackClientStatus, status.getCode());
+        InternalConfiguration.getOperationTube().onOperationCompletedEx(clientId, null,
+            requestId, AVIMOperation.CLIENT_STATUS, bundle);
+        break;
+      case CLIENT_ONLINE_QUERY:
+        List<String> idList = (List<String>) param.get(Conversation.PARAM_ONLINE_CLIENTS);
+        this.directlyOperationTube.queryOnlineClientsDirectly(clientId, idList, requestId);
+        break;
+      case CONVERSATION_CREATION:
+        List<String> members = (List<String>) param.get(Conversation.PARAM_CONVERSATION_MEMBER);
+        boolean isUnique = false;
+        if (param.containsKey(Conversation.PARAM_CONVERSATION_ISUNIQUE)) {
+          isUnique = (boolean) param.get(Conversation.PARAM_CONVERSATION_ISUNIQUE);
+        }
+        boolean isTransient = false;
+        if (param.containsKey(Conversation.PARAM_CONVERSATION_ISTRANSIENT)) {
+          isTransient = (boolean) param.get(Conversation.PARAM_CONVERSATION_ISTRANSIENT);
+        }
+        boolean isTemp = false;
+        if (param.containsKey(Conversation.PARAM_CONVERSATION_ISTEMPORARY)) {
+          isTemp = (boolean) param.get(Conversation.PARAM_CONVERSATION_ISTEMPORARY);
+        }
+        int tempTTL = isTemp ? (int) param.get(Conversation.PARAM_CONVERSATION_TEMPORARY_TTL) : 0;
+        Map<String, Object> attributes = (Map<String, Object>) param.get(Conversation.PARAM_CONVERSATION_ATTRIBUTE);
+        directlyOperationTube.createConversationDirectly(clientId, members, attributes, isTransient,
+            isUnique, isTemp, tempTTL, requestId);
+        break;
+      case CONVERSATION_QUERY:
+        this.directlyOperationTube.queryConversationsDirectly(clientId, keyData, requestId);
+        break;
+      case CONVERSATION_QUIT:
+        break;
+      case CONVERSATION_JOIN:
+        break;
+      case CONVERSATION_ADD_MEMBER:
+        break;
+      case CONVERSATION_RM_MEMBER:
+        break;
+      case CONVERSATION_BLOCK_MEMBER:
+        break;
+      case CONVERSATION_BLOCKED_MEMBER_QUERY:
+        break;
+      case CONVERSATION_MUTE:
+        break;
+      case CONVERSATION_MUTE_MEMBER:
+        break;
+      case CONVERSATION_MUTED_MEMBER_QUERY:
+        break;
+      case CONVERSATION_PROMOTE_MEMBER:
+        break;
+      case CONVERSATION_UNBLOCK_MEMBER:
+        break;
+      case CONVERSATION_UNMUTE:
+      case CONVERSATION_UNMUTE_MEMBER:
+      case CONVERSATION_UPDATE:
+      case CONVERSATION_UPDATE_MESSAGE:
+        break;
+      case CONVERSATION_FETCH_RECEIPT_TIME:
+        break;
+      case CONVERSATION_MEMBER_COUNT_QUERY:
+        break;
+      case CONVERSATION_MESSAGE_QUERY:
+        this.directlyOperationTube.queryMessagesDirectly(clientId, conversationId, convType, keyData,
+            AVIMOperation.CONVERSATION_MESSAGE_QUERY, requestId);
+        break;
+      case CONVERSATION_READ:
+        //
+        break;
+      case CONVERSATION_RECALL_MESSAGE:
+        // FIXME
+        AVIMMessage recallMessage = null;
+        this.directlyOperationTube.recallMessageDirectly(clientId, convType, recallMessage, requestId);
+        break;
+      case CONVERSATION_SEND_MESSAGE:
+        // FIXME
+        AVIMMessage msg = null;
+        AVIMMessageOption option = null;
+        this.directlyOperationTube.sendMessageDirectly(clientId, conversationId, convType, msg, option, requestId);
+        break;
+      default:
+        break;
+    }
   }
 
   private void processRequestsWithException(Intent intent, AVException exception) {
@@ -383,6 +531,9 @@ public class PushService extends Service {
     }
   }
 
+  private void processLiveQueryRequestsFromClient(Intent intent) {
+    ;
+  }
   private static Handler _installationSaveHandler = new Handler(Looper.getMainLooper()) {
 
     public void handleMessage(Message m) {

@@ -52,6 +52,7 @@ dependencies {
     compile project(':storage-android')
 
     compile('cn.leancloud:realtime-core:5.0.0-SNAPSHOT')
+    compile 'com.android.support:support-v4:18.+'
 
 
     testImplementation 'junit:junit:4.12'

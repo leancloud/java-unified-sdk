@@ -5,7 +5,9 @@ import cn.leancloud.AVObject;
 public interface Conversation {
   String AV_CONVERSATION_INTENT_ACTION = "com.avoscloud.im.v2.action";
 
-  String AV_CONVERSATION_PARCEL_ACTION = "com.avoscloud.im.v2.parcel.action";
+  String PARAM_CLIENT_TAG = "client.tag";
+  String PARAM_CLIENT_USERSESSIONTOKEN = "client.userSession";
+  String PARAM_CLIENT_RECONNECTION = "client.reconnect";
 
   String PARAM_CONVERSATION_MEMBER = "conversation.member";
   String PARAM_CONVERSATION_ATTRIBUTE = "conversation.attributes";

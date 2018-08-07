@@ -142,6 +142,37 @@ public class AVIMConversationTest extends TestCase {
     Thread.sleep(2000);
   }
 
+  public void testConversationQuery() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+
+    AVIMConversationsQuery query = client.getConversationsQuery();
+    query.containsMembers(Arrays.asList("testUser1"));
+    query.addAscendingOrder("updatedAt");
+    query.findInBackground(new AVIMConversationQueryCallback() {
+      @Override
+      public void done(List<AVIMConversation> conversations, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to query converstaion.");
+        } else {
+          System.out.println("succeed to query converstaion.");
+          assertTrue(conversations.size() > 0);
+          opersationSucceed = true;
+        }
+        countDownLatch.countDown();
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
   public void testDummyConversationEventHandlerCounter() throws Exception {
     AVIMClient client = AVIMClient.getInstance("testUser");
     AVIMConversation conv = client.getConversation("conversationId");
