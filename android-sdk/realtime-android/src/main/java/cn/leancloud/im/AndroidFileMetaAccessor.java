@@ -8,6 +8,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.leancloud.im.v2.messages.AVIMFileMessage;
+import cn.leancloud.im.v2.messages.AVIMImageMessage;
+
 /**
  * Created by fengjunwen on 2018/7/4.
  */

@@ -2,6 +2,7 @@ package cn.leancloud.session;
 
 import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
+import cn.leancloud.callback.AVCallback;
 import cn.leancloud.command.CommandPacket;
 import cn.leancloud.command.LoginPacket;
 import cn.leancloud.core.AVOSCloud;
@@ -41,13 +42,15 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
 
   public synchronized static AVConnectionManager getInstance() {
     if (instance == null) {
-      instance = new AVConnectionManager();
+      instance = new AVConnectionManager(false);
     }
     return instance;
   }
 
-  private AVConnectionManager() {
-    initConnection();
+  private AVConnectionManager(boolean autoConnection) {
+    if (autoConnection) {
+      startConnection();
+    }
   }
 
   private void reConnectionRTMServer() {
@@ -59,14 +62,17 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
           long sleepMS = (long)Math.pow(2, retryConnectionCount) * 1000;
           try {
             Thread.sleep(sleepMS);
-            initConnection();
+            startConnection();
           } catch (InterruptedException ex) {
-            ;
+            LOGGER.w("failed to start connection.", ex);
           }
         }
       }).start();
+    } else {
+      LOGGER.e("have tried " + retryConnectionCount + " times, stop connecting...");
     }
   }
+
   private String updateTargetServer(RTMConnectionServerResponse rtmConnectionServerResponse) {
     String primaryServer = rtmConnectionServerResponse.getServer();
     String secondary = rtmConnectionServerResponse.getSecondary();
@@ -108,7 +114,11 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     webSocketClient.connect();
   }
 
-  private void initConnection() {
+  public void startConnection(AVCallback callback) {
+    ;
+  }
+
+  public void startConnection() {
     String specifiedServer = AVIMOptions.getGlobalOptions().getRtmServer();
     if (!StringUtil.isEmpty(specifiedServer)) {
       initWebSocketClient(specifiedServer);
@@ -116,7 +126,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
     final AppRouter appRouter = AppRouter.getInstance();
     final String installationId = AVInstallation.getCurrentInstallation().getInstallationId();
-    appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.RTM, retryConnectionCount < 1)
+    appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.RTM, retryConnectionCount > 0)
             .map(new Function<String, RTMConnectionServerResponse>() {
               @Override
               public RTMConnectionServerResponse apply(@NonNull String var1) throws Exception {
@@ -147,6 +157,21 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
             });
   }
 
+  public void cleanup() {
+    if (null != webSocketClient) {
+      try {
+        webSocketClient.close();
+      } catch (Exception ex) {
+        LOGGER.e("failed to close websocket client.", ex);
+      } finally {
+        webSocketClient = null;
+      }
+    }
+    this.connectionListeners.clear();
+    connectionEstablished = false;
+    retryConnectionCount = 0;
+  }
+
   public void subscribeConnectionListener(String clientId, AVConnectionListener listener) {
     if (null != listener) {
       this.connectionListeners.put(clientId, listener);
@@ -161,9 +186,6 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public boolean isConnectionEstablished() {
-    if (!this.connectionEstablished) {
-      ;
-    }
     return this.connectionEstablished;
   }
 

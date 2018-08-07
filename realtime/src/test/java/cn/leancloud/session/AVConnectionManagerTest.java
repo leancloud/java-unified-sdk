@@ -54,6 +54,7 @@ public class AVConnectionManagerTest extends TestCase {
 
   public void testInitConnection() throws Exception {
     AVConnectionManager manager = AVConnectionManager.getInstance();
+    manager.startConnection();
     manager.subscribeConnectionListener("", this.listener);
     if (!manager.isConnectionEstablished()) {
       this.countDownLatch.await(12, TimeUnit.SECONDS);
@@ -71,6 +72,7 @@ public class AVConnectionManagerTest extends TestCase {
 
   public void testLogin() throws Exception {
     AVConnectionManager manager = AVConnectionManager.getInstance();
+    manager.startConnection();
     manager.subscribeConnectionListener("", this.listener);
     if (!manager.isConnectionEstablished()) {
       this.countDownLatch.await(12, TimeUnit.SECONDS);

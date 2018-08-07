@@ -3,6 +3,8 @@ package cn.leancloud.cache;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.Map;
+
 import cn.leancloud.AVLogger;
 import cn.leancloud.utils.LogUtil;
 
@@ -69,7 +71,7 @@ public class AndroidSystemSetting implements SystemSetting {
       return null;
     }
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
-    return settting.getAll();
+    return (Map<String, Object>)setting.getAll();
   }
 
   public void saveBoolean(String keyZone, String key, boolean value) {

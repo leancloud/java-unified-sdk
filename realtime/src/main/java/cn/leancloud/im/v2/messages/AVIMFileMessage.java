@@ -28,8 +28,8 @@ public class AVIMFileMessage extends AVIMTypedMessage {
   static final String FILE_URL = "url";
   static final String FILE_META = "metaData";
   static final String FILE_SIZE = "size";
-  static final String FORMAT = "format";
-  static final String DURATION = "duration";
+  public static final String FORMAT = "format";
+  public static final String DURATION = "duration";
   private static final String LOCAL_PATH = "local_path";
 
   File localFile;

@@ -12,8 +12,8 @@ import java.util.Map;
 
 @AVIMMessageType(type = AVIMMessageType.IMAGE_MESSAGE_TYPE)
 public class AVIMImageMessage extends AVIMFileMessage {
-  static final String IMAGE_HEIGHT = "height";
-  static final String IMAGE_WIDTH = "width";
+  public static final String IMAGE_HEIGHT = "height";
+  public static final String IMAGE_WIDTH = "width";
 
   public AVIMImageMessage() {
     super();

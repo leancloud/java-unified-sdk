@@ -27,6 +27,7 @@ public class AVIMConversationTest extends TestCase {
     super(suiteName);
     Configure.initialize();
     AVConnectionManager manager = AVConnectionManager.getInstance();
+    manager.startConnection();
     try {
       Thread.sleep(3000);
     } catch (Exception ex) {

@@ -9,8 +9,13 @@ import android.content.Intent;
  */
 
 public class AVShutdownReceiver extends BroadcastReceiver {
-  @Override
+  private AVShutdownListener listener;
+
+  public AVShutdownReceiver(AVShutdownListener listener) {
+    this.listener = listener;
+  }
+
   public void onReceive(Context context, Intent intent) {
-    ;
+    this.listener.onShutdown(context);
   }
 }

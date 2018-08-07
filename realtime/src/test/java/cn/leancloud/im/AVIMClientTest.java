@@ -35,6 +35,7 @@ public class AVIMClientTest extends TestCase {
   protected void setUp() throws Exception {
     this.countDownLatch = new CountDownLatch(1);
     AVConnectionManager manager = AVConnectionManager.getInstance();
+    manager.startConnection();
     opersationSucceed = false;
   }
 
