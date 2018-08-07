@@ -38,6 +38,8 @@ public interface OperationTube {
 
   boolean updateMembers(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
                          AVCallback callback);
+
+  boolean markConversationRead(String clientId, String conversationId, int convType, Map<String, Object> lastMessageParam);
   
   // response notifier
   void onOperationCompleted(String clientId, String conversationId, int requestId,

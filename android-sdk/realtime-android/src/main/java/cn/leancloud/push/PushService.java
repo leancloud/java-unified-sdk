@@ -405,12 +405,13 @@ public class PushService extends Service {
         intent.getExtras().getInt(Conversation.INTENT_KEY_OPERATION));
 
     String keyData = intent.getExtras().getString(Conversation.INTENT_KEY_DATA);
+    AVIMMessage existedMessage = null;
     Map<String, Object> param = null;
     if (!StringUtil.isEmpty(keyData)) {
       param = JSON.parseObject(keyData, Map.class);
     }
     String conversationId = intent.getExtras().getString(Conversation.INTENT_KEY_CONVERSATION);
-    int convType = intent.getExtras().getInt(Conversation.INTENT_KEY_CONV_TYPE, 0);
+    int convType = intent.getExtras().getInt(Conversation.INTENT_KEY_CONV_TYPE, Conversation.CONV_TYPE_NORMAL);
 
     switch (operation) {
       case CLIENT_OPEN:
@@ -489,8 +490,6 @@ public class PushService extends Service {
       case CONVERSATION_UNMUTE:
       case CONVERSATION_UNMUTE_MEMBER:
       case CONVERSATION_UPDATE:
-      case CONVERSATION_UPDATE_MESSAGE:
-        break;
       case CONVERSATION_FETCH_RECEIPT_TIME:
         break;
       case CONVERSATION_MEMBER_COUNT_QUERY:
@@ -500,18 +499,25 @@ public class PushService extends Service {
             AVIMOperation.CONVERSATION_MESSAGE_QUERY, requestId);
         break;
       case CONVERSATION_READ:
-        //
+        this.directlyOperationTube.markConversationReadDirectly(clientId, conversationId, convType,
+            param, requestId);
         break;
       case CONVERSATION_RECALL_MESSAGE:
         // FIXME
-        AVIMMessage recallMessage = null;
-        this.directlyOperationTube.recallMessageDirectly(clientId, convType, recallMessage, requestId);
+        existedMessage = null;
+        this.directlyOperationTube.recallMessageDirectly(clientId, convType, existedMessage, requestId);
         break;
       case CONVERSATION_SEND_MESSAGE:
         // FIXME
-        AVIMMessage msg = null;
+        existedMessage = null;
         AVIMMessageOption option = null;
-        this.directlyOperationTube.sendMessageDirectly(clientId, conversationId, convType, msg, option, requestId);
+        this.directlyOperationTube.sendMessageDirectly(clientId, conversationId, convType,
+            existedMessage, option, requestId);
+        break;
+      case CONVERSATION_UPDATE_MESSAGE:
+        existedMessage = null;
+        AVIMMessage secondMessage = null;
+        this.directlyOperationTube.updateMessageDirectly(clientId, convType, existedMessage, secondMessage, requestId);
         break;
       default:
         break;

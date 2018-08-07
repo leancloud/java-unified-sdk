@@ -160,6 +160,12 @@ public class DirectlyOperationTube implements OperationTube {
     return this.queryMessagesDirectly(clientId, conversationId, convType, params, operation, requestId);
   }
 
+  public boolean markConversationRead(String clientId, String conversationId, int convType, Map<String, Object> lastMessageParam) {
+    LOGGER.d("markConversationRead...");
+    int requestId = WindTalker.getNextIMRequestId();
+    return this.markConversationReadDirectly(clientId, conversationId, convType, lastMessageParam, requestId);
+  }
+
   public boolean openClientDirectly(String clientId, String tag, String userSessionToken,
                              boolean reConnect, int requestId) {
     AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
@@ -241,6 +247,14 @@ public class DirectlyOperationTube implements OperationTube {
     AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
     AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
     holder.processConversationCommandFromClient(op, JSON.parseObject(params, Map.class), requestId);
+    return true;
+  }
+
+  public boolean markConversationReadDirectly(String clientId, String conversationId, int convType,
+                                              Map<String, Object> lastMessageParam, int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
+    holder.processConversationCommandFromClient(Conversation.AVIMOperation.CONVERSATION_READ, lastMessageParam, requestId);
     return true;
   }
 

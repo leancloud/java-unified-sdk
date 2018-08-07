@@ -218,7 +218,8 @@ public class AndroidOperationTube implements OperationTube {
         }
       };
     }
-    return false;
+    return this.sendClientCMDToPushService2(clientId, oldMessage.getConversationId(), convType, oldMessage,
+        newMessage, AVIMOperation.CONVERSATION_UPDATE_MESSAGE, receiver);
   }
 
   public boolean recallMessage(String clientId, int convType, AVIMMessage message, AVIMCommonJsonCallback callback) {
@@ -260,6 +261,13 @@ public class AndroidOperationTube implements OperationTube {
   public boolean updateMembers(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
                         AVCallback callback) {
     return false;
+  }
+
+  public boolean markConversationRead(String clientId, String conversationId, int convType,
+                                      Map<String, Object> lastMessageParam) {
+    String dataString = null == lastMessageParam? null : JSON.toJSONString(lastMessageParam);
+    return this.sendClientCMDToPushService(clientId, conversationId, convType, dataString,
+        null, null, AVIMOperation.CONVERSATION_READ, null);
   }
 
   protected boolean sendClientCMDToPushService(String clientId, String dataAsString, BroadcastReceiver receiver,
@@ -309,6 +317,39 @@ public class AndroidOperationTube implements OperationTube {
 //      if (null != option) {
 //        i.putExtra(Conversation.INTENT_KEY_MESSAGE_OPTION, option);
 //      }
+//    }
+    i.putExtra(Conversation.INTENT_KEY_CLIENT, clientId);
+    i.putExtra(Conversation.INTENT_KEY_CONVERSATION, conversationId);
+    i.putExtra(Conversation.INTENT_KEY_CONV_TYPE, convType);
+    i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
+    i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
+    try {
+      AVOSCloud.getContext().startService(IntentUtil.setupIntentFlags(i));
+    } catch (Exception ex) {
+      LOGGER.e("failed to startService. cause: " + ex.getMessage());
+      return false;
+    }
+    return true;
+  }
+
+  protected boolean sendClientCMDToPushService2(String clientId, String conversationId, int convType,
+                                               final AVIMMessage message, final AVIMMessage message2,
+                                               final AVIMOperation operation,
+                                               BroadcastReceiver receiver) {
+    int requestId = WindTalker.getNextIMRequestId();
+    if (null != receiver) {
+      LocalBroadcastManager.getInstance(AVOSCloud.getContext()).registerReceiver(receiver,
+          new IntentFilter(operation.getOperation() + requestId));
+    }
+    Intent i = new Intent(AVOSCloud.getContext(), PushService.class);
+    i.setAction(Conversation.AV_CONVERSATION_INTENT_ACTION);
+
+    // FIXME
+//    if (null != message) {
+//      i.putExtra(Conversation.INTENT_KEY_DATA, message);
+//    }
+//    if (null != message2) {
+//      i.putExtra(Conversation.INTENT_KEY_MESSAGE_EX, message2);
 //    }
     i.putExtra(Conversation.INTENT_KEY_CLIENT, clientId);
     i.putExtra(Conversation.INTENT_KEY_CONVERSATION, conversationId);

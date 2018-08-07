@@ -30,6 +30,7 @@ public interface Conversation {
   String PARAM_MESSAGE_QUERY_TYPE = "type";
 
   String INTENT_KEY_DATA = "conversation.data";
+  String INTENT_KEY_MESSAGE_EX = "conversation.message.ex";
   String INTENT_KEY_MESSAGE_OPTION = "conversation.messageoption";
   String INTENT_KEY_CLIENT_PARCEL = "conversation.client.parcel";
   String INTENT_KEY_CLIENT = "conversation.client";

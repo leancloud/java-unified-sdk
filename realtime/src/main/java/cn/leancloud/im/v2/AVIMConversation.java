@@ -1292,6 +1292,21 @@ public class AVIMConversation {
     }
   }
 
+  /**
+   * 清除未读消息
+   */
+  public void read() {
+    if (isTransient) {
+      AVIMMessage lastMessage = getLastMessage();
+      Map<String, Object> params = new HashMap<String, Object>();
+      if (null != lastMessage) {
+        params.put(Conversation.PARAM_MESSAGE_QUERY_MSGID, lastMessage.getMessageId());
+        params.put(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP, lastMessage.getTimestamp());
+      }
+      return;
+    }
+  }
+
   void updateLocalMessage(AVIMMessage message) {
     storage.updateMessageForPatch(message);
   }
