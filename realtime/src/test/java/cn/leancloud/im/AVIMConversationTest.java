@@ -217,6 +217,213 @@ public class AVIMConversationTest extends TestCase {
     assertTrue(this.conversationEventHandler.getCount(0x00ffFF) == 3);
   }
 
+  public void testConversationJoinAndQuit() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    String conversationId = "5b6a909c756571003d3e1603";
+    AVIMConversation conversation = client.getConversation(conversationId, true, false);
+    conversation.join(new AVIMConversationCallback() {
+      @Override
+      public void done(AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to join conversation. cause:" + e.getMessage());
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed to join conversation.");
+          try {
+            Thread.sleep(1000);
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          }
+          conversation.quit(new AVIMConversationCallback() {
+            @Override
+            public void done(AVIMException e) {
+              if (null != e) {
+                System.out.println("failed to quit conversation. cause:" + e.getMessage());
+              } else {
+                System.out.println("succeed to quit conversation.");
+                opersationSucceed = true;
+              }
+              countDownLatch.countDown();
+            }
+          });
+        }
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testConversationRead() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    String conversationId = "5805eefd8159ccabfc39bc1c";
+    AVIMConversation conversation = client.getConversation(conversationId, false, false);
+    conversation.join(new AVIMConversationCallback() {
+      @Override
+      public void done(AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to join conversation. cause: " + e.getMessage());
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed to join conversation");
+          conversation.read();
+          try {
+            Thread.sleep(1000);
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          }
+          conversation.quit(new AVIMConversationCallback() {
+            @Override
+            public void done(AVIMException e) {
+              if (null != e) {
+                System.out.println("failed to quit conversation. cause:" + e.getMessage());
+              } else {
+                System.out.println("succeed to quit conversation.");
+                opersationSucceed = true;
+              }
+              countDownLatch.countDown();
+            }
+          });
+        }
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testMuteConversation() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    String conversationId = "5805eefd8159ccabfc39bc1c";
+    AVIMConversation conversation = client.getConversation(conversationId, false, false);
+    conversation.join(new AVIMConversationCallback() {
+      @Override
+      public void done(AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to join conversation. cause: " + e.getMessage());
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed to join conversation");
+          try {
+            Thread.sleep(1000);
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          }
+          conversation.mute(new AVIMConversationCallback() {
+            @Override
+            public void done(AVIMException e) {
+              if (null != e) {
+                System.out.println("failed to mute conversation. cause:" + e.getMessage());
+                countDownLatch.countDown();
+              } else {
+                System.out.println("succeed to mute conversation.");
+                conversation.unmute(new AVIMConversationCallback() {
+                  @Override
+                  public void done(AVIMException e) {
+                    if (null != e) {
+                      System.out.println("failed to unmute conversation. cause:" + e.getMessage());
+                      countDownLatch.countDown();
+                    } else {
+                      System.out.println("succeed to unmute conversation.");
+                      conversation.quit(new AVIMConversationCallback() {
+                        @Override
+                        public void done(AVIMException e) {
+                          if (null != e) {
+                            System.out.println("failed to quit conversation. cause:" + e.getMessage());
+                          } else {
+                            System.out.println("succeed to quit conversation.");
+                            opersationSucceed = true;
+                          }
+                          countDownLatch.countDown();
+                        }
+                      });
+                    }
+                  }
+                });
+              }
+            }
+          });
+
+
+        }
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testMuteConversationMembers() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    List<String> members = Arrays.asList("testUser2", "testUser3", "testUser4");
+    List<String> blockMembers = Arrays.asList("testUser3", "testUser4");
+    client.createConversation(members, "UnitTestConversation", null, false, true, new AVIMConversationCreatedCallback() {
+      @Override
+      public void done(AVIMConversation conversation, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to create conversation. cause: " + e.getMessage());
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed to create conversation.");
+          conversation.muteMembers(blockMembers, new AVIMOperationPartiallySucceededCallback() {
+            @Override
+            public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+              if (null != e) {
+                System.out.println("failed to mute conversation members. cause: " + e.getMessage());
+                countDownLatch.countDown();
+              } else {
+                System.out.println("succeed to mute conversation members.");
+                conversation.unmuteMembers(blockMembers, new AVIMOperationPartiallySucceededCallback() {
+                  @Override
+                  public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                    if (null != e) {
+                      System.out.println("failed to mute conversation members. cause: " + e.getMessage());
+                    } else {
+                      System.out.println("succeed to unmute conversation members.");
+                      opersationSucceed = true;
+                    }
+                    countDownLatch.countDown();
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
   public void testSendAndReceiveMessage() throws Exception {
     final String senderId = "sender-" + System.currentTimeMillis();
     Thread.sleep(8000);
