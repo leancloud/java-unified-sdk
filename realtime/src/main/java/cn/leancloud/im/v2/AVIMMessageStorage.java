@@ -367,6 +367,7 @@ public class AVIMMessageStorage {
                           StorageQueryCallback callback) {
     if (null == this.delegate) {
       callback.done(null, null);
+      return;
     }
     String selection;
     String[] selectionArgs;

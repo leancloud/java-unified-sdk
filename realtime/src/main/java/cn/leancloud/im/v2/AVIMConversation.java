@@ -840,7 +840,9 @@ public class AVIMConversation {
               new AVIMMessageStorage.StorageQueryCallback() {
                 @Override
                 public void done(List<AVIMMessage> messages, List<Boolean> breakpoints) {
-                  Collections.reverse(messages);
+                  if (null != messages) {
+                    Collections.reverse(messages);
+                  }
                   callback.internalDone(messages, null);
                 }
               });

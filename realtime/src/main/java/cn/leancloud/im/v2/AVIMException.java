@@ -56,6 +56,8 @@ public class AVIMException extends AVException {
   public static AVIMException wrapperAVException(Throwable e) {
     if (e == null) {
       return null;
+    } else if (e instanceof AVIMException){
+      return (AVIMException)e;
     } else {
       return new AVIMException(e);
     }

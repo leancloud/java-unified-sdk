@@ -94,7 +94,7 @@ public class DirectlyOperationTube implements OperationTube {
     LOGGER.d("updateConversation...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
-      RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
+      RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
     }
     return this.updateConversationDirectly(clientId, conversationId, convType, param, requestId);
   }
@@ -104,7 +104,7 @@ public class DirectlyOperationTube implements OperationTube {
     LOGGER.d("participateConversation...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
-      RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
+      RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
     }
     return this.participateConversationDirectly(clientId, conversationId, convType, param, operation, requestId);
   }
@@ -127,7 +127,7 @@ public class DirectlyOperationTube implements OperationTube {
     LOGGER.d("sendMessage...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
-      RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
+      RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
     }
     return this.sendMessageDirectly(clientId, conversationId, convType, message, messageOption, requestId);
   }
@@ -136,7 +136,7 @@ public class DirectlyOperationTube implements OperationTube {
     LOGGER.d("updateMessage...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
-      RequestCache.getInstance().addRequestCallback(clientId, oldMessage.getConversationId(), requestId, callback);
+      RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
     }
     return this.updateMessageDirectly(clientId, convType, oldMessage, newMessage, requestId);
   }
@@ -145,7 +145,7 @@ public class DirectlyOperationTube implements OperationTube {
     LOGGER.d("recallMessage...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
-      RequestCache.getInstance().addRequestCallback(clientId, message.getConversationId(), requestId, callback);
+      RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
     }
     return this.recallMessageDirectly(clientId, convType, message, requestId);
   }
@@ -155,7 +155,7 @@ public class DirectlyOperationTube implements OperationTube {
     LOGGER.d("fetchReceiptTimestamps...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
-      RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
+      RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
     }
     return this.fetchReceiptTimestampsDirectly(clientId, conversationId, convType, operation, requestId);
   }
@@ -165,7 +165,7 @@ public class DirectlyOperationTube implements OperationTube {
     LOGGER.d("processMembers...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
-      RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
+      RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
     }
     return this.processMembersDirectly(clientId, conversationId, convType, params, op, requestId);
   }
@@ -175,7 +175,7 @@ public class DirectlyOperationTube implements OperationTube {
     LOGGER.d("queryMessages...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
-      RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
+      RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
     }
     return this.queryMessagesDirectly(clientId, conversationId, convType, params, operation, requestId);
   }
@@ -237,25 +237,6 @@ public class DirectlyOperationTube implements OperationTube {
     AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
     AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
     holder.processConversationCommandFromClient(operation, param, requestId);
-//    boolean result = true;
-//    switch (operation) {
-//      case CONVERSATION_JOIN:
-//        holder.join(requestId);
-//        break;
-//      case CONVERSATION_QUIT:
-//        holder.quit(requestId);
-//        break;
-//      case CONVERSATION_MUTE:
-//        holder.mute(requestId);
-//        break;
-//      case CONVERSATION_UNMUTE:
-//        holder.unmute(requestId);
-//        break;
-//      default:
-//        result = false;
-//        break;
-//    }
-
     return true;
   }
 
@@ -316,22 +297,7 @@ public class DirectlyOperationTube implements OperationTube {
 
   private AVCallback getCachedCallback(final String clientId, final String conversationId, int requestId,
                                        Conversation.AVIMOperation operation) {
-    AVCallback callback = null;
-    switch (operation) {
-      case CLIENT_DISCONNECT:
-      case CLIENT_ONLINE_QUERY:
-      case CLIENT_OPEN:
-      case CLIENT_STATUS:
-      case CLIENT_REFRESH_TOKEN:
-      case CONVERSATION_CREATION:
-      case CONVERSATION_QUERY:
-        callback = RequestCache.getInstance().getRequestCallback(clientId, null, requestId);
-        break;
-      default:
-        callback = RequestCache.getInstance().getRequestCallback(clientId, conversationId, requestId);
-        break;
-    }
-    return callback;
+    return RequestCache.getInstance().getRequestCallback(clientId, null, requestId);
   }
 
   public void onOperationCompleted(String clientId, String conversationId, int requestId,
@@ -378,6 +344,9 @@ public class DirectlyOperationTube implements OperationTube {
       case CONVERSATION_MUTED_MEMBER_QUERY:
       case CONVERSATION_BLOCKED_MEMBER_QUERY:
         callback.internalDone(resultData, null);
+        break;
+      case CONVERSATION_MESSAGE_QUERY:
+        callback.internalDone(resultData.get(Conversation.callbackHistoryMessages), null);
         break;
       default:
         callback.internalDone(resultData, null);

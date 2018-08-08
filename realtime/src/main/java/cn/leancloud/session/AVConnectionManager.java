@@ -103,7 +103,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
         webSocketClient = null;
       }
     }
-    int connectTimeout = AVIMOptions.getGlobalOptions().getTimeoutInSecs();
+    int connectTimeout = AVIMOptions.getGlobalOptions().getTimeoutInSecs() * 1000;// milliseconds
     if (AVIMOptions.getGlobalOptions().isOnlyPushCount()) {
       webSocketClient = new AVStandardWebSocketClient(URI.create(targetServer), AVStandardWebSocketClient.SUB_PROTOCOL_2_3,
               true, true, sf, connectTimeout, AVConnectionManager.this);

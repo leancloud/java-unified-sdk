@@ -517,6 +517,7 @@ public class AVIMConversationsQuery {
         try {
           queryFromCache(callback, queryParams);
         } catch (Exception ex) {
+          LOGGER.d("encounter exception while query from cache.", ex);
           queryFromNetwork(callback, queryParams);
         }
         break;
@@ -539,8 +540,8 @@ public class AVIMConversationsQuery {
 
   private void queryFromCache(final AVIMConversationQueryCallback callback,
                               final Map<String, String> queryParams) {
-    QueryResultCache.getInstance().getCacheRawResult(CONVERSATION_CLASS_NAME, queryParams, maxAge, true)
-            .map(new Function<String, List<AVIMConversation>>() {
+    List<AVIMConversation> result = QueryResultCache.getInstance().getCacheRawResult(CONVERSATION_CLASS_NAME, queryParams,
+            maxAge, true).map(new Function<String, List<AVIMConversation>>() {
               @Override
               public List<AVIMConversation> apply(@NonNull String content) throws Exception {
                 LOGGER.d("map function. input: " + content);
@@ -550,39 +551,10 @@ public class AVIMConversationsQuery {
                 LOGGER.d("map function. output: " + conversations.size());
                 return conversations;
               }
-            })
-            .subscribe(new Observer<List<AVIMConversation>>() {
-              @Override
-              public void onSubscribe(Disposable disposable) {
-                LOGGER.d("onSubscribe");
-              }
-
-              @Override
-              public void onNext(List<AVIMConversation> avimConversations) {
-                LOGGER.d("onNext with convesations:" + avimConversations);
-                if (null != callback) {
-                  callback.internalDone(avimConversations, null);
-                }
-              }
-
-              @Override
-              public void onError(Throwable throwable) {
-                throwable.printStackTrace();
-              }
-
-              @Override
-              public void onComplete() {
-                LOGGER.d("onComplete");
-              }
-            });
-//    new Consumer<List<AVIMConversation>>() {
-//      @Override
-//      public void accept(List<AVIMConversation> result) throws Exception {
-//        if (null != callback) {
-//          callback.internalDone(result, null);
-//        }
-//      }
-//    }
+            }).blockingFirst();
+    if (null != callback) {
+      callback.internalDone(result, null);
+    }
   }
 
   private void queryFromNetwork(final AVIMConversationQueryCallback callback,
