@@ -1,9 +1,6 @@
 package cn.leancloud.im.v2;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVObject;
-import cn.leancloud.AVQuery;
-import cn.leancloud.ObjectValueFilter;
+import cn.leancloud.*;
 import cn.leancloud.cache.QueryResultCache;
 import cn.leancloud.callback.GenericObjectCallback;
 import cn.leancloud.core.AppConfiguration;
@@ -12,17 +9,24 @@ import cn.leancloud.im.v2.callback.AVIMCommonJsonCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationQueryCallback;
 import cn.leancloud.query.QueryOperation;
 import cn.leancloud.types.AVGeoPoint;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import io.reactivex.Observer;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 import javax.management.Query;
 import java.io.Serializable;
 import java.util.*;
 
 public class AVIMConversationsQuery {
+  private static final AVLogger LOGGER = LogUtil.getLogger(AVIMConversationsQuery.class);
+
   private static final String CONVERSATION_CLASS_NAME = "_conversation";
   private AVIMClient client;
   AVIMConversationQueryConditions conditions;
@@ -535,20 +539,50 @@ public class AVIMConversationsQuery {
 
   private void queryFromCache(final AVIMConversationQueryCallback callback,
                               final Map<String, String> queryParams) {
-    QueryResultCache.getInstance().getCacheResult(CONVERSATION_CLASS_NAME, queryParams, maxAge, true)
-            .subscribe(new Consumer<List<AVObject>>() {
+    QueryResultCache.getInstance().getCacheRawResult(CONVERSATION_CLASS_NAME, queryParams, maxAge, true)
+            .map(new Function<String, List<AVIMConversation>>() {
               @Override
-              public void accept(List<AVObject> avObjects) throws Exception {
-                List<AVIMConversation> result = new ArrayList<>();
-                for (AVObject obj : avObjects) {
-                  AVIMConversation conv = AVIMConversation.parseFromJson(AVIMConversationsQuery.this.client, obj.toJSONObject());
-                  result.add(conv);
-                }
+              public List<AVIMConversation> apply(@NonNull String content) throws Exception {
+                LOGGER.d("map function. input: " + content);
+                List<String> conversationList = JSON.parseObject(content, List.class);
+                List<AVIMConversation> conversations =
+                        client.getStorage().getCachedConversations(conversationList);
+                LOGGER.d("map function. output: " + conversations.size());
+                return conversations;
+              }
+            })
+            .subscribe(new Observer<List<AVIMConversation>>() {
+              @Override
+              public void onSubscribe(Disposable disposable) {
+                LOGGER.d("onSubscribe");
+              }
+
+              @Override
+              public void onNext(List<AVIMConversation> avimConversations) {
+                LOGGER.d("onNext with convesations:" + avimConversations);
                 if (null != callback) {
-                  callback.internalDone(result, null);
+                  callback.internalDone(avimConversations, null);
                 }
               }
+
+              @Override
+              public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+              }
+
+              @Override
+              public void onComplete() {
+                LOGGER.d("onComplete");
+              }
             });
+//    new Consumer<List<AVIMConversation>>() {
+//      @Override
+//      public void accept(List<AVIMConversation> result) throws Exception {
+//        if (null != callback) {
+//          callback.internalDone(result, null);
+//        }
+//      }
+//    }
   }
 
   private void queryFromNetwork(final AVIMConversationQueryCallback callback,
@@ -569,17 +603,17 @@ public class AVIMConversationsQuery {
         if (null != result) {
           Object callbackData = result.get(Conversation.callbackData);
           if (callbackData instanceof JSONArray) {
-              JSONArray content = (JSONArray) callbackData;
-              conversations = parseQueryResult(content);
-              if (null != conversations && conversations.size() > 0) {
-                cacheQueryResult(queryParams, conversations);
-              }
-            } else if (callbackData instanceof String) {
-              conversations = parseQueryResult(JSON.parseArray(String.valueOf(callbackData)));
-              if (null != conversations && conversations.size() > 0) {
-                cacheQueryResult(queryParams, conversations);
-              }
+            JSONArray content = (JSONArray) callbackData;
+            conversations = parseQueryResult(content);
+            if (null != conversations && conversations.size() > 0) {
+              cacheQueryResult(queryParams, conversations);
             }
+          } else if (callbackData instanceof String) {
+            conversations = parseQueryResult(JSON.parseArray(String.valueOf(callbackData)));
+            if (null != conversations && conversations.size() > 0) {
+              cacheQueryResult(queryParams, conversations);
+            }
+          }
         }
         if (null != callback) {
           callback.internalDone(conversations, e);

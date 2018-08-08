@@ -8,6 +8,7 @@ import cn.leancloud.query.AVQueryResult;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -70,6 +71,58 @@ public class QueryResultCache extends LocalStorage {
       return false;
     }
     return true;
+  }
+
+  public Observable<String> getCacheRawResult(final String className, final Map<String, String> query,
+                                              final long maxAgeInMilliseconds, final boolean isFinal) {
+    LOGGER.d("try to get cache raw result for class:" + className);
+    AppConfiguration.SchedulerCreator creator = AppConfiguration.getDefaultScheduler();
+    boolean isAsync = AppConfiguration.isAsynchronized();
+
+    Callable<String> callable = new Callable<String>() {
+      public String call() throws Exception {
+        String cacheKey = generateKeyForQueryCondition(className, query);
+        File cacheFile = getCacheFile(cacheKey);
+        if (null == cacheFile || !cacheFile.exists()) {
+          LOGGER.d("cache file(key=" + cacheKey + ") not existed.");
+          if (isFinal) {
+            throw new FileNotFoundException("cache is not existed.");
+          } else {
+            return "";
+          }
+        }
+        if (maxAgeInMilliseconds > 0 && (System.currentTimeMillis() - cacheFile.lastModified() > maxAgeInMilliseconds)) {
+          LOGGER.d("cache file(key=" + cacheKey + ") is expired.");
+          if (isFinal) {
+            throw new FileNotFoundException("cache file is expired.");
+          } else {
+            return "";
+          }
+        }
+        byte[] data = readData(cacheFile);
+        if (null == data) {
+          LOGGER.d("cache file(key=" + cacheKey + ") is empty.");
+          if (isFinal) {
+            throw new InterruptedException("failed to read cache file.");
+          } else {
+            return "";
+          }
+        }
+        String content = new String(data, 0, data.length, "UTF-8");
+        LOGGER.d("cache file(key=" + cacheKey + "), content: " + content);
+        return content;
+      }
+    };
+    FutureTask<String> futureTask = new FutureTask<>(callable);
+    executor.submit(futureTask);
+    Observable result = Observable.fromFuture(futureTask);
+    if (isAsync) {
+      result = result.subscribeOn(Schedulers.io());
+    }
+    if (null != creator) {
+      result = result.observeOn(creator.create());
+    }
+    return result;
   }
 
   public Observable<List<AVObject>> getCacheResult(final String className, final Map<String, String> query,

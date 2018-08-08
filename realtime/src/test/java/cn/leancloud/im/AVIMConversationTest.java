@@ -1,5 +1,6 @@
 package cn.leancloud.im;
 
+import cn.leancloud.AVQuery;
 import cn.leancloud.Configure;
 import cn.leancloud.im.v2.*;
 import cn.leancloud.im.v2.callback.*;
@@ -26,6 +27,8 @@ public class AVIMConversationTest extends TestCase {
   public AVIMConversationTest(String suiteName) {
     super(suiteName);
     Configure.initialize();
+    AVIMClient.setClientEventHandler(new DummyClientEventHandler());
+    AVIMMessageManager.setConversationEventHandler(conversationEventHandler);
     AVConnectionManager manager = AVConnectionManager.getInstance();
     manager.startConnection();
     try {
@@ -33,8 +36,6 @@ public class AVIMConversationTest extends TestCase {
     } catch (Exception ex) {
       ex.printStackTrace();
     }
-    AVIMClient.setClientEventHandler(new DummyClientEventHandler());
-    AVIMMessageManager.setConversationEventHandler(conversationEventHandler);
   }
 
   @Override
@@ -142,7 +143,7 @@ public class AVIMConversationTest extends TestCase {
     Thread.sleep(2000);
   }
 
-  public void testConversationQuery() throws Exception {
+  public void testConversationQueryWithCache() throws Exception {
     client = AVIMClient.getInstance("testUser1");
     CountDownLatch tmpCounter = new CountDownLatch(1);
     client.open(new AVIMClientCallback() {
@@ -163,8 +164,42 @@ public class AVIMConversationTest extends TestCase {
           System.out.println("failed to query converstaion.");
         } else {
           System.out.println("succeed to query converstaion.");
-          assertTrue(conversations.size() > 0);
+          for (AVIMConversation conv: conversations) {
+            System.out.println(conv);
+          }
+          // in core library, no db cache.
           opersationSucceed = true;
+        }
+        countDownLatch.countDown();
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testConversationQueryWithNetwork() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+
+    AVIMConversationsQuery query = client.getConversationsQuery();
+    query.containsMembers(Arrays.asList("testUser1"));
+    query.addAscendingOrder("updatedAt");
+    query.setQueryPolicy(AVQuery.CachePolicy.NETWORK_ELSE_CACHE);
+    query.findInBackground(new AVIMConversationQueryCallback() {
+      @Override
+      public void done(List<AVIMConversation> conversations, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to query converstaion.");
+        } else {
+          System.out.println("succeed to query converstaion.");
+          opersationSucceed = conversations.size() > 0;
         }
         countDownLatch.countDown();
       }
