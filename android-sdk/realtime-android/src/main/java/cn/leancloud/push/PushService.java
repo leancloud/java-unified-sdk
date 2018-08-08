@@ -469,12 +469,11 @@ public class PushService extends Service {
         this.directlyOperationTube.updateConversationDirectly(clientId, conversationId, convType, param, requestId);
         break;
       case CONVERSATION_QUIT:
-        break;
       case CONVERSATION_JOIN:
-        break;
       case CONVERSATION_MUTE:
-        break;
       case CONVERSATION_UNMUTE:
+        this.directlyOperationTube.participateConversationDirectly(clientId, conversationId, convType,
+            param, operation, requestId);
         break;
       case CONVERSATION_ADD_MEMBER:
       case CONVERSATION_RM_MEMBER:
@@ -485,12 +484,10 @@ public class PushService extends Service {
       case CONVERSATION_PROMOTE_MEMBER:
       case CONVERSATION_BLOCKED_MEMBER_QUERY:
       case CONVERSATION_MUTED_MEMBER_QUERY:
+      case CONVERSATION_FETCH_RECEIPT_TIME:
+      case CONVERSATION_MEMBER_COUNT_QUERY:
         this.directlyOperationTube.processMembersDirectly(clientId, conversationId, convType, keyData,
             operation, requestId);
-        break;
-      case CONVERSATION_FETCH_RECEIPT_TIME:
-        break;
-      case CONVERSATION_MEMBER_COUNT_QUERY:
         break;
       case CONVERSATION_MESSAGE_QUERY:
         this.directlyOperationTube.queryMessagesDirectly(clientId, conversationId, convType, keyData,
@@ -518,6 +515,7 @@ public class PushService extends Service {
         this.directlyOperationTube.updateMessageDirectly(clientId, convType, existedMessage, secondMessage, requestId);
         break;
       default:
+        LOGGER.w("not support operation: " + operation);
         break;
     }
   }

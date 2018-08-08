@@ -26,6 +26,9 @@ public interface OperationTube {
   boolean updateConversation(final String clientId, String conversationId, int convType, final Map<String, Object> param,
                              final AVIMCommonJsonCallback callback);
 
+  boolean participateConversation(final String clientId, String conversationId, int convType, final Map<String, Object> param,
+                                  Conversation.AVIMOperation operation, final AVIMConversationCallback callback);
+
   boolean queryConversations(final String clientId, final String queryString, final AVIMCommonJsonCallback callback);
   boolean queryConversationsInternally(final String clientId, final String queryString, final AVIMCommonJsonCallback callback);
 

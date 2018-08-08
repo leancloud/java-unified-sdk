@@ -1338,11 +1338,38 @@ public class AVIMConversation {
   }
 
   /**
+   * 查询成员数量
+   * @param callback
+   */
+  public void getMemberCount(AVIMConversationMemberCountCallback callback) {
+    if (StringUtil.isEmpty(getConversationId())) {
+      if (null != callback) {
+        callback.internalDone(new AVException(AVException.INVALID_QUERY, "ConversationId is empty"));
+      } else {
+        LOGGER.w("ConversationId is empty");
+      }
+      return;
+    }
+    InternalConfiguration.getOperationTube().processMembers(client.getClientId(), conversationId, getType(), null,
+            Conversation.AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, callback);
+  }
+
+  /**
    * 静音，客户端拒绝收到服务器端的离线推送通知
    *
    * @param callback
    */
   public void mute(final AVIMConversationCallback callback) {
+    if (StringUtil.isEmpty(getConversationId())) {
+      if (null != callback) {
+        callback.internalDone(new AVException(AVException.INVALID_QUERY, "ConversationId is empty"));
+      } else {
+        LOGGER.w("ConversationId is empty");
+      }
+      return;
+    }
+    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), conversationId, getType(),
+            null, Conversation.AVIMOperation.CONVERSATION_MUTE, callback);
   }
 
   /**
@@ -1351,6 +1378,16 @@ public class AVIMConversation {
    * @param callback
    */
   public void unmute(final AVIMConversationCallback callback) {
+    if (StringUtil.isEmpty(getConversationId())) {
+      if (null != callback) {
+        callback.internalDone(new AVException(AVException.INVALID_QUERY, "ConversationId is empty"));
+      } else {
+        LOGGER.w("ConversationId is empty");
+      }
+      return;
+    }
+    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), conversationId, getType(),
+            null, Conversation.AVIMOperation.CONVERSATION_UNMUTE, callback);
   }
 
   /**
@@ -1360,6 +1397,34 @@ public class AVIMConversation {
    * @since 3.0
    */
   public void quit(final AVIMConversationCallback callback) {
+    if (StringUtil.isEmpty(getConversationId())) {
+      if (null != callback) {
+        callback.internalDone(new AVException(AVException.INVALID_QUERY, "ConversationId is empty"));
+      } else {
+        LOGGER.w("ConversationId is empty");
+      }
+      return;
+    }
+    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), conversationId, getType(),
+            null, Conversation.AVIMOperation.CONVERSATION_QUIT, callback);
+  }
+
+  /**
+   * 加入当前聊天对话
+   *
+   * @param callback
+   */
+  public void join(AVIMConversationCallback callback) {
+    if (StringUtil.isEmpty(getConversationId())) {
+      if (null != callback) {
+        callback.internalDone(new AVException(AVException.INVALID_QUERY, "ConversationId is empty"));
+      } else {
+        LOGGER.w("ConversationId is empty");
+      }
+      return;
+    }
+    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), conversationId, getType(),
+            null, Conversation.AVIMOperation.CONVERSATION_JOIN, callback);
   }
 
   /**
@@ -1383,7 +1448,6 @@ public class AVIMConversation {
    * @param callback
    * @since 3.0
    */
-
   public void updateInfoInBackground(AVIMConversationCallback callback) {
     if (!pendingAttributes.isEmpty() || !pendingInstanceData.isEmpty()) {
       Map<String, Object> attributesMap = new HashMap<>();

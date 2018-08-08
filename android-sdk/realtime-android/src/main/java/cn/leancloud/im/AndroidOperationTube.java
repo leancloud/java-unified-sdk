@@ -33,6 +33,7 @@ import cn.leancloud.im.v2.Conversation.AVIMOperation;
 import cn.leancloud.im.v2.callback.AVIMClientCallback;
 import cn.leancloud.im.v2.callback.AVIMClientStatusCallback;
 import cn.leancloud.im.v2.callback.AVIMCommonJsonCallback;
+import cn.leancloud.im.v2.callback.AVIMConversationCallback;
 import cn.leancloud.im.v2.callback.AVIMMessagesQueryCallback;
 import cn.leancloud.im.v2.callback.AVIMOnlineClientsCallback;
 import cn.leancloud.push.PushService;
@@ -179,6 +180,24 @@ public class AndroidOperationTube implements OperationTube {
     }
     return this.sendClientCMDToPushService(clientId, conversationId, convType, JSON.toJSONString(param),
         null, null, AVIMOperation.CONVERSATION_UPDATE, receiver);
+  }
+
+  public boolean participateConversation(final String clientId, String conversationId, int convType, final Map<String, Object> param,
+                                         Conversation.AVIMOperation operation, final AVIMConversationCallback callback) {
+    BroadcastReceiver receiver = null;
+    if (callback != null) {
+      receiver = new AVIMBaseBroadcastReceiver(callback) {
+
+        @Override
+        public void execute(Intent intent, Throwable error) {
+          Bundle data = intent.getExtras();
+          callback.internalDone(data, AVIMException.wrapperAVException(error));
+        }
+      };
+    }
+    String paramString = null != param? JSON.toJSONString(param) : null;
+    return this.sendClientCMDToPushService(clientId, conversationId, convType, paramString,
+        null, null, operation, receiver);
   }
 
   public boolean queryConversations(final String clientId, final String queryString, final AVIMCommonJsonCallback callback) {

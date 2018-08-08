@@ -99,6 +99,16 @@ public class DirectlyOperationTube implements OperationTube {
     return this.updateConversationDirectly(clientId, conversationId, convType, param, requestId);
   }
 
+  public boolean participateConversation(final String clientId, String conversationId, int convType, final Map<String, Object> param,
+                                         Conversation.AVIMOperation operation, final AVIMConversationCallback callback) {
+    LOGGER.d("participateConversation...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
+    }
+    return this.participateConversationDirectly(clientId, conversationId, convType, param, operation, requestId);
+  }
+
   public boolean queryConversations(final String clientId, final String queryString, final AVIMCommonJsonCallback callback) {
     return queryConversationsInternally(clientId, queryString, callback);
   }
@@ -218,6 +228,34 @@ public class DirectlyOperationTube implements OperationTube {
     AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
     AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
     holder.updateInfo(param, requestId);
+    return true;
+  }
+
+  public boolean participateConversationDirectly(final String clientId, String conversationId, int convType,
+                                                 final Map<String, Object> param,
+                                                 Conversation.AVIMOperation operation, int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
+    holder.processConversationCommandFromClient(operation, param, requestId);
+//    boolean result = true;
+//    switch (operation) {
+//      case CONVERSATION_JOIN:
+//        holder.join(requestId);
+//        break;
+//      case CONVERSATION_QUIT:
+//        holder.quit(requestId);
+//        break;
+//      case CONVERSATION_MUTE:
+//        holder.mute(requestId);
+//        break;
+//      case CONVERSATION_UNMUTE:
+//        holder.unmute(requestId);
+//        break;
+//      default:
+//        result = false;
+//        break;
+//    }
+
     return true;
   }
 
