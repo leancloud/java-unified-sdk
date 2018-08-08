@@ -89,6 +89,16 @@ public class DirectlyOperationTube implements OperationTube {
     return createConversationDirectly(self, memberList, attribute, isTransient, isUnique, isTemp, tempTTL, requestId);
   }
 
+  public boolean updateConversation(final String clientId, String conversationId, int convType,
+                                    final Map<String, Object> param, final AVIMCommonJsonCallback callback) {
+    LOGGER.d("updateConversation...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(clientId, conversationId, requestId, callback);
+    }
+    return this.updateConversationDirectly(clientId, conversationId, convType, param, requestId);
+  }
+
   public boolean queryConversations(final String clientId, final String queryString, final AVIMCommonJsonCallback callback) {
     return queryConversationsInternally(clientId, queryString, callback);
   }
@@ -200,6 +210,14 @@ public class DirectlyOperationTube implements OperationTube {
   public boolean queryConversationsDirectly(final String clientId, final String queryString, int requestId) {
     AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
     session.queryConversations(JSON.parseObject(queryString, Map.class), requestId);
+    return true;
+  }
+
+  public boolean updateConversationDirectly(final String clientId, String conversationId, int convType,
+                                            final Map<String, Object> param, int requestId) {
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVConversationHolder holder = session.getConversationHolder(conversationId, convType);
+    holder.updateInfo(param, requestId);
     return true;
   }
 

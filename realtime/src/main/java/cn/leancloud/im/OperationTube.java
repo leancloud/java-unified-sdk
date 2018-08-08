@@ -23,6 +23,9 @@ public interface OperationTube {
                              final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
                              final boolean isTemp, int tempTTL, final AVIMCommonJsonCallback callback);
 
+  boolean updateConversation(final String clientId, String conversationId, int convType, final Map<String, Object> param,
+                             final AVIMCommonJsonCallback callback);
+
   boolean queryConversations(final String clientId, final String queryString, final AVIMCommonJsonCallback callback);
   boolean queryConversationsInternally(final String clientId, final String queryString, final AVIMCommonJsonCallback callback);
 

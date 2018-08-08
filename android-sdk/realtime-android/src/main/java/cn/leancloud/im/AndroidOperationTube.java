@@ -164,6 +164,23 @@ public class AndroidOperationTube implements OperationTube {
         AVIMOperation.CONVERSATION_CREATION);
   }
 
+  public boolean updateConversation(final String clientId, String conversationId, int convType,
+                                    final Map<String, Object> param, final AVIMCommonJsonCallback callback) {
+    BroadcastReceiver receiver = null;
+    if (callback != null) {
+      receiver = new AVIMBaseBroadcastReceiver(callback) {
+
+        @Override
+        public void execute(Intent intent, Throwable error) {
+          Bundle data = intent.getExtras();
+          callback.internalDone(data, AVIMException.wrapperAVException(error));
+        }
+      };
+    }
+    return this.sendClientCMDToPushService(clientId, conversationId, convType, JSON.toJSONString(param),
+        null, null, AVIMOperation.CONVERSATION_UPDATE, receiver);
+  }
+
   public boolean queryConversations(final String clientId, final String queryString, final AVIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {

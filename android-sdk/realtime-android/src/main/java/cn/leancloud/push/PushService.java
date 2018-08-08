@@ -465,6 +465,9 @@ public class PushService extends Service {
       case CONVERSATION_QUERY:
         this.directlyOperationTube.queryConversationsDirectly(clientId, keyData, requestId);
         break;
+      case CONVERSATION_UPDATE:
+        this.directlyOperationTube.updateConversationDirectly(clientId, conversationId, convType, param, requestId);
+        break;
       case CONVERSATION_QUIT:
         break;
       case CONVERSATION_JOIN:
@@ -484,8 +487,6 @@ public class PushService extends Service {
       case CONVERSATION_MUTED_MEMBER_QUERY:
         this.directlyOperationTube.processMembersDirectly(clientId, conversationId, convType, keyData,
             operation, requestId);
-        break;
-      case CONVERSATION_UPDATE:
         break;
       case CONVERSATION_FETCH_RECEIPT_TIME:
         break;

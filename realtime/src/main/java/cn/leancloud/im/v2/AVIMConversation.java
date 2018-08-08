@@ -511,18 +511,10 @@ public class AVIMConversation {
    * 发送一条消息。
    *
    * @param message
-   * @param messageFlag 消息发送选项。
+   * @param messageOption 消息发送选项。
    * @param callback
-   * @since 3.0
-   * @deprecated Please use {@link #sendMessage(AVIMMessage, AVIMMessageOption, AVIMConversationCallback)}
+   *
    */
-  public void sendMessage(AVIMMessage message, int messageFlag, AVIMConversationCallback callback) {
-    AVIMMessageOption option = new AVIMMessageOption();
-    option.setReceipt((messageFlag & AVIMConversation.RECEIPT_MESSAGE_FLAG) == AVIMConversation.RECEIPT_MESSAGE_FLAG);
-    option.setTransient((messageFlag & AVIMConversation.TRANSIENT_MESSAGE_FLAG) == AVIMConversation.TRANSIENT_MESSAGE_FLAG);
-    sendMessage(message, option, callback);
-  }
-
   public void sendMessage(final AVIMMessage message, final AVIMMessageOption messageOption, final AVIMConversationCallback callback) {
     message.setConversationId(conversationId);
     message.setFrom(client.getClientId());
@@ -686,6 +678,11 @@ public class AVIMConversation {
     this.storage.removeLocalMessage(message);
   }
 
+  /**
+   * fetchReceiptTimestamps
+   *
+   * @param callback
+   */
   public void fetchReceiptTimestamps(AVIMConversationCallback callback) {
     final AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
       @Override
@@ -1341,6 +1338,31 @@ public class AVIMConversation {
   }
 
   /**
+   * 静音，客户端拒绝收到服务器端的离线推送通知
+   *
+   * @param callback
+   */
+  public void mute(final AVIMConversationCallback callback) {
+  }
+
+  /**
+   * 取消静音，客户端取消静音设置
+   *
+   * @param callback
+   */
+  public void unmute(final AVIMConversationCallback callback) {
+  }
+
+  /**
+   * 退出当前的聊天对话
+   *
+   * @param callback
+   * @since 3.0
+   */
+  public void quit(final AVIMConversationCallback callback) {
+  }
+
+  /**
    * 清除未读消息
    */
   public void read() {
@@ -1351,8 +1373,79 @@ public class AVIMConversation {
         params.put(Conversation.PARAM_MESSAGE_QUERY_MSGID, lastMessage.getMessageId());
         params.put(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP, lastMessage.getTimestamp());
       }
+      InternalConfiguration.getOperationTube().markConversationRead(client.getClientId(), conversationId, getType(), params);
+    }
+  }
+
+  /**
+   * 更新当前对话的属性至服务器端
+   *
+   * @param callback
+   * @since 3.0
+   */
+
+  public void updateInfoInBackground(AVIMConversationCallback callback) {
+    if (!pendingAttributes.isEmpty() || !pendingInstanceData.isEmpty()) {
+      Map<String, Object> attributesMap = new HashMap<>();
+      if (!pendingAttributes.isEmpty()) {
+        final Map<String, Object> pendingAttrMap = processAttributes(pendingAttributes, false);
+        if (null != pendingAttrMap) {
+          attributesMap.putAll(pendingAttrMap);
+        }
+      }
+
+      if (!pendingInstanceData.isEmpty()) {
+        attributesMap.putAll(pendingInstanceData);
+      }
+
+      Map<String, Object> params = new HashMap<String, Object>();
+      if (!attributesMap.isEmpty()) {
+        params.put(Conversation.PARAM_CONVERSATION_ATTRIBUTE, attributesMap);
+      }
+      final AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
+        @Override
+        public void done(Map<String, Object> result, AVIMException e) {
+          if (null == e) {
+            attributes.putAll(pendingAttributes);
+            pendingAttributes.clear();
+            instanceData.putAll(pendingInstanceData);
+            pendingInstanceData.clear();
+            storage.insertConversations(Arrays.asList(AVIMConversation.this));
+          }
+          if (null != callback) {
+            callback.internalDone(e);
+          }
+        }
+      };
+      InternalConfiguration.getOperationTube().updateConversation(this.client.getClientId(), this.conversationId, this.getType(),
+              params, tmpCallback);
+    } else {
+      if (null != callback) {
+        callback.internalDone(null);
+      }
+    }
+  }
+
+  public void fetchInfoInBackground(final AVIMConversationCallback callback) {
+    if (StringUtil.isEmpty(getConversationId())) {
+      if (null != callback) {
+        callback.internalDone(new AVException(AVException.INVALID_QUERY, "ConversationId is empty"));
+      } else {
+        LOGGER.w("ConversationId is empty");
+      }
       return;
     }
+    Map<String, Object> params = getFetchRequestParams();
+    InternalConfiguration.getOperationTube().queryConversations(this.client.getClientId(),
+            JSON.toJSONString(params), new AVIMCommonJsonCallback() {
+              @Override
+              public void done(Map<String, Object> result, AVIMException e) {
+                processQueryResult((Serializable) result);
+                if (null != callback) {
+                  callback.internalDone(null, e);
+                }
+              }
+            });
   }
 
   void updateLocalMessage(AVIMMessage message) {
