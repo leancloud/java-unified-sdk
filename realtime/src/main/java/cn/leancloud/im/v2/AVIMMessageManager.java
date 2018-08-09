@@ -194,7 +194,7 @@ public class AVIMMessageManager {
           AVIMMessage typedMessage = clazz.newInstance();
           typedMessage.setConversationId(message.getConversationId());
           typedMessage.setFrom(message.getFrom());
-          typedMessage.setReceiptTimestamp(message.getReceiptTimestamp());
+          typedMessage.setDeliveredAt(message.getDeliveredAt());
           typedMessage.setTimestamp(message.getTimestamp());
           typedMessage.setContent(message.getContent());
           typedMessage.setMessageId(message.getMessageId());

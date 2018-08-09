@@ -1,5 +1,8 @@
 package cn.leancloud.im.v2;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
+
 import cn.leancloud.utils.StringUtil;
 
 import java.util.ArrayList;
@@ -129,7 +132,7 @@ public class AVIMMessage {
    * @see AVIMConversation#RECEIPT_MESSAGE_FLAG
    */
   public long getReceiptTimestamp() {
-    return deliveredAt;
+    return getDeliveredAt();
   }
 
   /**
@@ -139,9 +142,13 @@ public class AVIMMessage {
    * @see AVIMConversation#RECEIPT_MESSAGE_FLAG
    */
   public void setReceiptTimestamp(long receiptTimestamp) {
-    this.deliveredAt = receiptTimestamp;
+    setDeliveredAt(receiptTimestamp);
   }
 
+  /**
+   * 设置消息成功到达接收方的时间
+   * @return
+   */
   void setDeliveredAt(long deliveredAt) {
     this.deliveredAt = deliveredAt;
   }
@@ -262,6 +269,7 @@ public class AVIMMessage {
    * 获取 mention 用户列表的字符串（逗号分隔）
    * @return
    */
+  @JSONField(serialize = false, deserialize = false)
   public String getMentionListString() {
     if (null == this.mentionList) {
       return "";
@@ -280,13 +288,18 @@ public class AVIMMessage {
    * 设置 mention 用户列表字符串（逗号分隔），功能与 #setMentionList(List<String> peerIdList) 相同，两者调用一个即可。
    * @param content
    */
+  @JSONField(serialize = false, deserialize = false)
   public void setMentionListString(String content) {
     if (StringUtil.isEmpty(content)) {
       this.mentionList = null;
     } else {
-      String[] peerIdArray = content.split(",");
-      this.mentionList = new ArrayList<>(peerIdArray.length);
-      this.mentionList.addAll(Arrays.asList(peerIdArray));
+      this.mentionList = new ArrayList<>();
+      String[] peerIdArray = content.split("[,\\s]");
+      for (String peer: peerIdArray) {
+        if (!StringUtil.isEmpty(peer)) {
+          this.mentionList.add(peer);
+        }
+      }
     }
   }
 
@@ -316,7 +329,7 @@ public class AVIMMessage {
     }
   }
 
-  void setUniqueToken(String uniqueToken) {
+  public void setUniqueToken(String uniqueToken) {
     this.uniqueToken = uniqueToken;
   }
 
@@ -324,6 +337,44 @@ public class AVIMMessage {
     return uniqueToken;
   }
 
+  // FIXME
+  public int hashCode() {
+    return (uniqueToken + messageId + conversationId).hashCode();
+  }
+
+  public boolean equals(Object other) {
+    if (null == other) {
+      return false;
+    }
+    if (this == other) {
+      return true;
+    }
+    if (!(other instanceof AVIMMessage)) {
+      return false;
+    }
+    AVIMMessage otherMsg = (AVIMMessage) other;
+    return StringUtil.equals(conversationId, otherMsg.conversationId)
+            && StringUtil.equals(content, otherMsg.content)
+            && StringUtil.equals(from, otherMsg.from) && (timestamp == otherMsg.timestamp)
+            && (deliveredAt == otherMsg.deliveredAt) && (readAt == otherMsg.readAt) && (updateAt == otherMsg.updateAt)
+            && (getMessageStatus() == otherMsg.getMessageStatus())
+            && (getMessageIOType() == otherMsg.getMessageIOType())
+            && StringUtil.equals(messageId, otherMsg.messageId)
+            && StringUtil.equals(mentionList, otherMsg.mentionList)
+            && (mentionAll == otherMsg.mentionAll)
+            && StringUtil.equals(uniqueToken, otherMsg.uniqueToken);
+  }
+
+  public String toJSONString() {
+    return JSON.toJSONString(this);
+  }
+
+  public static AVIMMessage parseJSONString(String content) {
+    if (StringUtil.isEmpty(content)) {
+      return null;
+    }
+    return JSON.parseObject(content, AVIMMessage.class);
+  }
 
   public enum AVIMMessageStatus {
     AVIMMessageStatusNone(0), AVIMMessageStatusSending(1), AVIMMessageStatusSent(2),

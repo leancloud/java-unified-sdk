@@ -409,7 +409,7 @@ public class AVIMConversation {
   public Date getLastMessageAt() {
     AVIMMessage lastMessage = getLastMessage();
     if (null != lastMessage) {
-      setLastMessageAt(new Date(lastMessage.getReceiptTimestamp()));
+      setLastMessageAt(new Date(lastMessage.getDeliveredAt()));
     }
     return lastMessageAt;
   }

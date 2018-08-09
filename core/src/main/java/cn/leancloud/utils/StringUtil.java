@@ -2,6 +2,7 @@ package cn.leancloud.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
 
@@ -21,6 +22,30 @@ public class StringUtil {
       }
     }
     return true;
+  }
+
+  public static boolean equals(String left, String right) {
+    if (null == left || null == right) {
+      return false;
+    }
+    return left.equals(right);
+  }
+
+  public static boolean equals(List<String> left, List<String> right) {
+    if (null == left || null == right) {
+      return false;
+    }
+    if (left.size() != right.size()) {
+      return false;
+    }
+    return left.containsAll(right);
+  }
+
+  public static boolean equalsIgnoreCase(String left, String right) {
+    if (null == left || null == right) {
+      return false;
+    }
+    return left.equalsIgnoreCase(right);
   }
 
   public static String stringFromDate(Date date) {
