@@ -10,15 +10,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.net.ConnectivityManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 
 import com.alibaba.fastjson.JSON;
-
-import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,9 +27,8 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.AVOSCloud;
 import cn.leancloud.AVObject;
 import cn.leancloud.callback.AVCallback;
-import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.core.AppConfiguration;
-import cn.leancloud.im.AndroidDatabaseDelegate;
+import cn.leancloud.im.AndroidDatabaseDelegateFactory;
 import cn.leancloud.im.AndroidFileMetaAccessor;
 import cn.leancloud.im.AndroidOperationTube;
 import cn.leancloud.im.DirectlyOperationTube;
@@ -42,7 +38,6 @@ import cn.leancloud.im.v2.AVIMMessageOption;
 import cn.leancloud.im.v2.Conversation;
 import cn.leancloud.im.v2.Conversation.AVIMOperation;
 import cn.leancloud.im.v2.AVIMClient.AVIMClientStatus;
-import cn.leancloud.livequery.AVLiveQuery;
 import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.session.AVSession;
 import cn.leancloud.session.AVSessionManager;
@@ -50,7 +45,6 @@ import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 import static cn.leancloud.im.v2.AVIMClient.AVIMClientStatus.AVIMClientStatusNone;
 
@@ -350,7 +344,7 @@ public class PushService extends Service {
 
     InternalConfiguration.setFileMetaAccessor(new AndroidFileMetaAccessor());
     InternalConfiguration.setOperationTube(new AndroidOperationTube());
-//    InternalConfiguration.setDatabaseDelegate(new AndroidDatabaseDelegate());
+    InternalConfiguration.setDatabaseDelegateFactory(new AndroidDatabaseDelegateFactory(context));
 
     startService(context, cls);
   }

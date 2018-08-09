@@ -2,6 +2,7 @@ package cn.leancloud.im.v2;
 
 import cn.leancloud.codec.Base64;
 import cn.leancloud.im.DatabaseDelegate;
+import cn.leancloud.im.DatabaseDelegateFactory;
 import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.StringUtil;
@@ -116,7 +117,10 @@ public class AVIMMessageStorage {
 
   private AVIMMessageStorage(String clientId) {
     this.clientId = clientId;
-    this.delegate = InternalConfiguration.getDatabaseDelegate();
+    DatabaseDelegateFactory factory = InternalConfiguration.getDatabaseDelegateFactory();
+    if (null != factory) {
+      this.delegate = factory.createInstance(clientId);
+    }
   }
 
   public void insertMessage(AVIMMessage message, boolean breakpoint) {

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface DatabaseDelegate {
-  int update(String table, Map<String, Object> attrs, String whereClause);
+//  int update(String table, Map<String, Object> attrs, String whereClause);
   int update(String table, Map<String, Object> attrs, String whereClause, String[] whereArgs);
   int delete(String table, String whereClause, String[] whereArgs);
   int insert(String table, Map<String, Object> attrs);

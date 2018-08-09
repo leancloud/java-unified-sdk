@@ -57,10 +57,14 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
   }
 
-  private void resetConnectingStatus() {
+  private void resetConnectingStatus(boolean succeed) {
     this.connecting = false;
     if (null != pendingCallback) {
-      pendingCallback.internalDone(new AVException(AVException.TIMEOUT, "network timeout."));
+      if (succeed) {
+        pendingCallback.internalDone(null);
+      } else {
+        pendingCallback.internalDone(new AVException(AVException.TIMEOUT, "network timeout."));
+      }
     }
     pendingCallback = null;
   }
@@ -83,7 +87,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
       }).start();
     } else {
       LOGGER.e("have tried " + (retryConnectionCount - 1) + " times, stop connecting...");
-      resetConnectingStatus();
+      resetConnectingStatus(false);
     }
   }
 
@@ -244,7 +248,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
       listener.onWebSocketOpen();
     }
 
-    resetConnectingStatus();
+    resetConnectingStatus(true);
 
     // auto send login packet.
     LoginPacket lp = new LoginPacket();

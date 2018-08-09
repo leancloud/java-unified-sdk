@@ -3,7 +3,7 @@ package cn.leancloud.im;
 public class InternalConfiguration {
   private static OperationTube operationTube = new DirectlyOperationTube(true);
   private static FileMetaAccessor fileMetaAccessor = new SimpleFileMetaAccessor();
-  private static DatabaseDelegate databaseDelegate = null;
+  private static DatabaseDelegateFactory databaseDelegateFactory = null;
 
   public static OperationTube getOperationTube() {
     return operationTube;
@@ -21,11 +21,11 @@ public class InternalConfiguration {
     InternalConfiguration.fileMetaAccessor = fileMetaAccessor;
   }
 
-  public static DatabaseDelegate getDatabaseDelegate() {
-    return databaseDelegate;
+  public static DatabaseDelegateFactory getDatabaseDelegateFactory() {
+    return databaseDelegateFactory;
   }
 
-  public static void setDatabaseDelegate(DatabaseDelegate databaseDelegate) {
-    InternalConfiguration.databaseDelegate = databaseDelegate;
+  public static void setDatabaseDelegateFactory(DatabaseDelegateFactory databaseDelegateFactory) {
+    InternalConfiguration.databaseDelegateFactory = databaseDelegateFactory;
   }
 }
