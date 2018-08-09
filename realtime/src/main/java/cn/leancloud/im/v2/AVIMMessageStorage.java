@@ -98,6 +98,7 @@ public class AVIMMessageStorage {
 
   private static ConcurrentHashMap<String, AVIMMessageStorage> storages =
           new ConcurrentHashMap<String, AVIMMessageStorage>();
+
   public static AVIMMessageStorage getInstance(String clientId) {
     AVIMMessageStorage storage = storages.get(clientId);
     if (null == storage) {

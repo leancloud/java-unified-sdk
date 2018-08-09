@@ -1,5 +1,6 @@
 package cn.leancloud.session;
 
+import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.callback.AVCallback;
@@ -36,7 +37,10 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private AVStandardWebSocketClient webSocketClient = null;
   private String currentRTMConnectionServer = null;
   private int retryConnectionCount = 0;
-  private Boolean connectionEstablished = false;
+  private boolean connectionEstablished = false;
+
+  private volatile boolean connecting = false;
+  private volatile AVCallback pendingCallback = null;
 
   private Map<String, AVConnectionListener> connectionListeners = new ConcurrentHashMap<>(1);
 
@@ -53,23 +57,33 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
   }
 
+  private void resetConnectingStatus() {
+    this.connecting = false;
+    if (null != pendingCallback) {
+      pendingCallback.internalDone(new AVException(AVException.TIMEOUT, "network timeout."));
+    }
+    pendingCallback = null;
+  }
+
   private void reConnectionRTMServer() {
     retryConnectionCount++;
     if (retryConnectionCount <= 3) {
       new Thread(new Runnable() {
         @Override
         public void run() {
-          long sleepMS = (long)Math.pow(2, retryConnectionCount) * 1000;
           try {
+            long sleepMS = (long)Math.pow(2, retryConnectionCount) * 1000;
             Thread.sleep(sleepMS);
-            startConnection();
+            LOGGER.d("reConnect rtm server. count=" + retryConnectionCount);
+            startConnectionInternal();
           } catch (InterruptedException ex) {
             LOGGER.w("failed to start connection.", ex);
           }
         }
       }).start();
     } else {
-      LOGGER.e("have tried " + retryConnectionCount + " times, stop connecting...");
+      LOGGER.e("have tried " + (retryConnectionCount - 1) + " times, stop connecting...");
+      resetConnectingStatus();
     }
   }
 
@@ -115,10 +129,38 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public void startConnection(AVCallback callback) {
-    ;
+    if (this.connectionEstablished) {
+      LOGGER.d("connection is established, directly response callback...");
+      if (null != callback) {
+        callback.internalDone(null);
+      }
+    } else if (this.connecting) {
+      LOGGER.d("on starting connection, save callback...");
+      if (null != callback) {
+        this.pendingCallback = callback;
+      }
+    } else {
+      LOGGER.d("start connection with callback...");
+      this.connecting = true;
+      this.pendingCallback = callback;
+      startConnectionInternal();
+    }
   }
 
   public void startConnection() {
+    if (this.connectionEstablished) {
+      LOGGER.d("connection is established...");
+    } else if (this.connecting) {
+      LOGGER.d("on starting connection, ignore.");
+      return;
+    } else {
+      LOGGER.d("start connection...");
+      this.connecting = true;
+      startConnectionInternal();
+    }
+  }
+
+  private void startConnectionInternal() {
     String specifiedServer = AVIMOptions.getGlobalOptions().getRtmServer();
     if (!StringUtil.isEmpty(specifiedServer)) {
       initWebSocketClient(specifiedServer);
@@ -135,26 +177,26 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
                         1, retryConnectionCount < 1).blockingFirst();
               }
             }).subscribe(new Observer<RTMConnectionServerResponse>() {
-              @Override
-              public void onSubscribe(Disposable disposable) {
-              }
+      @Override
+      public void onSubscribe(Disposable disposable) {
+      }
 
-              @Override
-              public void onNext(RTMConnectionServerResponse rtmConnectionServerResponse) {
-                String targetServer = updateTargetServer(rtmConnectionServerResponse);
-                initWebSocketClient(targetServer);
-              }
+      @Override
+      public void onNext(RTMConnectionServerResponse rtmConnectionServerResponse) {
+        String targetServer = updateTargetServer(rtmConnectionServerResponse);
+        initWebSocketClient(targetServer);
+      }
 
-              @Override
-              public void onError(Throwable throwable) {
-                LOGGER.e("failed to query RTM Connection Server. cause: " + throwable.getMessage());
-                reConnectionRTMServer();
-              }
+      @Override
+      public void onError(Throwable throwable) {
+        LOGGER.e("failed to query RTM Connection Server. cause: " + throwable.getMessage());
+        reConnectionRTMServer();
+      }
 
-              @Override
-              public void onComplete() {
-              }
-            });
+      @Override
+      public void onComplete() {
+      }
+    });
   }
 
   public void cleanup() {
@@ -170,6 +212,8 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     this.connectionListeners.clear();
     connectionEstablished = false;
     retryConnectionCount = 0;
+    this.connecting = false;
+    this.pendingCallback = null;
   }
 
   public void subscribeConnectionListener(String clientId, AVConnectionListener listener) {
@@ -199,6 +243,8 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     for (AVConnectionListener listener: connectionListeners.values()) {
       listener.onWebSocketOpen();
     }
+
+    resetConnectingStatus();
 
     // auto send login packet.
     LoginPacket lp = new LoginPacket();

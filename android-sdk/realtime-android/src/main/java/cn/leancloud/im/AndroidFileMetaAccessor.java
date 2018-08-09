@@ -15,7 +15,7 @@ import cn.leancloud.im.v2.messages.AVIMImageMessage;
  * Created by fengjunwen on 2018/7/4.
  */
 
-public class AndroidFileMetaAccessor {
+public class AndroidFileMetaAccessor implements FileMetaAccessor {
   public Map<String, Object> mediaInfo(File file) {
     Map<String, Object> meta = new HashMap<String, Object>();
 

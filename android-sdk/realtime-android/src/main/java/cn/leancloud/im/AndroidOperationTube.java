@@ -358,13 +358,12 @@ public class AndroidOperationTube implements OperationTube {
     if (!StringUtil.isEmpty(dataAsString)) {
       i.putExtra(Conversation.INTENT_KEY_DATA, dataAsString);
     }
-    // FIXME
-//    if (null != message) {
-//      i.putExtra(Conversation.INTENT_KEY_DATA, message);
-//      if (null != option) {
-//        i.putExtra(Conversation.INTENT_KEY_MESSAGE_OPTION, option);
-//      }
-//    }
+    if (null != message) {
+      i.putExtra(Conversation.INTENT_KEY_DATA, message.toJSONString());
+      if (null != option) {
+        i.putExtra(Conversation.INTENT_KEY_MESSAGE_OPTION, option.toJSONString());
+      }
+    }
     i.putExtra(Conversation.INTENT_KEY_CLIENT, clientId);
     i.putExtra(Conversation.INTENT_KEY_CONVERSATION, conversationId);
     i.putExtra(Conversation.INTENT_KEY_CONV_TYPE, convType);
@@ -391,13 +390,12 @@ public class AndroidOperationTube implements OperationTube {
     Intent i = new Intent(AVOSCloud.getContext(), PushService.class);
     i.setAction(Conversation.AV_CONVERSATION_INTENT_ACTION);
 
-    // FIXME
-//    if (null != message) {
-//      i.putExtra(Conversation.INTENT_KEY_DATA, message);
-//    }
-//    if (null != message2) {
-//      i.putExtra(Conversation.INTENT_KEY_MESSAGE_EX, message2);
-//    }
+    if (null != message) {
+      i.putExtra(Conversation.INTENT_KEY_DATA, message.toJSONString());
+    }
+    if (null != message2) {
+      i.putExtra(Conversation.INTENT_KEY_MESSAGE_EX, message2.toJSONString());
+    }
     i.putExtra(Conversation.INTENT_KEY_CLIENT, clientId);
     i.putExtra(Conversation.INTENT_KEY_CONVERSATION, conversationId);
     i.putExtra(Conversation.INTENT_KEY_CONV_TYPE, convType);

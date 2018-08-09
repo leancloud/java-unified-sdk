@@ -1,5 +1,10 @@
 package cn.leancloud.im.v2;
 
+import cn.leancloud.utils.StringUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONType;
+
+@JSONType
 public class AVIMMessageOption {
 
   /**
@@ -26,6 +31,17 @@ public class AVIMMessageOption {
 
   public AVIMMessageOption() {
 
+  }
+
+  public String toJSONString() {
+    return JSON.toJSONString(this);
+  }
+
+  public static AVIMMessageOption parseJSONString(String content) {
+    if (StringUtil.isEmpty(content)) {
+      return null;
+    }
+    return JSON.parseObject(content, AVIMMessageOption.class);
   }
 
   public void setPriority(MessagePriority priority) {

@@ -1,3 +1,4 @@
 include ':storage-android'
 include ':realtime-android'
 include ':storage-sample-app'
+include ':realtime-sample-app'

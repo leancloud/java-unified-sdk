@@ -32,6 +32,9 @@ import cn.leancloud.AVObject;
 import cn.leancloud.callback.AVCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.core.AppConfiguration;
+import cn.leancloud.im.AndroidDatabaseDelegate;
+import cn.leancloud.im.AndroidFileMetaAccessor;
+import cn.leancloud.im.AndroidOperationTube;
 import cn.leancloud.im.DirectlyOperationTube;
 import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.im.v2.AVIMMessage;
@@ -118,9 +121,16 @@ public class PushService extends Service {
   public void onCreate() {
     LOGGER.d("PushService#onCreate");
     super.onCreate();
+
     directlyOperationTube = new DirectlyOperationTube(true);
 
     connectionManager = AVConnectionManager.getInstance();
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        connectionManager.startConnection();
+      }
+    }).start();
 
     connectivityReceiver = new AVConnectivityReceiver(new AVConnectivityListener() {
       @Override
@@ -159,6 +169,7 @@ public class PushService extends Service {
 
     boolean connected = AppConfiguration.getGlobalNetworkingDetector().isConnected();
     if (connected && !connectionManager.isConnectionEstablished()) {
+      LOGGER.d("networking is fine and try to start connection to leancloud.");
       synchronized (connecting) {
         connectionManager.startConnection(new AVCallback<Integer>() {
           @Override
@@ -166,6 +177,7 @@ public class PushService extends Service {
             if (null == exception) {
               processIMRequests(intent);
             } else {
+              LOGGER.w("failed to start connection. cause:", exception);
               processRequestsWithException(intent, exception);
             }
           }
@@ -261,6 +273,7 @@ public class PushService extends Service {
    */
   public static void setDefaultPushCallback(android.content.Context context,
                                             java.lang.Class<? extends android.app.Activity> cls) {
+    LOGGER.d("setDefaultPushCallback cls=" + cls.getName());
     startServiceIfRequired(context, cls);
     AVNotificationManager.getInstance().addDefaultPushCallback(AVOSCloud.getApplicationId(), cls.getName());
   }
@@ -335,6 +348,10 @@ public class PushService extends Service {
       return;
     }
 
+    InternalConfiguration.setFileMetaAccessor(new AndroidFileMetaAccessor());
+    InternalConfiguration.setOperationTube(new AndroidOperationTube());
+//    InternalConfiguration.setDatabaseDelegate(new AndroidDatabaseDelegate());
+
     startService(context, cls);
   }
 
@@ -387,7 +404,9 @@ public class PushService extends Service {
   }
 
   private void processIMRequests(Intent intent) {
+    LOGGER.d("processIMRequests...");
     if (null == intent) {
+      LOGGER.w("intent is null, invalid operation.");
       return;
     }
     if (Conversation.AV_CONVERSATION_INTENT_ACTION.equalsIgnoreCase(intent.getAction())) {
@@ -398,6 +417,8 @@ public class PushService extends Service {
   }
 
   private void processIMRequestsFromClient(Intent intent) {
+    LOGGER.d("processIMRequestsFromClient...");
+
     String clientId = intent.getExtras().getString(Conversation.INTENT_KEY_CLIENT);
 
     int requestId = intent.getExtras().getInt(Conversation.INTENT_KEY_REQUESTID);
@@ -498,20 +519,18 @@ public class PushService extends Service {
             param, requestId);
         break;
       case CONVERSATION_RECALL_MESSAGE:
-        // FIXME
-        existedMessage = null;
+        existedMessage = AVIMMessage.parseJSONString(keyData);
         this.directlyOperationTube.recallMessageDirectly(clientId, convType, existedMessage, requestId);
         break;
       case CONVERSATION_SEND_MESSAGE:
-        // FIXME
-        existedMessage = null;
-        AVIMMessageOption option = null;
+        existedMessage = AVIMMessage.parseJSONString(keyData);;
+        AVIMMessageOption option = AVIMMessageOption.parseJSONString(intent.getExtras().getString(Conversation.INTENT_KEY_MESSAGE_OPTION));
         this.directlyOperationTube.sendMessageDirectly(clientId, conversationId, convType,
             existedMessage, option, requestId);
         break;
       case CONVERSATION_UPDATE_MESSAGE:
-        existedMessage = null;
-        AVIMMessage secondMessage = null;
+        existedMessage = AVIMMessage.parseJSONString(keyData);;
+        AVIMMessage secondMessage = AVIMMessage.parseJSONString(intent.getExtras().getString(Conversation.INTENT_KEY_MESSAGE_EX));
         this.directlyOperationTube.updateMessageDirectly(clientId, convType, existedMessage, secondMessage, requestId);
         break;
       default:
