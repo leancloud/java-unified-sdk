@@ -23,6 +23,7 @@ import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
 import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_ATTRIBUTE;
+import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_BREAKPOINT;
 import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_CONVERSATION_ID;
 import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_CONVERSATION_READAT;
 import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_CONVRESATION_DELIVEREDAT;
@@ -78,7 +79,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
             + COLUMN_MESSAGE_UPDATEAT + " NUMBERIC, "
             + COLUMN_PAYLOAD + " BLOB, "
             + COLUMN_STATUS + " INTEGER, "
-            + AVIMMessageStorage.COLUMN_BREAKPOINT + " INTEGER, "
+            + COLUMN_BREAKPOINT + " INTEGER, "
             + COLUMN_DEDUPLICATED_TOKEN + " VARCHAR(32), "
             + COLUMN_MSG_MENTION_ALL + " INTEGER default 0, "
             + COLUMN_MSG_MENTION_LIST + " TEXT NULL, "
@@ -374,9 +375,10 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
     return resultCount;
   }
 
-  public List<AVIMMessage> queryMessages(String[] columns, String selection, String[] selectionArgs,
-                                  String groupBy, String having, String orderBy, String limit) {
-    List<AVIMMessage> result = new ArrayList<>();
+  public AVIMMessageStorage.MessageQueryResult queryMessages(String[] columns, String selection, String[] selectionArgs,
+                                                             String groupBy, String having, String orderBy, String limit) {
+    List<AVIMMessage> resultMessage = new ArrayList<>();
+    List<Boolean> resultBreakpoint = new ArrayList<>();
     try {
       SQLiteDatabase db = dbHelper.getReadableDatabase();
       Cursor cursor = db.query(MESSAGE_TABLE, columns, selection, selectionArgs, groupBy, having, orderBy, limit);
@@ -385,7 +387,9 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
       if (cursor.moveToFirst()) {
         while (!cursor.isAfterLast()) {
           AVIMMessage message = createMessageFromCursor(cursor);
-          result.add(message);
+          breakpoint = cursor.getInt(cursor.getColumnIndex(COLUMN_BREAKPOINT)) != 0;
+          resultMessage.add(message);
+          resultBreakpoint.add(breakpoint);
           cursor.moveToNext();
         }
       }
@@ -393,6 +397,10 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
     } catch (Exception e) {
       LOGGER.w("failed to execute message query. cause: " + e.getMessage());
     }
+
+    AVIMMessageStorage.MessageQueryResult result = new AVIMMessageStorage.MessageQueryResult();
+    result.messages = resultMessage;
+    result.breakpoints = resultBreakpoint;
     return result;
   }
 

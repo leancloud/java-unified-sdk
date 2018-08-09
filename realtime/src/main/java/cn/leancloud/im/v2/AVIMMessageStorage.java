@@ -89,6 +89,11 @@ public class AVIMMessageStorage {
     static final String SELECT_VALID_CONVS = "("+ COLUMN_CONV_TEMP + " < 1 and " + COLUMN_EXPIREAT + " > ?) or (" + COLUMN_CONV_TEMP + "> 0 and " + COLUMN_CONV_TEMP_TTL + " > ?)";
   }
 
+  public static class MessageQueryResult {
+    List<AVIMMessage> messages;
+    List<Boolean> breakpoints;
+  }
+
   public interface StorageQueryCallback {
     void done(List<AVIMMessage> messages, List<Boolean> breakpoints);
   }
@@ -355,7 +360,7 @@ public class AVIMMessageStorage {
     } else if (null == this.delegate){
       callback.done(null, false);
     } else {
-      List<AVIMMessage> result = null;
+      MessageQueryResult result = null;
       if (msgId == null) {
         result = this.delegate.queryMessages(null, getWhereClause(COLUMN_TIMESTAMP, COLUMN_CONVERSATION_ID),
                 new String[] {Long.toString(timestamp), conversationId}, null, null, null, "1");
@@ -363,8 +368,14 @@ public class AVIMMessageStorage {
         result = this.delegate.queryMessages(null, getWhereClause(COLUMN_MESSAGE_ID),
                 new String[] {msgId}, null, null, null, "1");
       }
-      // TODO: fix me!
-      callback.done(result.get(0), false);
+
+      AVIMMessage resultMessage = null;
+      boolean resultBreakPoint = false;
+      if (null != result) {
+        resultMessage = (null != result.messages && result.messages.size() > 0)?result.messages.get(0):null;
+        resultBreakPoint = (null != result.breakpoints && result.breakpoints.size() > 0)? result.breakpoints.get(0):false;
+      }
+      callback.done(resultMessage, resultBreakPoint);
     }
   }
 
@@ -389,10 +400,13 @@ public class AVIMMessageStorage {
       selection = getWhereClause(COLUMN_CONVERSATION_ID);
       selectionArgs = new String[] {conversationId};
     }
-    List<AVIMMessage> results = this.delegate.queryMessages(null, selection, selectionArgs, null, null,
+    MessageQueryResult results = this.delegate.queryMessages(null, selection, selectionArgs, null, null,
             SQL.ORDER_BY_TIMESTAMP_DESC_THEN_MESSAGE_ID_DESC, limit + "");
-    // TODO: fix me!
-    callback.done(results, null);
+    if (null == results) {
+      callback.done(null, null);
+    } else {
+      callback.done(results.messages, results.breakpoints);
+    }
   }
 
   public long getMessageCount(String conversationId) {
@@ -423,43 +437,43 @@ public class AVIMMessageStorage {
     if (null == this.delegate) {
       return null;
     }
-    List<AVIMMessage> result = this.delegate.queryMessages(null,
+    MessageQueryResult result = this.delegate.queryMessages(null,
             SQL.TIMESTAMP_MORE_OR_TIMESTAMP_EQUAL_BUT_MESSAGE_ID_MORE_AND_CONVERSATION_ID,
             new String[] {Long.toString(currentMessage.getTimestamp()),
                     Long.toString(currentMessage.getTimestamp()),
                     currentMessage.getMessageId(), currentMessage.getConversationId()}, null, null,
             SQL.ORDER_BY_TIMESTAMP_ASC_THEN_MESSAGE_ID_ASC, "1");
-    if (null == result || result.size() < 1) {
+    if (null == result || null == result.messages || result.messages.size() < 1) {
       return null;
     }
-    return result.get(0);
+    return result.messages.get(0);
   }
 
   AVIMMessage getLatestMessage(String conversationId) {
     if (null == this.delegate) {
       return null;
     }
-    List<AVIMMessage> result = this.delegate.queryMessages(null, getWhereClause(COLUMN_CONVERSATION_ID),
+    MessageQueryResult result = this.delegate.queryMessages(null, getWhereClause(COLUMN_CONVERSATION_ID),
             new String[] {conversationId}, null, null,
             SQL.ORDER_BY_TIMESTAMP_DESC_THEN_MESSAGE_ID_DESC, "1");
-    if (null == result || result.size() < 1) {
+    if (null == result || null == result.messages || result.messages.size() < 1) {
       return null;
     }
-    return result.get(0);
+    return result.messages.get(0);
   }
 
   AVIMMessage getLatestMessageWithBreakpoint(String conversationId, boolean breakpoint) {
     if (null == this.delegate) {
       return null;
     }
-    List<AVIMMessage> result = this.delegate.queryMessages(null,
+    MessageQueryResult result = this.delegate.queryMessages(null,
             getWhereClause(COLUMN_CONVERSATION_ID, COLUMN_BREAKPOINT),
             new String[] {conversationId, breakpoint ? "1" : "0"}, null, null,
             SQL.ORDER_BY_TIMESTAMP_DESC_THEN_MESSAGE_ID_DESC, "1");
-    if (null == result || result.size() < 1) {
+    if (null == result || null == result.messages || result.messages.size() < 1) {
       return null;
     }
-    return result.get(0);
+    return result.messages.get(0);
   }
 
   private String generateInternalMessageId(String uniqueToken) {
