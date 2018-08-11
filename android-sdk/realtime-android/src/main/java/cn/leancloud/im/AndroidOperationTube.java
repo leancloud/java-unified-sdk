@@ -445,10 +445,10 @@ public class AndroidOperationTube implements OperationTube {
     return;
   }
 
-  public void onMessageArrived(String clientId, String conversationId, int requestId,
-                        Conversation.AVIMOperation operation, Messages.GenericCommand command) {
-    return;
-  }
+//  public void onMessageArrived(String clientId, String conversationId, int requestId,
+//                        Conversation.AVIMOperation operation, Messages.GenericCommand command) {
+//    return;
+//  }
 
   public void onLiveQueryCompleted(int requestId, Throwable throwable) {
     return;

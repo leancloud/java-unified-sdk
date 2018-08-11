@@ -353,10 +353,10 @@ public class DirectlyOperationTube implements OperationTube {
         break;
     }
   }
-  public void onMessageArrived(String clientId, String conversationId, int requestId,
-                               Conversation.AVIMOperation operation, Messages.GenericCommand command) {
-    ;
-  }
+//  public void onMessageArrived(String clientId, String conversationId, int requestId,
+//                               Conversation.AVIMOperation operation, Messages.GenericCommand command) {
+//    ;
+//  }
   public void onLiveQueryCompleted(int requestId, Throwable throwable) {
     ;
   }
