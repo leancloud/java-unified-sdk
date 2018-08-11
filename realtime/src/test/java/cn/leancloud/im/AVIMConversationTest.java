@@ -102,6 +102,63 @@ public class AVIMConversationTest extends TestCase {
     assertTrue(opersationSucceed);
   }
 
+  public void testSendAndReceiveTextMessage() throws Exception {
+    AVIMMessageManager.registerDefaultMessageHandler(new DummyMessageHandler());
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter2 = new CountDownLatch(1);
+    client = AVIMClient.getInstance("testUser1");
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    client.createConversation(memebers, convName, null, false, true, new AVIMConversationCreatedCallback() {
+      @Override
+      public void done(AVIMConversation conversation, AVIMException e) {
+        if (null != e) {
+          e.printStackTrace();
+          countDownLatch.countDown();
+        } else {
+          try {
+            tmpCounter2.await();
+          } catch (Exception ex) {
+            ex.printStackTrace();
+          }
+          AVIMTextMessage msg = new AVIMTextMessage();
+          msg.setText("test run @" + System.currentTimeMillis());
+          conversation.sendMessage(msg, new AVIMConversationCallback() {
+            @Override
+            public void done(AVIMException ex) {
+              if (null != ex) {
+                System.out.println("failed to send message");
+                ex.printStackTrace();
+              } else {
+                System.out.println("succeed to send message");
+                opersationSucceed = true;
+              }
+              countDownLatch.countDown();
+            }
+          });
+        }
+      }
+    });
+    AVIMClient client2 = AVIMClient.getInstance("User2");
+    client2.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        if (null != e) {
+          System.out.println("User2 open failed.");
+        }
+        tmpCounter2.countDown();
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+    Thread.sleep(3000);
+  }
+
   public void testRecallMessage() throws Exception {
     CountDownLatch tmpCounter = new CountDownLatch(1);
     client = AVIMClient.getInstance("testUser1");
