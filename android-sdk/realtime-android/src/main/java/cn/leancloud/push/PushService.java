@@ -30,6 +30,7 @@ import cn.leancloud.callback.AVCallback;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.AndroidDatabaseDelegateFactory;
 import cn.leancloud.im.AndroidFileMetaAccessor;
+import cn.leancloud.im.AndroidInitializer;
 import cn.leancloud.im.AndroidOperationTube;
 import cn.leancloud.im.DirectlyOperationTube;
 import cn.leancloud.im.InternalConfiguration;
@@ -111,6 +112,9 @@ public class PushService extends Service {
   AVShutdownReceiver shutdownReceiver;
   DirectlyOperationTube directlyOperationTube;
 
+  static {
+    AndroidInitializer.init();
+  }
   @Override
   public void onCreate() {
     LOGGER.d("PushService#onCreate");

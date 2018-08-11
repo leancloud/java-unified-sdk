@@ -1,18 +1,21 @@
 package cn.leancloud;
 
 import android.content.Context;
+import android.os.Handler;
 
 import cn.leancloud.cache.AndroidSystemSetting;
 
 import cn.leancloud.logging.DefaultLoggerAdapter;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.network.AndroidNetworkingDetector;
+import cn.leancloud.util.AndroidUtil;
 import cn.leancloud.utils.LogUtil;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
   private static Context context = null;
+  protected static Handler handler = null;
 
   public static Context getContext() {
     return context;
@@ -22,7 +25,17 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
     AVOSCloud.context = context;
   }
 
+  public static Handler getHandler() {
+    return handler;
+  }
+
   public static void initialize(Context context, String appId, String appKey) {
+    if (null == handler && !AndroidUtil.isMainThread()) {
+      throw new IllegalStateException("Please call AVOSCloud.initialize in main thread.");
+    }
+    if (null == handler) {
+      handler = new Handler();
+    }
     AppConfiguration.setLogAdapter(new DefaultLoggerAdapter());
     AppConfiguration.setGlobalNetworkingDetector(new AndroidNetworkingDetector(context));
 
