@@ -6,6 +6,7 @@ import cn.leancloud.im.v2.AVIMMessage;
 import cn.leancloud.im.v2.AVIMMessageOption;
 import cn.leancloud.im.v2.Conversation;
 import cn.leancloud.im.v2.callback.*;
+import cn.leancloud.livequery.AVLiveQuerySubscribeCallback;
 
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,8 @@ public interface OperationTube {
                          AVCallback callback);
 
   boolean markConversationRead(String clientId, String conversationId, int convType, Map<String, Object> lastMessageParam);
+
+  boolean loginLiveQuery(String subscriptionId, AVLiveQuerySubscribeCallback callback);
   
   // response notifier
   void onOperationCompleted(String clientId, String conversationId, int requestId,

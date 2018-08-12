@@ -36,6 +36,8 @@ import cn.leancloud.im.v2.callback.AVIMCommonJsonCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationCallback;
 import cn.leancloud.im.v2.callback.AVIMMessagesQueryCallback;
 import cn.leancloud.im.v2.callback.AVIMOnlineClientsCallback;
+import cn.leancloud.livequery.AVLiveQuery;
+import cn.leancloud.livequery.AVLiveQuerySubscribeCallback;
 import cn.leancloud.push.PushService;
 import cn.leancloud.session.AVSession;
 import cn.leancloud.session.AVSessionManager;
@@ -317,6 +319,34 @@ public class AndroidOperationTube implements OperationTube {
         null, null, AVIMOperation.CONVERSATION_READ, null);
   }
 
+  public boolean loginLiveQuery(String subscriptionId, AVLiveQuerySubscribeCallback callback) {
+    BroadcastReceiver receiver = null;
+    if (null != callback) {
+      receiver = new AVIMBaseBroadcastReceiver(callback) {
+        @Override
+        public void execute(Intent intent, Throwable error) {
+          if (null != callback) {
+            callback.internalDone(null == error ? null : new AVException(error));
+          }
+        }
+      };
+    }
+    int requestId = WindTalker.getNextIMRequestId();
+    LocalBroadcastManager.getInstance(AVOSCloud.getContext()).registerReceiver(receiver,
+            new IntentFilter(AVLiveQuery.LIVEQUERY_PRIFIX + requestId));
+    try {
+      Intent i = new Intent(AVOSCloud.getContext(), PushService.class);
+      i.setAction(AVLiveQuery.ACTION_LIVE_QUERY_LOGIN);
+      i.putExtra(AVLiveQuery.SUBSCRIBE_ID, subscriptionId);
+      i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
+      AVOSCloud.getContext().startService(IntentUtil.setupIntentFlags(i));
+    } catch (Exception ex) {
+      LOGGER.e("failed to start PushServer. cause: " + ex.getMessage());
+      return false;
+    }
+    return true;
+  }
+
   protected boolean sendClientCMDToPushService(String clientId, String dataAsString, BroadcastReceiver receiver,
                                                AVIMOperation operation) {
 
@@ -451,7 +481,7 @@ public class AndroidOperationTube implements OperationTube {
 //  }
 
   public void onLiveQueryCompleted(int requestId, Throwable throwable) {
-    return;
+    IntentUtil.sendLiveQueryLocalBroadcast(requestId, throwable);
   }
 
   public void onPushMessage(String message, String messageId) {

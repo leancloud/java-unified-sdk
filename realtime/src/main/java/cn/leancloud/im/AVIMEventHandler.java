@@ -1,12 +1,9 @@
 package cn.leancloud.im;
 
+import cn.leancloud.ThreadModel.ThreadShuttle;
+import cn.leancloud.ThreadModel.MainThreadChecker;
+
 public abstract class AVIMEventHandler {
-  interface MainThreadChecker {
-    boolean isMainThread();
-  }
-  interface ThreadShuttle {
-    void launch(Runnable runnable);
-  }
 
   private static volatile boolean needCheckMainThread = false;
   private static volatile MainThreadChecker mainThreadChecker = null;

@@ -46,6 +46,13 @@ public class Utils {
     return point;
   }
 
+  public static AVObject parseObjectFromMap(Map<String, Object> map) {
+    AVObject avObject = Transformer.objectFromClassName((String) map.get("className"));
+    map.remove("__type");
+    avObject.resetServerData(map);
+    return avObject;
+  }
+
   public static byte[] dataFromMap(Map<String, Object> map) {
     String value = (String) map.get("base64");
     return Base64.decode(value, Base64.NO_WRAP);

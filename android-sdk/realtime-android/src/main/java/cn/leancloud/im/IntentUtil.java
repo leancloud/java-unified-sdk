@@ -7,6 +7,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import cn.leancloud.AVOSCloud;
 import cn.leancloud.im.v2.Conversation;
+import cn.leancloud.livequery.AVLiveQuery;
 import cn.leancloud.utils.StringUtil;
 
 /**
@@ -35,6 +36,14 @@ public class IntentUtil {
   public static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId,
                                           Bundle bundle, Conversation.AVIMOperation operation) {
     sendIMLocalBroadcast(clientId, conversationId, requestId, bundle, null, operation);
+  }
+
+  public static void sendLiveQueryLocalBroadcast(int requestId, Throwable throwable) {
+    Intent callbackIntent = new Intent(AVLiveQuery.LIVEQUERY_PRIFIX + requestId);
+    if (null != throwable) {
+      callbackIntent.putExtra(Conversation.callbackExceptionKey, throwable);
+    }
+    LocalBroadcastManager.getInstance(AVOSCloud.getContext()).sendBroadcast(callbackIntent);
   }
 
   private static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId,

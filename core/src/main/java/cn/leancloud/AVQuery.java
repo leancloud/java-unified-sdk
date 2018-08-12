@@ -949,6 +949,9 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     });
   }
 
+  public Map<String, String> assembleParameters() {
+    return conditions.assembleParameters();
+  }
   /**
    * Cloud Query
    */

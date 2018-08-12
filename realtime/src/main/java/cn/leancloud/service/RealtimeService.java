@@ -19,4 +19,11 @@ public interface RealtimeService {
   @GET("/1.1/classes/_ConversationMemberInfo")
   Observable<Map<String, List<JSONObject>>> queryMemberInfo(@Header("X-LC-IM-Session-Token") String realtimeSessionToken,
                                                @QueryMap Map<String, String> query);
+
+  @POST("/1.1/LiveQuery/subscribe")
+  Observable<JSONObject> subscribe(@Body JSONObject param);
+
+  @POST("/1.1/LiveQuery/unsubscribe")
+  Observable<JSONObject> unsubscribe(@Body JSONObject param);
+
 }

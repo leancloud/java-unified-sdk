@@ -1,16 +1,20 @@
 package cn.leancloud.im;
 
+import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.callback.AVCallback;
+import cn.leancloud.command.LiveQueryLoginPacket;
 import cn.leancloud.im.v2.*;
 import cn.leancloud.im.v2.callback.*;
+import cn.leancloud.livequery.AVLiveQuerySubscribeCallback;
 import cn.leancloud.push.AVNotificationManager;
 import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.session.AVConversationHolder;
 import cn.leancloud.session.AVSession;
 import cn.leancloud.session.AVSessionManager;
 import cn.leancloud.utils.LogUtil;
+import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 
 import java.util.Date;
@@ -19,6 +23,7 @@ import java.util.Map;
 
 public class DirectlyOperationTube implements OperationTube {
   private static final AVLogger LOGGER = LogUtil.getLogger(DirectlyOperationTube.class);
+  private static final String LIVEQUERY_DEFAULT_ID = "livequery_default_id";
 
   private final boolean needCacheRequestKey;
   public DirectlyOperationTube(boolean needCacheRequestKey) {
@@ -184,6 +189,28 @@ public class DirectlyOperationTube implements OperationTube {
     LOGGER.d("markConversationRead...");
     int requestId = WindTalker.getNextIMRequestId();
     return this.markConversationReadDirectly(clientId, conversationId, convType, lastMessageParam, requestId);
+  }
+
+  public boolean loginLiveQuery(String subscriptionId, AVLiveQuerySubscribeCallback callback) {
+    LOGGER.d("loginLiveQuery...");
+    int requestId = WindTalker.getNextIMRequestId();
+    if (this.needCacheRequestKey) {
+      RequestCache.getInstance().addRequestCallback(LIVEQUERY_DEFAULT_ID, null, requestId, callback);
+    }
+    return loginLiveQueryDirectly(subscriptionId, requestId);
+  }
+
+  public boolean loginLiveQueryDirectly(String subscriptionId, int requestId) {
+    if (StringUtil.isEmpty(subscriptionId)) {
+      return false;
+    }
+    LiveQueryLoginPacket lp = new LiveQueryLoginPacket();
+    lp.setSubscribeId(subscriptionId);
+    if (0 != requestId) {
+      lp.setRequestId(requestId);
+    }
+    AVConnectionManager.getInstance().sendPacket(lp);
+    return true;
   }
 
   public boolean openClientDirectly(String clientId, String tag, String userSessionToken,
@@ -357,8 +384,12 @@ public class DirectlyOperationTube implements OperationTube {
 //                               Conversation.AVIMOperation operation, Messages.GenericCommand command) {
 //    ;
 //  }
+
   public void onLiveQueryCompleted(int requestId, Throwable throwable) {
-    ;
+    AVCallback callback = getCachedCallback(LIVEQUERY_DEFAULT_ID, null, requestId, null);
+    if (null != callback) {
+      callback.internalDone(null == throwable? null : new AVException(throwable));
+    }
   }
 
   public void onPushMessage(String message, String messageId) {

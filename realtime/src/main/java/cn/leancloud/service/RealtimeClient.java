@@ -86,4 +86,11 @@ public class RealtimeClient {
               }
             });
   }
+
+  public Observable<JSONObject> subscribeLiveQuery(Map<String, Object> params) {
+    return wrappObservable(service.subscribe(new JSONObject(params)));
+  }
+  public Observable<JSONObject> unsubscribeLiveQuery(Map<String, Object> params) {
+    return wrappObservable(service.unsubscribe(new JSONObject(params)));
+  }
 }
