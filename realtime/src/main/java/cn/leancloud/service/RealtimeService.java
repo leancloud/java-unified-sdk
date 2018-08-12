@@ -1,6 +1,5 @@
 package cn.leancloud.service;
 
-import cn.leancloud.AVObject;
 import cn.leancloud.im.Signature;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
@@ -10,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface RealtimeService {
-  @POST("/1.1/push")
-  Observable<AVObject> sendPushRequest();
 
   @POST("/1.1/rtm/sign")
   Observable<Signature> createSignature(@Body JSONObject sessionToken);

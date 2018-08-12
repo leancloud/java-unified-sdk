@@ -41,6 +41,12 @@ public class AVUtils {
     return dict;
   }
 
+  public static Map<String, Object> createStringObjectMap(String key, Object value) {
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put(key, value);
+    return map;
+  }
+
   public static String jsonStringFromMapWithNull(Object map) {
     if (AVOSCloud.isDebugEnable()) {
       return JSON.toJSONString(map, SerializerFeature.WriteMapNullValue,
