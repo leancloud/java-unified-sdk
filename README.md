@@ -20,13 +20,13 @@ SDK 中所有 API 接口与 LeanCloud 云端交互严格遵循 LeanCloud REST AP
 - [x] EngineFunction
 - [x] EngineHook
 - [x] IMHook
-### 实时通讯核心 library（coming soon）
-- [ ] LiveQuery
-- [ ] RTM
-### Android 推送和实时通讯 library（not start）
-- [ ] LiveQuery
-- [ ] RTM
-- [ ] Push
+### 实时通讯核心 library
+- [x] LiveQuery
+- [x] RTM
+### Android 推送和实时通讯 library（in progress）
+- [x] LiveQuery
+- [x] RTM
+- [x] Push
 
 
 ## Bugs and Feedback
