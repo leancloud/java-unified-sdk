@@ -49,11 +49,12 @@ class LiveQueryConnectionListener implements AVConnectionListener {
 
   @Override
   public void onError(Integer requestKey, Messages.ErrorCommand errorCommand) {
-
+    LOGGER.e("encounter error.");
   }
 
   private void processLoggedinCommand(Integer requestKey) {
     if (null != requestKey) {
+      LiveQueryOperationDelegate.getInstance().ackOperationReplied(requestKey);
       InternalConfiguration.getOperationTube().onLiveQueryCompleted(requestKey, null);
     }
   }

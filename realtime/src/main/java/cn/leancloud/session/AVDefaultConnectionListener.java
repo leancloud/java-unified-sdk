@@ -5,11 +5,11 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
-import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.im.WindTalker;
 import cn.leancloud.im.v2.*;
 import cn.leancloud.livequery.AVLiveQuery;
+import cn.leancloud.livequery.LiveQueryOperationDelegate;
 import cn.leancloud.push.AVInstallation;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -113,6 +113,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     }
     if (command.getCmd().getNumber() == Messages.CommandType.loggedin_VALUE) {
       if (LiveQueryLoginPacket.SERVICE_LIVE_QUERY == command.getService()) {
+        // FIXME: unused code
         processLoggedinCommand(requestKey);
       } else {
         LOGGER.w("ignore loggedin command bcz invalid service.");
@@ -127,6 +128,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
             if (LiveQueryLoginPacket.SERVICE_PUSH == service) {
               processDataCommand(command.getDataMessage());
             } else if (LiveQueryLoginPacket.SERVICE_LIVE_QUERY == service) {
+              // FIXME: unused code
               processLiveQueryData(command.getDataMessage());
             }
           }
@@ -176,8 +178,9 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     }
   }
 
-
+  // FIXME: unused code
   private void processLoggedinCommand(Integer requestKey) {
+    LiveQueryOperationDelegate.getInstance().ackOperationReplied(requestKey);
     if (null != requestKey) {
       InternalConfiguration.getOperationTube().onLiveQueryCompleted(requestKey, null);
     }
@@ -201,6 +204,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     AVConnectionManager.getInstance().sendPacket(packet);
   }
 
+  // FIXME: unused code
   private void processLiveQueryData(Messages.DataCommand dataCommand) {
     List<String> messageIds = dataCommand.getIdsList();
     List<Messages.JsonObjectMessage> messages = dataCommand.getMsgList();

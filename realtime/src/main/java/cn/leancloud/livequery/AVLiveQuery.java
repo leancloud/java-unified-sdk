@@ -106,7 +106,8 @@ public class AVLiveQuery {
   }
 
   static {
-    AVConnectionManager.getInstance().subscribeConnectionListener("", new AVDefaultConnectionListener(AVSessionManager.getInstance().getOrCreateSession("")));
+    AVConnectionManager.getInstance().subscribeConnectionListener(LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID,
+            new LiveQueryConnectionListener());
   }
 
   private static String subscribeId;

@@ -8,6 +8,7 @@ import cn.leancloud.command.LiveQueryLoginPacket;
 import cn.leancloud.im.v2.*;
 import cn.leancloud.im.v2.callback.*;
 import cn.leancloud.livequery.AVLiveQuerySubscribeCallback;
+import cn.leancloud.livequery.LiveQueryOperationDelegate;
 import cn.leancloud.push.AVNotificationManager;
 import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.session.AVConversationHolder;
@@ -23,7 +24,7 @@ import java.util.Map;
 
 public class DirectlyOperationTube implements OperationTube {
   private static final AVLogger LOGGER = LogUtil.getLogger(DirectlyOperationTube.class);
-  private static final String LIVEQUERY_DEFAULT_ID = "livequery_default_id";
+
 
   private final boolean needCacheRequestKey;
   public DirectlyOperationTube(boolean needCacheRequestKey) {
@@ -195,7 +196,7 @@ public class DirectlyOperationTube implements OperationTube {
     LOGGER.d("loginLiveQuery...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
-      RequestCache.getInstance().addRequestCallback(LIVEQUERY_DEFAULT_ID, null, requestId, callback);
+      RequestCache.getInstance().addRequestCallback(LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID, null, requestId, callback);
     }
     return loginLiveQueryDirectly(subscriptionId, requestId);
   }
@@ -204,8 +205,7 @@ public class DirectlyOperationTube implements OperationTube {
     if (StringUtil.isEmpty(subscriptionId)) {
       return false;
     }
-    // FIXME: no timeout timer for login request.
-    AVConnectionManager.getInstance().sendPacket(WindTalker.getInstance().assembleLiveQueryLoginPacket(subscriptionId, requestId));
+    LiveQueryOperationDelegate.getInstance().login(subscriptionId, requestId);
     return true;
   }
 
@@ -375,17 +375,15 @@ public class DirectlyOperationTube implements OperationTube {
         callback.internalDone(resultData, null);
         break;
     }
+    RequestCache.getInstance().cleanRequestCallback(clientId, conversationId, requestId);
   }
-//  public void onMessageArrived(String clientId, String conversationId, int requestId,
-//                               Conversation.AVIMOperation operation, Messages.GenericCommand command) {
-//    ;
-//  }
 
   public void onLiveQueryCompleted(int requestId, Throwable throwable) {
-    AVCallback callback = getCachedCallback(LIVEQUERY_DEFAULT_ID, null, requestId, null);
+    AVCallback callback = getCachedCallback(LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID, null, requestId, null);
     if (null != callback) {
       callback.internalDone(null == throwable? null : new AVException(throwable));
     }
+    RequestCache.getInstance().cleanRequestCallback(LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID, null, requestId);
   }
 
   public void onPushMessage(String message, String messageId) {

@@ -5,6 +5,7 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.callback.AVCallback;
 import cn.leancloud.command.CommandPacket;
+import cn.leancloud.command.LiveQueryLoginPacket;
 import cn.leancloud.command.LoginPacket;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AVOSService;
@@ -12,6 +13,8 @@ import cn.leancloud.core.AppRouter;
 import cn.leancloud.im.AVIMOptions;
 import cn.leancloud.im.WindTalker;
 import cn.leancloud.im.v2.AVIMClient;
+import cn.leancloud.livequery.AVLiveQuery;
+import cn.leancloud.livequery.LiveQueryOperationDelegate;
 import cn.leancloud.push.AVInstallation;
 import cn.leancloud.service.RTMConnectionServerResponse;
 import cn.leancloud.utils.LogUtil;
@@ -276,7 +279,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
 
     String peerId = command.getPeerId();
     Integer requestKey = command.hasI() ? command.getI() : null;
-    if (StringUtil.isEmpty(peerId)) {
+    if (command.hasService() && command.getService() == LiveQueryLoginPacket.SERVICE_LIVE_QUERY) {
+      peerId = LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID;
+    } else if (StringUtil.isEmpty(peerId)) {
       peerId = AVIMClient.getDefaultClient();
     }
     AVConnectionListener listener = this.connectionListeners.get(peerId);
