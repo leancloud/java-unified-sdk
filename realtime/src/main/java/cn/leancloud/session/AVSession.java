@@ -229,12 +229,8 @@ public class AVSession {
         } else {
           conversationOperationCache.offer(AVIMOperationQueue.Operation.getOperation(
                   Conversation.AVIMOperation.CLIENT_OPEN.getCode(), getSelfPeerId(), null, requestId));
-          SessionControlPacket scp = SessionControlPacket.genSessionCommand(
-                  getSelfPeerId(), null,
-                  SessionControlPacket.SessionControlOp.OPEN, sig,
-                  getLastNotifyTime(), getLastPatchTime(), requestId);
-          scp.setTag(tag);
-          scp.setReconnectionRequest(reconnectionFlag);
+          CommandPacket scp = WindTalker.getInstance().assembleSessionOpenPacket(getSelfPeerId(), tag, sig, getLastNotifyTime(),
+                  getLastPatchTime(), reconnectionFlag, requestId);
           AVConnectionManager.getInstance().sendPacket(scp);
         }
       }
@@ -286,7 +282,7 @@ public class AVSession {
       if (AVConnectionManager.getInstance().isConnectionEstablished()) {
         conversationOperationCache.offer(Operation.getOperation(
                 AVIMOperation.CLIENT_DISCONNECT.getCode(), selfId, null, requestId));
-        SessionControlPacket scp = SessionControlPacket.genSessionCommand(this.selfId, null,
+        CommandPacket scp = WindTalker.getInstance().assembleSessionPacket(this.selfId, null,
                 SessionControlPacket.SessionControlOp.CLOSE, null, requestId);
         AVConnectionManager.getInstance().sendPacket(scp);
       } else {

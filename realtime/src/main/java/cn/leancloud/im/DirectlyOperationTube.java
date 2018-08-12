@@ -204,12 +204,8 @@ public class DirectlyOperationTube implements OperationTube {
     if (StringUtil.isEmpty(subscriptionId)) {
       return false;
     }
-    LiveQueryLoginPacket lp = new LiveQueryLoginPacket();
-    lp.setSubscribeId(subscriptionId);
-    if (0 != requestId) {
-      lp.setRequestId(requestId);
-    }
-    AVConnectionManager.getInstance().sendPacket(lp);
+    // FIXME: no timeout timer for login request.
+    AVConnectionManager.getInstance().sendPacket(WindTalker.getInstance().assembleLiveQueryLoginPacket(subscriptionId, requestId));
     return true;
   }
 
