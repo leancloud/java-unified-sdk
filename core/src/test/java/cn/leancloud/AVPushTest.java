@@ -1,12 +1,11 @@
-package cn.leancloud.push;
+package cn.leancloud;
 
-import cn.leancloud.Configure;
 import junit.framework.TestCase;
 
 public class AVPushTest extends TestCase {
   public AVPushTest(String name) {
     super(name);
-    Configure.initialize();
+    Configure.initializeRuntime();
   }
 
   public void testSimplePush() throws Exception {

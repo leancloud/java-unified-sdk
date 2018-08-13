@@ -21,6 +21,8 @@ public class PaasClient {
   private static APIService apiService = null;
   private static StorageClient storageClient = null;
   private static OkHttpClient globalHttpClient = null;
+  private static PushService pushService = null;
+  private static PushClient pushClient = null;
   static SchedulerCreator defaultScheduler = null;
   static boolean asynchronized = false;
 
@@ -85,5 +87,22 @@ public class PaasClient {
       storageClient = new StorageClient(apiService, asynchronized, defaultScheduler);
     }
     return storageClient;
+  }
+
+  public static PushClient getPushClient() {
+    if (null == pushService) {
+      OkHttpClient okHttpClient = getGlobalOkHttpClient();
+      AppRouter appRouter = AppRouter.getInstance();
+      String apiHost = appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.PUSH, false).blockingFirst();
+      Retrofit retrofit = new Retrofit.Builder()
+              .baseUrl(apiHost)
+              .addConverterFactory(FastJsonConverterFactory.create())
+              .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+              .client(okHttpClient)
+              .build();
+      pushService = retrofit.create(PushService.class);
+      pushClient = new PushClient(pushService, asynchronized, defaultScheduler);
+    }
+    return pushClient;
   }
 }

@@ -1,6 +1,5 @@
-package cn.leancloud.service;
+package cn.leancloud.core;
 
-import cn.leancloud.core.*;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
@@ -13,40 +12,15 @@ import retrofit2.converter.fastjson.FastJsonConverterFactory;
 import java.util.Map;
 
 public class PushClient {
-  private static PushClient instance = null;
-  public static PushClient getInstance() {
-    if (null == instance) {
-      synchronized (PushClient.class) {
-        if (null == instance) {
-          instance = new PushClient();
-        }
-      }
-    }
-    return instance;
-  }
-
   private PushService service = null;
   private boolean asynchronized = false;
   private AppConfiguration.SchedulerCreator defaultCreator = null;
 
-  private PushClient() {
+  public PushClient(PushService service, boolean asyncRequest, AppConfiguration.SchedulerCreator observerSchedulerCreator) {
+    this.service = service;
     this.asynchronized = AppConfiguration.isAsynchronized();
     this.defaultCreator = AppConfiguration.getDefaultScheduler();
     final OkHttpClient httpClient = PaasClient.getGlobalOkHttpClient();
-    AppRouter appRouter = AppRouter.getInstance();
-    appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.PUSH, false).subscribe(
-            new Consumer<String>() {
-              @Override
-              public void accept(String serverHost) throws Exception {
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(serverHost)
-                        .addConverterFactory(FastJsonConverterFactory.create())
-                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                        .client(httpClient)
-                        .build();
-                service = retrofit.create(PushService.class);
-              }
-            });
   }
 
   public Observable<JSONObject> sendPushRequest(Map<String, Object> param) {

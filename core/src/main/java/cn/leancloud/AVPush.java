@@ -1,11 +1,7 @@
-package cn.leancloud.push;
+package cn.leancloud;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVObject;
-import cn.leancloud.AVQuery;
 import cn.leancloud.callback.SendCallback;
-import cn.leancloud.service.PushClient;
+import cn.leancloud.core.PaasClient;
 import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -254,7 +250,7 @@ public class AVPush {
   public Observable<JSONObject> sendInBackground() {
     try {
       Map<String, Object> map = postDataMap();
-      return PushClient.getInstance().sendPushRequest(map);
+      return PaasClient.getPushClient().sendPushRequest(map);
     } catch (Exception ex) {
       return Observable.error(ex);
     }

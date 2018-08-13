@@ -27,7 +27,7 @@ public class Configure {
   }
 
   public static void initializeRuntime() {
-    AppConfiguration.setLogAdapter(new DummyLoggerFactory());
+//    AppConfiguration.setLogAdapter(new DummyLoggerFactory());
     AVOSCloud.setRegion(reGion);
     if (!StringUtil.isEmpty(API_HOST)) {
       AVOSCloud.setServer(AVOSService.API, API_HOST);

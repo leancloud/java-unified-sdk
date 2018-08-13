@@ -10,7 +10,7 @@ import cn.leancloud.im.WindTalker;
 import cn.leancloud.im.v2.*;
 import cn.leancloud.livequery.AVLiveQuery;
 import cn.leancloud.livequery.LiveQueryOperationDelegate;
-import cn.leancloud.push.AVInstallation;
+import cn.leancloud.AVInstallation;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.session.PendingMessageCache.Message;

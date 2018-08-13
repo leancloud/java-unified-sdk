@@ -3,7 +3,7 @@ package cn.leancloud.command;
 import cn.leancloud.Messages;
 import cn.leancloud.im.Signature;
 import cn.leancloud.im.v2.AVIMClient;
-import cn.leancloud.push.AVInstallation;
+import cn.leancloud.AVInstallation;
 import cn.leancloud.utils.StringUtil;
 
 import java.util.Collection;

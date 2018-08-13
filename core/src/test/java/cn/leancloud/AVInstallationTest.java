@@ -1,14 +1,11 @@
-package cn.leancloud.push;
+package cn.leancloud;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.Configure;
-import cn.leancloud.core.AVOSCloud;
 import junit.framework.TestCase;
 
 public class AVInstallationTest extends TestCase {
   public AVInstallationTest(String testName) {
     super(testName);
-    Configure.initialize();
+    Configure.initializeRuntime();
   }
 
   public void testCreateInstallation() {

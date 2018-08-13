@@ -1,9 +1,5 @@
-package cn.leancloud.push;
+package cn.leancloud;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVObject;
-import cn.leancloud.AVQuery;
-import cn.leancloud.ObjectValueFilter;
 import cn.leancloud.annotation.AVClassName;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.codec.MD5;
