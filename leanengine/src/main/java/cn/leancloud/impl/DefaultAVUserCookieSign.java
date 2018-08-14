@@ -32,7 +32,7 @@ public class DefaultAVUserCookieSign implements AVUserCookieSign {
   int maxAge;
 
   public DefaultAVUserCookieSign(String secret, int maxAge) {
-    this(secret, "avos:sess", maxAge);
+    this(secret, "avos.sess", maxAge);
   }
 
   public DefaultAVUserCookieSign(String secret, String sessionKey, int maxAge) {

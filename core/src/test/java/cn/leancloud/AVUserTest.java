@@ -7,7 +7,10 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.util.concurrent.CountDownLatch;
+
 public class AVUserTest extends TestCase {
+  private boolean operationSucceed = false;
   public AVUserTest(String name) {
     super(name);
     Configure.initializeRuntime();
@@ -19,6 +22,7 @@ public class AVUserTest extends TestCase {
 
   @Override
   protected void setUp() throws Exception {
+    operationSucceed = false;
   }
 
   @Override
@@ -69,6 +73,86 @@ public class AVUserTest extends TestCase {
       }
     });
     Thread.sleep(3000);
+  }
+
+  public void testAnonymousLogin() throws Exception {
+    CountDownLatch latch = new CountDownLatch(1);
+    AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVUser avUser) {
+        System.out.println("onNext. result=" + avUser.toString());
+        operationSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(operationSucceed);
+  }
+
+  public void testDisassociateAnonymousLogin() throws Exception {
+    CountDownLatch latch = new CountDownLatch(1);
+    AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVUser avUser) {
+        System.out.println("logInAnonymously onNext. result=" + avUser.toString());
+        avUser.dissociateWithAuthData("anonymous").subscribe(new Observer<AVUser>() {
+          @Override
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(AVUser avUser) {
+            System.out.println("dissociateWithAuthData onNext. result=" + avUser.toString());
+            operationSucceed = true;
+            latch.countDown();
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            System.out.println("failed to dissocaite auth data. cause: " + throwable.getMessage());
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(operationSucceed);
   }
 
   public void testCurrentUser() throws Exception {

@@ -3,6 +3,8 @@ package cn.leancloud;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
+import cn.leancloud.ops.DeleteOperation;
+import cn.leancloud.ops.RemoveOperation;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
@@ -11,12 +13,14 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observable;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 // TODO: need transfer Anonymous User/Common User
 
@@ -269,6 +273,13 @@ public class AVUser extends AVObject {
     return logIn(username, password, AVUser.class);
   }
 
+  public static Observable<AVUser> logInAnonymously() {
+    String anonymousId = UUID.randomUUID().toString().toLowerCase();
+    Map<String, Object> param = new HashMap<>();
+    param.put("id", anonymousId);
+    return loginWithAuthData(param, "anonymous");
+  }
+
   /**
    * logIn in background
    *
@@ -492,17 +503,22 @@ public class AVUser extends AVObject {
     if (StringUtil.isEmpty(platform)) {
       return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "platform")));
     }
+
     String objectId = getObjectId();
     if (StringUtil.isEmpty(objectId) || !isAuthenticated()) {
       return Observable.error(new AVException(AVException.SESSION_MISSING,
               "the user object missing a valid session"));
     }
-    Map<String, Object> authData = (Map<String, Object>) this.get(AUTHDATA_TAG);
-    if (authData != null) {
-      authData.remove(platform);
-    }
-    this.put(AUTHDATA_TAG, authData);
-    return (Observable<AVUser>)this.saveInBackground();
+    this.remove(AUTHDATA_TAG + "." + platform);
+    return this.saveInBackground().map(new Function<AVObject, AVUser>() {
+      public AVUser apply(@NonNull AVObject var1) throws Exception {
+        Map<String, Object> authData = (Map<String, Object>) AVUser.this.get(AUTHDATA_TAG);
+        if (authData != null) {
+          authData.remove(platform);
+        }
+        return AVUser.this;
+      }
+    });
   }
 
   /**

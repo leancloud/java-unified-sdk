@@ -1506,7 +1506,9 @@ public class AVIMConversation {
             JSON.toJSONString(params), new AVIMCommonJsonCallback() {
               @Override
               public void done(Map<String, Object> result, AVIMException e) {
-                processQueryResult((Serializable) result);
+                if (null == e) {
+                  e = processQueryResult((Serializable) result);
+                }
                 if (null != callback) {
                   callback.internalDone(null, e);
                 }
@@ -1727,7 +1729,7 @@ public class AVIMConversation {
     return conversation;
   }
 
-  public Exception processQueryResult(Serializable serializable) {
+  public AVIMException processQueryResult(Serializable serializable) {
     if (null != serializable) {
       try {
         String result = (String)serializable;
@@ -1743,7 +1745,7 @@ public class AVIMConversation {
           return new AVIMException(9100, "Conversation not found");
         }
       } catch (Exception e) {
-        return e;
+        return AVIMException.wrapperAVException(e);
       }
     } else {
       return new AVIMException(9100, "Conversation not found");
