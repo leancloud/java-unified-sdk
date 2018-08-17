@@ -1,6 +1,9 @@
 package cn.leancloud.push;
 
 import android.annotation.TargetApi;
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,6 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemClock;
 
 import com.alibaba.fastjson.JSON;
 
@@ -23,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.leancloud.AVException;
+import cn.leancloud.AVInstallation;
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVOSCloud;
 import cn.leancloud.AVObject;
@@ -115,6 +120,7 @@ public class PushService extends Service {
   static {
     AndroidInitializer.init();
   }
+
   @Override
   public void onCreate() {
     LOGGER.d("PushService#onCreate");
@@ -216,6 +222,33 @@ public class PushService extends Service {
     return null;
   }
 
+  /*
+ * https://groups.google.com/forum/#!topic/android-developers/H-DSQ4-tiac
+ * @see android.app.Service#onTaskRemoved(android.content.Intent)
+ */
+  @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+  @Override
+  public void onTaskRemoved(Intent rootIntent) {
+    LOGGER.d("try to restart service on task Removed");
+
+    if (isAutoWakeUp) {
+      Intent restartServiceIntent = new Intent(getApplicationContext(), this.getClass());
+      restartServiceIntent.setPackage(getPackageName());
+
+      PendingIntent restartServicePendingIntent =
+          PendingIntent.getService(getApplicationContext(), 1, restartServiceIntent,
+              PendingIntent.FLAG_UPDATE_CURRENT);
+      AlarmManager alarmService =
+          (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+      alarmService.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 500,
+          restartServicePendingIntent);
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+      super.onTaskRemoved(rootIntent);
+    }
+  }
+
   /**
    * Helper function to subscribe to push notifications with the default application icon.
    *
@@ -274,6 +307,42 @@ public class PushService extends Service {
     LOGGER.d("setDefaultPushCallback cls=" + cls.getName());
     startServiceIfRequired(context, cls);
     AVNotificationManager.getInstance().addDefaultPushCallback(AVOSCloud.getApplicationId(), cls.getName());
+  }
+
+  /**
+   * Set whether to automatically wake up PushService
+   * @param isAutoWakeUp the default value is true
+   */
+  public static void setAutoWakeUp(boolean isAutoWakeUp) {
+    PushService.isAutoWakeUp = isAutoWakeUp;
+  }
+
+  /**
+   * Set default channel for Android Oreo or newer version
+   * Notice: it isn"t necessary to invoke this method for any Android version before Oreo.
+   *
+   * @param context   context
+   * @param channelId default channel id.
+   */
+  @TargetApi(Build.VERSION_CODES.O)
+  public static void setDefaultChannelId(Context context, String channelId) {
+    DefaultChannelId = channelId;
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+      // do nothing for Android versions before Ore
+      return;
+    }
+
+    try {
+      NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+      CharSequence name = context.getPackageName();
+      String description = "PushNotification";
+      int importance = NotificationManager.IMPORTANCE_DEFAULT;
+      android.app.NotificationChannel channel = new android.app.NotificationChannel(channelId, name, importance);
+      channel.setDescription(description);
+      notificationManager.createNotificationChannel(channel);
+    } catch (Exception ex) {
+      LOGGER.w("failed to create NotificationChannel, then perhaps PushNotification doesn't work well on Android O and newer version.");
+    }
   }
 
   /**
