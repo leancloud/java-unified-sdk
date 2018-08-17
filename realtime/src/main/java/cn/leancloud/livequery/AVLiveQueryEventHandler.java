@@ -2,7 +2,7 @@ package cn.leancloud.livequery;
 
 import cn.leancloud.AVObject;
 import cn.leancloud.AVUser;
-import cn.leancloud.ThreadModel;
+import cn.leancloud.internal.ThreadModel;
 
 import java.util.List;
 

@@ -14,6 +14,7 @@ public interface DatabaseDelegate {
   int queryCount(String table, String[] columns, String selection,
             String[] selectionArgs, String groupBy, String having,
             String orderBy);
+  long countForQuery(String query, String[] selectionArgs);
   AVIMMessageStorage.MessageQueryResult queryMessages(String[] columns, String selection, String[] selectionArgs,
                                                       String groupBy, String having, String orderBy, String limit);
   List<AVIMConversation> queryConversations(String[] columns, String selection, String[] selectionArgs,

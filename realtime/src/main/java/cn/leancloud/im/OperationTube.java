@@ -1,6 +1,5 @@
 package cn.leancloud.im;
 
-import cn.leancloud.Messages;
 import cn.leancloud.callback.AVCallback;
 import cn.leancloud.im.v2.AVIMMessage;
 import cn.leancloud.im.v2.AVIMMessageOption;
@@ -8,6 +7,7 @@ import cn.leancloud.im.v2.Conversation;
 import cn.leancloud.im.v2.callback.*;
 import cn.leancloud.livequery.AVLiveQuerySubscribeCallback;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +54,7 @@ public interface OperationTube {
   void onOperationCompleted(String clientId, String conversationId, int requestId,
                             Conversation.AVIMOperation operation, Throwable throwable);
   void onOperationCompletedEx(String clientId, String conversationId, int requestId,
-                              Conversation.AVIMOperation operation, Map<String, Object> resultData);
+                              Conversation.AVIMOperation operation, HashMap<String, Object> resultData);
 //  void onMessageArrived(String clientId, String conversationId, int requestId,
 //                        Conversation.AVIMOperation operation, Messages.GenericCommand command);
   void onLiveQueryCompleted(int requestId, Throwable throwable);

@@ -19,6 +19,7 @@ import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -346,7 +347,7 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public void onOperationCompletedEx(String clientId, String conversationId, int requestId,
-                                     Conversation.AVIMOperation operation, Map<String, Object> resultData) {
+                                     Conversation.AVIMOperation operation, HashMap<String, Object> resultData) {
     LOGGER.d("enter onOperationCompletedEx with clientId=" + clientId + ", convId=" + conversationId + ", requestId="
             + requestId + ", operation=" + operation + ", resultData=" + resultData.toString());
     AVCallback callback = getCachedCallback(clientId, conversationId, requestId, operation);

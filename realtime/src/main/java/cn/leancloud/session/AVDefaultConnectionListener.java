@@ -359,7 +359,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       LOGGER.d("poll operation with requestId=" + requestKey + ", result=" + op);
       if (null != op && op.operation == AVIMOperation.CONVERSATION_QUERY.getCode()) {
         String result = convCommand.getResults().getData();
-        Map<String, Object> bundle = new HashMap<>();
+        HashMap<String, Object> bundle = new HashMap<>();
         bundle.put(Conversation.callbackData, result);
         InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
                 AVIMOperation.CONVERSATION_QUERY, bundle);
@@ -374,7 +374,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
         if (null != result) {
           result.toArray(resultMembers);
         }
-        Map<String, Object> bundle = new HashMap<>();
+        HashMap<String, Object> bundle = new HashMap<>();
         bundle.put(Conversation.callbackData, resultMembers);
         InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
                 AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, bundle);
@@ -511,7 +511,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
           result.toArray(resultArray);
         }
         String cid = blacklistCommand.getSrcCid();
-        Map<String, Object> bundle = new HashMap<>();
+        HashMap<String, Object> bundle = new HashMap<>();
         bundle.put(Conversation.callbackData, resultArray);
         InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), cid, requestKey,
                 AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, bundle);
@@ -545,7 +545,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     } else {
       Operation op = session.conversationOperationCache.poll(requestKey);
       AVIMOperation operation = AVIMOperation.getAVIMOperation(op.operation);
-      Map<String, Object> bundle = new HashMap<>();
+      HashMap<String, Object> bundle = new HashMap<>();
       bundle.put(Conversation.PARAM_MESSAGE_PATCH_TIME, patchCommand.getLastPatchTime());
       InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
               operation, bundle);

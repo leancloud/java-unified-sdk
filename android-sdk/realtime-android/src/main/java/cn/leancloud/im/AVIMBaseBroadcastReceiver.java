@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import cn.leancloud.AVException;
 import cn.leancloud.AVOSCloud;
 import cn.leancloud.callback.AVCallback;
@@ -28,7 +31,8 @@ public abstract class AVIMBaseBroadcastReceiver extends BroadcastReceiver {
       if (null != intent && null != intent.getExtras() && intent.getExtras().containsKey(Conversation.callbackExceptionKey)) {
         error = (Throwable) intent.getExtras().getSerializable(Conversation.callbackExceptionKey);
       }
-      execute(intent, error);
+      HashMap<String, Object> result = (HashMap<String, Object>) intent.getSerializableExtra(IntentUtil.CALLBACK_RESULT_KEY);
+      execute(result, error);
       LocalBroadcastManager.getInstance(AVOSCloud.getContext()).unregisterReceiver(this);
     } catch (Exception e) {
       if (callback != null) {
@@ -37,5 +41,5 @@ public abstract class AVIMBaseBroadcastReceiver extends BroadcastReceiver {
     }
   }
 
-  public abstract void execute(Intent intent, Throwable error);
+  public abstract void execute(Map<String, Object> result, Throwable error);
 }

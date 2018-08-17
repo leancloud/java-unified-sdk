@@ -1506,8 +1506,8 @@ public class AVIMConversation {
             JSON.toJSONString(params), new AVIMCommonJsonCallback() {
               @Override
               public void done(Map<String, Object> result, AVIMException e) {
-                if (null == e) {
-                  e = processQueryResult((Serializable) result);
+                if (null == e && null != result) {
+                  e = processQueryResult((String)result.get(Conversation.callbackData));
                 }
                 if (null != callback) {
                   callback.internalDone(null, e);
@@ -1729,10 +1729,9 @@ public class AVIMConversation {
     return conversation;
   }
 
-  public AVIMException processQueryResult(Serializable serializable) {
-    if (null != serializable) {
+  public AVIMException processQueryResult(String result) {
+    if (null != result) {
       try {
-        String result = (String)serializable;
         JSONArray jsonArray = JSON.parseArray(String.valueOf(result));
         if (null != jsonArray && !jsonArray.isEmpty()) {
           JSONObject jsonObject = jsonArray.getJSONObject(0);

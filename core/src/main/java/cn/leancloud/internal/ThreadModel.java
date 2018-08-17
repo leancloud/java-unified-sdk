@@ -1,4 +1,4 @@
-package cn.leancloud;
+package cn.leancloud.internal;
 
 public class ThreadModel {
   public interface MainThreadChecker {

@@ -5,6 +5,8 @@ import android.os.Handler;
 
 import cn.leancloud.cache.AndroidSystemSetting;
 
+import cn.leancloud.callback.AVCallback;
+import cn.leancloud.internal.ThreadModel;
 import cn.leancloud.logging.DefaultLoggerAdapter;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.network.AndroidNetworkingDetector;
@@ -38,6 +40,21 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
     }
     AppConfiguration.setLogAdapter(new DefaultLoggerAdapter());
     AppConfiguration.setGlobalNetworkingDetector(new AndroidNetworkingDetector(context));
+
+    ThreadModel.MainThreadChecker checker = new ThreadModel.MainThreadChecker() {
+      @Override
+      public boolean isMainThread() {
+        return AndroidUtil.isMainThread();
+      }
+    };
+    ThreadModel.ThreadShuttle shuttle = new ThreadModel.ThreadShuttle() {
+      @Override
+      public void launch(Runnable runnable) {
+        AVOSCloud.getHandler().post(runnable);
+      }
+    };
+    AVCallback.setMainThreadChecker(checker, shuttle);
+    LogUtil.getLogger(AVOSCloud.class).i("[LeanCloud] initialize mainThreadChecker and threadShuttle within AVCallback.");
 
     String importantFileDir = context.getFilesDir().getAbsolutePath();
     String baseDir = context.getCacheDir().getAbsolutePath();

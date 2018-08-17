@@ -62,7 +62,7 @@ public class AndroidOperationTube implements OperationTube {
     if (callback != null) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
-        public void execute(Intent intent, Throwable error) {
+        public void execute(Map<String, Object> intentResult, Throwable error) {
           callback.internalDone(AVIMClient.getInstance(clientId), AVIMException.wrapperAVException(error));
         }
       };
@@ -76,11 +76,11 @@ public class AndroidOperationTube implements OperationTube {
     if (callback != null) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
-        public void execute(Intent intent, Throwable error) {
+        public void execute(Map<String, Object> intentResult, Throwable error) {
           AVIMClientStatus status = null;
-          if (intent.getExtras() != null
-              && intent.getExtras().containsKey(Conversation.callbackClientStatus)) {
-            status = AVIMClientStatus.getClientStatus(intent.getExtras().getInt(Conversation.callbackClientStatus));
+          if (null != intentResult
+              && intentResult.containsKey(Conversation.callbackClientStatus)) {
+            status = AVIMClientStatus.getClientStatus((int)intentResult.get(Conversation.callbackClientStatus));
           }
           callback.internalDone(status, AVIMException.wrapperAVException(error));
         }
@@ -94,7 +94,7 @@ public class AndroidOperationTube implements OperationTube {
     if (callback != null) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
-        public void execute(Intent intent, Throwable error) {
+        public void execute(Map<String, Object> intentResult, Throwable error) {
           AVIMClient client = AVIMClient.getInstance(self);
           callback.internalDone(client, AVIMException.wrapperAVException(error));
         }
@@ -108,7 +108,7 @@ public class AndroidOperationTube implements OperationTube {
     if (callback != null) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
-        public void execute(Intent intent, Throwable error) {
+        public void execute(Map<String, Object> intentResult, Throwable error) {
           callback.internalDone(null, AVIMException.wrapperAVException(error));
         }
       };
@@ -124,12 +124,14 @@ public class AndroidOperationTube implements OperationTube {
     if (callback != null) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
-        public void execute(Intent intent, Throwable error) {
+        public void execute(Map<String, Object> intentResult, Throwable error) {
           if (error != null) {
             callback.internalDone(null, AVIMException.wrapperAVException(error));
           } else {
-            List<String> onlineClients =
-                intent.getStringArrayListExtra(Conversation.callbackOnlineClients);
+            List<String> onlineClients = null;
+            if (null != intentResult && intentResult.containsKey(Conversation.callbackOnlineClients)) {
+              onlineClients = (List<String>) intentResult.get(Conversation.callbackOnlineClients);
+            }
             callback.internalDone(onlineClients, null);
           }
         }
@@ -157,9 +159,8 @@ public class AndroidOperationTube implements OperationTube {
     if (null != callback) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
-        public void execute(Intent intent, Throwable error) {
-          // FIXME
-          callback.internalDone(intent.getExtras(), AVIMException.wrapperAVException(error));
+        public void execute(Map<String, Object> intentResult, Throwable error) {
+          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
         }
       };
     }
@@ -174,9 +175,8 @@ public class AndroidOperationTube implements OperationTube {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
 
         @Override
-        public void execute(Intent intent, Throwable error) {
-          Bundle data = intent.getExtras();
-          callback.internalDone(data, AVIMException.wrapperAVException(error));
+        public void execute(Map<String, Object> intentResult, Throwable error) {
+          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
         }
       };
     }
@@ -191,9 +191,8 @@ public class AndroidOperationTube implements OperationTube {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
 
         @Override
-        public void execute(Intent intent, Throwable error) {
-          Bundle data = intent.getExtras();
-          callback.internalDone(data, AVIMException.wrapperAVException(error));
+        public void execute(Map<String, Object> intentResult, Throwable error) {
+          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
         }
       };
     }
@@ -208,9 +207,8 @@ public class AndroidOperationTube implements OperationTube {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
 
         @Override
-        public void execute(Intent intent, Throwable error) {
-          Bundle data = intent.getExtras();
-          callback.internalDone(data, AVIMException.wrapperAVException(error));
+        public void execute(Map<String, Object> intentResult, Throwable error) {
+          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
         }
       };
     }
@@ -234,9 +232,8 @@ public class AndroidOperationTube implements OperationTube {
     if (null != callback) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
-        public void execute(Intent intent, Throwable error) {
-          Bundle data = intent.getExtras();
-          callback.internalDone(data, AVIMException.wrapperAVException(error));
+        public void execute(Map<String, Object> intentResult, Throwable error) {
+          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
         }
       };
     }
@@ -250,9 +247,8 @@ public class AndroidOperationTube implements OperationTube {
     if (null != callback) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
-        public void execute(Intent intent, Throwable error) {
-          Bundle data = intent.getExtras();
-          callback.internalDone(data, AVIMException.wrapperAVException(error));
+        public void execute(Map<String, Object> intentResult, Throwable error) {
+          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
         }
       };
     }
@@ -265,9 +261,8 @@ public class AndroidOperationTube implements OperationTube {
     if (null != callback) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
-        public void execute(Intent intent, Throwable error) {
-          Bundle data = intent.getExtras();
-          callback.internalDone(data, AVIMException.wrapperAVException(error));
+        public void execute(Map<String, Object> intentResult, Throwable error) {
+          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
         }
       };
     }
@@ -286,9 +281,10 @@ public class AndroidOperationTube implements OperationTube {
     if (null != callback) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
-        public void execute(Intent intent, Throwable error) {
-          Bundle data = intent.getExtras();
-          callback.internalDone(data, AVIMException.wrapperAVException(error));
+        public void execute(Map<String, Object> intentResult, Throwable error) {
+          List<AVIMMessage> msg = (null == intentResult)?
+              null : (List<AVIMMessage>) intentResult.get(Conversation.callbackHistoryMessages);
+          callback.internalDone(msg, AVIMException.wrapperAVException(error));
         }
       };
     }
@@ -302,9 +298,8 @@ public class AndroidOperationTube implements OperationTube {
     if (null != callback) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
-        public void execute(Intent intent, Throwable error) {
-          Bundle data = intent.getExtras();
-          callback.internalDone(data, AVIMException.wrapperAVException(error));
+        public void execute(Map<String, Object> intentResult, Throwable error) {
+          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
         }
       };
     }
@@ -324,7 +319,7 @@ public class AndroidOperationTube implements OperationTube {
     if (null != callback) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
-        public void execute(Intent intent, Throwable error) {
+        public void execute(Map<String, Object> intentResult, Throwable error) {
           if (null != callback) {
             callback.internalDone(null == error ? null : new AVException(error));
           }
@@ -456,7 +451,7 @@ public class AndroidOperationTube implements OperationTube {
   }
 
   public void onOperationCompletedEx(String clientId, String conversationId, int requestId,
-                              Conversation.AVIMOperation operation, Map<String, Object> resultData) {
+                              Conversation.AVIMOperation operation, HashMap<String, Object> resultData) {
     if (AVIMOperation.CONVERSATION_QUERY == operation) {
       AVCallback callback = RequestCache.getInstance().getRequestCallback(clientId, null, requestId);
       if (null != callback) {
@@ -466,19 +461,9 @@ public class AndroidOperationTube implements OperationTube {
         return;
       }
     }
-    Bundle bundle = new Bundle();
-    for (String key: resultData.keySet()) {
-      Object value = resultData.get(key);
-      bundle.putSerializable(key, (Serializable) value);
-    }
-    IntentUtil.sendIMLocalBroadcast(clientId, conversationId, requestId, bundle, operation);
+    IntentUtil.sendMap2LocalBroadcase(clientId, conversationId, requestId, resultData, null, operation);
     return;
   }
-
-//  public void onMessageArrived(String clientId, String conversationId, int requestId,
-//                        Conversation.AVIMOperation operation, Messages.GenericCommand command) {
-//    return;
-//  }
 
   public void onLiveQueryCompleted(int requestId, Throwable throwable) {
     IntentUtil.sendLiveQueryLocalBroadcast(requestId, throwable);

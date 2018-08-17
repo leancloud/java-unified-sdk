@@ -522,7 +522,7 @@ public class PushService extends Service {
         } else {
           status = AVIMClientStatus.AVIMClientStatusOpened;
         }
-        Map<String, Object> bundle = new HashMap<>();
+        HashMap<String, Object> bundle = new HashMap<>();
         bundle.put(Conversation.callbackClientStatus, status.getCode());
         InternalConfiguration.getOperationTube().onOperationCompletedEx(clientId, null,
             requestId, AVIMOperation.CLIENT_STATUS, bundle);

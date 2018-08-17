@@ -3,6 +3,7 @@ package cn.leancloud.im.v2;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -373,6 +374,14 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
       LOGGER.w("failed to execute count query. cause: " + e.getMessage());
     }
     return resultCount;
+  }
+
+  public long countForQuery(String query, String[] selectionArgs) {
+    if (StringUtil.isEmpty(query)) {
+      return 0l;
+    }
+    SQLiteDatabase db = dbHelper.getReadableDatabase();
+    return DatabaseUtils.longForQuery(db, query, selectionArgs);
   }
 
   public AVIMMessageStorage.MessageQueryResult queryMessages(String[] columns, String selection, String[] selectionArgs,

@@ -430,7 +430,7 @@ public class AVIMMessageStorage {
                       String.valueOf(lastBreakPointMessage.getTimestamp()),
                       lastBreakPointMessage.getMessageId()};
     }
-    return this.delegate.queryCount(MESSAGE_TABLE, null, query, queryArgs, null, null, null);
+    return this.delegate.countForQuery(query, queryArgs);
   }
 
   protected AVIMMessage getNextMessage(AVIMMessage currentMessage) {

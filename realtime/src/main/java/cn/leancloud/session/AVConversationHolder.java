@@ -663,7 +663,7 @@ public class AVConversationHolder {
     }
     List<String> allowedList = blacklistCommand.getAllowedPidsList();
     List<Messages.ErrorCommand> errorCommandList = blacklistCommand.getFailedPidsList();
-    Map<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
+    HashMap<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), blacklistCommand.getSrcCid(),
             reqeustId, imop, bundle);
   }
@@ -674,12 +674,12 @@ public class AVConversationHolder {
     }
     List<String> allowedList = convCommand.getAllowedPidsList();
     List<Messages.ErrorCommand> errorCommandList = convCommand.getFailedPidsList();
-    Map<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
+    HashMap<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
             imop, bundle);
   }
 
-  private Map<String, Object> genPartiallyResult(List<String> allowedList, List<Messages.ErrorCommand> errorCommandList) {
+  private HashMap<String, Object> genPartiallyResult(List<String> allowedList, List<Messages.ErrorCommand> errorCommandList) {
     String[] allowedMembers = new String[null == allowedList? 0 : allowedList.size()];
     if (null != allowedList) {
       allowedList.toArray(allowedMembers);
@@ -695,7 +695,7 @@ public class AVConversationHolder {
         failedList.add(failure);
       }
     }
-    Map<String, Object> bundle = new HashMap<>();
+    HashMap<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackConvMemberMuted_SUCC, allowedMembers);
     bundle.put(Conversation.callbackConvMemberMuted_FAIL, failedList);
     return bundle;
@@ -751,7 +751,7 @@ public class AVConversationHolder {
     int tempTTL = convCommand.hasTempConvTTL()? convCommand.getTempConvTTL(): 0;
 
     // they are not necessary for create-callback(isTemp, isTransient), except for tempTTL.
-    Map<String, Object> bundle = new HashMap<>();
+    HashMap<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackCreatedAt, createdAt);
     bundle.put(Conversation.callbackConversationKey, cid);
     bundle.put(Conversation.callbackTemporaryTTL, tempTTL);
@@ -776,7 +776,7 @@ public class AVConversationHolder {
             AVIMOperation.CONVERSATION_QUIT, null);
   }
   private void onInfoUpdated(int requestId, String updatedAt) {
-    Map<String, Object> bundle = new HashMap<>();
+    HashMap<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackUpdatedAt, updatedAt);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_UPDATE, bundle);
@@ -812,20 +812,20 @@ public class AVConversationHolder {
             AVIMOperation.CONVERSATION_UNMUTE, null);
   }
   void onMemberCount(int count, int requestId) {
-    Map<String, Object> bundle = new HashMap<>();
+    HashMap<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackMemberCount, count);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, bundle);
   }
   void onMessageSent(int requestId, String msgId, long timestamp) {
-    Map<String, Object> bundle = new HashMap<>();
+    HashMap<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackMessageTimeStamp, timestamp);
     bundle.put(Conversation.callbackMessageId, msgId);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_SEND_MESSAGE, bundle);
   }
   void onHistoryMessageQuery(ArrayList<AVIMMessage> messages, int requestId, long deliveredAt, long readAt) {
-    Map<String, Object> bundle = new HashMap<>();
+    HashMap<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackHistoryMessages, messages);
     bundle.put(Conversation.callbackDeliveredAt, deliveredAt);
     bundle.put(Conversation.callbackReadAt, readAt);
@@ -835,7 +835,7 @@ public class AVConversationHolder {
   }
 
   void onTimesReceipt(int requestId, long deliveredAt, long readAt) {
-    Map<String, Object> bundle = new HashMap<>();
+    HashMap<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackReadAt, readAt);
     bundle.put(Conversation.callbackDeliveredAt, deliveredAt);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,

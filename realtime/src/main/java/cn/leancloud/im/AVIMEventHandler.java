@@ -1,7 +1,7 @@
 package cn.leancloud.im;
 
-import cn.leancloud.ThreadModel.ThreadShuttle;
-import cn.leancloud.ThreadModel.MainThreadChecker;
+import cn.leancloud.internal.ThreadModel.ThreadShuttle;
+import cn.leancloud.internal.ThreadModel.MainThreadChecker;
 
 public abstract class AVIMEventHandler {
 

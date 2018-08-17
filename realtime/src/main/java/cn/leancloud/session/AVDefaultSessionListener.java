@@ -111,7 +111,7 @@ public class AVDefaultSessionListener extends AVSessionListener {
   public void onOnlineQuery(AVSession session, List<String> onlinePeerIds,
                             int requestCode) {
     if (requestCode != CommandPacket.UNSUPPORTED_OPERATION) {
-      Map<String, Object> bundle = new HashMap<>();
+      HashMap<String, Object> bundle = new HashMap<>();
       bundle.put(Conversation.callbackOnlineClients, new ArrayList<String>(
               onlinePeerIds));
       InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestCode,
