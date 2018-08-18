@@ -15,6 +15,7 @@ import cn.leancloud.im.WindTalker;
 import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.livequery.LiveQueryOperationDelegate;
 import cn.leancloud.AVInstallation;
+import cn.leancloud.push.AVPushMessageListener;
 import cn.leancloud.service.RTMConnectionServerResponse;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -54,6 +55,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   private AVConnectionManager(boolean autoConnection) {
+    connectionListeners.put(AVPushMessageListener.DEFAULT_ID, AVPushMessageListener.getInstance());
     if (autoConnection) {
       startConnection();
     }
@@ -280,6 +282,8 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     Integer requestKey = command.hasI() ? command.getI() : null;
     if (command.hasService() && command.getService() == LiveQueryLoginPacket.SERVICE_LIVE_QUERY) {
       peerId = LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID;
+    } else if (command.getCmd().getNumber() == Messages.CommandType.data_VALUE) {
+      peerId = AVPushMessageListener.DEFAULT_ID;
     } else if (StringUtil.isEmpty(peerId)) {
       peerId = AVIMClient.getDefaultClient();
     }

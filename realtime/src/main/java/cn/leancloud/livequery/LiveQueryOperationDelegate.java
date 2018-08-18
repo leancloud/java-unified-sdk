@@ -8,7 +8,8 @@ import cn.leancloud.session.AVIMOperationQueue;
 public class LiveQueryOperationDelegate {
   private static final LiveQueryOperationDelegate instance = new LiveQueryOperationDelegate();
 
-  public static final String LIVEQUERY_DEFAULT_ID = "livequery_default_id";
+  public static final String LIVEQUERY_DEFAULT_ID = "leancloud_livequery_default_id";
+
   public static LiveQueryOperationDelegate getInstance() {
     return instance;
   }

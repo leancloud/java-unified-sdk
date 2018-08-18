@@ -55,8 +55,5 @@ public interface OperationTube {
                             Conversation.AVIMOperation operation, Throwable throwable);
   void onOperationCompletedEx(String clientId, String conversationId, int requestId,
                               Conversation.AVIMOperation operation, HashMap<String, Object> resultData);
-//  void onMessageArrived(String clientId, String conversationId, int requestId,
-//                        Conversation.AVIMOperation operation, Messages.GenericCommand command);
   void onLiveQueryCompleted(int requestId, Throwable throwable);
-  void onPushMessage(String message, String messageId);
 }

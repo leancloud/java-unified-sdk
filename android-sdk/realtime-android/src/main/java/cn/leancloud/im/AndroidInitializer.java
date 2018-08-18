@@ -2,10 +2,11 @@ package cn.leancloud.im;
 
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVOSCloud;
-import cn.leancloud.im.AVIMEventHandler;
 import cn.leancloud.internal.ThreadModel.MainThreadChecker;
 import cn.leancloud.internal.ThreadModel.ThreadShuttle;
 import cn.leancloud.livequery.AVLiveQueryEventHandler;
+import cn.leancloud.push.AVPushMessageListener;
+import cn.leancloud.push.AndroidNotificationManager;
 import cn.leancloud.util.AndroidUtil;
 import cn.leancloud.utils.LogUtil;
 
@@ -33,5 +34,6 @@ public class AndroidInitializer {
     AVIMEventHandler.setMainThreadChecker(checker, shuttle);
     LOGGER.i("[LeanCloud] initialize mainThreadChecker and threadShuttle within AVLiveQueryEventHandler.");
     AVLiveQueryEventHandler.setMainThreadChecker(checker, shuttle);
+    AVPushMessageListener.getInstance().setNotificationManager(new AndroidNotificationManager());
   }
 }

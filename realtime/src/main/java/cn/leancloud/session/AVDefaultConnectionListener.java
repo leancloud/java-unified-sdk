@@ -112,27 +112,9 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       return;
     }
     if (command.getCmd().getNumber() == Messages.CommandType.loggedin_VALUE) {
-      if (LiveQueryLoginPacket.SERVICE_LIVE_QUERY == command.getService()) {
-        // FIXME: unused code
-        processLoggedinCommand(requestKey);
-      } else {
-        LOGGER.w("ignore loggedin command bcz invalid service.");
-      }
+      LOGGER.w("ignore loggedin command bcz invalid service.");
     } else {
       switch (command.getCmd().getNumber()) {
-        case Messages.CommandType.data_VALUE:
-          if (!command.hasService()) {
-            processDataCommand(command.getDataMessage());
-          } else {
-            final int service = command.getService();
-            if (LiveQueryLoginPacket.SERVICE_PUSH == service) {
-              processDataCommand(command.getDataMessage());
-            } else if (LiveQueryLoginPacket.SERVICE_LIVE_QUERY == service) {
-              // FIXME: unused code
-              processLiveQueryData(command.getDataMessage());
-            }
-          }
-          break;
         case Messages.CommandType.direct_VALUE:
           processDirectCommand(peerId, command.getDirectMessage());
           break;
@@ -176,47 +158,6 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
           break;
       }
     }
-  }
-
-  // FIXME: unused code
-  private void processLoggedinCommand(Integer requestKey) {
-    LiveQueryOperationDelegate.getInstance().ackOperationReplied(requestKey);
-    if (null != requestKey) {
-      InternalConfiguration.getOperationTube().onLiveQueryCompleted(requestKey, null);
-    }
-  }
-
-  private void processDataCommand(Messages.DataCommand dataCommand) {
-    List<String> messageIds = dataCommand.getIdsList();
-    List<Messages.JsonObjectMessage> messages = dataCommand.getMsgList();
-    for (int i = 0; i < messages.size() && i < messageIds.size(); i++) {
-      if (null != messages.get(i)) {
-        if (depot.putStableMessage(messageIds.get(i))) {
-          InternalConfiguration.getOperationTube().onPushMessage(messages.get(i).getData(),
-                  messageIds.get(i));
-        } else {
-          LOGGER.d("ignore duplicated push message.");
-        }
-      }
-    }
-    WindTalker windTalker = WindTalker.getInstance();
-    CommandPacket packet = windTalker.assemblePushAckPacket(AVInstallation.getCurrentInstallation().getInstallationId(), messageIds);
-    AVConnectionManager.getInstance().sendPacket(packet);
-  }
-
-  // FIXME: unused code
-  private void processLiveQueryData(Messages.DataCommand dataCommand) {
-    List<String> messageIds = dataCommand.getIdsList();
-    List<Messages.JsonObjectMessage> messages = dataCommand.getMsgList();
-
-    ArrayList<String> dataList = new ArrayList<>();
-    for (int i = 0; i < messages.size() && i < messageIds.size(); i++) {
-      Messages.JsonObjectMessage message = messages.get(i);
-      if (null != message) {
-        dataList.add(message.getData());
-      }
-    };
-    AVLiveQuery.processData(dataList);
   }
 
   private void processDirectCommand(String peerId, Messages.DirectCommand directCommand) {
@@ -337,7 +278,12 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
   }
   private void processRcpCommand(String peerId, Messages.RcpCommand rcpCommand) {
     try {
-      if (rcpCommand.hasT()) {
+      if (rcpCommand.hasRead() && rcpCommand.hasCid()) {
+        final Long timestamp = rcpCommand.getT();
+        String conversationId = rcpCommand.getCid();
+        AVConversationHolder conversation = session.getConversationHolder(conversationId, Conversation.CONV_TYPE_NORMAL);
+        conversation.onConversationReadAtEvent(timestamp);
+      } else if (rcpCommand.hasT()) {
         final Long timestamp = rcpCommand.getT();
         final String conversationId = rcpCommand.getCid();
         int convType = Conversation.CONV_TYPE_NORMAL; // RcpCommand doesn't include convType, so we use default value.
@@ -352,6 +298,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       session.sessionListener.onError(session, e);
     }
   }
+
   private void processConvCommand(String peerId, String operation, Integer requestKey,
                                   Messages.ConvCommand convCommand) {
     if (ConversationControlPacket.ConversationControlOp.QUERY_RESULT.equals(operation)) {
@@ -596,15 +543,6 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     msg.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusReceipt);
     AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
     conversation.onMessageReceipt(msg);
-  }
-
-  public void onReadCmdReceipt(Messages.RcpCommand rcpCommand) {
-    if (rcpCommand.hasRead() && rcpCommand.hasCid()) {
-      final Long timestamp = rcpCommand.getT();
-      String conversationId = rcpCommand.getCid();
-      AVConversationHolder conversation = session.getConversationHolder(conversationId, Conversation.CONV_TYPE_NORMAL);
-      conversation.onConversationReadAtEvent(timestamp);
-    }
   }
 
   private SessionAckPacket genSessionAckPacket(String messageId) {

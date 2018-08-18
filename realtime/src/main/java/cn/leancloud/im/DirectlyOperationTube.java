@@ -386,8 +386,4 @@ public class DirectlyOperationTube implements OperationTube {
     }
     RequestCache.getInstance().cleanRequestCallback(LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID, null, requestId);
   }
-
-  public void onPushMessage(String message, String messageId) {
-    AVNotificationManager.getInstance().processPushMessage(message, messageId);
-  }
 }

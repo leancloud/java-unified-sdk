@@ -270,7 +270,7 @@ public class PushService extends Service {
     _installationSaveHandler.sendMessage(Message.obtain());
 
     if (cls != null) {
-      AVNotificationManager manager = AVNotificationManager.getInstance();
+      AVNotificationManager manager = AVPushMessageListener.getInstance().getNotificationManager();
       manager.addDefaultPushCallback(channel, cls.getName());
 
       // set default push callback if it's not exist yet
@@ -287,7 +287,7 @@ public class PushService extends Service {
    * @since 1.4.4
    */
   public static void setNotificationIcon(int icon) {
-    AVNotificationManager.getInstance().setNotificationIcon(icon);
+    AVPushMessageListener.getInstance().getNotificationManager().setNotificationIcon(icon);
   }
 
   /**
@@ -306,7 +306,7 @@ public class PushService extends Service {
                                             java.lang.Class<? extends android.app.Activity> cls) {
     LOGGER.d("setDefaultPushCallback cls=" + cls.getName());
     startServiceIfRequired(context, cls);
-    AVNotificationManager.getInstance().addDefaultPushCallback(AVOSCloud.getApplicationId(), cls.getName());
+    AVPushMessageListener.getInstance().getNotificationManager().addDefaultPushCallback(AVOSCloud.getApplicationId(), cls.getName());
   }
 
   /**
@@ -357,7 +357,7 @@ public class PushService extends Service {
     if (channel == null) {
       return;
     }
-    AVNotificationManager.getInstance().removeDefaultPushCallback(channel);
+    AVPushMessageListener.getInstance().getNotificationManager().removeDefaultPushCallback(channel);
     final java.lang.String finalChannel = channel;
     if (StringUtil.isEmpty(AVInstallation.getCurrentInstallation().getObjectId())) {
       AVInstallation.getCurrentInstallation().saveInBackground().subscribe(new Observer<AVObject>() {

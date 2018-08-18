@@ -13,30 +13,19 @@ import com.alibaba.fastjson.JSONObject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AVNotificationManager {
+public abstract class AVNotificationManager {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVNotificationManager.class);
 
-  private static final String PUSH_INTENT_KEY = "com.avoscloud.push";
   private static final String PUSH_MESSAGE_DEPOT = "com.avos.push.message";
-  private static final String LOGTAG = "AVNotificationManager";
+
   private static final String AV_PUSH_SERVICE_APP_DATA = "AV_PUSH_SERVICE_APP_DATA";
   private static final String ICON_KEY = "_notification_icon";
 
-  private static final Random random = new Random();
   private final ConcurrentHashMap<String, String> defaultPushCallback =
           new ConcurrentHashMap<String, String>();
   private int notificationIcon = 0;
 
-  private static AVNotificationManager notificationManager;
-
-  public synchronized static AVNotificationManager getInstance() {
-    if (null == notificationManager) {
-      notificationManager = new AVNotificationManager();
-    }
-    return notificationManager;
-  }
-
-  private AVNotificationManager() {
+  AVNotificationManager() {
     readDataFromCache();
   }
 
@@ -49,6 +38,7 @@ public class AVNotificationManager {
           notificationIcon = Integer.valueOf((String) entry.getValue());
         } catch (Exception e) {
           // ignore;
+          LOGGER.w(e);
         }
       } else {
         String defaultCls = String.valueOf(entry.getValue());
@@ -57,7 +47,7 @@ public class AVNotificationManager {
     }
   }
 
-  private int getNotificationIcon() {
+  int getNotificationIcon() {
     return notificationIcon;
   }
 
@@ -100,21 +90,70 @@ public class AVNotificationManager {
     return action != null ? action.toString() : null;
   }
 
-  private String getChannel(String msg) {
+  String getChannel(String msg) {
     return getJSONValue(msg, "_channel");
   }
 
-  private String getAction(String msg) {
+  String getAction(String msg) {
     return getJSONValue(msg, "action");
   }
 
+  String getTitle(String msg) {
+    return getValue(msg, "title");
+  }
+
+  String getSound(String msg) {
+    return getValue(msg, "sound");
+  }
+
+  private String getValue(String msg, String key) {
+    String title = getJSONValue(msg, key);
+    if (title != null && title.trim().length() > 0) {
+      return title;
+    } else {
+      Map<String, Object> jsonMap = JSON.parseObject(msg, HashMap.class);
+      if (jsonMap == null || jsonMap.isEmpty()) return getApplicationName();
+
+      Map<String, Object> data = (Map<String, Object>) jsonMap.get("data");
+      if (data == null || data.isEmpty()) {
+        return getApplicationName();
+      }
+      Object val = data.get(key);
+      if (val != null) {
+        return val.toString();
+      } else {
+        return getApplicationName();
+      }
+    }
+  }
+
+  String getText(String msg) {
+    String text = getJSONValue(msg, "alert");
+    if (text != null && text.trim().length() > 0) {
+      return text;
+    } else {
+      Map<String, Object> jsonMap = JSON.parseObject(msg, HashMap.class);
+      if (jsonMap == null || jsonMap.isEmpty()) return null;
+
+      Map<String, Object> data = (Map<String, Object>) jsonMap.get("data");
+      if (data == null || data.isEmpty()) {
+        return null;
+      }
+      Object val = data.get("message");
+      if (val != null) {
+        return val.toString();
+      } else {
+        return null;
+      }
+    }
+  }
   /**
    * 是否为静默推送
    * 默认值为 false，及如果 server 并没有传 silent 字段，则默认为通知栏推送
    * @param message
    * @return
    */
-  private boolean getSilent(String message) {
+  boolean getSilent(String message) {
     if (!StringUtil.isEmpty(message)) {
       try {
         JSONObject object = JSON.parseObject(message);
@@ -126,7 +165,7 @@ public class AVNotificationManager {
     return false;
   }
 
-  private Date getExpiration(String msg) {
+  Date getExpiration(String msg) {
     String result = "";
     try {
       JSONObject object = JSON.parseObject(msg);
@@ -169,11 +208,9 @@ public class AVNotificationManager {
     }
   }
 
-  private void sendNotification(String from, String msg) throws IllegalArgumentException {
-    ;
-  }
+  abstract String getApplicationName();
 
-  private void sendBroadcast(String channel, String msg, String action) {
-    ;
-  }
+  abstract void sendNotification(String from, String msg) throws IllegalArgumentException;
+
+  abstract void sendBroadcast(String channel, String msg, String action);
 }
