@@ -38,6 +38,7 @@ public class LeanEngine {
    * @param masterKey The master key provided in the AVOSCloud dashboard.
    */
   public static void initialize(String applicationId, String clientKey, String masterKey) {
+    AVOSCloud.setLogLevel(AVLogger.Level.ALL);// let log4j make decision.
     AppConfiguration.setLogAdapter(new Log4jAdapter());
     AVOSCloud.initialize(applicationId, clientKey);
 
