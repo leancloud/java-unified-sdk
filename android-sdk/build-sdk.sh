@@ -20,11 +20,9 @@ sed -i '' "s/include ':realtime-sample-app'//" settings.gradle
 releaseDir="build/release-$version"
 rm -rf "$releaseDir"
 mkdir "$releaseDir"
-mkdir -p "$releaseDir/storage-android/libs"
-mkdir -p "$releaseDir/realtime-android/libs"
 
-cp storage-android/build/libs/storage-android*.jar $releaseDir/
-cp realtime-android/build/libs/realtime-android*.jar $releaseDir/
+cp storage-android/build/libs/storage-android-*.jar $releaseDir/
+cp realtime-android/build/libs/realtime-android-*.jar $releaseDir/
 cp -rf libs/* $releaseDir/
 
 echo "Build sdk $version done!"

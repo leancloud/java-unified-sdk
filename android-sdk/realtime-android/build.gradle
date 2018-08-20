@@ -1,13 +1,16 @@
 apply plugin: 'com.android.library'
 
 android {
+    useLibrary 'org.apache.http.legacy'
+
     compileSdkVersion 26
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
-        versionName "5.0.0"
+        versionName "5.0.0-SNAPSHOT"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -54,8 +57,9 @@ dependencies {
     compile('cn.leancloud:realtime-core:5.0.0-SNAPSHOT')
     compile 'com.android.support:support-v4:18.+'
 
-
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
+
+//apply from: '../maven_push.gradle'
