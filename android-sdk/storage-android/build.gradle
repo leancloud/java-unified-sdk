@@ -72,4 +72,4 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
-//apply from: '../maven_push.gradle'
+apply from: '../maven_push.gradle'
