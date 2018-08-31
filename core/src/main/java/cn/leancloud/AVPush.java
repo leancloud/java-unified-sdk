@@ -305,7 +305,7 @@ public class AVPush {
    *
    * @param callback callback.done(e) is called when the send completes.
    */
-  public void sendInBackground(SendCallback callback) {
+  public void sendInBackground(final SendCallback callback) {
     sendInBackground().subscribe(new Observer<JSONObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
@@ -351,7 +351,7 @@ public class AVPush {
    * @param callback callback.done(e) is called when the send completes.
    */
   public static void sendDataInBackground(JSONObject data, AVQuery<? extends AVInstallation> query,
-                                          SendCallback callback) {
+                                          final SendCallback callback) {
     AVPush push = new AVPush();
     push.setData(data);
     push.setQuery(query);
@@ -415,7 +415,7 @@ public class AVPush {
    * @param callback callback.done(e) is called when the send completes.
    */
   public static void sendMessageInBackground(String message,
-                                             AVQuery<? extends AVInstallation> query, SendCallback callback) {
+                                             AVQuery<? extends AVInstallation> query, final SendCallback callback) {
     AVPush push = new AVPush();
     push.setMessage(message);
     push.setQuery(query);

@@ -132,7 +132,7 @@ public class AVIMClientTest extends TestCase {
     Thread.sleep(4000);
     client.open(new AVIMClientCallback() {
       @Override
-      public void done(AVIMClient client, AVIMException e) {
+      public void done(final AVIMClient client, AVIMException e) {
         if (null != e) {
           System.out.println("failed open client.");
           e.printStackTrace();
@@ -166,7 +166,7 @@ public class AVIMClientTest extends TestCase {
     Thread.sleep(4000);
     client.open(new AVIMClientCallback() {
       @Override
-      public void done(AVIMClient client, AVIMException e) {
+      public void done(final AVIMClient client, final AVIMException e) {
         if (null != e) {
           System.out.println("failed open client.");
           e.printStackTrace();

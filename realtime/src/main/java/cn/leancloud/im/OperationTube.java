@@ -14,10 +14,10 @@ import java.util.Map;
 public interface OperationTube {
   // request sender
   boolean openClient(String clientId, String tag, String userSessionToken,
-                  boolean reConnect, AVIMClientCallback callback);
+                  boolean reConnect, final AVIMClientCallback callback);
   boolean queryClientStatus(String clientId, final AVIMClientStatusCallback callback);
-  boolean closeClient(String self, AVIMClientCallback callback);
-  boolean renewSessionToken(String clientId, AVIMClientCallback callback);
+  boolean closeClient(String self, final AVIMClientCallback callback);
+  boolean renewSessionToken(String clientId, final AVIMClientCallback callback);
   boolean queryOnlineClients(String self, List<String> clients, final AVIMOnlineClientsCallback callback);
 
   boolean createConversation(final String self, final List<String> members,
@@ -36,19 +36,19 @@ public interface OperationTube {
   boolean sendMessage(String clientId, String conversationId, int convType, final AVIMMessage message, final AVIMMessageOption messageOption,
                       final AVIMCommonJsonCallback callback);
   boolean updateMessage(String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage,
-                        AVIMCommonJsonCallback callback);
-  boolean recallMessage(String clientId, int convType, AVIMMessage message, AVIMCommonJsonCallback callback);
+                        final AVIMCommonJsonCallback callback);
+  boolean recallMessage(String clientId, int convType, AVIMMessage message, final AVIMCommonJsonCallback callback);
   boolean fetchReceiptTimestamps(String clientId, String conversationId, int convType, Conversation.AVIMOperation operation,
-                                 AVIMCommonJsonCallback callback);
+                                 final AVIMCommonJsonCallback callback);
   boolean queryMessages(String clientId, String conversationId, int convType, String params,
-                        Conversation.AVIMOperation operation, AVIMMessagesQueryCallback callback);
+                        Conversation.AVIMOperation operation, final AVIMMessagesQueryCallback callback);
 
   boolean processMembers(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
-                         AVCallback callback);
+                         final AVCallback callback);
 
   boolean markConversationRead(String clientId, String conversationId, int convType, Map<String, Object> lastMessageParam);
 
-  boolean loginLiveQuery(String subscriptionId, AVLiveQuerySubscribeCallback callback);
+  boolean loginLiveQuery(String subscriptionId, final AVLiveQuerySubscribeCallback callback);
   
   // response notifier
   void onOperationCompleted(String clientId, String conversationId, int requestId,

@@ -33,7 +33,7 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public boolean openClient(String clientId, String tag, String userSessionToken,
-                  boolean reConnect, AVIMClientCallback callback) {
+                  boolean reConnect, final AVIMClientCallback callback) {
     LOGGER.d("openClient...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -58,7 +58,7 @@ public class DirectlyOperationTube implements OperationTube {
     return true;
   }
 
-  public boolean renewSessionToken(String clientId, AVIMClientCallback callback) {
+  public boolean renewSessionToken(String clientId, final AVIMClientCallback callback) {
     LOGGER.d("renewSessionToken...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -67,7 +67,7 @@ public class DirectlyOperationTube implements OperationTube {
     return renewSessionTokenDirectly(clientId, requestId);
   }
 
-  public boolean closeClient(String self, AVIMClientCallback callback) {
+  public boolean closeClient(String self, final AVIMClientCallback callback) {
     LOGGER.d("closeClient...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -139,7 +139,8 @@ public class DirectlyOperationTube implements OperationTube {
     return this.sendMessageDirectly(clientId, conversationId, convType, message, messageOption, requestId);
   }
 
-  public boolean updateMessage(String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage, AVIMCommonJsonCallback callback) {
+  public boolean updateMessage(String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage,
+                               final AVIMCommonJsonCallback callback) {
     LOGGER.d("updateMessage...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -148,7 +149,7 @@ public class DirectlyOperationTube implements OperationTube {
     return this.updateMessageDirectly(clientId, convType, oldMessage, newMessage, requestId);
   }
 
-  public boolean recallMessage(String clientId, int convType, AVIMMessage message, AVIMCommonJsonCallback callback) {
+  public boolean recallMessage(String clientId, int convType, AVIMMessage message, final AVIMCommonJsonCallback callback) {
     LOGGER.d("recallMessage...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -158,7 +159,7 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public boolean fetchReceiptTimestamps(String clientId, String conversationId, int convType,
-                                        Conversation.AVIMOperation operation, AVIMCommonJsonCallback callback) {
+                                        Conversation.AVIMOperation operation, final AVIMCommonJsonCallback callback) {
     LOGGER.d("fetchReceiptTimestamps...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -168,7 +169,7 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public boolean processMembers(String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
-                                AVCallback callback) {
+                                final AVCallback callback) {
     LOGGER.d("processMembers...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -178,7 +179,7 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public boolean queryMessages(String clientId, String conversationId, int convType, String params,
-                        Conversation.AVIMOperation operation, AVIMMessagesQueryCallback callback) {
+                        Conversation.AVIMOperation operation, final AVIMMessagesQueryCallback callback) {
     LOGGER.d("queryMessages...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -193,7 +194,7 @@ public class DirectlyOperationTube implements OperationTube {
     return this.markConversationReadDirectly(clientId, conversationId, convType, lastMessageParam, requestId);
   }
 
-  public boolean loginLiveQuery(String subscriptionId, AVLiveQuerySubscribeCallback callback) {
+  public boolean loginLiveQuery(String subscriptionId, final AVLiveQuerySubscribeCallback callback) {
     LOGGER.d("loginLiveQuery...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {

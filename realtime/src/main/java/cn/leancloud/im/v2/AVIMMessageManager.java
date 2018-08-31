@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class AVIMMessageManager {
@@ -24,7 +25,7 @@ public class AVIMMessageManager {
   static Map<Integer, Class<? extends AVIMTypedMessage>> messageTypesRepository =
           new HashMap<>();
   static AVIMMessageHandler defaultMessageHandler;
-  static ConcurrentHashMap<Class<? extends AVIMMessage>, Set<MessageHandler>> messageHandlerRepository =
+  static ConcurrentMap<Class<? extends AVIMMessage>, Set<MessageHandler>> messageHandlerRepository =
           new ConcurrentHashMap<Class<? extends AVIMMessage>, Set<MessageHandler>>();
 
   static AVIMConversationEventHandler conversationEventHandler;

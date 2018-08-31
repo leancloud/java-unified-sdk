@@ -29,8 +29,8 @@ public class AVLiveQueryTest extends TestCase{
   public void testSubscribe() throws Exception {
     AVQuery query = new AVQuery("Product");
     query.whereExists("objectId");
-    AVLiveQuery liveQuery = AVLiveQuery.initWithQuery(query);
-    CountDownLatch latch = new CountDownLatch(1);
+    final AVLiveQuery liveQuery = AVLiveQuery.initWithQuery(query);
+    final CountDownLatch latch = new CountDownLatch(1);
     liveQuery.subscribeInBackground(new AVLiveQuerySubscribeCallback() {
       @Override
       public void done(AVException e) {
@@ -61,8 +61,8 @@ public class AVLiveQueryTest extends TestCase{
   public void testReceiveLiveQueryNotification() throws Exception {
     AVQuery query = new AVQuery("Product");
     query.whereExists("objectId");
-    AVLiveQuery liveQuery = AVLiveQuery.initWithQuery(query);
-    CountDownLatch latch = new CountDownLatch(1);
+    final AVLiveQuery liveQuery = AVLiveQuery.initWithQuery(query);
+    final CountDownLatch latch = new CountDownLatch(1);
     liveQuery.setEventHandler(new AVLiveQueryEventHandler() {
       @Override
       public void onObjectCreated(AVObject avObject) {
@@ -89,7 +89,7 @@ public class AVLiveQueryTest extends TestCase{
     });
     latch.await();
 
-    CountDownLatch latch2 = new CountDownLatch(1);
+    final CountDownLatch latch2 = new CountDownLatch(1);
     liveQuery.unsubscribeInBackground(new AVLiveQuerySubscribeCallback() {
       @Override
       public void done(AVException ex) {

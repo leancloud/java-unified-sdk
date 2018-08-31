@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSON;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class AVIMMessageStorage {
   public static final int MESSAGE_INNERTYPE_BIN = 1;
@@ -102,7 +103,7 @@ public class AVIMMessageStorage {
     void done(AVIMMessage message, boolean breakpoint);
   }
 
-  private static ConcurrentHashMap<String, AVIMMessageStorage> storages =
+  private static ConcurrentMap<String, AVIMMessageStorage> storages =
           new ConcurrentHashMap<String, AVIMMessageStorage>();
 
   public static AVIMMessageStorage getInstance(String clientId) {

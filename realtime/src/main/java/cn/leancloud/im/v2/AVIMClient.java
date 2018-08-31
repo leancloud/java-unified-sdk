@@ -22,11 +22,12 @@ import io.reactivex.disposables.Disposable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class AVIMClient {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVIMClient.class);
 
-  private static ConcurrentHashMap<String, AVIMClient> clients =
+  private static ConcurrentMap<String, AVIMClient> clients =
           new ConcurrentHashMap<String, AVIMClient>();
   private static AVIMClientEventHandler clientEventHandler;
 
@@ -83,7 +84,7 @@ public class AVIMClient {
   private long realtimeSessionTokenExpired = 0l;
 
   private AVIMMessageStorage storage;
-  private ConcurrentHashMap<String, AVIMConversation> conversationCache =
+  private ConcurrentMap<String, AVIMConversation> conversationCache =
           new ConcurrentHashMap<String, AVIMConversation>();
 
   private AVIMClient(String clientId) {
@@ -140,7 +141,7 @@ public class AVIMClient {
    */
   public static String getDefaultClient() {
     if (getClientsCount() == 1) {
-      return clients.keys().nextElement();
+      return clients.keySet().iterator().next();
     }
     return "";
   }
@@ -351,7 +352,10 @@ public class AVIMClient {
           String conversationId =
                   (String) result.get(Conversation.callbackConversationKey);
           String createdAt = (String) result.get(Conversation.callbackCreatedAt);
-          int tempTTLFromServer = (int)result.getOrDefault(Conversation.callbackTemporaryTTL, 0);
+          int tempTTLFromServer = 0;
+          if (result.containsKey(Conversation.callbackTemporaryTTL)) {
+            tempTTLFromServer = (int) result.get(Conversation.callbackTemporaryTTL);
+          };
           conversation = getConversation(conversationId, isTransient, isTemp);
           conversation.setMembers(conversationMembers);
           conversation.setAttributesForInit(conversationAttributes);

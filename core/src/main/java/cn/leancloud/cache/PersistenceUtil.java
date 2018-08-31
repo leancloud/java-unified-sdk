@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -16,7 +17,7 @@ public class PersistenceUtil {
   private static PersistenceUtil INSTANCE = new PersistenceUtil();
   public static final int MAX_FILE_BUF_SIZE = 1024*1024*2;
 
-  private ConcurrentHashMap<String, ReentrantReadWriteLock> fileLocks =
+  private ConcurrentMap<String, ReentrantReadWriteLock> fileLocks =
           new ConcurrentHashMap<String, ReentrantReadWriteLock>();
 
   private PersistenceUtil() {

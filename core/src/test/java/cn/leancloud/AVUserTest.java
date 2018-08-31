@@ -76,7 +76,7 @@ public class AVUserTest extends TestCase {
   }
 
   public void testAnonymousLogin() throws Exception {
-    CountDownLatch latch = new CountDownLatch(1);
+    final CountDownLatch latch = new CountDownLatch(1);
     AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
@@ -105,7 +105,7 @@ public class AVUserTest extends TestCase {
   }
 
   public void testDisassociateAnonymousLogin() throws Exception {
-    CountDownLatch latch = new CountDownLatch(1);
+    final CountDownLatch latch = new CountDownLatch(1);
     AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {

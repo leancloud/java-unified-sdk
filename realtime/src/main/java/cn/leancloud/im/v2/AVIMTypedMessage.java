@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class AVIMTypedMessage extends AVIMMessage{
   private static final String KEY_MESSAGE_ID = "msg_mid";
@@ -19,7 +20,7 @@ public class AVIMTypedMessage extends AVIMMessage{
   private static final String KEY_MESSAGE_CONTENT = "msg";
 
   private int messageType;
-  static ConcurrentHashMap<Class<? extends AVIMTypedMessage>, Map<String, FieldAttribute>> fieldCache =
+  static ConcurrentMap<Class<? extends AVIMTypedMessage>, Map<String, FieldAttribute>> fieldCache =
           new ConcurrentHashMap<Class<? extends AVIMTypedMessage>, Map<String, FieldAttribute>>();
 
   public AVIMTypedMessage() {
@@ -44,7 +45,7 @@ public class AVIMTypedMessage extends AVIMMessage{
   public final String getContent() {
     JSONObject json = new JSONObject();
     json.put("_lctype", this.getMessageType());
-    if (!fieldCache.contains(this.getClass())) {
+    if (!fieldCache.containsKey(this.getClass())) {
       computeFieldAttribute(this.getClass());
     }
     Map<String, FieldAttribute> classFieldAttributesMap = fieldCache.get(this.getClass());
@@ -58,7 +59,7 @@ public class AVIMTypedMessage extends AVIMMessage{
   @Override
   public final void setContent(String content) {
     Map<String, Object> contentMap = JSONObject.parseObject(content, Map.class);
-    if (!fieldCache.contains(this.getClass())) {
+    if (!fieldCache.containsKey(this.getClass())) {
       computeFieldAttribute(this.getClass());
     }
     Map<String, FieldAttribute> classFieldAttributesMap = fieldCache.get(this.getClass());

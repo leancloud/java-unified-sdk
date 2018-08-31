@@ -50,7 +50,7 @@ public class AVIMConversationTest extends TestCase {
   @Override
   protected void tearDown() throws Exception {
     this.countDownLatch = null;
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     if (null != client) {
       client.close(new AVIMClientCallback() {
         @Override
@@ -64,7 +64,7 @@ public class AVIMConversationTest extends TestCase {
   }
 
   public void testSendTextMessage() throws Exception {
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client = AVIMClient.getInstance("testUser1");
     client.open(new AVIMClientCallback() {
       @Override
@@ -160,7 +160,7 @@ public class AVIMConversationTest extends TestCase {
   }
 
   public void testRecallMessage() throws Exception {
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client = AVIMClient.getInstance("testUser1");
     client.open(new AVIMClientCallback() {
       @Override
@@ -171,12 +171,12 @@ public class AVIMConversationTest extends TestCase {
     tmpCounter.await();
     client.createConversation(memebers, convName, null, false, true, new AVIMConversationCreatedCallback() {
       @Override
-      public void done(AVIMConversation conversation, AVIMException e) {
+      public void done(final AVIMConversation conversation, AVIMException e) {
         if (null != e) {
           e.printStackTrace();
           countDownLatch.countDown();
         } else {
-          AVIMTextMessage msg = new AVIMTextMessage();
+          final AVIMTextMessage msg = new AVIMTextMessage();
           msg.setText("test run @" + System.currentTimeMillis());
           conversation.sendMessage(msg, new AVIMConversationCallback() {
             @Override
@@ -210,7 +210,7 @@ public class AVIMConversationTest extends TestCase {
 
 
   public void testUpdateMessage() throws Exception {
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client = AVIMClient.getInstance("testUser1");
     client.open(new AVIMClientCallback() {
       @Override
@@ -221,12 +221,12 @@ public class AVIMConversationTest extends TestCase {
     tmpCounter.await();
     client.createConversation(memebers, convName, null, false, true, new AVIMConversationCreatedCallback() {
       @Override
-      public void done(AVIMConversation conversation, AVIMException e) {
+      public void done(final AVIMConversation conversation, AVIMException e) {
         if (null != e) {
           e.printStackTrace();
           countDownLatch.countDown();
         } else {
-          AVIMTextMessage msg = new AVIMTextMessage();
+          final AVIMTextMessage msg = new AVIMTextMessage();
           msg.setText("test run @" + System.currentTimeMillis());
           conversation.sendMessage(msg, new AVIMConversationCallback() {
             @Override
@@ -261,7 +261,7 @@ public class AVIMConversationTest extends TestCase {
   }
 
   public void testQueryMessages() throws Exception {
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client = AVIMClient.getInstance("testUser1");
     client.open(new AVIMClientCallback() {
       @Override
@@ -299,7 +299,7 @@ public class AVIMConversationTest extends TestCase {
 
   public void testJoinedNotification() throws Exception {
     client = AVIMClient.getInstance("testUser1");
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -342,7 +342,7 @@ public class AVIMConversationTest extends TestCase {
 
   public void testConversationQueryWithCache() throws Exception {
     client = AVIMClient.getInstance("testUser1");
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -376,7 +376,7 @@ public class AVIMConversationTest extends TestCase {
 
   public void testConversationQueryWithNetwork() throws Exception {
     client = AVIMClient.getInstance("testUser1");
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -416,7 +416,7 @@ public class AVIMConversationTest extends TestCase {
 
   public void testConversationJoinAndQuit() throws Exception {
     client = AVIMClient.getInstance("testUser1");
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -425,7 +425,7 @@ public class AVIMConversationTest extends TestCase {
     });
     tmpCounter.await();
     String conversationId = "5b6a909c756571003d3e1603";
-    AVIMConversation conversation = client.getConversation(conversationId, true, false);
+    final AVIMConversation conversation = client.getConversation(conversationId, true, false);
     conversation.join(new AVIMConversationCallback() {
       @Override
       public void done(AVIMException e) {
@@ -460,7 +460,7 @@ public class AVIMConversationTest extends TestCase {
 
   public void testConversationRead() throws Exception {
     client = AVIMClient.getInstance("testUser1");
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -469,7 +469,7 @@ public class AVIMConversationTest extends TestCase {
     });
     tmpCounter.await();
     String conversationId = "5805eefd8159ccabfc39bc1c";
-    AVIMConversation conversation = client.getConversation(conversationId, false, false);
+    final AVIMConversation conversation = client.getConversation(conversationId, false, false);
     conversation.join(new AVIMConversationCallback() {
       @Override
       public void done(AVIMException e) {
@@ -505,7 +505,7 @@ public class AVIMConversationTest extends TestCase {
 
   public void testConversationFetch() throws Exception {
     client = AVIMClient.getInstance("testUser1");
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -533,7 +533,7 @@ public class AVIMConversationTest extends TestCase {
 
   public void testConversationFetchLastTime() throws Exception {
     client = AVIMClient.getInstance("testUser1");
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -542,7 +542,7 @@ public class AVIMConversationTest extends TestCase {
     });
     tmpCounter.await();
     String conversationId = "5805eefd8159ccabfc39bc1c";
-    AVIMConversation conversation = client.getConversation(conversationId, false, false);
+    final AVIMConversation conversation = client.getConversation(conversationId, false, false);
     conversation.fetchReceiptTimestamps(new AVIMConversationCallback() {
       @Override
       public void done(AVIMException e) {
@@ -563,7 +563,7 @@ public class AVIMConversationTest extends TestCase {
 
   public void testConversationFetchLastTimeWithMembership() throws Exception {
     client = AVIMClient.getInstance("testUser1");
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -572,7 +572,7 @@ public class AVIMConversationTest extends TestCase {
     });
     tmpCounter.await();
     String conversationId = "5805eefd8159ccabfc39bc1c";
-    AVIMConversation conversation = client.getConversation(conversationId, false, false);
+    final AVIMConversation conversation = client.getConversation(conversationId, false, false);
     conversation.join(new AVIMConversationCallback() {
       @Override
       public void done(AVIMException e) {
@@ -614,7 +614,7 @@ public class AVIMConversationTest extends TestCase {
 
   public void testMuteConversation() throws Exception {
     client = AVIMClient.getInstance("testUser1");
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -623,7 +623,7 @@ public class AVIMConversationTest extends TestCase {
     });
     tmpCounter.await();
     String conversationId = "5805eefd8159ccabfc39bc1c";
-    AVIMConversation conversation = client.getConversation(conversationId, false, false);
+    final AVIMConversation conversation = client.getConversation(conversationId, false, false);
     conversation.join(new AVIMConversationCallback() {
       @Override
       public void done(AVIMException e) {
@@ -682,7 +682,7 @@ public class AVIMConversationTest extends TestCase {
 
   public void testMuteConversationMembers() throws Exception {
     client = AVIMClient.getInstance("testUser1");
-    CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
@@ -691,10 +691,10 @@ public class AVIMConversationTest extends TestCase {
     });
     tmpCounter.await();
     List<String> members = Arrays.asList("testUser2", "testUser3", "testUser4");
-    List<String> blockMembers = Arrays.asList("testUser3", "testUser4");
+    final List<String> blockMembers = Arrays.asList("testUser3", "testUser4");
     client.createConversation(members, "UnitTestConversation", null, false, true, new AVIMConversationCreatedCallback() {
       @Override
-      public void done(AVIMConversation conversation, AVIMException e) {
+      public void done(final AVIMConversation conversation, AVIMException e) {
         if (null != e) {
           System.out.println("failed to create conversation. cause: " + e.getMessage());
           countDownLatch.countDown();
@@ -735,16 +735,16 @@ public class AVIMConversationTest extends TestCase {
     Thread.sleep(8000);
     final String receiverId = "receiver-" + System.currentTimeMillis();
 
-    CountDownLatch receierOnlineLatch = new CountDownLatch(1);
+    final CountDownLatch receierOnlineLatch = new CountDownLatch(1);
 
     Runnable sendThread = new Runnable() {
       @Override
       public void run() {
-        CountDownLatch tmpCounter = new CountDownLatch(1);
-        AVIMClient client = AVIMClient.getInstance(senderId);
+        final CountDownLatch tmpCounter = new CountDownLatch(1);
+        final AVIMClient client = AVIMClient.getInstance(senderId);
         client.open(new AVIMClientCallback() {
           @Override
-          public void done(AVIMClient client, AVIMException e) {
+          public void done(final AVIMClient client, AVIMException e) {
             if (null != e) {
               System.out.println("failed to open sender client.");
               e.printStackTrace();
@@ -758,7 +758,7 @@ public class AVIMConversationTest extends TestCase {
               client.createConversation(Arrays.asList(receiverId), null, null, false, true,
                       new AVIMConversationCreatedCallback() {
                         @Override
-                        public void done(AVIMConversation conversation, AVIMException e) {
+                        public void done(final AVIMConversation conversation, AVIMException e) {
                           if (null != e) {
                             System.out.println("failed to create conversation from sender client.");
                             e.printStackTrace();
@@ -823,7 +823,7 @@ public class AVIMConversationTest extends TestCase {
     Runnable receiveThread = new Runnable() {
       @Override
       public void run() {
-        CountDownLatch tmpCounter = new CountDownLatch(1);
+        final CountDownLatch tmpCounter = new CountDownLatch(1);
         AVIMClient client = AVIMClient.getInstance(receiverId);
         client.open(new AVIMClientCallback() {
           @Override

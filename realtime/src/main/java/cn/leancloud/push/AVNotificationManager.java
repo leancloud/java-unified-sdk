@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public abstract class AVNotificationManager {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVNotificationManager.class);
@@ -21,7 +22,7 @@ public abstract class AVNotificationManager {
   private static final String AV_PUSH_SERVICE_APP_DATA = "AV_PUSH_SERVICE_APP_DATA";
   private static final String ICON_KEY = "_notification_icon";
 
-  private final ConcurrentHashMap<String, String> defaultPushCallback =
+  private final ConcurrentMap<String, String> defaultPushCallback =
           new ConcurrentHashMap<String, String>();
   private int notificationIcon = 0;
 

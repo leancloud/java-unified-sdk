@@ -594,14 +594,14 @@ public class AVIMConversation {
    * @param newMessage the content of the old message will be covered by the new message's
    * @param callback
    */
-  public void updateMessage(AVIMMessage oldMessage, AVIMMessage newMessage, AVIMMessageUpdatedCallback callback) {
+  public void updateMessage(final AVIMMessage oldMessage, final AVIMMessage newMessage, final AVIMMessageUpdatedCallback callback) {
     if (null == oldMessage || null == newMessage) {
       if (null != callback) {
         callback.internalDone(new AVException(new IllegalArgumentException("oldMessage/newMessage shouldn't be null")));
       }
       return;
     }
-    AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
+    final AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
       @Override
       public void done(Map<String, Object> result, AVIMException e) {
         if (null != e || null == result) {
@@ -609,7 +609,10 @@ public class AVIMConversation {
             callback.internalDone(null, e);
           }
         } else {
-          long patchTime = (Long)result.getOrDefault(Conversation.PARAM_MESSAGE_PATCH_TIME, 0);
+          long patchTime = 0;
+          if (result.containsKey(Conversation.PARAM_MESSAGE_PATCH_TIME)) {
+            patchTime = (Long) result.get(Conversation.PARAM_MESSAGE_PATCH_TIME);
+          }
           copyMessageWithoutContent(oldMessage, newMessage);
           newMessage.setUpdateAt(patchTime);
           updateLocalMessage(newMessage);
@@ -627,14 +630,14 @@ public class AVIMConversation {
    * @param message the message need to be recalled
    * @param callback
    */
-  public void recallMessage(AVIMMessage message, AVIMMessageRecalledCallback callback) {
+  public void recallMessage(final AVIMMessage message, final AVIMMessageRecalledCallback callback) {
     if (null == message) {
       if (null != callback) {
         callback.internalDone(new AVException(new IllegalArgumentException("message shouldn't be null")));
       }
       return;
     }
-    AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
+    final AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
       @Override
       public void done(Map<String, Object> result, AVIMException e) {
         if (null != e || null == result) {
@@ -642,7 +645,10 @@ public class AVIMConversation {
             callback.internalDone(null, e);
           }
         } else {
-          long patchTime = (Long)result.getOrDefault(Conversation.PARAM_MESSAGE_PATCH_TIME, 0);
+          long patchTime = 0;
+          if (result.containsKey(Conversation.PARAM_MESSAGE_PATCH_TIME)) {
+            patchTime = (Long) result.get(Conversation.PARAM_MESSAGE_PATCH_TIME);
+          }
           AVIMRecalledMessage recalledMessage = new AVIMRecalledMessage();
           copyMessageWithoutContent(message, recalledMessage);
           recalledMessage.setUpdateAt(patchTime);
@@ -683,7 +689,7 @@ public class AVIMConversation {
    *
    * @param callback
    */
-  public void fetchReceiptTimestamps(AVIMConversationCallback callback) {
+  public void fetchReceiptTimestamps(final AVIMConversationCallback callback) {
     final AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
       @Override
       public void done(Map<String, Object> result, AVIMException e) {
@@ -693,8 +699,15 @@ public class AVIMConversation {
         if (null != e || null == result) {
           callback.internalDone(e);
         } else {
-          long readAt = (Long) result.getOrDefault(Conversation.callbackReadAt, 0l);
-          long deliveredAt = (Long) result.getOrDefault(Conversation.callbackDeliveredAt, 0l);
+          long readAt = 0;
+          if (result.containsKey(Conversation.callbackReadAt)) {
+            readAt = (Long) result.get(Conversation.callbackReadAt);
+          }
+
+          long deliveredAt = 0;
+          if (result.containsKey(Conversation.callbackDeliveredAt)) {
+            readAt = (Long) result.get(Conversation.callbackDeliveredAt);
+          }
           AVIMConversation.this.setLastReadAt(readAt, false);
           AVIMConversation.this.setLastDeliveredAt(deliveredAt, false);
           storage.updateConversationTimes(AVIMConversation.this);
@@ -745,7 +758,7 @@ public class AVIMConversation {
    * @param limit
    * @param callback
    */
-  public void queryMessagesFromCache(int limit, AVIMMessagesQueryCallback callback) {
+  public void queryMessagesFromCache(int limit, final AVIMMessagesQueryCallback callback) {
     queryMessagesFromCache(null, 0, limit, callback);
   }
 
@@ -757,7 +770,7 @@ public class AVIMConversation {
     }
   }
   private void queryMessagesFromServer(String msgId, long timestamp, int limit,
-                                       String toMsgId, long toTimestamp, AVIMMessagesQueryCallback callback) {
+                                       String toMsgId, long toTimestamp, final AVIMMessagesQueryCallback callback) {
     queryMessagesFromServer(msgId, timestamp, false, toMsgId, toTimestamp, false,
             AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld, limit, callback);
   }
@@ -1450,7 +1463,7 @@ public class AVIMConversation {
    * @param callback
    * @since 3.0
    */
-  public void updateInfoInBackground(AVIMConversationCallback callback) {
+  public void updateInfoInBackground(final AVIMConversationCallback callback) {
     if (!pendingAttributes.isEmpty() || !pendingInstanceData.isEmpty()) {
       Map<String, Object> attributesMap = new HashMap<>();
       if (!pendingAttributes.isEmpty()) {

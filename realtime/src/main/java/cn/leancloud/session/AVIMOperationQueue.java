@@ -9,6 +9,7 @@ import cn.leancloud.im.v2.Conversation;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class AVIMOperationQueue {
   public static class Operation {
@@ -28,7 +29,7 @@ public class AVIMOperationQueue {
     }
   }
 
-  static ConcurrentHashMap<Integer, Runnable> timeoutCache =
+  static ConcurrentMap<Integer, Runnable> timeoutCache =
           new ConcurrentHashMap<Integer, Runnable>();
   Map<Integer, Operation> cache = new ConcurrentHashMap<>();
   PersistentQueue<Operation> operationQueue;

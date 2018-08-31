@@ -23,7 +23,7 @@ public abstract class AVLiveQueryEventHandler {
     }
   }
 
-  public void done(AVLiveQuery.EventType eventType, AVObject avObject, List<String> updateKeyList) {
+  public void done(final AVLiveQuery.EventType eventType, final AVObject avObject, final List<String> updateKeyList) {
     switch (eventType) {
       case ENTER:
         if (needCheckMainThread && !mainThreadChecker.isMainThread()) {

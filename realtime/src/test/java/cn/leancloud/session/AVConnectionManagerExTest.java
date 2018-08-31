@@ -31,7 +31,7 @@ public class AVConnectionManagerExTest extends TestCase {
 
   public void testConnectionRetry() throws Exception {
     AVIMOptions.getGlobalOptions().setRtmServer("wss://cn-n1-cell987.leancloud.cn");
-    AVConnectionManager manager = AVConnectionManager.getInstance();
+    final AVConnectionManager manager = AVConnectionManager.getInstance();
     new Thread(new Runnable() {
       @Override
       public void run() {
@@ -59,7 +59,7 @@ public class AVConnectionManagerExTest extends TestCase {
 
   public void testMultipleConnection() throws Exception {
     AVIMOptions.getGlobalOptions().setRtmServer("wss://cn-n1-cell987.leancloud.cn");
-    AVConnectionManager manager = AVConnectionManager.getInstance();
+    final AVConnectionManager manager = AVConnectionManager.getInstance();
     new Thread(new Runnable() {
       @Override
       public void run() {

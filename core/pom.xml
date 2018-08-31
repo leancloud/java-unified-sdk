@@ -52,7 +52,7 @@
     <!-- dependencies -->
     <okhttp.version>3.9.1</okhttp.version>
     <retrofit.version>2.3.0</retrofit.version>
-    <rxjava2.version>2.1.9</rxjava2.version>
+    <rxjava2.version>2.2.1</rxjava2.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
