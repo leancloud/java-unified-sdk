@@ -1,6 +1,5 @@
 package cn.leancloud.sample.testcase;
 
-import cn.leancloud.AVAnonymousUtils;
 import cn.leancloud.AVException;
 import cn.leancloud.AVQuery;
 import cn.leancloud.AVUser;
@@ -288,7 +287,7 @@ public class UserDemoActivity extends DemoBaseActivity {
   }
 
   public void testAnonymousUserLogin() {
-    AVAnonymousUtils.logIn()
+    AVUser.logInAnonymously()
         .subscribe(ObserverBuilder.buildSingleObserver(new LogInCallback<AVUser>() {
       @Override
       public void done(AVUser avUser, AVException e) {

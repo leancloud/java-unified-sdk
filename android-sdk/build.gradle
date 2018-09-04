@@ -12,6 +12,10 @@ buildscript {
         maven {
             url "$androidHome/extras/android/m2repository/"
         }
+        //这里是 LeanCloud 的包仓库
+        maven {
+            url "http://mvn.leancloud.cn/nexus/content/repositories/public"
+        }
         google()
     }
     dependencies {
@@ -36,6 +40,10 @@ allprojects {
         def androidHome = System.getenv("ANDROID_HOME")
         maven {
             url "$androidHome/extras/android/m2repository/"
+        }
+        //这里是 LeanCloud 的包仓库
+        maven {
+            url "http://mvn.leancloud.cn/nexus/content/repositories/public"
         }
         google()
     }

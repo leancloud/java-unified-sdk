@@ -15,7 +15,7 @@ sed -i '' "s/VERSION_NAME=.*/VERSION_NAME=$version/" gradle.properties
 sed -i '' "s/include ':storage-sample-app'//" settings.gradle
 sed -i '' "s/include ':realtime-sample-app'//" settings.gradle
 
-./gradlew clean assemble
+./gradlew clean assemble uploadArchives
 
 releaseDir="build/release-$version"
 rm -rf "$releaseDir"

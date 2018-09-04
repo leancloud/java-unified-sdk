@@ -24,6 +24,7 @@ android {
             }
         }
     }
+
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
@@ -35,7 +36,7 @@ android {
 }
 
 dependencies {
-    compile project(':storage-android')
+    compile('cn.leancloud:storage-android:5.0.0-SNAPSHOT')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.1.0'
@@ -60,12 +61,11 @@ task renameFile {
 }
 
 task copySource(type: Copy) {
-    from 'src/main/java/cn/leancloud/testcase'
+    from 'src/main/java/cn/leancloud/sample/testcase'
     into 'src/main/assets'
     rename { String fileName ->
         fileName.replace('java', 'file')
     }
-
 }
 
 preBuild.dependsOn copySource
