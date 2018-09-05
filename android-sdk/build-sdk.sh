@@ -23,6 +23,9 @@ mkdir "$releaseDir"
 
 cp storage-android/build/libs/storage-android-*.jar $releaseDir/
 cp realtime-android/build/libs/realtime-android-*.jar $releaseDir/
+cp mixpush-android/build/libs/mixpush-android-*.jar $releaseDir/
+cp leancloud-fcm/build/libs/leancloud-fcm-*.jar $releaseDir/
 cp -rf libs/* $releaseDir/
+cp -rf mixpush-android/libs/* $releaseDir/
 
 echo "Build sdk $version done!"
