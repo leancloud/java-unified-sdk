@@ -81,7 +81,7 @@ public class AVMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
       if (!StringUtil.isEmpty(description)) {
         jsonObject.put("alert", description);
       }
-      AndroidNotificationManager androidNotificationManager = (AndroidNotificationManager) AVPushMessageListener.getInstance().getNotificationManager();
+      AndroidNotificationManager androidNotificationManager = AndroidNotificationManager.getInstance();
       androidNotificationManager.processMixPushMessage(jsonObject.toJSONString());
     }
   }
@@ -94,7 +94,7 @@ public class AVMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
     if (null != miPushMessage) {
       String content = miPushMessage.getContent();
       if (!StringUtil.isEmpty(content)) {
-        AndroidNotificationManager androidNotificationManager = (AndroidNotificationManager) AVPushMessageListener.getInstance().getNotificationManager();
+        AndroidNotificationManager androidNotificationManager = AndroidNotificationManager.getInstance();
         androidNotificationManager.processMixNotification(content, AV_MIXPUSH_MI_NOTIFICATION_ACTION);
       }
     }
@@ -129,7 +129,7 @@ public class AVMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
     if (null != miPushMessage) {
       String content = miPushMessage.getContent();
       if (!StringUtil.isEmpty(content)) {
-        AndroidNotificationManager androidNotificationManager = (AndroidNotificationManager) AVPushMessageListener.getInstance().getNotificationManager();
+        AndroidNotificationManager androidNotificationManager = AndroidNotificationManager.getInstance();
         androidNotificationManager.porcessMixNotificationArrived(content, AV_MIXPUSH_MI_NOTIFICATION_ARRIVED_ACTION);
       }
     }

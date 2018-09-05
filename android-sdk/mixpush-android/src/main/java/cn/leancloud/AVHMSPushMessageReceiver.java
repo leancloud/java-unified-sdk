@@ -83,7 +83,7 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
   public void onPushMsg(Context var1, byte[] var2, String var3) {
     try {
       String message = new String(var2, "UTF-8");
-      AndroidNotificationManager androidNotificationManager = (AndroidNotificationManager) AVPushMessageListener.getInstance().getNotificationManager();
+      AndroidNotificationManager androidNotificationManager = AndroidNotificationManager.getInstance();
       androidNotificationManager.processMixPushMessage(message);
     } catch (Exception ex) {
       LOGGER.e("failed to process PushMessage.", ex);

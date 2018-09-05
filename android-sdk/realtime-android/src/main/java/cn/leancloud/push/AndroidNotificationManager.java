@@ -35,6 +35,14 @@ public class AndroidNotificationManager extends AVNotificationManager {
   private static final AVLogger LOGGER = LogUtil.getLogger(AndroidNotificationManager.class);
   private static final String PUSH_INTENT_KEY = "com.avoscloud.push";
   private static final Random random = new Random();
+  private static final AndroidNotificationManager INSTANCE = new AndroidNotificationManager();
+
+  public static AndroidNotificationManager getInstance() {
+    return INSTANCE;
+  }
+
+  private AndroidNotificationManager() {
+  }
 
   private Intent buildUpdateIntent(String channel, String msg, String action) {
     Intent updateIntent = new Intent();
@@ -200,6 +208,23 @@ public class AndroidNotificationManager extends AVNotificationManager {
             LOGGER.e("Ocurred PendingIntent.CanceledException", e);
           }
         }
+      }
+    }
+  }
+
+  /**
+   * 处理 GCM 的透传消息
+   * @param channel
+   * @param action
+   * @param message
+   */
+  public void processGcmMessage(String channel, String action, String message) {
+    if (channel == null || !containsDefaultPushCallback(channel)) {
+      channel = AVOSCloud.getApplicationId();
+      if (action != null) {
+        sendBroadcast(channel, message, action);
+      } else {
+        sendNotification(channel, message);
       }
     }
   }

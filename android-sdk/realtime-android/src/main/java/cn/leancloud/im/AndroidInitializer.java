@@ -34,6 +34,6 @@ public class AndroidInitializer {
     AVIMEventHandler.setMainThreadChecker(checker, shuttle);
     LOGGER.i("[LeanCloud] initialize mainThreadChecker and threadShuttle within AVLiveQueryEventHandler.");
     AVLiveQueryEventHandler.setMainThreadChecker(checker, shuttle);
-    AVPushMessageListener.getInstance().setNotificationManager(new AndroidNotificationManager());
+    AVPushMessageListener.getInstance().setNotificationManager(AndroidNotificationManager.getInstance());
   }
 }

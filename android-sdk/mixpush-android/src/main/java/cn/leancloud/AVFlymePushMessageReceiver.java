@@ -63,7 +63,7 @@ public class AVFlymePushMessageReceiver extends com.meizu.cloud.pushsdk.MzPushMe
       return;
     }
     LOGGER.d("throughMessage coming, message=" + s);
-    AndroidNotificationManager androidNotificationManager = (AndroidNotificationManager) AVPushMessageListener.getInstance().getNotificationManager();
+    AndroidNotificationManager androidNotificationManager = AndroidNotificationManager.getInstance();
     androidNotificationManager.processMixPushMessage(s);
   }
 
@@ -162,7 +162,7 @@ public class AVFlymePushMessageReceiver extends com.meizu.cloud.pushsdk.MzPushMe
     }
     LOGGER.d("notificationClicked, message=" + var2.getSelfDefineContentString());
     String selfDefineContentString = var2.getSelfDefineContentString();
-    AndroidNotificationManager androidNotificationManager = (AndroidNotificationManager) AVPushMessageListener.getInstance().getNotificationManager();
+    AndroidNotificationManager androidNotificationManager = AndroidNotificationManager.getInstance();
     androidNotificationManager.processMixNotification(selfDefineContentString,
         AV_MIXPUSH_FLYME_NOTIFICATION_ACTION);
   }

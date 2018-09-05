@@ -87,33 +87,6 @@ public class AVMixPushManager {
   }
 
   /**
-   * 注册华为推送
-   * 只有 EMUI && manifest 正确填写 才能注册
-   *
-   * 这是老版本推送，现在已经不推荐使用了。
-   *
-   * @param context
-   */
-  @Deprecated
-  public static void registerHuaweiPush(Context context) throws IllegalAccessException {
-    registerHuaweiPush(context, "");
-  }
-
-  /**
-   * 注册华为推送
-   * 只有是 EMUI && manifest 正确填写 才能注册
-   *
-   * 这是老版本推送，现在已经不推荐使用了。
-   *
-   * @param context
-   * @param profile 华为推送配置
-   */
-  @Deprecated
-  public static void registerHuaweiPush(Context context, String profile) throws IllegalAccessException {
-    throw new IllegalAccessException("registerHuaweiPush is deprecated, please use registerHMSPush instead.");
-  }
-
-  /**
    * 初始化方法，建议在 Application onCreate 里面调用
    * @param application
    */
@@ -210,6 +183,7 @@ public class AVMixPushManager {
           }
         });
   }
+
   /**
    * 请求push协议展示
    *  Request Push Protocol Display
@@ -264,6 +238,7 @@ public class AVMixPushManager {
   public static void setFlymeMStatusbarIcon(int icon) {
     flymeMStatusBarIcon = icon;
   }
+
   /**
    * 取消混合推送的注册
    * 取消成功后，消息会通过 LeanCloud websocket 发送
