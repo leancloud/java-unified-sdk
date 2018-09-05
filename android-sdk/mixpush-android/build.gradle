@@ -1,0 +1,47 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 26
+
+
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile project(':huawei-hmsagent')
+    compile project(':realtime-android')
+    compile project(':storage-android')
+
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation('cn.leancloud:storage-core:5.0.0-SNAPSHOT') {
+        exclude group: 'com.alibaba', module: 'fastjson'
+    }
+    implementation 'com.alibaba:fastjson:1.1.68.android'
+    implementation('cn.leancloud:realtime-core:5.0.0-SNAPSHOT')
+
+    compile 'com.meizu.flyme.internet:push-internal:3.6.2@aar'
+
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}

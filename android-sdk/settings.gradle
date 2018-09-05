@@ -1,4 +1,6 @@
 include ':storage-android'
+include ':mixpush-android'
+include ':huawei-hmsagent'
 include ':realtime-android'
 include ':realtime-sample-app'
 include ':storage-sample-app'

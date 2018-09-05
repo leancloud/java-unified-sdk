@@ -127,4 +127,92 @@ public class AndroidNotificationManager extends AVNotificationManager {
     AVOSCloud.getContext().sendBroadcast(updateIntent);
     LOGGER.d("sent broadcast");
   }
+
+  /**
+   * 处理透传消息（华为只有透传）
+   * @param message
+   */
+  public void processMixPushMessage(String message) {
+    if (!StringUtil.isEmpty(message)) {
+      String channel = getChannel(message);
+      if (channel == null || !containsDefaultPushCallback(channel)) {
+        channel = AVOSCloud.getApplicationId();
+      }
+
+      String action = getAction(message);
+      boolean isSlient = getSilent(message);
+      if (action != null) {
+        sendBroadcast(channel, message, action);
+      } else if (!isSlient) {
+        sendNotification(channel, message);
+      } else {
+        LOGGER.e("ignore push silent message: " + message);
+      }
+    }
+  }
+
+  /**
+   * 处理混合推送到达事件（暂只支持小米）
+   * @param message
+   * @param action
+   */
+  public void porcessMixNotificationArrived(String message, String action) {
+    if (!StringUtil.isEmpty(message) && !StringUtil.isEmpty(action)) {
+      String channel = getChannel(message);
+      if (channel == null || !containsDefaultPushCallback(channel)) {
+        channel = AVOSCloud.getApplicationId();
+      }
+
+      sendNotificationBroadcast(channel, message, action);
+    }
+  }
+
+  /**
+   * 处理混合推送通知栏消息点击后的事件（现在支持小米、魅族，华为不支持）
+   * 处理逻辑：如果是自定义 action 的消息点击事件，则发送 broadcast，否则按照 sdk 自有逻辑打开相应的 activity
+   * @param message
+   */
+  public void processMixNotification(String message, String defaultAction) {
+    if (StringUtil.isEmpty(message)) {
+      LOGGER.e("message is empty, ignore.");
+    } else {
+      String channel = getChannel(message);
+      if (channel == null || !containsDefaultPushCallback(channel)) {
+        channel = AVOSCloud.getApplicationId();
+      }
+
+      String action = getAction(message);
+      if (null != action) {
+        sendNotificationBroadcast(channel, message, defaultAction);
+      } else {
+        String clsName = getDefaultPushCallback(channel);
+        if (StringUtil.isEmpty(clsName)) {
+          LOGGER.e("className is empty, ignore.");
+        } else {
+          Intent intent = buildUpdateIntent(channel, message, null);
+          ComponentName cn = new ComponentName(AVOSCloud.getContext(), clsName);
+          intent.setComponent(cn);
+          intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+          PendingIntent pendingIntent = PendingIntent.getActivity(AVOSCloud.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+          try {
+            pendingIntent.send();
+          } catch (PendingIntent.CanceledException e) {
+            LOGGER.e("Ocurred PendingIntent.CanceledException", e);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * 给订阅了小米 action 的 broadcastreciver 发 broadcast
+   * @param channel
+   * @param msg
+   */
+  private void sendNotificationBroadcast(String channel, String msg, String action) {
+    Intent updateIntent = buildUpdateIntent(channel, msg, action);
+    LOGGER.d("action: " + updateIntent.getAction());
+    AVOSCloud.getContext().sendBroadcast(updateIntent);
+    LOGGER.d("sent broadcast");
+  }
 }

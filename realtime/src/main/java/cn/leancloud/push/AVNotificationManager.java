@@ -71,7 +71,7 @@ public abstract class AVNotificationManager {
     setting.removeKey(AV_PUSH_SERVICE_APP_DATA, channel);
   }
 
-  private boolean containsDefaultPushCallback(String channel) {
+  boolean containsDefaultPushCallback(String channel) {
     return defaultPushCallback.containsKey(channel);
   }
 
@@ -91,11 +91,11 @@ public abstract class AVNotificationManager {
     return action != null ? action.toString() : null;
   }
 
-  String getChannel(String msg) {
+  static String getChannel(String msg) {
     return getJSONValue(msg, "_channel");
   }
 
-  String getAction(String msg) {
+  static String getAction(String msg) {
     return getJSONValue(msg, "action");
   }
 
@@ -108,9 +108,9 @@ public abstract class AVNotificationManager {
   }
 
   private String getValue(String msg, String key) {
-    String title = getJSONValue(msg, key);
-    if (title != null && title.trim().length() > 0) {
-      return title;
+    String result = getJSONValue(msg, key);
+    if (!StringUtil.isEmpty(result)) {
+      return result;
     } else {
       Map<String, Object> jsonMap = JSON.parseObject(msg, HashMap.class);
       if (jsonMap == null || jsonMap.isEmpty()) return getApplicationName();
@@ -128,7 +128,7 @@ public abstract class AVNotificationManager {
     }
   }
 
-  String getText(String msg) {
+  static String getText(String msg) {
     String text = getJSONValue(msg, "alert");
     if (text != null && text.trim().length() > 0) {
       return text;
@@ -154,7 +154,7 @@ public abstract class AVNotificationManager {
    * @param message
    * @return
    */
-  boolean getSilent(String message) {
+  static boolean getSilent(String message) {
     if (!StringUtil.isEmpty(message)) {
       try {
         JSONObject object = JSON.parseObject(message);
@@ -166,7 +166,7 @@ public abstract class AVNotificationManager {
     return false;
   }
 
-  Date getExpiration(String msg) {
+  static Date getExpiration(String msg) {
     String result = "";
     try {
       JSONObject object = JSON.parseObject(msg);
