@@ -37,7 +37,11 @@ public class EngineSessionCookie {
     if (sign.validateCookieSign(req)) {
       AVUser user = sign.decodeUser(req);
       if (fetchUser && user != null && !user.isDataAvailable()) {
-        user.fetch();
+        try {
+          user.fetch();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
       }
       if (user != null) {
         AVUser.changeCurrentUser(user, true);

@@ -85,7 +85,7 @@ public class Utils {
     return result;
   }
 
-  private static Map<String, Object> mapFromAVObject(AVObject object, boolean topObject) {
+  public static Map<String, Object> mapFromAVObject(AVObject object, boolean topObject) {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("className", object.internalClassName());
 
@@ -109,7 +109,7 @@ public class Utils {
     return getParsedMap(map, false);
   }
 
-  private static Map<String, Object> getParsedMap(Map<String, Object> object, boolean topObject) {
+  public static Map<String, Object> getParsedMap(Map<String, Object> object, boolean topObject) {
     Map newMap = new HashMap<String, Object>(object.size());
 
     for (Map.Entry<String, Object> entry : object.entrySet()) {
@@ -121,7 +121,7 @@ public class Utils {
     return newMap;
   }
 
-  private static List getParsedList(Collection list) {
+  public static List getParsedList(Collection list) {
     List newList = new ArrayList(list.size());
 
     for (Object o : list) {
@@ -131,7 +131,7 @@ public class Utils {
     return newList;
   }
 
-  private static List getParsedList(Collection object, boolean topObject) {
+  public static List getParsedList(Collection object, boolean topObject) {
     if (!topObject) {
       return getParsedList(object);
     } else {

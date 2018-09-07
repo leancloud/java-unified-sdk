@@ -282,6 +282,24 @@ public final class AVFile extends AVObject {
     return this.getUrl() + String.format(THUMBNAIL_FMT, mode, width, height, quality, fmt);
   }
 
+  public Map<String, Object> toMap() {
+    Map<String, Object> result = new HashMap<String, Object>();
+    result.put("__type", CLASS_NAME);
+    result.put(KEY_METADATA, getMetaData());
+
+    if (!StringUtil.isEmpty(getUrl())) {
+      result.put(KEY_URL, getUrl());
+    }
+
+    if (!StringUtil.isEmpty(getObjectId())) {
+      result.put(AVObject.KEY_OBJECT_ID, getObjectId());
+    }
+
+    result.put("id", getName());
+
+    return result;
+  }
+
   public synchronized void saveInBackground(final ProgressCallback progressCallback) {
     if (StringUtil.isEmpty(objectId)) {
       Uploader uploader = getUploader(null, progressCallback);
