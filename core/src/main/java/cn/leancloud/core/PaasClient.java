@@ -2,6 +2,7 @@ package cn.leancloud.core;
 
 import cn.leancloud.network.DNSDetoxicant;
 import cn.leancloud.service.APIService;
+import cn.leancloud.service.PushService;
 import io.reactivex.functions.Consumer;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;

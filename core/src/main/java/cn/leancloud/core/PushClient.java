@@ -1,13 +1,10 @@
 package cn.leancloud.core;
 
+import cn.leancloud.service.PushService;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.fastjson.FastJsonConverterFactory;
 
 import java.util.Map;
 

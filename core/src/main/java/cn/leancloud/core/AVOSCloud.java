@@ -41,6 +41,10 @@ public class AVOSCloud {
     PaasClient.initializeGlobalClient();
   }
 
+  public static void setMasterKey(String masterKey) {
+    RequestSignImplementation.setMasterKey(masterKey);
+  }
+
   public static void setServer(AVOSService service, String host) {
     AppRouter appRouter = AppRouter.getInstance();
     appRouter.freezeEndpoint(service, host);

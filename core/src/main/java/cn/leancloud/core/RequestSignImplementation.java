@@ -5,7 +5,7 @@ import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.StringUtil;
 
 public class RequestSignImplementation {
-  static boolean useMasterKey = false;
+  private static boolean useMasterKey = false;
   private static String masterKey = null;
 
   public static String requestSign() {
@@ -13,17 +13,21 @@ public class RequestSignImplementation {
   }
 
   public static String requestSign(long ts, boolean useMasterKey) {
-    StringBuilder builder = new StringBuilder();
-    StringBuilder result = new StringBuilder();
     String appKey = AVOSCloud.getApplicationKey();
+    StringBuilder builder = new StringBuilder();
+
+    StringBuilder result = new StringBuilder();
 
     result.append(MD5.computeMD5(builder.append(ts).append(useMasterKey ? masterKey : appKey).toString()).toLowerCase());
     result.append(',').append(ts);
-    return !useMasterKey ? result.toString() : result.append(",master").toString();
+    if (useMasterKey) {
+      result.append(",master");
+    }
+    return result.toString();
   }
 
   public static void setMasterKey(String masKey) {
-    if (!StringUtil.isEmpty(masterKey)) {
+    if (!StringUtil.isEmpty(masKey)) {
       masterKey = masKey;
       useMasterKey = true;
     } else {

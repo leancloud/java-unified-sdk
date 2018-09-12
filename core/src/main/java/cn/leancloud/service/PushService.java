@@ -1,4 +1,4 @@
-package cn.leancloud.core;
+package cn.leancloud.service;
 
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
