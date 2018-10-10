@@ -22,8 +22,10 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.HttpException;
 
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVObject {
@@ -545,6 +547,16 @@ public class AVObject {
                     AVObject.this.mergeRawData(avObject);
                     return AVObject.this;
                   }
+//                }).doOnError(new Consumer<Throwable>() {
+//                  @Override
+//                  public void accept(Throwable throwable) throws Exception {
+//                    if (throwable instanceof HttpException) {
+//                      HttpException httpException = (HttpException) throwable;
+//                      throw new AVException(httpException.code(), httpException.message());
+//                    } else {
+//                      throw new AVException(throwable);
+//                    }
+//                  }
                 });
       } else {
         return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData, needFetch, whereCondition)

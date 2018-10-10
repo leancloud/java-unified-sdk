@@ -24,6 +24,7 @@ import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
+import org.java_websocket.framing.CloseFrame;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -210,7 +211,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   public void cleanup() {
     if (null != webSocketClient) {
       try {
-        webSocketClient.close();
+        webSocketClient.closeConnection(CloseFrame.ABNORMAL_CLOSE, "Connectivity broken");
       } catch (Exception ex) {
         LOGGER.e("failed to close websocket client.", ex);
       } finally {

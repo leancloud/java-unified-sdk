@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVInstallation;
@@ -39,6 +41,7 @@ import cn.leancloud.im.AndroidInitializer;
 import cn.leancloud.im.AndroidOperationTube;
 import cn.leancloud.im.DirectlyOperationTube;
 import cn.leancloud.im.InternalConfiguration;
+import cn.leancloud.im.AVIMOptions;
 import cn.leancloud.im.v2.AVIMMessage;
 import cn.leancloud.im.v2.AVIMMessageOption;
 import cn.leancloud.im.v2.Conversation;
@@ -137,19 +140,39 @@ public class PushService extends Service {
     }).start();
 
     connectivityReceiver = new AVConnectivityReceiver(new AVConnectivityListener() {
+      private volatile boolean connectEstablished = false;
+      private Timer cleanupTimer = new Timer();
       @Override
       public void onMobile(Context context) {
         connectionManager.startConnection();
+        connectEstablished = true;
+        LOGGER.d("Connection resumed with Mobile...");
       }
 
       @Override
       public void onWifi(Context context) {
         connectionManager.startConnection();
+        connectEstablished = true;
+        LOGGER.d("Connection resumed with Wifi...");
       }
 
       @Override
       public void onNotConnected(Context context) {
-        LOGGER.d("Connection Lost...");
+        LOGGER.d("Connection broken...");
+        connectEstablished = false;
+        if (AVIMOptions.getGlobalOptions().isResetConnectionWhileBroken()) {
+          cleanupTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+              if (!connectEstablished) {
+                LOGGER.d("Connectivity cleanup now.");
+                connectionManager.cleanup();
+              } else {
+                LOGGER.d("Connectivity resumed");
+              }
+            }
+          }, 3000);
+        }
       }
     });
     registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));

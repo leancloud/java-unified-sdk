@@ -4,13 +4,17 @@ import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.types.AVNull;
+import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import java.util.concurrent.CountDownLatch;
 
 public class AVObjectAsyncTest extends TestCase {
   public AVObjectAsyncTest(String testName) {
@@ -96,6 +100,44 @@ public class AVObjectAsyncTest extends TestCase {
     }
     System.out.println("test completed.");
   }
+
+  public void testObjectCreateEx() throws Exception{
+    final CountDownLatch latch = new CountDownLatch(1);
+    AVObject post = new AVObject("Post");
+    post.put("title", "LeanCloud 发布了新版 Java 统一 SDK");
+    post.put("content", "9 月初，LeanCloud 发布了新版 Java 统一 SDK，欢迎大家试用。。。");
+    post.saveInBackground().map(new Function<AVObject, AVObject>() {
+      public AVObject apply(AVObject p) throws Exception {
+        // 在 Post 保存成功之后，再新建一个 Comment 对象.
+        AVObject comment = new AVObject("Comment");
+        comment.put("content", "好想试一下");
+        comment.put("post", p);
+        return comment.saveInBackground().blockingFirst();
+      };
+    }).subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+      }
+
+      @Override
+      public void onNext(AVObject comment) {
+        System.out.print("succeed to save post and comment objects.");
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        System.out.print("failed to save post or comment objects. cause: " + throwable.getMessage());
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+      }
+    });
+    latch.await();
+  }
+
   public void testObjectRefresh() {
     AVObject object = new AVObject("Student");
     object.setObjectId("5a7a4ac8128fe1003768d2b1");
