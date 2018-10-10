@@ -2,16 +2,18 @@ package cn.leancloud.utils;
 
 import cn.leancloud.AVFile;
 
+import java.util.regex.Pattern;
+
 public class FileUtil {
   public static final int DEFAULT_FILE_KEY_LEN = 40;
   public static final String DEFAULTMIMETYPE = "application/octet-stream";
-  private static long MAX_FILE_BUF_SIZE = 1024 * 2014 * 4l;
 
   public static interface MimeTypeDetector {
-    String getFileExtensionFromUrl(String url);
+    String getMimeTypeFromUrl(String url);
+    String getMimeTypeFromPath(String filePath);
     String getMimeTypeFromExtension(String extension);
   }
-  private static MimeTypeDetector detector = null;
+  private static MimeTypeDetector detector = new DefaultMimeTypeDetector();
   public static void config(MimeTypeDetector mimeTypeDetector) {
     detector = mimeTypeDetector;
   }
@@ -29,34 +31,46 @@ public class FileUtil {
     return key;
   }
 
+  public static String getExtensionFromFilename(String filename) {
+    if (!StringUtil.isEmpty(filename) && Pattern.matches("[a-zA-Z_0-9\\.\\-\\(\\)\\%]+", filename)) {
+      int dotPos = filename.lastIndexOf('.');
+      if (0 <= dotPos) {
+        return filename.substring(dotPos + 1);
+      }
+    }
+    return "";
+  }
+
   public static String getFileMimeType(AVFile avFile) {
     String fileName = avFile.getName();
     String fileUrl = avFile.getUrl();
     String mimeType = DEFAULTMIMETYPE;
     if (!StringUtil.isEmpty(fileName)) {
-      mimeType = getMimeTypeFromLocalFile(fileName);
+      mimeType = getMimeTypeFromFilename(fileName);
     } else if (!StringUtil.isEmpty(fileUrl)) {
       mimeType = getMimeTypeFromUrl(fileUrl);
     }
     return mimeType;
   }
 
-  public static String getMimeTypeFromLocalFile(String localPath) {
-    if (!StringUtil.isEmpty(localPath) && localPath.contains(".")) {
-      String extension = localPath.substring(localPath.lastIndexOf('.') + 1);
-      if (!StringUtil.isEmpty(extension)) {
-        return detector.getMimeTypeFromExtension(extension);
-      }
+  public static String getMimeTypeFromFilename(String fileName) {
+    String extension = getExtensionFromFilename(fileName);
+    if (!StringUtil.isEmpty(extension)) {
+      return detector.getMimeTypeFromExtension(extension);
+    }
+    return "";
+  }
+
+  public static String getMimeTypeFromPath(String localPath) {
+    if (!StringUtil.isEmpty(localPath)) {
+      return detector.getMimeTypeFromPath(localPath);
     }
     return "";
   }
 
   public static String getMimeTypeFromUrl(String url) {
     if (!StringUtil.isEmpty(url)) {
-      String extension = detector.getFileExtensionFromUrl(url);
-      if (!StringUtil.isEmpty(extension)) {
-        return detector.getMimeTypeFromExtension(extension);
-      }
+      return detector.getMimeTypeFromUrl(url);
     }
     return "";
   }

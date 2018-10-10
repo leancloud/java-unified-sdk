@@ -10,6 +10,7 @@ import cn.leancloud.internal.ThreadModel;
 import cn.leancloud.logging.DefaultLoggerAdapter;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.network.AndroidNetworkingDetector;
+import cn.leancloud.util.AndroidMimeTypeDetector;
 import cn.leancloud.util.AndroidUtil;
 import cn.leancloud.utils.LogUtil;
 import io.reactivex.Scheduler;
@@ -40,6 +41,7 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
     }
     AppConfiguration.setLogAdapter(new DefaultLoggerAdapter());
     AppConfiguration.setGlobalNetworkingDetector(new AndroidNetworkingDetector(context));
+    AppConfiguration.setMimeTypeDetector(new AndroidMimeTypeDetector());
 
     ThreadModel.MainThreadChecker checker = new ThreadModel.MainThreadChecker() {
       @Override

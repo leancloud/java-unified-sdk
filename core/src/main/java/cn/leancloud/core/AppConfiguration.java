@@ -8,6 +8,7 @@ import cn.leancloud.cache.SystemSetting;
 import cn.leancloud.logging.SimpleLoggerAdapter;
 import cn.leancloud.network.NetworkingDetector;
 import cn.leancloud.network.SimpleNetworkingDetector;
+import cn.leancloud.utils.FileUtil;
 import io.reactivex.Scheduler;
 
 import java.io.File;
@@ -192,5 +193,11 @@ public class AppConfiguration {
 
   public static void setGlobalNetworkingDetector(NetworkingDetector globalNetworkingDetector) {
     AppConfiguration.globalNetworkingDetector = globalNetworkingDetector;
+  }
+
+  public static void setMimeTypeDetector(FileUtil.MimeTypeDetector detector) {
+    if (null != detector) {
+      FileUtil.config(detector);
+    }
   }
 }

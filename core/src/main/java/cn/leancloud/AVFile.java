@@ -77,7 +77,7 @@ public final class AVFile extends AVObject {
     localPath = FileCache.getIntance().saveData(md5, data);
     addMetaData(FILE_SUM_KEY, md5);
     addMetaData(FILE_LENGTH_KEY, data.length);
-    internalPut(KEY_MIME_TYPE, FileUtil.getMimeTypeFromLocalFile(name));
+    internalPut(KEY_MIME_TYPE, FileUtil.getMimeTypeFromFilename(name));
     logger.d("localpath=" + localPath);
   }
 
@@ -93,7 +93,7 @@ public final class AVFile extends AVObject {
     localPath = localFile.getAbsolutePath();
     addMetaData(FILE_SUM_KEY, md5);
     addMetaData(FILE_LENGTH_KEY, localFile.length());
-    internalPut(KEY_MIME_TYPE, FileUtil.getMimeTypeFromLocalFile(localPath));
+    internalPut(KEY_MIME_TYPE, FileUtil.getMimeTypeFromPath(localPath));
   }
 
   public AVFile(String name, String url) {

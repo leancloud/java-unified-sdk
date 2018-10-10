@@ -11,6 +11,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.io.File;
+
 public class AVFileTest extends TestCase {
   public AVFileTest(String name) {
     super(name);
@@ -58,6 +60,46 @@ public class AVFileTest extends TestCase {
       }
 
       public void onComplete() {
+      }
+    });
+  }
+
+  public void testCreateWithExtension() {
+    File localFile = new File("./20160704174809.jpeg");
+    AVFile file = new AVFile("test.jpeg", localFile);
+    Observable<AVFile> result = file.saveInBackground();
+    result.subscribe(new Observer<AVFile>() {
+      public void onSubscribe(Disposable disposable) {
+      }
+
+      public void onNext(AVFile avFile) {
+        System.out.println("[Thread:" + Thread.currentThread().getId() +
+                "]succeed to upload file. objectId=" + avFile.getObjectId());
+        avFile.deleteInBackground().subscribe(new Observer<AVNull>() {
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          public void onNext(AVNull aVoid) {
+            System.out.println("[Thread:" + Thread.currentThread().getId() + "]succeed to delete file.");
+          }
+
+          public void onError(Throwable throwable) {
+            fail();
+          }
+
+          public void onComplete() {
+
+          }
+        });
+      }
+
+      public void onError(Throwable throwable) {
+        fail();
+      }
+
+      public void onComplete() {
+
       }
     });
   }
