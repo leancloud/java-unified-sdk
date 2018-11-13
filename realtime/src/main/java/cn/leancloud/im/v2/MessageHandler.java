@@ -22,6 +22,8 @@ public abstract class MessageHandler<T extends AVIMMessage> extends AVIMEventHan
       case Conversation.STATUS_ON_MESSAGE_RECEIPTED:
         onMessageReceipt((T) operand, conversation, conversation.client);
         break;
+      default:
+        break;
     }
   }
 }

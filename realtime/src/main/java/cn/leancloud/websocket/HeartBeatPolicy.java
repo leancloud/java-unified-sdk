@@ -20,12 +20,12 @@ abstract class HeartBeatPolicy {
   /**
    * 心跳设置为 180s
    */
-  private final long HEART_BEAT_INTERNAL = 180 * 1000;
+  private final static long HEART_BEAT_INTERNAL = 180 * 1000;
 
   /**
    * 超时时长设置为两个心跳
    */
-  private final long HEALTHY_THRESHOLD = HEART_BEAT_INTERNAL * 2;
+  private final static long HEALTHY_THRESHOLD = HEART_BEAT_INTERNAL * 2;
 
   private Runnable healthMonitor = new Runnable() {
     public void run() {

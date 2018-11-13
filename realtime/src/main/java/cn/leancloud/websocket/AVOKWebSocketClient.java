@@ -109,20 +109,18 @@ public class AVOKWebSocketClient {
   public AVOKWebSocketClient(WsStatusListener externalListener, boolean needReconnect) {
     this.wsStatusListener = externalListener;
     this.isNeedReconnect = needReconnect;
-    SSLSocketFactory sf = null;
-    try {
-      SSLContext sslContext = SSLContext.getDefault();
-      sf = sslContext.getSocketFactory();
-    } catch (Exception ex) {
-      gLogger.w(ex);
-    }
-    this.client = new OkHttpClient.Builder()
+    OkHttpClient.Builder builder = new OkHttpClient.Builder()
             .pingInterval(120, TimeUnit.SECONDS)
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .sslSocketFactory(sf)
-            .retryOnConnectionFailure(true)
+            .writeTimeout(10, TimeUnit.SECONDS);
+    try {
+      SSLContext sslContext = SSLContext.getDefault();
+      builder.sslSocketFactory(sslContext.getSocketFactory());
+    } catch (Exception ex) {
+      gLogger.w(ex);
+    }
+    this.client = builder.retryOnConnectionFailure(true)
             .addInterceptor(new Interceptor() {
               public Response intercept(Interceptor.Chain chain) throws IOException {
                 Request originalRequest = chain.request();
@@ -134,7 +132,7 @@ public class AVOKWebSocketClient {
             .build();
   }
 
-  public Status currentStatus() {
+  public Status getCurrentStatus() {
     return this.currentStatus;
   }
 

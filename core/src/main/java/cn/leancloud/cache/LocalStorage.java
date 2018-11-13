@@ -91,7 +91,7 @@ public class LocalStorage {
   public void clearCacheMoreThanDays(int days) {
     long curTime = System.currentTimeMillis();
     if ( days > 0) {
-      curTime -= days * 86400000; // 86400000 is one day.
+      curTime -= 86400000L * days; // 86400000 is one day.
     }
     PersistenceUtil.sharedInstance().clearDir(baseDir, curTime);
   }

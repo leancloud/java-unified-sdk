@@ -106,11 +106,12 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     }
   }
 
+  @Override
   public void onMessageArriving(String peerId, Integer requestKey, Messages.GenericCommand command) {
-    LOGGER.d("new message arriving. peerId=" + peerId + ", requestId=" + requestKey + ", command=" + command.getCmd().getNumber());
     if (null == command) {
       return;
     }
+    LOGGER.d("new message arriving. peerId=" + peerId + ", requestId=" + requestKey + ", command=" + command.getCmd().getNumber());
     if (command.getCmd().getNumber() == Messages.CommandType.loggedin_VALUE) {
       LOGGER.w("ignore loggedin command bcz invalid service.");
     } else {

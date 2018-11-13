@@ -82,6 +82,8 @@ public class AVDefaultSessionListener extends AVSessionListener {
           InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
                   Conversation.AVIMOperation.CLIENT_DISCONNECT, e);
           break;
+        default:
+          break;
       }
       if (sessionOperation == AVIMOperation.CONVERSATION_CREATION.getCode()) {
         InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,

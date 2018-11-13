@@ -28,7 +28,7 @@ public abstract class AVIMOperationPartiallySucceededCallback extends AVCallback
       String[] allowed = (String[]) returnValue.get(Conversation.callbackConvMemberMuted_SUCC);
       ArrayList<AVIMOperationFailure> failed = (ArrayList<AVIMOperationFailure>) returnValue.get(Conversation.callbackConvMemberMuted_FAIL);
 
-      done(AVIMException.wrapperAVException(e), Arrays.asList(allowed), failed);
+      done(null, Arrays.asList(allowed), failed);
     }
   }
 }

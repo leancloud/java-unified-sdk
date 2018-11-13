@@ -14,6 +14,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.zip.CRC32;
 

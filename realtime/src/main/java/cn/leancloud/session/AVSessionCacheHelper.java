@@ -27,7 +27,7 @@ public class AVSessionCacheHelper {
   }
 
   public static class SessionTagCache {
-    private final String SESSION_TAG_CACHE_KEY = "session_tag_cache_key";
+    private final static String SESSION_TAG_CACHE_KEY = "session_tag_cache_key";
     Map<String, String> cachedTagMap = Collections.synchronizedMap(new HashMap<String, String>());
     private SessionTagCache() {
       syncLocalToMemory(cachedTagMap);

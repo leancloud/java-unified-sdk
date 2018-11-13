@@ -33,12 +33,6 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   private long maxCacheAge = -1;
   private boolean includeACL = false;
 
-//  private String queryPath;
-
-  // different from queryPath. externalQueryPath is used by caller directly to
-  // create special end point for certain query.
-//  private String externalQueryPath;
-
   QueryConditions conditions;
 
   /**
@@ -57,14 +51,12 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    *
    * @return a new AVQuery object.
    */
-  public AVQuery clone() {
-    AVQuery query = new AVQuery(this.className, this.clazz);
+  public AVQuery clone() throws CloneNotSupportedException {
+    AVQuery query = (AVQuery) super.clone();
 
     query.isRunning = false;
     query.cachePolicy = this.cachePolicy;
     query.maxCacheAge = this.maxCacheAge;
-//    query.queryPath = this.queryPath;
-//    query.externalQueryPath = this.externalQueryPath;
     query.conditions = null != this.conditions? this.conditions.clone(): null;
     return query;
   }

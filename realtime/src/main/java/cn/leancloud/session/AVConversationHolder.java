@@ -718,7 +718,7 @@ public class AVConversationHolder {
       }
 
       String from = item.getFrom();
-      Object data = item.getData();
+      String data = item.getData();
       long timestamp = item.getTimestamp();
       String msgId = item.getMsgId();
       boolean mentionAll = item.hasMentionAll()? item.getMentionAll():false;
@@ -729,11 +729,9 @@ public class AVConversationHolder {
       if (isBinaryMsg && null != data) {
         message = new AVIMBinaryMessage(this.conversationId, from, timestamp, ackAt, readAt);
         ((AVIMBinaryMessage)message).setBytes(Base64Decoder.decodeToBytes(data.toString()));
-      } else if (data instanceof String || data instanceof JSON) {
+      } else {
         message = new AVIMMessage(this.conversationId, from, timestamp, ackAt, readAt);
         message.setContent(data.toString());
-      } else {
-        continue;
       }
       message.setMessageId(msgId);
       message.setMentionAll(mentionAll);

@@ -84,7 +84,9 @@ public class FieldAttribute {
       } else {
         throw new RuntimeException();
       }
-    } catch (Exception e) {
+    } catch (ReflectiveOperationException e) {
+      LOGGER.d("Failed to invoke setter:" + fieldName);
+    } catch (IllegalArgumentException ex) {
       LOGGER.d("Failed to invoke setter:" + fieldName);
     }
   }

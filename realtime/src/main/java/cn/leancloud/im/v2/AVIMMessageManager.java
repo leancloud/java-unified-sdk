@@ -144,7 +144,6 @@ public class AVIMMessageManager {
   protected static void processMessageReceipt(AVIMMessage message, AVIMClient client) {
     client.getStorage().updateMessage(message, message.getMessageId());
     message = parseTypedMessage(message);
-    final AVIMMessage finalMessageObject = message;
     final AVIMConversation conversation = client.getConversation(message.getConversationId());
     retrieveAllMessageHandlers(message, conversation, true);
   }
@@ -152,9 +151,9 @@ public class AVIMMessageManager {
   private static void retrieveAllMessageHandlers(AVIMMessage message,
                                                  AVIMConversation conversation, boolean receipt) {
     boolean messageProcessed = false;
-    for (Class clazzKey : messageHandlerRepository.keySet()) {
-      if (clazzKey.isAssignableFrom(message.getClass())) {
-        Set<MessageHandler> handlers = messageHandlerRepository.get(clazzKey);
+    for (Map.Entry<Class<? extends AVIMMessage>, Set<MessageHandler>> entry : messageHandlerRepository.entrySet()) {
+      if (entry.getKey().isAssignableFrom(message.getClass())) {
+        Set<MessageHandler> handlers = entry.getValue();
         if (handlers.size() > 0) {
           messageProcessed = true;
         }
@@ -167,6 +166,7 @@ public class AVIMMessageManager {
                     conversation);
           }
         }
+
       }
     }
     if (!messageProcessed && defaultMessageHandler != null) {
@@ -206,7 +206,8 @@ public class AVIMMessageManager {
           typedMessage.mentionAll = message.mentionAll;
           typedMessage.mentionList = message.mentionList;
           message = typedMessage;
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
       }
     }
     return message;

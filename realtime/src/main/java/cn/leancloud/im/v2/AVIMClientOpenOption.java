@@ -1,10 +1,7 @@
 package cn.leancloud.im.v2;
 
 public class AVIMClientOpenOption {
-  /**
-   * 是否强制单点登陆，默认为强制
-   */
-  private boolean isForceSingleLogin = true;
+
   private boolean isReconnect = false;
 
   public AVIMClientOpenOption() {

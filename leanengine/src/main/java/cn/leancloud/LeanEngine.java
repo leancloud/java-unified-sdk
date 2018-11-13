@@ -123,7 +123,7 @@ public class LeanEngine {
 
   public static String hmacSha1(String value, String key) {
     try {
-      byte[] keyBytes = key.getBytes();
+      byte[] keyBytes = key.getBytes("UTF-8");
       SecretKeySpec signingKey = new SecretKeySpec(keyBytes, "HmacSHA1");
       Mac mac = Mac.getInstance("HmacSHA1");
       mac.init(signingKey);

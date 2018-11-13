@@ -152,9 +152,6 @@ public class AVIMTypedMessage extends AVIMMessage{
             continue;
           }
         } else if (isBooleanGetterMethod) {
-          if (methodName.length() < 3) {
-            continue;
-          }
           char c2 = methodName.charAt(2);
 
           if (Character.isUpperCase(c2)) {
@@ -244,5 +241,12 @@ public class AVIMTypedMessage extends AVIMMessage{
     message.setMessageId(mId);
     message.setContent(data);
     return AVIMMessageManagerHelper.parseTypedMessage(message);
+  }
+
+  public boolean equals(Object other) {
+    if (!super.equals(other)) {
+      return false;
+    }
+    return this.messageType == ((AVIMTypedMessage)other).messageType;
   }
 }

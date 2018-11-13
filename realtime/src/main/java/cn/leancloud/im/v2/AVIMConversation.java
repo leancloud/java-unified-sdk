@@ -545,7 +545,7 @@ public class AVIMConversation {
           } else {
             LOGGER.d("skip inserting into local storage.");
           }
-          AVIMConversation.this.lastMessageAt = new Date(msgTimestamp);
+          AVIMConversation.this.lastMessageAt = (null != msgTimestamp)? new Date(msgTimestamp) : new Date();
           storage.updateConversationLastMessageAt(AVIMConversation.this);
         } else {
           message.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed);
@@ -711,7 +711,7 @@ public class AVIMConversation {
           AVIMConversation.this.setLastReadAt(readAt, false);
           AVIMConversation.this.setLastDeliveredAt(deliveredAt, false);
           storage.updateConversationTimes(AVIMConversation.this);
-          callback.internalDone(null, e);
+          callback.internalDone(null, null);
         }
       }
     };
@@ -1550,12 +1550,10 @@ public class AVIMConversation {
       }
     }
     conversation.attributes.putAll(attributes);
-    Set<String> keySet = jsonObj.keySet();
-    if (!keySet.isEmpty()) {
-      for (String key : keySet) {
-        if (!Arrays.asList(Conversation.CONVERSATION_COLUMNS).contains(key)) {
-          conversation.instanceData.put(key, jsonObj.get(key));
-        }
+    for (Map.Entry<String, Object> entry : jsonObj.entrySet()) {
+      String key = entry.getKey();
+      if (!Arrays.asList(Conversation.CONVERSATION_COLUMNS).contains(key)) {
+        conversation.instanceData.put(key, entry.getValue());
       }
     }
     conversation.latestConversationFetch = System.currentTimeMillis();
@@ -1600,9 +1598,10 @@ public class AVIMConversation {
     if (attributes.containsKey(Conversation.NAME)) {
       attributeMap.put(Conversation.NAME, attributes.get(Conversation.NAME));
     }
-    for (String k : attributes.keySet()) {
+    for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+      String k = entry.getKey();
       if (!Arrays.asList(Conversation.CONVERSATION_COLUMNS).contains(k)) {
-        attributeMap.put(ATTR_PERFIX + k, attributes.get(k));
+        attributeMap.put(ATTR_PERFIX + k, entry.getValue());
       }
     }
     if (attributeMap.isEmpty()) {
@@ -1624,9 +1623,10 @@ public class AVIMConversation {
               attributes.get(Conversation.NAME));
     }
     Map<String, Object> innerAttribute = new HashMap<String, Object>();
-    for (String k : attributes.keySet()) {
+    for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+      String k = entry.getKey();
       if (!Arrays.asList(Conversation.CONVERSATION_COLUMNS).contains(k)) {
-        innerAttribute.put(k, attributes.get(k));
+        innerAttribute.put(k, entry.getValue());
       }
     }
     if (!innerAttribute.isEmpty()) {
@@ -1703,12 +1703,10 @@ public class AVIMConversation {
     conversation.setAttributesForInit(attributes);
 
     conversation.instanceData.clear();
-    Set<String> keySet = jsonObj.keySet();
-    if (!keySet.isEmpty()) {
-      for (String key : keySet) {
-        if (!Arrays.asList(Conversation.CONVERSATION_COLUMNS).contains(key)) {
-          conversation.instanceData.put(key, jsonObj.get(key));
-        }
+    for (Map.Entry<String, Object> entry : jsonObj.entrySet()) {
+      String key = entry.getKey();
+      if (!Arrays.asList(Conversation.CONVERSATION_COLUMNS).contains(key)) {
+        conversation.instanceData.put(key, entry.getValue());
       }
     }
 

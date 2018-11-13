@@ -8,6 +8,7 @@ import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -125,7 +126,7 @@ public class AVIMMessageStorage {
     this.clientId = clientId;
     DatabaseDelegateFactory factory = InternalConfiguration.getDatabaseDelegateFactory();
     if (null != factory) {
-      this.delegate = factory.createInstance(clientId);
+      this.delegate = factory.createInstance(this.clientId);
     }
   }
 
@@ -152,7 +153,10 @@ public class AVIMMessageStorage {
         values.put(COLUMN_PAYLOAD, ((AVIMBinaryMessage)message).getBytes());
         values.put(COLUMN_MSG_INNERTYPE, MESSAGE_INNERTYPE_BIN);
       } else {
-        values.put(COLUMN_PAYLOAD, message.getContent().getBytes());
+        try {
+          values.put(COLUMN_PAYLOAD, message.getContent().getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException ex) {
+        }
         values.put(COLUMN_MSG_INNERTYPE, MESSAGE_INNERTYPE_PLAIN);
       }
       values.put(COLUMN_MESSAGE_DELIVEREDAT, message.getDeliveredAt());
@@ -189,7 +193,10 @@ public class AVIMMessageStorage {
       values.put(COLUMN_PAYLOAD, ((AVIMBinaryMessage)message).getBytes());
       values.put(COLUMN_MSG_INNERTYPE, MESSAGE_INNERTYPE_BIN);
     } else {
-      values.put(COLUMN_PAYLOAD, message.getContent().getBytes());
+      try {
+        values.put(COLUMN_PAYLOAD, message.getContent().getBytes("UTF-8"));
+      } catch (UnsupportedEncodingException ex) {
+      }
     }
     values.put(COLUMN_MESSAGE_DELIVEREDAT, message.getDeliveredAt());
     values.put(COLUMN_MESSAGE_READAT, message.getReadAt());

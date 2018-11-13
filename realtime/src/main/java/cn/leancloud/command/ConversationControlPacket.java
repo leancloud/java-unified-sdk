@@ -257,7 +257,7 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
       builder.setInfo(cmiBuilder.build());
     }
     if (this.queryOffset > 0) {
-      builder.setNext(new Integer(this.queryOffset).toString());
+      builder.setNext(Integer.toString(this.queryOffset));
     }
     if (this.queryLimit > 0) {
       builder.setLimit(this.queryLimit);

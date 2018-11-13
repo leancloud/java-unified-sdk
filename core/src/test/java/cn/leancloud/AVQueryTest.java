@@ -111,6 +111,16 @@ public class AVQueryTest extends TestCase {
     assertTrue(testSucceed);
   }
 
+  public void testClone() throws Exception {
+    AVQuery query = new AVQuery("Student");
+    query.orderByDescending(AVObject.KEY_CREATED_AT);
+    AVQuery q1 = query.clone();
+    assertEquals(q1.getCachePolicy(), query.getCachePolicy());
+    assertEquals(q1.getClassName(), query.getClassName());
+    assertEquals(q1.getClazz(), query.getClazz());
+    assertEquals(q1.getClass(), query.getClass());
+  }
+
   public void testFirstQuery() throws Exception {
     AVQuery query = new AVQuery("Student");
     query.orderByDescending(AVObject.KEY_CREATED_AT);

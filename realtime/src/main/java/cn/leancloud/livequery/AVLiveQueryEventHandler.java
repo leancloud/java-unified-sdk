@@ -101,6 +101,8 @@ public abstract class AVLiveQueryEventHandler {
           onObjectCreated(avObject);
         }
         break;
+      default:
+        break;
     }
   }
 

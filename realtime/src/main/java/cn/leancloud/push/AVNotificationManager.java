@@ -36,7 +36,7 @@ public abstract class AVNotificationManager {
       String channel = (String) entry.getKey();
       if (channel.equals(ICON_KEY)) {
         try {
-          notificationIcon = Integer.valueOf((String) entry.getValue());
+          notificationIcon = Integer.parseInt((String) entry.getValue());
         } catch (Exception e) {
           // ignore;
           LOGGER.w(e);

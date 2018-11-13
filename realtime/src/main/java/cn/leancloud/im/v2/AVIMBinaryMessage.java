@@ -1,5 +1,7 @@
 package cn.leancloud.im.v2;
 
+import java.util.Arrays;
+
 public class AVIMBinaryMessage extends AVIMMessage {
   private byte[] bytes = new byte[0];
 
@@ -83,5 +85,12 @@ public class AVIMBinaryMessage extends AVIMMessage {
    */
   public byte[] getBytes() {
     return bytes;
+  }
+
+  public boolean equals(Object other) {
+    if (!super.equals(other)) {
+      return false;
+    }
+    return Arrays.equals(this.bytes, ((AVIMBinaryMessage)other).bytes);
   }
 }
