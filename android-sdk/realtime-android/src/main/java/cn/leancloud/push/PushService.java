@@ -119,6 +119,7 @@ public class PushService extends Service {
   AVConnectivityReceiver connectivityReceiver;
   AVShutdownReceiver shutdownReceiver;
   DirectlyOperationTube directlyOperationTube;
+  private Timer cleanupTimer = new Timer();
 
   static {
     AndroidInitializer.init();
@@ -141,34 +142,44 @@ public class PushService extends Service {
 
     connectivityReceiver = new AVConnectivityReceiver(new AVConnectivityListener() {
       private volatile boolean connectEstablished = false;
-      private Timer cleanupTimer = new Timer();
+
       @Override
       public void onMobile(Context context) {
-        connectionManager.startConnection();
         connectEstablished = true;
+        connectionManager.startConnection();
         LOGGER.d("Connection resumed with Mobile...");
       }
 
       @Override
       public void onWifi(Context context) {
-        connectionManager.startConnection();
         connectEstablished = true;
+        connectionManager.startConnection();
         LOGGER.d("Connection resumed with Wifi...");
+      }
+
+      public void onOtherConnected(Context context) {
+        LOGGER.d("Connectivity resumed with Others");
+        connectEstablished = true;
+        connectionManager.startConnection();
       }
 
       @Override
       public void onNotConnected(Context context) {
-        LOGGER.d("Connection broken...");
+        if(!connectEstablished) {
+          LOGGER.d("Connectivity isn't established yet.");
+          return;
+        }
+        LOGGER.d("Connectivity broken");
         connectEstablished = false;
         if (AVIMOptions.getGlobalOptions().isResetConnectionWhileBroken()) {
           cleanupTimer.schedule(new TimerTask() {
             @Override
             public void run() {
               if (!connectEstablished) {
-                LOGGER.d("Connectivity cleanup now.");
+                LOGGER.d("Connection cleanup now.");
                 connectionManager.cleanup();
               } else {
-                LOGGER.d("Connectivity resumed");
+                LOGGER.d("Connection has been resumed");
               }
             }
           }, 3000);
