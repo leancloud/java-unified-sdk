@@ -62,8 +62,10 @@ dependencies {
 
     compile('cn.leancloud:storage-core:5.0.0-SNAPSHOT') {
         exclude group: 'com.alibaba', module: 'fastjson'
+        exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
     }
     implementation 'com.alibaba:fastjson:1.1.68.android'
+    compile 'org.ligboy.retrofit2:converter-fastjson-android:2.1.0'
 
     testImplementation 'junit:junit:4.12'
     testImplementation "org.mockito:mockito-core:2.+"
