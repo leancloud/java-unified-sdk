@@ -400,6 +400,7 @@ public class DemoBaseActivity extends ListActivity {
 
   protected Student getFirstStudent() throws AVException {
     AVQuery<Student> q = AVObject.getQuery(Student.class);
+    q.addDescendingOrder("createdAt");
     Student student = q.getFirst();
     if (student == null) {
       log("请先运行创建对象的例子，以便有对象可演示");
