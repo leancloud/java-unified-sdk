@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>cn.leancloud</groupId>
     <artifactId>leancloud-sdk</artifactId>
-    <version>5.0.0</version>
+    <version>5.0.0-SNAPSHOT</version>
   </parent>
   <groupId>cn.leancloud</groupId>
-  <artifactId>engine-core</artifactId>
-  <version>5.0.0</version>
+  <artifactId>leanengine</artifactId>
+  <version>5.0.0-SNAPSHOT</version>
   <name>leanengine library</name>
   <url>http://maven.apache.org</url>
 
@@ -32,7 +33,7 @@
     <connection>scm:git:https://github.com/leancloud/java-sdk-all.git</connection>
     <developerConnection>scm:git:git@github.com:leancloud/java-sdk-all.git</developerConnection>
     <url>http://github.com/leancloud/java-sdk-all/tree/master</url>
-    <tag>leancloud-sdk-5.0.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <distributionManagement>
@@ -60,7 +61,7 @@
     <dependency>
       <groupId>cn.leancloud</groupId>
       <artifactId>storage-core</artifactId>
-      <version>5.0.0</version>
+      <version>5.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
