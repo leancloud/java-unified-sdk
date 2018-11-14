@@ -3,6 +3,7 @@
 buildscript {
     
     repositories {
+        google()
         jcenter()
         def home = System.getenv("HOME")
         maven {
@@ -12,11 +13,6 @@ buildscript {
         maven {
             url "$androidHome/extras/android/m2repository/"
         }
-        //这里是 LeanCloud 的包仓库
-        maven {
-            url "http://mvn.leancloud.cn/nexus/content/repositories/public"
-        }
-        google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.0'
@@ -32,6 +28,7 @@ allprojects {
     version = VERSION_NAME
 
     repositories {
+        google()
         jcenter()
         def home = System.getenv("HOME")
         maven {
@@ -41,11 +38,6 @@ allprojects {
         maven {
             url "$androidHome/extras/android/m2repository/"
         }
-        //这里是 LeanCloud 的包仓库
-        maven {
-            url "http://mvn.leancloud.cn/nexus/content/repositories/public"
-        }
-        google()
     }
 }
 

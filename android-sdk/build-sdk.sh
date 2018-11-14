@@ -18,8 +18,7 @@ sed -i '' "s/include ':realtime-sample-app'//" settings.gradle
 ./gradlew clean assemble uploadArchives
 
 releaseDir="build/release-$version"
-rm -rf "$releaseDir"
-mkdir "$releaseDir"
+mkdir -p "$releaseDir"
 
 cp storage-android/build/libs/storage-android-*.jar $releaseDir/
 cp realtime-android/build/libs/realtime-android-*.jar $releaseDir/

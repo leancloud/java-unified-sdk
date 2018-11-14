@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
+    buildToolsVersion "28.0.2"
+
     defaultConfig {
         applicationId "cn.leancloud.sample"
         minSdkVersion 14
@@ -36,7 +38,7 @@ android {
 }
 
 dependencies {
-    compile('cn.leancloud:storage-android:5.0.0-SNAPSHOT')
+    compile project(':storage-android')
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.1.0'

@@ -4,7 +4,7 @@ android {
     useLibrary 'org.apache.http.legacy'
 
     compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    buildToolsVersion "28.0.2"
 
     defaultConfig {
         minSdkVersion 14
@@ -60,7 +60,7 @@ dependencies {
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 
-    compile('cn.leancloud:storage-core:5.0.0-SNAPSHOT') {
+    compile('cn.leancloud:storage-core:5.0.0') {
         exclude group: 'com.alibaba', module: 'fastjson'
         exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
     }
