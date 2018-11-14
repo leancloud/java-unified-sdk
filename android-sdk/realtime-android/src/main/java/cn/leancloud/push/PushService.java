@@ -58,47 +58,8 @@ import io.reactivex.disposables.Disposable;
 import static cn.leancloud.im.v2.AVIMClient.AVIMClientStatus.AVIMClientStatusNone;
 
 /**
- * <p>
- * A service to listen for push notifications. This operates in the same process as the parent
- * application. To use this class, the PushService must be registered. Add this XML right before the
- * </application> tag in your AndroidManifest.xml:
- * </p>
- * <p/>
- * <pre>
- *    <service android:name="cn.leancloud.push.PushService" />
- *    <receiver android:name="cn.leancloud.push.AVBroadcastReceiver">
- *        <intent-filter>
- *            <action android:name="android.intent.action.BOOT_COMPLETED" />
- *            <action android:name="android.intent.action.USER_PRESENT" />
- *        </intent-filter>
- *    </receiver>
- * </pre>
- * <p>
- * Next, you must ensure your app has the permissions needed to show a notification. Make sure that
- * these permissions are present in your AndroidManifest.xml, typically immediately before the
- * </manifest> tag:
- * </p>
- * <p/>
- * <pre>
- *    <uses-permission android:name="android.permission.INTERNET" />
- *    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
- *    <uses-permission android:name="android.permission.VIBRATE" />
- * </pre>
- * <p>
- * Once push notifications are configured in the manifest, you can subscribe to a push channel by
- * calling
- * </p>
- * <p/>
- * <pre>
- * PushService.subscribe(context, &quot;the_channel_name&quot;, YourActivity.class);
- * </pre>
- * <p>
- * When the client receives a push message, a notification will appear in the system tray. When the
- * user taps the notification, they will enter the application through a new instance of
- * YourActivity.
- * </p>
+ * PushService
  */
-
 public class PushService extends Service {
   private static final AVLogger LOGGER = LogUtil.getLogger(PushService.class);
 

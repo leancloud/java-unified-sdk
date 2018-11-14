@@ -37,7 +37,7 @@ public class AVMixPushManager {
 
   /**
    * 注册小米推送
-   * 只有 appId、appKey 有效 && MIUI && manifest 正确填写 才能注册
+   * 只有 appId、appKey 有效 且 MIUI 且 manifest 正确填写 才能注册
    *
    * @param context
    * @param miAppId
@@ -49,7 +49,7 @@ public class AVMixPushManager {
 
   /**
    * 注册小米推送
-   * 只有 appId、appKey 有效 && MIUI && manifest 正确填写 才能注册
+   * 只有 appId、appKey 有效 且 MIUI 且 manifest 正确填写 才能注册
    *
    * @param context
    * @param miAppId

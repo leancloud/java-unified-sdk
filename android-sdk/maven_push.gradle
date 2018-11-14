@@ -71,6 +71,21 @@ afterEvaluate { project ->
                     description POM_DESCRIPTION
                     url POM_URL
 
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+               
+                    developers {
+                        developer {
+                            id = 'leancloud'
+                            name = 'LeanCloud Engineer'
+                            email = 'eng@leancloud.rocks'
+                        }
+                    }
+
                     scm {
                         url POM_SCM_URL
                         connection POM_SCM_CONNECTION
@@ -91,7 +106,12 @@ afterEvaluate { project ->
         from android.sourceSets.main.java.sourceFiles
     }
 
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+    }
+
     artifacts {
         archives androidSourcesJar
-    }
+        archives javadocJar
+   }
 }
