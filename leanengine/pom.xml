@@ -7,7 +7,7 @@
     <version>5.0.2-SNAPSHOT</version>
   </parent>
   <groupId>cn.leancloud</groupId>
-  <artifactId>leanengine</artifactId>
+  <artifactId>engine-core</artifactId>
   <version>5.0.2-SNAPSHOT</version>
   <name>leanengine library</name>
   <url>http://maven.apache.org</url>
