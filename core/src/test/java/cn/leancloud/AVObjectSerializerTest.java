@@ -14,6 +14,7 @@ import java.util.List;
 public class AVObjectSerializerTest extends TestCase {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVObjectSerializerTest.class);
   private static final String CLASSNAME_STUDENT = "Student";
+  private static final String FILE_OBJECT_ID = "5bff45249f54540066d4d829";
   private String studentId = null;
   public AVObjectSerializerTest(String name) {
     super(name);
@@ -30,7 +31,7 @@ public class AVObjectSerializerTest extends TestCase {
     object.put("age", 18);
     object.put("grade", 9);
     object.put("occ", new Date());
-    String fileObjectId = "5aa634357565710044bde4df";
+    String fileObjectId = FILE_OBJECT_ID;
     AVFile file = AVFile.withObjectIdInBackground(fileObjectId).blockingFirst();
     object.put("avatar", file);
     AVGeoPoint loc = new AVGeoPoint(89.4223, -45.43);
@@ -90,8 +91,8 @@ public class AVObjectSerializerTest extends TestCase {
   }
 
   public void testObjectArrayAttr() {
-    AVObject dad = AVObject.createWithoutData("Person", "5ad88466ee920a3f733c306f");
-    AVObject mom = AVObject.createWithoutData("Person", "5ad884661b69e600670e6cf3");
+    AVObject dad = AVObject.createWithoutData("Person", "5bff468944d904005f856849");
+    AVObject mom = AVObject.createWithoutData("Person", "5bff46911579a3005f2207dd");
     AVObject s = AVObject.createWithoutData(CLASSNAME_STUDENT, studentId);
     s.put("parents", Arrays.asList(dad, mom));
     s.save();

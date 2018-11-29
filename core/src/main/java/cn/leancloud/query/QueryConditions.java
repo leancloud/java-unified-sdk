@@ -85,7 +85,7 @@ public class QueryConditions implements Cloneable {
   }
 
   public Map<String, String> getParameters() {
-    return parameters;
+    return new HashMap<String, String>(parameters);
   }
 
   public void setParameters(Map<String, String> parameters) {
@@ -454,8 +454,5 @@ public class QueryConditions implements Cloneable {
 //    return sb.toString();
 //  }
 
-  public void setCountResult() {
-    this.parameters.put("count", "1");
-    this.parameters.put("limit", "0");
-  }
+
 }

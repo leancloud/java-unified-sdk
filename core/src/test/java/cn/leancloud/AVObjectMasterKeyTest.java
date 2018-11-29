@@ -14,18 +14,20 @@ public class AVObjectMasterKeyTest extends TestCase {
   public AVObjectMasterKeyTest(String name) {
     super(name);
     Configure.initializeRuntime();
-    AVOSCloud.setMasterKey("your master key");
+
   }
 
   @Override
   protected void setUp() throws Exception {
     latch = new CountDownLatch(1);
     testSucceed = false;
+    AVOSCloud.setMasterKey("your master key");
   }
 
   @Override
   protected void tearDown() throws Exception {
     latch = null;
+    AVOSCloud.setMasterKey(null);
   }
 
   public void testCreateObject() throws Exception {

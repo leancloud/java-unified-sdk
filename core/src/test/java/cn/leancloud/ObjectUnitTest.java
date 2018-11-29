@@ -19,6 +19,7 @@ public class ObjectUnitTest extends TestCase {
 
     AVObject.registerSubclass(Armor.class);
     Configure.initializeRuntime();
+    AVUser.changeCurrentUser(null, true);
   }
   public static Test suite() {
     return new TestSuite(ObjectUnitTest.class);

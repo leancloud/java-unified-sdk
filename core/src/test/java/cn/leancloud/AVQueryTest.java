@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 public class AVQueryTest extends TestCase {
   private CountDownLatch latch = null;
   private boolean testSucceed = false;
+  private String currentObjectId = null;
   public AVQueryTest(String testName) {
     super(testName);
     Configure.initializeRuntime();
@@ -24,16 +25,26 @@ public class AVQueryTest extends TestCase {
   protected void setUp() throws Exception {
     latch = new CountDownLatch(1);
     testSucceed = false;
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 18);
+    object.put("grade", null);
+    object.save();
+    currentObjectId = object.getObjectId();
+    AVUser.changeCurrentUser(null, true);
   }
 
   @Override
   protected void tearDown() throws Exception {
     latch = null;
+    AVObject object = new AVObject("Student");
+    object.setObjectId(currentObjectId);
+    object.delete();
   }
 
   public void testFetchSingleObject() throws Exception {
     AVQuery query = new AVQuery("Student");
-    query.getInBackground("5a8e7e0efe88c200388bc8f0").subscribe(new Observer<AVObject>() {
+    query.getInBackground(currentObjectId).subscribe(new Observer<AVObject>() {
       public void onSubscribe(Disposable disposable) {
 
       }
@@ -111,6 +122,38 @@ public class AVQueryTest extends TestCase {
     assertTrue(testSucceed);
   }
 
+  public void testCountThenFind() throws Exception {
+    AVQuery query = new AVQuery("Student");
+    int cnt = query.count();
+    assertTrue(cnt > 0);
+    AVObject firstObj = query.getFirst();
+    assertTrue(null != firstObj);
+    query.findInBackground().subscribe(new Observer<List<AVObject>>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(List<AVObject> o) {
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
   public void testClone() throws Exception {
     AVQuery query = new AVQuery("Student");
     query.orderByDescending(AVObject.KEY_CREATED_AT);
@@ -140,7 +183,8 @@ public class AVQueryTest extends TestCase {
       }
 
       public void onComplete() {
-
+        System.out.println("completed.");
+        latch.countDown();
       }
     });
     latch.await();

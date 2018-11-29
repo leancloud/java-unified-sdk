@@ -868,10 +868,17 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   }
 
   public Observable<List<T>> findInBackground() {
+    return findInBackground(0);
+  }
+
+  private Observable<List<T>> findInBackground(int explicitLimit) {
     conditions.assembleParameters();
     Map<String, String> query = conditions.getParameters();
     if (this.includeACL && null != query) {
       query.put("returnACL", "true");
+    }
+    if (explicitLimit > 0) {
+      query.put("limit", Integer.toString(explicitLimit));
     }
     LOGGER.d("Query: " + query);
     return PaasClient.getStorageClient().queryObjects(getClassName(), query, this.cachePolicy, this.maxCacheAge)
@@ -909,10 +916,10 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   }
 
   public Observable<T> getFirstInBackground() {
-    conditions.setLimit(1);
-    return findInBackground().flatMap(new Function<List<T>, ObservableSource<T>>() {
+    return findInBackground(1).flatMap(new Function<List<T>, ObservableSource<T>>() {
       @Override
       public ObservableSource<T> apply(List<T> list) throws Exception {
+        LOGGER.d("flatMap: " + list);
         return Observable.fromIterable(list);
       }
     });
@@ -923,9 +930,10 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   }
 
   public Observable<Integer> countInBackground() {
-    conditions.setCountResult();
     conditions.assembleParameters();
     Map<String, String> query = conditions.getParameters();
+    query.put("count", "1");
+    query.put("limit", "0");
     return PaasClient.getStorageClient().queryCount(getClassName(), query);
   }
 
