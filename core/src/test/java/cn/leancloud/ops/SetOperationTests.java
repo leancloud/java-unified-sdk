@@ -16,7 +16,7 @@ import java.util.Map;
 public class SetOperationTests extends TestCase {
   public SetOperationTests(String testName) {
     super(testName);
-    PaasClient.config(true, new AppConfiguration.SchedulerCreator() {
+    AppConfiguration.config(true, new AppConfiguration.SchedulerCreator() {
       public Scheduler create() {
         return Schedulers.newThread();
       }

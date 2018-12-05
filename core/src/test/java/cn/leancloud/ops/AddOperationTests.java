@@ -20,7 +20,7 @@ public class AddOperationTests extends TestCase {
   }
   public AddOperationTests(String testName) {
     super(testName);
-    PaasClient.config(true, new AppConfiguration.SchedulerCreator() {
+    AppConfiguration.config(true, new AppConfiguration.SchedulerCreator() {
       public Scheduler create() {
         return Schedulers.newThread();
       }

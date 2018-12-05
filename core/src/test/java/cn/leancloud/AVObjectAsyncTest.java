@@ -19,7 +19,7 @@ import java.util.concurrent.CountDownLatch;
 public class AVObjectAsyncTest extends TestCase {
   public AVObjectAsyncTest(String testName) {
     super(testName);
-    PaasClient.config(true, new AppConfiguration.SchedulerCreator() {
+    AppConfiguration.config(true, new AppConfiguration.SchedulerCreator() {
       public Scheduler create() {
         return Schedulers.newThread();
       }

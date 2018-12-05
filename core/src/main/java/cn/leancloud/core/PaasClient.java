@@ -24,19 +24,6 @@ public class PaasClient {
   private static OkHttpClient globalHttpClient = null;
   private static PushService pushService = null;
   private static PushClient pushClient = null;
-  static SchedulerCreator defaultScheduler = null;
-  static boolean asynchronized = false;
-
-  /**
-   * configure run-time env.
-   *
-   * @param asyncRequest
-   * @param observerSchedulerCreator
-   */
-  public static void config(boolean asyncRequest, SchedulerCreator observerSchedulerCreator) {
-    asynchronized = asyncRequest;
-    defaultScheduler = observerSchedulerCreator;
-  }
 
   public static OkHttpClient getGlobalOkHttpClient() {
     if (null == globalHttpClient) {
@@ -67,7 +54,7 @@ public class PaasClient {
                           .client(okHttpClient)
                           .build();
                   apiService = retrofit.create(APIService.class);
-                  storageClient = new StorageClient(apiService, asynchronized, defaultScheduler);
+                  storageClient = new StorageClient(apiService, AppConfiguration.isAsynchronized(), AppConfiguration.getDefaultScheduler());
                 }
               });
     }
@@ -85,7 +72,7 @@ public class PaasClient {
               .client(okHttpClient)
               .build();
       apiService = retrofit.create(APIService.class);
-      storageClient = new StorageClient(apiService, asynchronized, defaultScheduler);
+      storageClient = new StorageClient(apiService, AppConfiguration.isAsynchronized(), AppConfiguration.getDefaultScheduler());
     }
     return storageClient;
   }
@@ -102,7 +89,7 @@ public class PaasClient {
               .client(okHttpClient)
               .build();
       pushService = retrofit.create(PushService.class);
-      pushClient = new PushClient(pushService, asynchronized, defaultScheduler);
+      pushClient = new PushClient(pushService, AppConfiguration.isAsynchronized(), AppConfiguration.getDefaultScheduler());
     }
     return pushClient;
   }
