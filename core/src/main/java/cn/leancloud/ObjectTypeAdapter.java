@@ -78,7 +78,7 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
         obj.serverData.put(k, Utils.getObjectFrom(v));
       } else if (v instanceof Collection) {
         obj.serverData.put(k, Utils.getObjectFrom(v));
-      } else {
+      } else if (null != v) {
         obj.serverData.put(k, v);
       }
     }

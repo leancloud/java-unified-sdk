@@ -102,6 +102,14 @@ public class StorageClient {
     return QueryResultCache.getInstance().hasCachedResult(className, query, maxAgeInMilliseconds);
   }
 
+  private Observable<AVQueryResult> queryRemoteServer(String className, final Map<String, String> query) {
+    if (AVUser.CLASS_NAME.equalsIgnoreCase(className)) {
+      return apiService.queryUsers(query);
+    } else {
+      return apiService.queryObjects(className, query);
+    }
+  }
+
   public Observable<List<AVObject>> queryObjects(final String className, final Map<String, String> query,
                                                  AVQuery.CachePolicy cachePolicy, final long maxAgeInMilliseconds) {
     final String cacheKey = QueryResultCache.generateKeyForQueryCondition(className, query);
@@ -117,7 +125,7 @@ public class StorageClient {
           result = result.onErrorReturn(new Function<Throwable, List<AVObject>>() {
             public List<AVObject> apply(Throwable o) throws Exception {
               LOGGER.d("failed to query local cache, cause: " + o.getMessage() + ", try to query networking");
-              return apiService.queryObjects(className, query)
+              return queryRemoteServer(className, query)
                       .map(new Function<AVQueryResult, List<AVObject>>() {
                         public List<AVObject> apply(AVQueryResult o) throws Exception {
                           o.setClassName(className);
@@ -134,7 +142,7 @@ public class StorageClient {
         }
         break;
       case NETWORK_ELSE_CACHE:
-        queryResult =  wrappObservable(apiService.queryObjects(className, query));
+        queryResult =  wrappObservable(queryRemoteServer(className, query));
         if (null != queryResult) {
           result = queryResult.map(new Function<AVQueryResult, List<AVObject>>() {
             public List<AVObject> apply(AVQueryResult o) throws Exception {
@@ -156,7 +164,7 @@ public class StorageClient {
         break;
       case IGNORE_CACHE:
       default:
-        queryResult = wrappObservable(apiService.queryObjects(className, query));
+        queryResult = wrappObservable(queryRemoteServer(className, query));
         if (null != queryResult) {
           result = queryResult.map(new Function<AVQueryResult, List<AVObject>>() {
             public List<AVObject> apply(AVQueryResult o) throws Exception {
@@ -180,7 +188,7 @@ public class StorageClient {
   }
 
   public Observable<Integer> queryCount(final String className, Map<String, String> query) {
-    Observable<AVQueryResult> queryResult = wrappObservable(apiService.queryObjects(className, query));
+    Observable<AVQueryResult> queryResult = wrappObservable(this.queryRemoteServer(className, query));
     if (null == queryResult) {
       return null;
     }

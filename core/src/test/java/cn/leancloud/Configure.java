@@ -26,6 +26,12 @@ public class Configure {
     System.out.println("Test API_HOST: " + API_HOST);
   }
 
+  public static void initializeWithApp(String appId, String appKey, AVOSCloud.REGION region) {
+    AVOSCloud.setRegion(region);
+    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
+    AVOSCloud.initialize(appId, appKey);
+  }
+
   public static void initializeRuntime() {
 //    AppConfiguration.setLogAdapter(new DummyLoggerFactory());
     AVOSCloud.setRegion(reGion);

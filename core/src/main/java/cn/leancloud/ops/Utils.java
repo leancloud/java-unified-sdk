@@ -4,6 +4,7 @@ import java.util.*;
 
 import cn.leancloud.AVFile;
 import cn.leancloud.AVObject;
+import cn.leancloud.AVRelation;
 import cn.leancloud.Transformer;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.utils.StringUtil;
@@ -188,10 +189,9 @@ public class Utils {
     return ops;
   }
 
-  public static AVObject objectFromRelationMap(Map<String, Object> map) {
+  public static AVRelation objectFromRelationMap(Map<String, Object> map) {
     String className = (String) map.get("className");
-    AVObject object = Transformer.objectFromClassName(className);
-    return object;
+    return new AVRelation(className);
   }
 
   public static AVFile fileFromMap(Map<String, Object> map) {

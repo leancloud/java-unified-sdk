@@ -263,6 +263,7 @@ public class AVObject {
     Object object = get(key);
     if (object instanceof AVRelation) {
       ((AVRelation)object).setParent(this);
+      ((AVRelation)object).setKey(key);
       return (AVRelation)object;
     } else {
       return new AVRelation<>(this, key);

@@ -7,6 +7,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class AVUserTest extends TestCase {
@@ -159,6 +160,35 @@ public class AVUserTest extends TestCase {
     AVUser.disableAutomaticUser();
     AVUser currentUser = AVUser.getCurrentUser();
     assertNotNull(currentUser);
+  }
+
+  public void testQueryUser() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    AVQuery<AVUser> query = new AVQuery<AVUser>(AVUser.CLASS_NAME);
+    query.findInBackground().subscribe(new Observer<List<AVUser>>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(List<AVUser> avUsers) {
+        operationSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(operationSucceed);
   }
 
   public void testCurrentUserWithNew() throws Exception {

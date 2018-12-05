@@ -122,7 +122,8 @@ public interface APIService {
   Observable<AVUser> signup(@Body JSONObject object);
   @POST("/1.1/users")
   Observable<AVUser> signup(@Body JSONObject object, @Path("failOnNotExist") boolean failOnNotExist);
-
+  @GET("/1.1/users")
+  Observable<AVQueryResult> queryUsers(@QueryMap Map<String, String> query);
 
   @POST("/1.1/usersByMobilePhone")
   Observable<AVUser> signupByMobilePhone(@Body JSONObject object);
