@@ -12,6 +12,7 @@ import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 
 import java.util.*;
@@ -40,16 +41,19 @@ public class AVObject {
   private static final Set<String> RESERVED_ATTRS = new HashSet<String>(
           Arrays.asList(KEY_CREATED_AT, KEY_UPDATED_AT, KEY_OBJECT_ID, KEY_ACL));
 
-  protected String className;
-  protected String endpointClassName = null;
   protected static final AVLogger logger = LogUtil.getLogger(AVObject.class);
   protected static final int UUID_LEN = UUID.randomUUID().toString().length();
+
+  protected String className;
+  protected String endpointClassName = null;
 
   protected String objectId = "";
   protected Map<String, Object> serverData = new ConcurrentHashMap<String, Object>();
   protected Map<String, ObjectFieldOperation> operations = new ConcurrentHashMap<String, ObjectFieldOperation>();
   protected AVACL acl = null;
   private String uuid = null;
+
+  @JSONField(serialize = false)
   private volatile boolean fetchWhenSave = false;
   protected volatile boolean totallyOverwrite = false;
 
@@ -302,6 +306,7 @@ public class AVObject {
     }
   }
 
+  @JSONField(serialize = false)
   public boolean isDataAvailable() {
     return !StringUtil.isEmpty(this.objectId) && !this.serverData.isEmpty();
   }

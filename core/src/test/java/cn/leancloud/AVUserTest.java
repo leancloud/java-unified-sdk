@@ -1,6 +1,8 @@
 package cn.leancloud;
 
 import cn.leancloud.core.AVOSCloud;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
@@ -36,44 +38,59 @@ public class AVUserTest extends TestCase {
     user.setEmail("jfeng@test.com");
     user.setUsername("jfeng");
     user.setPassword("FER$@$@#Ffwe");
+    final CountDownLatch latch = new CountDownLatch(1);
     user.signUpInBackground().subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
 
       }
 
       public void onNext(AVUser avUser) {
+        System.out.println(JSON.toJSONString(avUser));
+        latch.countDown();
 
       }
 
       public void onError(Throwable throwable) {
-        assertNotNull(throwable);
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
+    latch.await();
   }
 
   public void testLogin() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
     AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
 
       public void onNext(AVUser avUser) {
-        System.out.println("onNext. result=" + avUser.toString());
+        System.out.println("onNext. result=" + JSON.toJSONString(avUser, ObjectValueFilter.instance,
+                SerializerFeature.WriteClassName,
+                SerializerFeature.DisableCircularReferenceDetect));
+
+        AVUser currentUser = AVUser.getCurrentUser();
+        System.out.println("currentUser. result=" + JSON.toJSONString(currentUser, ObjectValueFilter.instance,
+                SerializerFeature.WriteClassName,
+                SerializerFeature.DisableCircularReferenceDetect));
+        System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
+
+        latch.countDown();
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
         System.out.println("onComplete");
       }
     });
-    Thread.sleep(3000);
+    latch.await();
   }
 
   public void testAnonymousLogin() throws Exception {

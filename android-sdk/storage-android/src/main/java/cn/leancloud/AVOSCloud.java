@@ -3,6 +3,9 @@ package cn.leancloud;
 import android.content.Context;
 import android.os.Handler;
 
+import com.alibaba.fastjson.parser.ParserConfig;
+import com.alibaba.fastjson.serializer.SerializeConfig;
+
 import cn.leancloud.cache.AndroidSystemSetting;
 
 import cn.leancloud.callback.AVCallback;
@@ -39,6 +42,11 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
     if (null == handler) {
       handler = new Handler();
     }
+
+    ParserConfig.getGlobalInstance().putDeserializer(AVObject.class, new ObjectTypeAdapter());
+    ParserConfig.getGlobalInstance().putDeserializer(AVUser.class, new ObjectTypeAdapter());
+    ParserConfig.getGlobalInstance().putDeserializer(AVFile.class, new ObjectTypeAdapter());
+
     AppConfiguration.setLogAdapter(new DefaultLoggerAdapter());
     AppConfiguration.setGlobalNetworkingDetector(new AndroidNetworkingDetector(context));
     AppConfiguration.setMimeTypeDetector(new AndroidMimeTypeDetector());

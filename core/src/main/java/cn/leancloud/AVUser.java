@@ -43,6 +43,7 @@ public class AVUser extends AVObject {
   private static final String ILLEGALARGUMENT_MSG_FORMAT = "illegal parameter. %s must not null/empty.";
 
   public static final String CLASS_NAME = "_User";
+
   public enum SNS_PLATFORM {
     FACEBOOK("facebook"), TWITTER("twitter"), QQ("qq"), WEIBO("weibo"), WECHAT("weixin");
     SNS_PLATFORM(String name) {
@@ -176,6 +177,7 @@ public class AVUser extends AVObject {
    * whether user is authenticated or not.
    * @return
    */
+  @JSONField(serialize = false)
   public boolean isAuthenticated() {
     // TODO: need to support thirdparty login.
     String sessionToken = getSessionToken();
@@ -576,6 +578,7 @@ public class AVUser extends AVObject {
     enableAutomatic = true;
   }
 
+  @JSONField(serialize = false)
   public static boolean isEnableAutomatic() {
     return enableAutomatic;
   }

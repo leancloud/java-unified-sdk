@@ -70,11 +70,11 @@ dependencies {
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 
-    compile('cn.leancloud:storage-core:5.0.0') {
+    compile('cn.leancloud:storage-core:5.0.2') {
         exclude group: 'com.alibaba', module: 'fastjson'
         exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
     }
-    implementation 'com.alibaba:fastjson:1.1.68.android'
+    implementation 'com.alibaba:fastjson:1.1.70.android'
     compile 'org.ligboy.retrofit2:converter-fastjson-android:2.1.0'
 
     testImplementation 'junit:junit:4.12'
