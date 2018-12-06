@@ -12,4 +12,6 @@ fi
 version=$1
 sed -i '' "s/SDK_VERSION = .*;/SDK_VERSION = \"$version\";/" core/src/main/java/cn/leancloud/core/AppConfiguration.java
 
-mvn clean site
+mvn clean
+
+mvn --batch-mode  release:clean release:prepare release:perform
