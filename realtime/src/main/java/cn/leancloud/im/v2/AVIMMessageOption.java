@@ -4,6 +4,8 @@ import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONType;
 
+import java.util.Map;
+
 @JSONType
 public class AVIMMessageOption {
 
@@ -73,6 +75,12 @@ public class AVIMMessageOption {
 
   public void setPushData(String pushData) {
     this.pushData = pushData;
+  }
+
+  public void setPushDataEx(Map<String, Object> data) {
+    if (null != data) {
+      this.pushData = JSON.toJSONString(data);
+    }
   }
 
   public boolean isWill() {
