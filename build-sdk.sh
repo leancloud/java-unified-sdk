@@ -20,4 +20,4 @@ git push origin master
 
 mvn clean
 
-mvn --batch-mode  release:clean release:prepare release:perform
+mvn --batch-mode  release:clean release:prepare release:perform -Darguments="-DskipTests"
