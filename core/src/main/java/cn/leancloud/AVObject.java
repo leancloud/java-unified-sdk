@@ -628,18 +628,48 @@ public class AVObject {
     saveAllInBackground(objects).blockingSubscribe();
   }
 
-  public static Observable<AVNull> saveAllInBackground(Collection<? extends AVObject> objects) {
+  public static Observable<JSONArray> saveAllInBackground(final Collection<? extends AVObject> objects) {
     if (null == objects || objects.isEmpty()) {
-      return Observable.just(AVNull.getINSTANCE());
+      JSONArray emptyResult = new JSONArray();
+      return Observable.just(emptyResult);
     }
+    JSONArray requests = new JSONArray();
     for (AVObject o : objects) {
       Map<AVObject, Boolean> markMap = new HashMap<>();
       if (o.hasCircleReference(markMap)) {
         return Observable.error(new AVException(AVException.CIRCLE_REFERENCE, "Found a circular dependency when saving."));
       }
+      JSONObject requestBody = o.generateChangedParam();
+      JSONObject objectRequest = new JSONObject();
+      objectRequest.put("method", o.getRequestMethod());
+      objectRequest.put("path", o.getRequestRawEndpoint());
+      objectRequest.put("body", requestBody);
+      requests.add(objectRequest);
     }
-    // TODO: need to complete me.
-    return Observable.just(AVNull.getINSTANCE());
+
+    JSONObject requestTotal = new JSONObject();
+    requestTotal.put("requests", requests);
+    return PaasClient.getStorageClient().batchSave(requestTotal).map(new Function<JSONArray, JSONArray>() {
+      public JSONArray apply(JSONArray batchResults) throws Exception {
+
+        if (null != batchResults && (objects.size() == batchResults.size())) {
+          logger.d("batchSave result: " + batchResults.toJSONString());
+          Iterator it = objects.iterator();
+
+          for (int i = 0; i < batchResults.size() && it.hasNext(); i++) {
+            JSONObject oneResult = batchResults.getJSONObject(i);
+            AVObject originObject = (AVObject) it.next();
+            if (oneResult.containsKey("success")) {
+              originObject.serverData.putAll(oneResult.getJSONObject("success"));
+              originObject.operations.clear();
+            } else if (oneResult.containsKey("error")) {
+              ;
+            }
+          }
+        }
+        return batchResults;
+      }
+    });
   }
 
   public void saveEventually() throws AVException {
@@ -850,6 +880,7 @@ public class AVObject {
     this.operations.clear();
   }
 
+  @JSONField(serialize = false)
   public String getRequestRawEndpoint() {
     if (StringUtil.isEmpty(getObjectId())) {
       return "/1.1/classes/" + this.getClassName();
@@ -858,6 +889,7 @@ public class AVObject {
     }
   }
 
+  @JSONField(serialize = false)
   public String getRequestMethod() {
     if (StringUtil.isEmpty(getObjectId())) {
       return "POST";

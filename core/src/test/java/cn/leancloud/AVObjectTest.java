@@ -9,7 +9,9 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class AVObjectTest extends TestCase {
   public AVObjectTest(String testName) {
@@ -748,6 +750,49 @@ public class AVObjectTest extends TestCase {
     } catch (Exception ex) {
       fail();
     }
+  }
+
+  public void testSaveAllWithCreateOperation() throws Exception {
+    List<AVObject> objects = new ArrayList<>(4);
+    for (int i = 0; i < 4; i++) {
+      AVObject object = new AVObject("Student");
+      object.put("name", "Automatic Tester");
+      object.put("age", System.currentTimeMillis() / 1000);
+      object.add("course", "Art");
+      objects.add(object);
+    }
+    AVObject.saveAll(objects);
+    for (int i = 0; i < 4; i++) {
+      System.out.println(objects.get(i).getObjectId());
+    }
+    AVObject.deleteAll(objects);
+  }
+
+  public void testSaveAllWithMultiOperation() throws Exception {
+    List<AVObject> objects = new ArrayList<>(4);
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", System.currentTimeMillis() / 1000);
+    object.add("course", "Art");
+    object.save();
+    System.out.println(object.getObjectId());
+
+    object.put("age", System.currentTimeMillis() / 1000);
+    objects.add(object);
+
+    for (int i = 0; i < 3; i++) {
+      AVObject tmp = new AVObject("Student");
+      tmp.put("name", "Automatic Tester");
+      tmp.put("age", System.currentTimeMillis() / 1000);
+      tmp.add("course", "Art");
+      objects.add(tmp);
+    }
+    AVObject.saveAll(objects);
+    for (int i = 0; i < 4; i++) {
+      System.out.println(objects.get(i).getObjectId());
+    }
+
+    AVObject.deleteAll(objects);
   }
 
   public void testDeleteEventually() {
