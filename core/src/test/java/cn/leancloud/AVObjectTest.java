@@ -11,6 +11,7 @@ import junit.framework.TestSuite;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class AVObjectTest extends TestCase {
@@ -807,6 +808,18 @@ public class AVObjectTest extends TestCase {
     } catch (Exception ex) {
       fail();
     }
+  }
+
+  public void testACLDeserialized() {
+    AVObject object = new AVObject("Student");
+    HashMap<String, Object> acl = new HashMap<>();
+    HashMap<String, Object> aclValue = new HashMap<>();
+    aclValue.put("read", true);
+    aclValue.put("write", true);
+    acl.put("*", aclValue);
+    object.serverData.put("ACL",acl);
+    AVACL getACL = object.getACL();
+    assertNotNull(getACL);
   }
 
   public void testUpdateWithSaveOptionShouldNotChange() {

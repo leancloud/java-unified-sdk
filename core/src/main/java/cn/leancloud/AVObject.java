@@ -926,8 +926,12 @@ public class AVObject {
     if (!this.serverData.containsKey(KEY_ACL)) {
       return new AVACL();
     } else {
-      JSONObject obj = (JSONObject) this.serverData.get(KEY_ACL);
-      return new AVACL(obj);
+      Object aclMap = this.serverData.get(KEY_ACL);
+      if (aclMap instanceof HashMap) {
+        return new AVACL((HashMap) aclMap);
+      } else {
+        return new AVACL();
+      }
     }
   }
 

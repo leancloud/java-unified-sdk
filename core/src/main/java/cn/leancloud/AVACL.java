@@ -28,6 +28,25 @@ public class AVACL {
       }
     }
 
+    Permissions(HashMap<String, Object> map) {
+      super();
+      if (null == map) {
+        return;
+      }
+      Object readValue = map.get(KEY_READ_PERMISSION);
+      Object writeValue = map.get(KEY_WRITE_PERMISSION);
+      if (null == readValue || !(readValue instanceof Boolean)) {
+        put(KEY_READ_PERMISSION, false);
+      } else {
+        put(KEY_READ_PERMISSION, (Boolean)readValue);
+      }
+      if (null == writeValue || !(writeValue instanceof Boolean)) {
+        put(KEY_WRITE_PERMISSION, false);
+      } else {
+        put(KEY_WRITE_PERMISSION, (Boolean)writeValue);
+      }
+    }
+
     Permissions(Permissions permissions) {
       super();
       if (null == permissions) {
@@ -58,7 +77,22 @@ public class AVACL {
     if (null != json) {
       Set<Map.Entry<String, Object>> entries = json.entrySet();
       for (Map.Entry<String, Object> entry : entries) {
-        permissionsById.put(entry.getKey(), (Permissions) entry.getValue());
+        Object v = entry.getValue();
+        if (null != v && v instanceof HashMap) {
+          permissionsById.put(entry.getKey(), new Permissions((HashMap<String, Object>) entry.getValue()));
+        }
+      }
+    }
+  }
+
+  public AVACL(HashMap data) {
+    if (null != data) {
+      Set<Map.Entry<String, Object>> entries = data.entrySet();
+      for (Map.Entry<String, Object> entry : entries) {
+        Object v = entry.getValue();
+        if (null != v && v instanceof HashMap) {
+          permissionsById.put(entry.getKey(), new Permissions((HashMap<String, Object>) entry.getValue()));
+        }
       }
     }
   }
