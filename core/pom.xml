@@ -50,7 +50,7 @@
   <properties>
     <!-- dependencies -->
     <okhttp.version>3.10.0</okhttp.version>
-    <retrofit.version>2.4.0</retrofit.version>
+    <retrofit.version>2.5.0</retrofit.version>
     <rxjava2.version>2.2.3</rxjava2.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
