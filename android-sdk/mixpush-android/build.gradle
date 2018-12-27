@@ -57,6 +57,13 @@ dependencies {
     compile project(':realtime-android')
     compile project(':storage-android')
 
+    implementation('cn.leancloud:realtime-core:5.0.4'){
+        exclude group: 'com.alibaba', module: 'fastjson'
+        exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
+    }
+    implementation 'com.alibaba:fastjson:1.1.70.android'
+    implementation 'org.ligboy.retrofit2:converter-fastjson-android:2.1.0'
+
     implementation 'com.meizu.flyme.internet:push-internal:3.6.2@aar'
 
     implementation 'com.android.support:appcompat-v7:26.1.0'
