@@ -30,7 +30,7 @@ public class RequestPaddingInterceptor implements Interceptor {
             .header(HEADER_KEY_ACCEPT, DEFAULT_CONTENT_TYPE)
             .header(HEADER_KEY_CONTENT_TYPE, DEFAULT_CONTENT_TYPE)
             .header(HEADER_KEY_USER_AGENT, AppConfiguration.getUserAgent())
-            .header(HEADER_KEY_LC_SESSIONTOKEN, sessionToken)
+            .header(HEADER_KEY_LC_SESSIONTOKEN, null == sessionToken ? "":sessionToken)
             .build();
     return chain.proceed(newRequest);
   }

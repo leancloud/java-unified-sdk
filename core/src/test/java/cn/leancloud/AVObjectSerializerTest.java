@@ -3,6 +3,7 @@ package cn.leancloud;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.utils.LogUtil;
+import com.alibaba.fastjson.JSON;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -124,5 +125,24 @@ public class AVObjectSerializerTest extends TestCase {
     String name = s.getString("name");
     assertEquals(age, 18);
     assertEquals(name, "Automatic Tester");
+  }
+
+  public void testDeserializer() {
+    String oldVersionString = "{ \"@type\":\"com.example.avoscloud_demo.Student\",\"objectId\":\"5bff468944d904005f856849\",\"updatedAt\":\"2018-12-08T09:53:05.008Z\",\"createdAt\":\"2018-11-29T01:53:13.327Z\",\"className\":\"Student\",\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"name\":\"Automatic Tester's Dad\",\"course\":[\"Math\",\"Art\"],\"age\":20}}";
+    AVObject oldV = AVObject.parseAVObject(oldVersionString);
+    assertTrue((null != oldV) && oldV.getObjectId().length() > 0);
+
+    AVObject s = AVObject.createWithoutData(CLASSNAME_STUDENT, studentId);
+    s.refresh();
+    AVObject newV = JSON.parseObject(s.toJSONString(), AVObject.class);
+    assertTrue((null != newV) && newV.getObjectId().length() > 0);
+    AVObject newS = AVObject.parseAVObject(s.toJSONString());
+    assertTrue((null != newS) && newS.getObjectId().length() > 0);
+
+    AVObject c = new AVObject(CLASSNAME_STUDENT);
+    c.put("name", "test");
+    String archivedString = ArchivedRequests.getArchiveContent(c, false);
+    AVObject newD = ArchivedRequests.parseAVObject(archivedString);
+    assertTrue(null != newD);
   }
 }

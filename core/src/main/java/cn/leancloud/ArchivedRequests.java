@@ -175,7 +175,7 @@ public class ArchivedRequests {
     Map<String, String> content = new HashMap<>(3);
     content.put(ATTR_METHOD, isDelete ? METHOD_DELETE : METHOD_SAVE);
     content.put(ATTR_INTERNAL_ID, object.internalId());
-    content.put(ATTR_OBJECT, JSON.toJSONString(object));
+    content.put(ATTR_OBJECT, object.toJSONString());
     content.put(ATTR_OPERATION, JSON.toJSONString(object.operations.values(), ObjectValueFilter.instance,
             /*SerializerFeature.WriteClassName, */SerializerFeature.QuoteFieldNames,
             SerializerFeature.DisableCircularReferenceDetect));
