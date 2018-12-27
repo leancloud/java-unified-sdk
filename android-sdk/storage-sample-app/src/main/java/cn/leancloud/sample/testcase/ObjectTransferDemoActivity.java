@@ -5,7 +5,9 @@ import android.content.Intent;
 import cn.leancloud.AVException;
 import cn.leancloud.AVObject;
 import cn.leancloud.AVParcelableObject;
+import cn.leancloud.AVQuery;
 import cn.leancloud.sample.DemoBaseActivity;
+import cn.leancloud.sample.Student;
 
 /**
  * Created by fengjunwen on 2018/6/27.
@@ -13,9 +15,15 @@ import cn.leancloud.sample.DemoBaseActivity;
 
 public class ObjectTransferDemoActivity extends DemoBaseActivity {
   public void testTransferObject() throws AVException {
-    AVObject student = new AVObject("Student");
-    student.put("age", 12);
-    student.put("name", "Mike");
+    AVQuery q = new AVQuery("Student");
+    q.addDescendingOrder("createdAt");
+    AVObject student = q.getFirst();
+    if (student == null) {
+      student = new AVObject("Student");
+      student.put("age", 12);
+      student.put("name", "Mike");
+    }
+
     AVParcelableObject parcelableObject = new AVParcelableObject(student);
     Intent intent = new Intent(this, ObjectTransferTargetActivity.class);
     intent.putExtra("attached", parcelableObject);
