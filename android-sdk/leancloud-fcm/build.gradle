@@ -50,6 +50,13 @@ dependencies {
 
     compile project(':realtime-android')
 
+    implementation('cn.leancloud:realtime-core:5.0.4'){
+        exclude group: 'com.alibaba', module: 'fastjson'
+        exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
+    }
+    implementation 'com.alibaba:fastjson:1.1.70.android'
+    implementation 'org.ligboy.retrofit2:converter-fastjson-android:2.1.0'
+
     implementation 'com.google.firebase:firebase-core:15.0.2'
     implementation 'com.google.firebase:firebase-iid:15.0.2'
     implementation 'com.google.firebase:firebase-messaging:15.0.2'
