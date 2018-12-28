@@ -35,7 +35,7 @@ public class AppConfiguration {
   private static String queryResultCacheDir = "./PaasKeyValueCache";
   private static SystemSetting defaultSetting = new InMemorySetting();
 
-  private static final String SDK_VERSION = "5.0.4";
+  private static final String SDK_VERSION = "5.0.5";
   private static final String DEFAULT_USER_AGENT = "LeanCloud SDK v" + SDK_VERSION;
 
   public static void setNetworkTimeout(int seconds) {
