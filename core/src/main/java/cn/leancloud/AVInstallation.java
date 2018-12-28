@@ -28,10 +28,6 @@ public final class AVInstallation extends AVObject {
   private static String DEFAULT_DEVICETYPE = "android";
   private static volatile AVInstallation currentInstallation;
 
-  static {
-    AVObject.registerSubclass(AVInstallation.class);
-  }
-
   public AVInstallation() {
     super(CLASS_NAME);
     this.totallyOverwrite = true;

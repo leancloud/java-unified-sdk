@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.annotation.AVClassName;
 import cn.leancloud.callback.ProgressCallback;
 import cn.leancloud.codec.MD5;
 import cn.leancloud.core.AVOSCloud;
@@ -28,6 +29,7 @@ import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 
+@AVClassName("_File")
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public final class AVFile extends AVObject {
   public static final String CLASS_NAME = "_File";

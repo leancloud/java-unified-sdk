@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.annotation.AVClassName;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
@@ -24,6 +25,7 @@ import java.util.UUID;
 
 // TODO: need transfer Anonymous User/Common User
 
+@AVClassName("_User")
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVUser extends AVObject {
   private static final String ATTR_USERNAME = "username";

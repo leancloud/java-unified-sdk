@@ -1,8 +1,8 @@
 package cn.leancloud.core;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVObject;
-import cn.leancloud.AVStatus;
+import cn.leancloud.*;
+import com.alibaba.fastjson.parser.ParserConfig;
+import com.alibaba.fastjson.serializer.SerializeConfig;
 
 /**
  * we should set following variables:
@@ -35,9 +35,26 @@ public class AVOSCloud {
   }
 
   public static void initialize(String appId, String appKey) {
+    ObjectTypeAdapter adapter = new ObjectTypeAdapter();
+    ParserConfig.getGlobalInstance().putDeserializer(AVObject.class, adapter);
+    ParserConfig.getGlobalInstance().putDeserializer(AVUser.class, adapter);
+    ParserConfig.getGlobalInstance().putDeserializer(AVFile.class, adapter);
+    ParserConfig.getGlobalInstance().putDeserializer(AVStatus.class, adapter);
+    ParserConfig.getGlobalInstance().putDeserializer(AVInstallation.class, adapter);
+
+    SerializeConfig.getGlobalInstance().put(AVObject.class, adapter);
+    SerializeConfig.getGlobalInstance().put(AVUser.class, adapter);
+    SerializeConfig.getGlobalInstance().put(AVFile.class, adapter);
+    SerializeConfig.getGlobalInstance().put(AVStatus.class, adapter);
+    SerializeConfig.getGlobalInstance().put(AVInstallation.class, adapter);
+
+    AVObject.registerSubclass(AVStatus.class);
+    AVObject.registerSubclass(AVUser.class);
+    AVObject.registerSubclass(AVFile.class);
+    AVObject.registerSubclass(AVInstallation.class);
+
     applicationId = appId;
     applicationKey = appKey;
-    AVObject.registerSubclass(AVStatus.class);
     PaasClient.initializeGlobalClient();
   }
 
