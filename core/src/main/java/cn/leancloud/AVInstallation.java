@@ -15,12 +15,13 @@ import java.util.UUID;
 
 @AVClassName("_Installation")
 public final class AVInstallation extends AVObject {
+  public static final String CLASS_NAME = "_Installation";
+
   private static final AVLogger LOGGER = LogUtil.getLogger(AVInstallation.class);
   private static final String INSTALLATION = "installation";
   private static final String DEVICETYPETAG = "deviceType";
   private static final String CHANNELSTAG = "channel";
   private static final String INSTALLATIONIDTAG = "installationId";
-  private static final String INSTALLATION_AVNAME = "_Installation";
   private static final String TIMEZONE = "timeZone";
   public static final String REGISTRATION_ID = "registrationId";
   public static final String VENDOR = "vendor";
@@ -32,7 +33,7 @@ public final class AVInstallation extends AVObject {
   }
 
   public AVInstallation() {
-    super(INSTALLATION_AVNAME);
+    super(CLASS_NAME);
     this.totallyOverwrite = true;
     initialize();
     this.endpointClassName = "installations";
@@ -65,7 +66,7 @@ public final class AVInstallation extends AVObject {
       if (!StringUtil.isEmpty(json)) {
         if (json.indexOf("{") >= 0) {
           try {
-            currentInstallation = new AVInstallation(JSON.parseObject(json, AVInstallation.class));
+            currentInstallation = (AVInstallation) AVObject.parseAVObject(json);
             currentInstallation.totallyOverwrite = true;
             needWriteback = false;
           } catch (Exception ex) {
@@ -135,7 +136,7 @@ public final class AVInstallation extends AVObject {
   }
 
   public static AVQuery<AVInstallation> getQuery() {
-    AVQuery<AVInstallation> query = new AVQuery<AVInstallation>(INSTALLATION_AVNAME);
+    AVQuery<AVInstallation> query = new AVQuery<AVInstallation>(CLASS_NAME);
     return query;
   }
 

@@ -98,6 +98,8 @@ public class Transformer {
       result = new AVRole();
     } else if (AVFile.CLASS_NAME.equals(className)) {
       result = new AVFile();
+    } else if (AVInstallation.CLASS_NAME.equals(className)) {
+      result = new AVInstallation();
     } else if (subClassesMAP.containsKey(className)) {
       try {
         result = subClassesMAP.get(className).newInstance();

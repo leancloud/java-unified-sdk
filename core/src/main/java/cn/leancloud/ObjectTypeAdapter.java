@@ -16,7 +16,6 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
@@ -109,8 +108,14 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
       obj = new AVFile();
     } else if (type.toString().endsWith(AVUser.class.getCanonicalName())) {
       obj = new AVUser();
+    } else if (type.toString().endsWith(AVInstallation.class.getCanonicalName())) {
+      obj = new AVInstallation();
+    } else if (type.toString().endsWith(AVStatus.class.getCanonicalName())) {
+      obj = new AVStatus();
+    } else if (type.toString().endsWith(AVRole.class.getCanonicalName())) {
+      obj = new AVRole();
     } else if (!StringUtil.isEmpty(className)){
-      obj = new AVObject(className);
+      obj = Transformer.objectFromClassName(className);
     } else {
       obj = new AVObject();
     }
