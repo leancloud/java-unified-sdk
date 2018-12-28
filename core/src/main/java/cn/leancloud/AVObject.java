@@ -19,6 +19,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import com.alibaba.fastjson.parser.Feature;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
@@ -34,9 +35,6 @@ public class AVObject {
   public static final String KEY_UPDATED_AT = "updatedAt";
   public static final String KEY_OBJECT_ID = "objectId";
   public static final String KEY_ACL = "ACL";
-
-  public static final String KEY_AUTOTYPE_NAME = "@type";
-  public static final String KEY_AUTOTYPE_SUBSTITUTION = "_type";
 
   public static final String KEY_CLASSNAME = "className";
 
@@ -977,8 +975,7 @@ public class AVObject {
     if (StringUtil.isEmpty(objectString)) {
       return null;
     }
-    objectString = objectString.replaceAll(KEY_AUTOTYPE_NAME, KEY_AUTOTYPE_SUBSTITUTION);
-    return JSON.parseObject(objectString, AVObject.class);
+    return JSON.parseObject(objectString, AVObject.class, Feature.SupportAutoType);
   }
 
   /**

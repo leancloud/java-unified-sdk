@@ -24,6 +24,9 @@ public class ObjectTransferDemoActivity extends DemoBaseActivity {
       student.put("name", "Mike");
     }
 
+    System.out.println("sender: " + student.toJSONString());
+    System.out.println("sender objectId:" + student.getObjectId());
+
     AVParcelableObject parcelableObject = new AVParcelableObject(student);
     Intent intent = new Intent(this, ObjectTransferTargetActivity.class);
     intent.putExtra("attached", parcelableObject);

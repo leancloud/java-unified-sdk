@@ -18,7 +18,8 @@ public class ObjectTransferTargetActivity extends AppCompatActivity {
     AVParcelableObject parcelableObject = getIntent().getParcelableExtra("attached");
     if (null != parcelableObject) {
       attached = parcelableObject.object();
-      System.out.println(attached);
+      System.out.println("receiver: " + attached.toJSONString());
+      System.out.println("receiver objectId:" + attached.getObjectId());
     } else {
       System.out.println("parcelableObject is null.");
     }

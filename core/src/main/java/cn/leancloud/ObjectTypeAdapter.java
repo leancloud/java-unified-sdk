@@ -70,17 +70,14 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
       } else {
         serverJson = jsonObject;
       }
-    } else if (jsonObject.containsKey(AVObject.KEY_AUTOTYPE_SUBSTITUTION)) {
+    } else if (jsonObject.containsKey(AVObject.KEY_CLASSNAME)) {
       // android sdk output
       // { "@type":"com.example.avoscloud_demo.Student","objectId":"5bff468944d904005f856849","updatedAt":"2018-12-08T09:53:05.008Z","createdAt":"2018-11-29T01:53:13.327Z","className":"Student","serverData":{"@type":"java.util.concurrent.ConcurrentHashMap","name":"Automatic Tester's Dad","course":["Math","Art"],"age":20}}
-      jsonObject.remove(AVObject.KEY_AUTOTYPE_SUBSTITUTION);
       className = (String) jsonObject.get(AVObject.KEY_CLASSNAME);
+      jsonObject.remove(AVObject.KEY_CLASSNAME);
       if (jsonObject.containsKey(KEY_SERVERDATA)) {
         serverJson = jsonObject.getJSONObject(KEY_SERVERDATA);
-        serverJson.remove(AVObject.KEY_AUTOTYPE_SUBSTITUTION);
-
         jsonObject.remove(KEY_SERVERDATA);
-        jsonObject.remove(AVObject.KEY_CLASSNAME);
         jsonObject.putAll(serverJson);
       }
       serverJson = jsonObject;

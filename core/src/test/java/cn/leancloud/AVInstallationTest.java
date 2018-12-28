@@ -45,7 +45,9 @@ public class AVInstallationTest extends TestCase {
     File installationFile = new File(AppConfiguration.getImportantFileDir(), AVInstallation.INSTALLATION);
     PersistenceUtil.sharedInstance().saveContentToFile(json, installationFile);
     AVInstallation installation = AVInstallation.getCurrentInstallation();
-    assertTrue(null != installation && installation.getInstallationId().equals("007394934f6a1336718c90e196ef8a64"));
+    System.out.println(installation.toString());
+    assertTrue(null != installation);
+    assertTrue(installation.getInstallationId().equals("007394934f6a1336718c90e196ef8a64"));
     assertTrue(installation.getObjectId().equals("wYtTtsc5jnd0tXX8hQQa8oBekQXHBUIG"));
 
     final CountDownLatch latch = new CountDownLatch(1);
