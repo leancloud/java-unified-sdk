@@ -231,8 +231,15 @@ public class StorageClient {
     });
   }
 
-  public <E extends AVObject> Observable<E> saveWholeObject(final Class<E> clazz, final String endpointClass, JSONObject object, boolean fetchFlag, JSONObject where) {
-    Observable<AVObject> result = wrappObservable(apiService.saveWholeObject(endpointClass, object, fetchFlag, where));
+  public <E extends AVObject> Observable<E> saveWholeObject(final Class<E> clazz, final String endpointClass, String objectId,
+                                                            JSONObject object, boolean fetchFlag, JSONObject where) {
+    Observable<AVObject> result = null;
+    if (StringUtil.isEmpty(objectId)) {
+      result = wrappObservable(apiService.saveWholeObject(endpointClass, object, fetchFlag, where));
+    } else {
+      result = wrappObservable(apiService.saveWholeObject(endpointClass, objectId, object, fetchFlag, where));
+    }
+
     if (null == result) {
       return null;
     }

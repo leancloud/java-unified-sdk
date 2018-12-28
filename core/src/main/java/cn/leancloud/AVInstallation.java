@@ -18,7 +18,7 @@ public final class AVInstallation extends AVObject {
   public static final String CLASS_NAME = "_Installation";
 
   private static final AVLogger LOGGER = LogUtil.getLogger(AVInstallation.class);
-  private static final String INSTALLATION = "installation";
+  static final String INSTALLATION = "installation";
   private static final String DEVICETYPETAG = "deviceType";
   private static final String CHANNELSTAG = "channel";
   private static final String INSTALLATIONIDTAG = "installationId";

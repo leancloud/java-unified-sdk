@@ -35,6 +35,9 @@ public class AVObject {
   public static final String KEY_OBJECT_ID = "objectId";
   public static final String KEY_ACL = "ACL";
 
+  public static final String KEY_AUTOTYPE_NAME = "@type";
+  public static final String KEY_AUTOTYPE_SUBSTITUTION = "_type";
+
   public static final String KEY_CLASSNAME = "className";
 
   private static final String INTERNAL_PATTERN = "^[\\da-z][\\d-a-z]*$";
@@ -419,7 +422,14 @@ public class AVObject {
    */
   protected JSONObject generateChangedParam() {
     if (totallyOverwrite) {
-      return new JSONObject(this.serverData);
+      HashMap<String, Object> tmp = new HashMap<>();
+      tmp.putAll(this.serverData);
+
+      // createdAt, updatedAt, objectId is unnecessary.
+      tmp.remove(KEY_CREATED_AT);
+      tmp.remove(KEY_UPDATED_AT);
+      tmp.remove(KEY_OBJECT_ID);
+      return new JSONObject(tmp);
     }
 
     Map<String, Object> params = new HashMap<String, Object>();
@@ -544,7 +554,8 @@ public class AVObject {
         whereCondition = new JSONObject(whereOperationMap);
       }
       if (totallyOverwrite) {
-        return PaasClient.getStorageClient().saveWholeObject(this.getClass(), endpointClassName, paramData, needFetch, whereCondition);
+        return PaasClient.getStorageClient().saveWholeObject(this.getClass(), endpointClassName, currentObjectId,
+                paramData, needFetch, whereCondition);
       } else if (StringUtil.isEmpty(currentObjectId)) {
         return PaasClient.getStorageClient().createObject(this.className, paramData, needFetch, whereCondition)
                 .map(new Function<AVObject, AVObject>() {
@@ -966,7 +977,7 @@ public class AVObject {
     if (StringUtil.isEmpty(objectString)) {
       return null;
     }
-    objectString = objectString.replaceAll("@type", "_type");
+    objectString = objectString.replaceAll(KEY_AUTOTYPE_NAME, KEY_AUTOTYPE_SUBSTITUTION);
     return JSON.parseObject(objectString, AVObject.class);
   }
 

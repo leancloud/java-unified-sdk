@@ -22,6 +22,7 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
   private static AVLogger LOGGER = LogUtil.getLogger(ObjectTypeAdapter.class);
   private static final String KEY_VERSION = "_version";
   private static final String DEFAULT_VERSION = "5";
+  private static final String KEY_SERVERDATA = "serverData";
 
   public void write(JSONSerializer serializer, Object object, Object fieldName, Type fieldType,
                     int features) throws IOException {
@@ -33,7 +34,7 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
     SerializeWriter writer = serializer.getWriter();
     writer.write('{');
 
-    // for 1.1.70.android fastjson
+    // for 1.1.70.android fastjson, we dont use writer.writeFieldValue(seperator, field, value) method.
     writer.write(' ');
     writer.writeFieldName(KEY_VERSION, false);
     writer.writeString(DEFAULT_VERSION);
@@ -41,27 +42,10 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
     writer.writeFieldName(AVObject.KEY_CLASSNAME, false);
     writer.writeString(avObject.getClassName());
     writer.write(',');
-    writer.writeFieldName("serverData", false);
+    writer.writeFieldName(KEY_SERVERDATA, false);
     writer.write(JSON.toJSONString(avObject.serverData, ObjectValueFilter.instance, SerializerFeature.WriteClassName,
             SerializerFeature.DisableCircularReferenceDetect));
 
-//    try {
-//      // for 1.2.x fastjson
-//      SerializeWriter.class.getDeclaredMethod("writeFieldName", String.class, String.class);
-//      writer.writeFieldValue(' ', AVObject.KEY_CLASSNAME, avObject.getClassName());
-//      writer.writeFieldValue(',', "serverData",
-//              JSON.toJSONString(avObject.serverData, ObjectValueFilter.instance, SerializerFeature.WriteClassName,
-//                      SerializerFeature.DisableCircularReferenceDetect));
-//    } catch (NoSuchMethodException ex) {
-//      // for 1.1.70.android fastjson
-//      writer.write(' ');
-//      writer.writeFieldName(AVObject.KEY_CLASSNAME, false);
-//      writer.writeString(avObject.getClassName());
-//      writer.write(',');
-//      writer.writeFieldName("serverData", false);
-//      writer.write(JSON.toJSONString(avObject.serverData, ObjectValueFilter.instance, SerializerFeature.WriteClassName,
-//              SerializerFeature.DisableCircularReferenceDetect));
-//    }
     writer.write('}');
   }
 
@@ -81,21 +65,22 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
     if (jsonObject.containsKey(KEY_VERSION)) {
       // 5.x version
       className = (String) jsonObject.get(AVObject.KEY_CLASSNAME);
-      if (jsonObject.containsKey("serverData")) {
-        serverJson = jsonObject.getJSONObject("serverData");
+      if (jsonObject.containsKey(KEY_SERVERDATA)) {
+        serverJson = jsonObject.getJSONObject(KEY_SERVERDATA);
       } else {
         serverJson = jsonObject;
       }
-    } else if (jsonObject.containsKey("_type")) {
+    } else if (jsonObject.containsKey(AVObject.KEY_AUTOTYPE_SUBSTITUTION)) {
       // android sdk output
       // { "@type":"com.example.avoscloud_demo.Student","objectId":"5bff468944d904005f856849","updatedAt":"2018-12-08T09:53:05.008Z","createdAt":"2018-11-29T01:53:13.327Z","className":"Student","serverData":{"@type":"java.util.concurrent.ConcurrentHashMap","name":"Automatic Tester's Dad","course":["Math","Art"],"age":20}}
-      jsonObject.remove("_type");
+      jsonObject.remove(AVObject.KEY_AUTOTYPE_SUBSTITUTION);
       className = (String) jsonObject.get(AVObject.KEY_CLASSNAME);
-      if (jsonObject.containsKey("serverData")) {
-        serverJson = jsonObject.getJSONObject("serverData");
-        serverJson.remove("_type");
+      if (jsonObject.containsKey(KEY_SERVERDATA)) {
+        serverJson = jsonObject.getJSONObject(KEY_SERVERDATA);
+        serverJson.remove(AVObject.KEY_AUTOTYPE_SUBSTITUTION);
 
-        jsonObject.remove("serverData");
+        jsonObject.remove(KEY_SERVERDATA);
+        jsonObject.remove(AVObject.KEY_CLASSNAME);
         jsonObject.putAll(serverJson);
       }
       serverJson = jsonObject;

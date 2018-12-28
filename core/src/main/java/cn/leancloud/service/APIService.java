@@ -61,6 +61,10 @@ public interface APIService {
   Observable<AVObject> saveWholeObject(@Path("endpointClass") String endpointClass, @Body JSONObject object,
                                        @Query("fetchWhenSave") boolean fetchFlag,
                                        @Query("where") JSONObject where);
+  @PUT("/1.1/{endpointClass}/{objectId}")
+  Observable<AVObject> saveWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
+                                       @Body JSONObject object, @Query("fetchWhenSave") boolean fetchFlag,
+                                       @Query("where") JSONObject where);
   @GET("/1.1/{endpointClass}/{objectId}")
   Observable<AVObject> getWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId);
   @DELETE("/1.1/{endpointClass}/{objectId}")
