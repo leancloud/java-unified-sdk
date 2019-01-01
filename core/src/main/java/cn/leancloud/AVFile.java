@@ -20,13 +20,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.leancloud.upload.*;
+import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.FileUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 
 @AVClassName("_File")
@@ -303,23 +306,52 @@ public final class AVFile extends AVObject {
   }
 
   public synchronized void saveInBackground(final ProgressCallback progressCallback) {
-    if (StringUtil.isEmpty(objectId)) {
-      Uploader uploader = getUploader(null, progressCallback);
-      uploader.execute();
-    } else {
-      if (null != progressCallback) {
-        progressCallback.internalDone(100, null);
+    saveWithProgressCallback(progressCallback).subscribe(new Observer<AVFile>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
       }
-    }
+
+      @Override
+      public void onNext(AVFile avFile) {
+        if (null != progressCallback) {
+          progressCallback.internalDone(100, null);
+        }
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        if (null != progressCallback) {
+          progressCallback.internalDone(90, new AVException(throwable));
+        }
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
   }
 
-  @Override
-  public Observable<AVFile> saveInBackground() {
+  private Observable<AVFile> directlyCreate(JSONObject parameters) {
+    return PaasClient.getStorageClient().createObject(this.className, parameters, false, null)
+            .map(new Function<AVObject, AVFile>() {
+              @Override
+              public AVFile apply(AVObject avObject) throws Exception {
+                AVFile.this.mergeRawData(avObject);
+                return AVFile.this;
+              }});
+  }
+
+  private Observable<AVFile> saveWithProgressCallback(final ProgressCallback callback) {
     JSONObject paramData = generateChangedParam();
     final String fileKey = FileUtil.generateFileKey(this.getName());
     paramData.put("key", fileKey);
     paramData.put("__type", "File");
     if (StringUtil.isEmpty(getObjectId())) {
+      if (!StringUtil.isEmpty(getUrl())) {
+        return directlyCreate(paramData);
+      }
       logger.d("createToken params: " + paramData.toJSONString() + ", " + this);
       return PaasClient.getStorageClient().newUploadToken(paramData)
               .map(new Function<FileUploadToken, AVFile>() {
@@ -331,7 +363,7 @@ public final class AVFile extends AVObject {
                   AVFile.this.internalPutDirectly(KEY_PROVIDER, fileUploadToken.getProvider());
                   AVFile.this.internalPutDirectly(KEY_FILE_KEY, fileKey);
 
-                  Uploader uploader = AVFile.this.getUploader(fileUploadToken, null);
+                  Uploader uploader = new FileUploader(AVFile.this, fileUploadToken, callback);
                   AVFile.this.internalPutDirectly(KEY_URL, fileUploadToken.getUrl());
 
                   AVException exception = uploader.execute();
@@ -355,19 +387,16 @@ public final class AVFile extends AVObject {
                 }
               });
     } else {
-      logger.d("file has been upload to cloud, ignore request.");
-      return Observable.just((AVFile) this);
+      logger.d("file has been upload to cloud, ignore update request.");
+      return Observable.just(this);
     }
   }
 
-  private Uploader getUploader(FileUploadToken uploadToken, ProgressCallback progressCallback) {
-
-    if (StringUtil.isEmpty(getUrl())) {
-      return new FileUploader(this, uploadToken, progressCallback);
-    } else {
-      return new UrlDirectlyUploader(this, progressCallback);
-    }
+  @Override
+  public Observable<AVFile> saveInBackground() {
+    return saveWithProgressCallback(null);
   }
+
 
   @JSONField(serialize = false)
   public byte[] getData() {

@@ -225,9 +225,10 @@ public class Utils {
         newMap.put(key, getObjectFrom(o));
       }
       return newMap;
-    } else if (type.equals("Pointer") || type.equals("Object")) {
+    }
+    map.remove("__type");
+    if (type.equals("Pointer") || type.equals("Object")) {
       AVObject avObject = Transformer.objectFromClassName((String) map.get("className"));
-      map.remove("__type");
       avObject.resetServerData(map);
       return avObject;
     } else if (type.equals("GeoPoint")) {
