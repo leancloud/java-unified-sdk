@@ -13,8 +13,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class AVObjectTest extends TestCase {
+  private CountDownLatch latch = null;
+  private boolean testSucceed = false;
+
   public AVObjectTest(String testName) {
     super(testName);
     Configure.initializeRuntime();
@@ -25,9 +29,11 @@ public class AVObjectTest extends TestCase {
 
   @Override
   protected void setUp() throws Exception {
+    latch = new CountDownLatch(1);
+    testSucceed = false;
   }
 
-  public void testPutNull() {
+  public void testPutNull() throws Exception {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 18);
@@ -41,12 +47,13 @@ public class AVObjectTest extends TestCase {
       @Override
       public void onNext(AVObject avObject) {
         System.out.println("saveObject field finished.");
-        //avObject.deleteInBackground().subscribe();
+        testSucceed = true;
+        latch.countDown();
       }
 
       @Override
       public void onError(Throwable throwable) {
-
+        latch.countDown();
       }
 
       @Override
@@ -54,9 +61,11 @@ public class AVObjectTest extends TestCase {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testDeleteField() {
+  public void testDeleteField() throws Exception {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 18);
@@ -75,11 +84,32 @@ public class AVObjectTest extends TestCase {
 
           public void onNext(AVObject avObject) {
             System.out.println("remove field finished.");
-            avObject.deleteInBackground().subscribe();
+            avObject.deleteInBackground().subscribe(new Observer<AVNull>() {
+              @Override
+              public void onSubscribe(Disposable disposable) {
+
+              }
+
+              @Override
+              public void onNext(AVNull avNull) {
+                testSucceed = true;
+                latch.countDown();
+              }
+
+              @Override
+              public void onError(Throwable throwable) {
+                latch.countDown();
+              }
+
+              @Override
+              public void onComplete() {
+
+              }
+            });
           }
 
           public void onError(Throwable throwable) {
-            fail();
+            latch.countDown();
           }
 
           public void onComplete() {
@@ -89,16 +119,18 @@ public class AVObjectTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testCreateObjectWithPublicACL() {
+  public void testCreateObjectWithPublicACL() throws Exception {
     AVACL acl = new AVACL();
     acl.setPublicWriteAccess(true);
     acl.setPublicReadAccess(true);
@@ -130,10 +162,12 @@ public class AVObjectTest extends TestCase {
 
               public void onNext(AVNull aVoid) {
                 System.out.println("delete object finished!");
+                testSucceed = true;
+                latch.countDown();
               }
 
               public void onError(Throwable throwable) {
-                fail();
+                latch.countDown();
               }
 
               public void onComplete() {
@@ -143,7 +177,7 @@ public class AVObjectTest extends TestCase {
           }
 
           public void onError(Throwable throwable) {
-            fail();
+            latch.countDown();
           }
 
           public void onComplete() {
@@ -153,17 +187,18 @@ public class AVObjectTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
-
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testCreateObjectWithReadOnlyACL() {
+  public void testCreateObjectWithReadOnlyACL() throws Exception {
     AVACL acl = new AVACL();
     acl.setPublicWriteAccess(false);
     acl.setPublicReadAccess(true);
@@ -188,12 +223,13 @@ public class AVObjectTest extends TestCase {
 
           public void onNext(AVNull aVoid) {
             System.out.println("delete object finished, but ACL doesn't work!");
-            fail();
+            latch.countDown();
           }
 
           public void onError(Throwable throwable) {
             System.out.println("delete object failed as expected.");
-            assertNotNull(throwable);
+            testSucceed = (null != throwable);
+            latch.countDown();
           }
 
           public void onComplete() {
@@ -202,17 +238,18 @@ public class AVObjectTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
-
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testCreateObject() {
+  public void testCreateObject() throws Exception {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 17);
@@ -229,11 +266,13 @@ public class AVObjectTest extends TestCase {
 
           public void onNext(AVNull aVoid) {
             System.out.println("delete object finished.");
+            testSucceed = true;
+            latch.countDown();
           }
 
           public void onError(Throwable throwable) {
             System.out.println("delete object failed.");
-            fail();
+            latch.countDown();
           }
 
           public void onComplete() {
@@ -244,15 +283,17 @@ public class AVObjectTest extends TestCase {
 
       public void onError(Throwable throwable) {
         System.out.println("create object failed.");
-
+        latch.countDown();
       }
 
       public void onComplete() {
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testObjectRefresh() {
+  public void testObjectRefresh() throws Exception {
     AVObject object = new AVObject("Student");
     object.setObjectId("5a7a4ac8128fe1003768d2b1");
     object.refreshInBackground().subscribe(new Observer<AVObject>() {
@@ -262,22 +303,26 @@ public class AVObjectTest extends TestCase {
 
       public void onNext(AVObject avObject) {
         System.out.println("subscribe result: " + avObject.toString());
+        testSucceed = true;
+        latch.countDown();
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
         System.out.println("subscribe completed.");
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
     System.out.println("test completed.");
   }
 
-  public void testIncrementOperation() {
+  public void testIncrementOperation() throws Exception {
     AVObject object = new AVObject("Student");
-    object.setObjectId("5ab5f7b89f545437fe95f860");
+    object.setObjectId("5c2d9e7e808ca4565c481fae");
     object.increment("age", 5);
     object.setFetchWhenSave(true);
     object.saveInBackground().subscribe(new Observer<AVObject>() {
@@ -296,10 +341,12 @@ public class AVObjectTest extends TestCase {
 
           public void onNext(AVObject avObject) {
             System.out.println("new value of age: " + avObject.getInt("age"));
+            testSucceed = true;
+            latch.countDown();
           }
 
           public void onError(Throwable throwable) {
-            fail();
+            latch.countDown();
           }
 
           public void onComplete() {
@@ -310,16 +357,18 @@ public class AVObjectTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testCreateObjectThenBitOperation() {
+  public void testCreateObjectThenBitOperation() throws Exception {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 39);
@@ -359,10 +408,12 @@ public class AVObjectTest extends TestCase {
 
                       public void onNext(AVNull avNull) {
                         System.out.println("OK!");
+                        testSucceed = true;
+                        latch.countDown();
                       }
 
                       public void onError(Throwable throwable) {
-                        fail();
+                        latch.countDown();
                       }
 
                       public void onComplete() {
@@ -372,7 +423,7 @@ public class AVObjectTest extends TestCase {
                   }
 
                   public void onError(Throwable throwable) {
-                    fail();
+                    latch.countDown();
                   }
 
                   public void onComplete() {
@@ -382,7 +433,7 @@ public class AVObjectTest extends TestCase {
               }
 
               public void onError(Throwable throwable) {
-                fail();
+                latch.countDown();
               }
 
               public void onComplete() {
@@ -392,7 +443,7 @@ public class AVObjectTest extends TestCase {
           }
 
           public void onError(Throwable throwable) {
-            fail();
+            latch.countDown();
           }
 
           public void onComplete() {
@@ -403,16 +454,18 @@ public class AVObjectTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
-
+    latch.await();
+    assertTrue(testSucceed);
   }
-  public void testCreateObjectThenRemoveOperation() {
+
+  public void testCreateObjectThenRemoveOperation() throws Exception {
     AVACL acl = new AVACL();
     acl.setPublicWriteAccess(true);
     acl.setPublicReadAccess(true);
@@ -446,10 +499,12 @@ public class AVObjectTest extends TestCase {
 
               public void onNext(AVNull aVoid) {
                 System.out.println("delete object finished!");
+                testSucceed = true;
+                latch.countDown();
               }
 
               public void onError(Throwable throwable) {
-                fail();
+                latch.countDown();
               }
 
               public void onComplete() {
@@ -459,7 +514,7 @@ public class AVObjectTest extends TestCase {
           }
 
           public void onError(Throwable throwable) {
-            fail();
+            latch.countDown();
           }
 
           public void onComplete() {
@@ -469,16 +524,18 @@ public class AVObjectTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testCompoundOperation() {
+  public void testCompoundOperation() throws Exception {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 19);
@@ -506,11 +563,12 @@ public class AVObjectTest extends TestCase {
               }
 
               public void onNext(AVNull avNull) {
-
+                testSucceed = true;
+                latch.countDown();
               }
 
               public void onError(Throwable throwable) {
-                fail();
+                latch.countDown();
               }
 
               public void onComplete() {
@@ -520,7 +578,7 @@ public class AVObjectTest extends TestCase {
           }
 
           public void onError(Throwable throwable) {
-            fail();;
+            latch.countDown();;
           }
 
           public void onComplete() {
@@ -531,16 +589,18 @@ public class AVObjectTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testBatchSaveOperation() {
+  public void testBatchSaveOperation() throws Exception {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 19);
@@ -553,20 +613,23 @@ public class AVObjectTest extends TestCase {
       }
 
       public void onNext(AVObject avObject) {
-
+        testSucceed = true;
+        latch.countDown();
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testSaveFailureWithCircleReference() {
+  public void testSaveFailureWithCircleReference() throws Exception {
     AVObject objectA = new AVObject("Student");
     AVObject objectB = new AVObject("Student");
     objectA.put("friend", objectB);
@@ -579,18 +642,17 @@ public class AVObjectTest extends TestCase {
 
       @Override
       public void onNext(AVObject avObject) {
-        fail();
+        latch.countDown();
       }
 
       @Override
       public void onError(Throwable throwable) {
-        assertNotNull(throwable);
+        testSucceed = (null != throwable);
         if (throwable instanceof AVException) {
           AVException ex = (AVException)throwable;
-          assertEquals(ex.getCode(), AVException.CIRCLE_REFERENCE);
-        } else {
-          fail();
+          testSucceed = testSucceed & (ex.getCode() == AVException.CIRCLE_REFERENCE);
         }
+        latch.countDown();
       }
 
       @Override
@@ -598,9 +660,11 @@ public class AVObjectTest extends TestCase {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testSaveFailureWithIndirectlyCircleReference() {
+  public void testSaveFailureWithIndirectlyCircleReference() throws Exception {
     AVObject objectA = new AVObject("Student");
     AVObject objectB = new AVObject("Student");
     AVObject objectC = new AVObject("Student");
@@ -615,7 +679,7 @@ public class AVObjectTest extends TestCase {
 
       @Override
       public void onNext(AVObject avObject) {
-        fail();
+        latch.countDown();
       }
 
       @Override
@@ -623,10 +687,9 @@ public class AVObjectTest extends TestCase {
         assertNotNull(throwable);
         if (throwable instanceof AVException) {
           AVException ex = (AVException)throwable;
-          assertEquals(ex.getCode(), AVException.CIRCLE_REFERENCE);
-        } else {
-          fail();
+          testSucceed = (ex.getCode() == AVException.CIRCLE_REFERENCE);
         }
+        latch.countDown();
       }
 
       @Override
@@ -634,8 +697,11 @@ public class AVObjectTest extends TestCase {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
-  public void testCreateWithSaveOptionShouldAdd() {
+
+  public void testCreateWithSaveOptionShouldAdd() throws Exception {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 19);
@@ -653,13 +719,14 @@ public class AVObjectTest extends TestCase {
 
       @Override
       public void onNext(AVObject avObject) {
-        assertNotNull(avObject);
+        testSucceed = (null != avObject);
+        latch.countDown();
       }
 
       @Override
       public void onError(Throwable throwable) {
         throwable.printStackTrace();
-        fail();
+        latch.countDown();
       }
 
       @Override
@@ -667,9 +734,11 @@ public class AVObjectTest extends TestCase {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testCreateWithSaveOptionShouldNotAdd() {
+  public void testCreateWithSaveOptionShouldNotAdd() throws Exception {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 19);
@@ -687,12 +756,14 @@ public class AVObjectTest extends TestCase {
 
       @Override
       public void onNext(AVObject avObject) {
-        assertNotNull(avObject);
+        testSucceed = (null != avObject);
+        latch.countDown();
       }
 
       @Override
       public void onError(Throwable throwable) {
         throwable.printStackTrace();
+        latch.countDown();
       }
 
       @Override
@@ -700,9 +771,11 @@ public class AVObjectTest extends TestCase {
 
       }
     });
-
+    latch.await();
+    assertTrue(testSucceed);
   }
-  public void testUpdateWithSaveOptionShouldChange() {
+
+  public void testUpdateWithSaveOptionShouldChange() throws Exception {
     final AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 19);
@@ -725,12 +798,14 @@ public class AVObjectTest extends TestCase {
       @Override
       public void onNext(AVObject avObject) {
         object.delete();
+        testSucceed = true;
+        latch.countDown();
       }
 
       @Override
       public void onError(Throwable throwable) {
         throwable.printStackTrace();
-        fail();
+        latch.countDown();
       }
 
       @Override
@@ -738,16 +813,18 @@ public class AVObjectTest extends TestCase {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testSaveEventually() {
+  public void testSaveEventually() throws Exception {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 19);
     object.add("course", "Art");
     try {
       object.saveEventually();
-      Thread.sleep(20000);
+      Thread.sleep(10000);
     } catch (Exception ex) {
       fail();
     }
@@ -796,7 +873,7 @@ public class AVObjectTest extends TestCase {
     AVObject.deleteAll(objects);
   }
 
-  public void testDeleteEventually() {
+  public void testDeleteEventually() throws Exception {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 19);
@@ -804,7 +881,7 @@ public class AVObjectTest extends TestCase {
     object.save();
     try {
       object.deleteEventually();
-      Thread.sleep(20000);
+      Thread.sleep(10000);
     } catch (Exception ex) {
       fail();
     }
@@ -822,7 +899,7 @@ public class AVObjectTest extends TestCase {
     assertNotNull(getACL);
   }
 
-  public void testUpdateWithSaveOptionShouldNotChange() {
+  public void testUpdateWithSaveOptionShouldNotChange() throws Exception {
     final AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 19);
@@ -845,13 +922,15 @@ public class AVObjectTest extends TestCase {
       @Override
       public void onNext(AVObject avObject) {
         object.delete();
-        fail();
+        latch.countDown();
       }
 
       @Override
       public void onError(Throwable throwable) {
         throwable.printStackTrace();
         object.delete();
+        testSucceed = true;
+        latch.countDown();
       }
 
       @Override
@@ -859,5 +938,7 @@ public class AVObjectTest extends TestCase {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 }

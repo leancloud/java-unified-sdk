@@ -18,11 +18,15 @@ import junit.framework.TestSuite;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import static com.alibaba.fastjson.parser.Feature.IgnoreAutoType;
 import static com.alibaba.fastjson.parser.Feature.IgnoreNotMatch;
 
 public class ArchivedRequestsTest extends TestCase {
+  private boolean testSucceed = false;
+  private CountDownLatch latch = null;
+
   public ArchivedRequestsTest(String name) {
     super(name);
     Configure.initializeRuntime();
@@ -67,7 +71,10 @@ public class ArchivedRequestsTest extends TestCase {
     assertEquals(2, parsedOps.size());
   }
 
-  public void testRequestSerialize() {
+  public void testRequestSerialize() throws Exception {
+    testSucceed = false;
+    latch = new CountDownLatch(1);
+
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 19);
@@ -87,11 +94,14 @@ public class ArchivedRequestsTest extends TestCase {
       @Override
       public void onNext(AVObject avObject) {
         avObject.delete();
+        testSucceed = true;
+        latch.countDown();
       }
 
       @Override
       public void onError(Throwable throwable) {
         throwable.printStackTrace();
+        latch.countDown();
       }
 
       @Override
@@ -99,6 +109,8 @@ public class ArchivedRequestsTest extends TestCase {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
   public void testCompoundRequestSerialize() {

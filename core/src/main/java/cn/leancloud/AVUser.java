@@ -603,9 +603,7 @@ public class AVUser extends AVObject {
     }
     File currentUserArchivePath = currentUserArchivePath();
     if (null != newUser && save) {
-      String jsonString = JSON.toJSONString(newUser, ObjectValueFilter.instance,
-              SerializerFeature.WriteClassName,
-              SerializerFeature.DisableCircularReferenceDetect);
+      String jsonString = newUser.toJSONString();
       logger.d(jsonString);
       PersistenceUtil.sharedInstance().saveContentToFile(jsonString, currentUserArchivePath);
     } else if (save) {
@@ -631,21 +629,10 @@ public class AVUser extends AVObject {
       synchronized (AVUser.class) {
         String jsonString = PersistenceUtil.sharedInstance().readContentFromFile(currentUserArchivePath);
         if (!StringUtil.isEmpty(jsonString)) {
-          if (jsonString.indexOf("@type") >= 0) {
+          if (jsonString.indexOf("@type") >= 0 || jsonString.indexOf(ObjectTypeAdapter.KEY_VERSION) >= 0) {
             // new version.
             try {
-              T newUser = userClass.newInstance();
-              Map<String, Object> jsonData = JSON.parseObject(jsonString, Map.class);
-              Object serverDataString = jsonData.get("serverData");
-              if (serverDataString instanceof String) {
-                Map<String, Object> rawData = JSON.parseObject((String)serverDataString, Map.class);
-                rawData.remove("@type");
-                newUser.resetServerData(rawData);
-              } else {
-                newUser.resetServerData(jsonData);
-                changeCurrentUser(newUser, true);
-              }
-              user = newUser;
+              user = (AVUser) AVObject.parseAVObject(jsonString);;
               PaasClient.getStorageClient().setCurrentUser(user);
             } catch (Exception ex) {
               logger.w("failed to deserialize AVUser instance.", ex);
@@ -673,7 +660,7 @@ public class AVUser extends AVObject {
         logger.w(ex);
       }
     }
-    return (T) user;
+    return (T) Transformer.transform(user, userClass);
   }
 
   /**

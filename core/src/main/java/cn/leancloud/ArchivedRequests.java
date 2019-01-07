@@ -13,6 +13,7 @@ import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observer;
@@ -222,7 +223,7 @@ public class ArchivedRequests {
     String objectJSON = contentMap.get(ATTR_OBJECT);
     String operationJSON = contentMap.get(ATTR_OPERATION);
 
-    AVObject resultObj = JSON.parseObject(objectJSON, AVObject.class);
+    AVObject resultObj = AVObject.parseAVObject(objectJSON);
     if (!StringUtil.isEmpty(internalId) && !internalId.equals(resultObj.getObjectId())) {
       resultObj.setUuid(internalId);
     }

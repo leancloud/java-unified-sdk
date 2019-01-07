@@ -12,8 +12,11 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.io.File;
+import java.util.concurrent.CountDownLatch;
 
 public class AVFileTest extends TestCase {
+  private boolean testSucceed = false;
+  private CountDownLatch latch = null;
   public AVFileTest(String name) {
     super(name);
     Configure.initializeRuntime();
@@ -25,6 +28,8 @@ public class AVFileTest extends TestCase {
 
   @Override
   protected void setUp() throws Exception {
+    testSucceed = false;
+    latch = new CountDownLatch(1);
   }
 
   @Override
@@ -32,8 +37,8 @@ public class AVFileTest extends TestCase {
     ;
   }
 
-  public void testCreateWithObjectId() {
-    String fileObjectId = "5aa634357565710044bde4df";
+  public void testCreateWithObjectId() throws Exception {
+    String fileObjectId = "5c2a1c4d808ca4565c20f0f2";
     AVFile.withObjectIdInBackground(fileObjectId).subscribe(new Observer<AVFile>() {
       public void onSubscribe(Disposable disposable) {
 
@@ -50,21 +55,24 @@ public class AVFileTest extends TestCase {
         String mimeType = avFile.getMimeType();
         System.out.println("url=" + url + ", name=" + name + ", key=" + key + ", size=" + size);
         System.out.println("objId=" + objectId + ", thumbnail=" + thumbnailUrl + ", mime=" + mimeType);
-        assertTrue(url.length() > 0 && thumbnailUrl.length() > 0 && name.length() > 0 && key.length() > 0);
-        assertTrue(size > 0 && objectId.equals("5aa634357565710044bde4df"));
-        assertTrue(mimeType.length() > 0);
+        testSucceed = url.length() > 0 && thumbnailUrl.length() > 0 && name.length() > 0 && key.length() > 0;
+        testSucceed = testSucceed && (size > 0 && objectId.equals("5c2a1c4d808ca4565c20f0f2"));
+        testSucceed = testSucceed && (mimeType.length() > 0);
+        latch.countDown();
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testCreateWithExtension() {
+  public void testCreateWithExtension() throws Exception {
     File localFile = new File("./20160704174809.jpeg");
     AVFile file = new AVFile("test.jpeg", localFile);
     Observable<AVFile> result = file.saveInBackground();
@@ -82,10 +90,12 @@ public class AVFileTest extends TestCase {
 
           public void onNext(AVNull aVoid) {
             System.out.println("[Thread:" + Thread.currentThread().getId() + "]succeed to delete file.");
+            testSucceed = true;
+            latch.countDown();
           }
 
           public void onError(Throwable throwable) {
-            fail();
+            latch.countDown();
           }
 
           public void onComplete() {
@@ -95,16 +105,49 @@ public class AVFileTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testUploader() {
+  public void testExternalFile() throws Exception {
+    AVFile portrait = new AVFile("thumbnail", "https://tvax1.sinaimg.cn/crop.0.0.200.200.180/a8d43f7ely1fnxs86j4maj205k05k74f.jpg");
+    portrait.saveInBackground().subscribe(new Observer<AVFile>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVFile avFile) {
+        avFile.delete();
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testUploader() throws Exception {
     String contents = StringUtil.getRandomString(64);
     AVFile file = new AVFile("test", contents.getBytes());
     Observable<AVFile> result = file.saveInBackground();
@@ -123,10 +166,12 @@ public class AVFileTest extends TestCase {
 
           public void onNext(AVNull aVoid) {
             System.out.println("[Thread:" + Thread.currentThread().getId() + "]succeed to delete file.");
+            testSucceed = true;
+            latch.countDown();
           }
 
           public void onError(Throwable throwable) {
-            fail();
+            latch.countDown();
           }
 
           public void onComplete() {
@@ -136,12 +181,14 @@ public class AVFileTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 }

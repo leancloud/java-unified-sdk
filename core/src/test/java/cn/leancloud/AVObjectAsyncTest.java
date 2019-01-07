@@ -17,6 +17,9 @@ import junit.framework.TestSuite;
 import java.util.concurrent.CountDownLatch;
 
 public class AVObjectAsyncTest extends TestCase {
+  private boolean testSucceed = false;
+  private CountDownLatch latch = null;
+
   public AVObjectAsyncTest(String testName) {
     super(testName);
     AppConfiguration.config(true, new AppConfiguration.SchedulerCreator() {
@@ -32,9 +35,11 @@ public class AVObjectAsyncTest extends TestCase {
 
   @Override
   protected void setUp() throws Exception {
+    latch = new CountDownLatch(1);
+    testSucceed = false;
   }
 
-  public void testCreateObject() {
+  public void testCreateObject() throws Exception {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 18);
@@ -62,10 +67,13 @@ public class AVObjectAsyncTest extends TestCase {
 
               public void onNext(AVNull object) {
                 System.out.println("delete finished.");
+                testSucceed = true;
+                latch.countDown();
               }
 
               public void onError(Throwable throwable) {
                 throwable.printStackTrace();
+                latch.countDown();
               }
 
               public void onComplete() {
@@ -75,7 +83,7 @@ public class AVObjectAsyncTest extends TestCase {
           }
 
           public void onError(Throwable throwable) {
-            fail();
+            latch.countDown();
           }
 
           public void onComplete() {
@@ -92,17 +100,11 @@ public class AVObjectAsyncTest extends TestCase {
 
       }
     });
-    System.out.println("wait response...");
-    try {
-      Thread.sleep(2000);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-    System.out.println("test completed.");
+    latch.await();
+    assertTrue(testSucceed);
   }
 
   public void testObjectCreateEx() throws Exception{
-    final CountDownLatch latch = new CountDownLatch(1);
     AVObject post = new AVObject("Post");
     post.put("title", "LeanCloud 发布了新版 Java 统一 SDK");
     post.put("content", "9 月初，LeanCloud 发布了新版 Java 统一 SDK，欢迎大家试用。。。");
@@ -122,6 +124,7 @@ public class AVObjectAsyncTest extends TestCase {
       @Override
       public void onNext(AVObject comment) {
         System.out.print("succeed to save post and comment objects.");
+        testSucceed = true;
         latch.countDown();
       }
 
@@ -136,9 +139,10 @@ public class AVObjectAsyncTest extends TestCase {
       }
     });
     latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testObjectRefresh() {
+  public void testObjectRefresh() throws Exception {
     AVObject object = new AVObject("Student");
     object.setObjectId("5a7a4ac8128fe1003768d2b1");
     object.refreshInBackground().subscribe(new Observer<AVObject>() {
@@ -148,22 +152,19 @@ public class AVObjectAsyncTest extends TestCase {
 
       public void onNext(AVObject avObject) {
         System.out.println("subscribe result: " + avObject.toString());
+        testSucceed = true;
+        latch.countDown();
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
         System.out.println("subscribe completed.");
       }
     });
-    System.out.println("wait response...");
-    try {
-      Thread.sleep(2000);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-    System.out.println("test completed.");
+    latch.await();
+    assertTrue(testSucceed);
   }
 }

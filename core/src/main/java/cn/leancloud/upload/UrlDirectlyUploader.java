@@ -13,4 +13,6 @@ public class UrlDirectlyUploader extends HttpClientUploader {
   public AVException execute() {
     return new AVException(new UnsupportedOperationException("UrlDirectlyUploader is deprecated."));
   }
+
+
 }

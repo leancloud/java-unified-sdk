@@ -46,11 +46,13 @@ public class AVUserTest extends TestCase {
 
       public void onNext(AVUser avUser) {
         System.out.println(JSON.toJSONString(avUser));
+        operationSucceed = true;
         latch.countDown();
 
       }
 
       public void onError(Throwable throwable) {
+        operationSucceed = true;
         latch.countDown();
       }
 
@@ -59,6 +61,7 @@ public class AVUserTest extends TestCase {
       }
     });
     latch.await();
+    assertTrue(operationSucceed);
   }
 
   public void testLogin() throws Exception {
@@ -79,6 +82,7 @@ public class AVUserTest extends TestCase {
                 SerializerFeature.DisableCircularReferenceDetect));
         System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
+        operationSucceed = true;
         latch.countDown();
       }
 
@@ -91,6 +95,7 @@ public class AVUserTest extends TestCase {
       }
     });
     latch.await();
+    assertTrue(operationSucceed);
   }
 
   public void testAnonymousLogin() throws Exception {
@@ -209,6 +214,7 @@ public class AVUserTest extends TestCase {
   }
 
   public void testCurrentUserWithNew() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
     AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
@@ -218,17 +224,20 @@ public class AVUserTest extends TestCase {
         System.out.println("onNext. result=" + avUser.toString());
         AVUser.changeCurrentUser(avUser, true);
         AVUser u = AVUser.getCurrentUser();
-        assertTrue(avUser.equals(u));
+        operationSucceed = avUser.equals(u);
+        latch.countDown();
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
         System.out.println("onComplete");
       }
     });
+    latch.await();
+    assertTrue(operationSucceed);
   }
 
   public void testCurrentUserWithCached() throws Exception {
@@ -240,6 +249,7 @@ public class AVUserTest extends TestCase {
   }
 
   public void testCheckAuthenticatedFalse() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
     AVUser u = new AVUser();
     u.setEmail("jfeng@test.com");
     u.setUsername("jfeng");
@@ -251,21 +261,23 @@ public class AVUserTest extends TestCase {
       }
 
       public void onNext(Boolean aBoolean) {
-        if (aBoolean) {
-          fail();
-        }
+        operationSucceed = aBoolean;
+        latch.countDown();
       }
 
       public void onError(Throwable throwable) {
-
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
+    latch.await();
+    assertTrue(operationSucceed);
   }
   public void testCheckAuthenticatedTrue() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
     AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
@@ -278,13 +290,12 @@ public class AVUserTest extends TestCase {
           }
 
           public void onNext(Boolean aBoolean) {
-            if (!aBoolean) {
-              fail();
-            }
+            operationSucceed = aBoolean;
+            latch.countDown();
           }
 
           public void onError(Throwable throwable) {
-            fail();
+            latch.countDown();
           }
 
           public void onComplete() {
@@ -294,11 +305,13 @@ public class AVUserTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
       }
     });
+    latch.await();
+    assertTrue(operationSucceed);
   }
 }

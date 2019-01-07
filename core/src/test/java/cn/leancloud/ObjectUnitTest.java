@@ -11,9 +11,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 
 public class ObjectUnitTest extends TestCase {
+  private CountDownLatch latch = null;
+  private boolean testSucceed = false;
+
   public ObjectUnitTest(String testName) {
     super(testName);
 
@@ -100,6 +104,9 @@ public class ObjectUnitTest extends TestCase {
 
 
   public void testUpdateCounter() throws Exception {
+    latch = new CountDownLatch(1);
+    testSucceed = false;
+
     AVObject avObject = new AVQuery<AVObject>("ObjectUnitTest").getFirstInBackground().blockingFirst();
     assertNotNull(avObject);
     final int oldNumber = avObject.getInt("number");
@@ -115,12 +122,13 @@ public class ObjectUnitTest extends TestCase {
       @Override
       public void onNext(AVObject o) {
         int newValue = o.getInt("number");
-        assertEquals(oldNumber +1, newValue);
+        testSucceed = (oldNumber +1 )== newValue;
+        latch.countDown();
       }
 
       @Override
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       @Override
@@ -128,6 +136,8 @@ public class ObjectUnitTest extends TestCase {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
 

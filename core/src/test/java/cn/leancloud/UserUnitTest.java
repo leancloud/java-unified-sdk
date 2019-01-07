@@ -9,9 +9,13 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.util.concurrent.CountDownLatch;
+
 public class UserUnitTest extends TestCase {
   public static final String username = "steve" + System.currentTimeMillis();
   public static final String password = "f32@ds*@&dsa";
+  private CountDownLatch latch = null;
+  private boolean testSucceed = false;
 
   public UserUnitTest(String name) {
     super(name);
@@ -23,6 +27,18 @@ public class UserUnitTest extends TestCase {
     return new TestSuite(UserUnitTest.class);
   }
 
+
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
+    latch = new CountDownLatch(1);
+    testSucceed = false;
+  }
+
+  @Override
+  protected void tearDown() throws Exception {
+    super.tearDown();
+  }
 
   public void testSignupLogin() throws Exception {
     AVUser user = new AVUser();
@@ -38,13 +54,20 @@ public class UserUnitTest extends TestCase {
       public void done(AVException e) {
         if (e != null) {
           e.printStackTrace();
-          fail();
+        } else {
+          testSucceed = true;
         }
+        latch.countDown();
       }
     };
     user.signUpInBackground().subscribe(ObserverBuilder.buildSingleObserver(cb));
+    latch.await();
+    assertTrue(testSucceed);
 
     assertFalse(user.getSessionToken().isEmpty());
+
+    latch = new CountDownLatch(1);
+    testSucceed = false;
 
     // signup twice should fail
     AVUser newUser = new AVUser();
@@ -54,10 +77,16 @@ public class UserUnitTest extends TestCase {
     cb = new SignUpCallback() {
       @Override
       public void done(AVException e) {
-        assertEquals(AVException.USERNAME_TAKEN, e.getCode());
+        if (null != e) {
+          testSucceed = true;
+        }
+        latch.countDown();
       }
     };
     newUser.signUpInBackground().subscribe(ObserverBuilder.buildSingleObserver(cb));
+    latch.await();
+    assertTrue(testSucceed);
+
     login(user);
     currentUser(user);
 //    currentUserWithRelation(user);
@@ -72,16 +101,23 @@ public class UserUnitTest extends TestCase {
     assertEquals(cloudUser.getSessionToken(), user.getSessionToken());
     assertEquals(username, cloudUser.getUsername());
 
+    latch = new CountDownLatch(1);
+    testSucceed = false;
+
     LogInCallback cb = new LogInCallback<AVUser>() {
 
       @Override
       public void done(AVUser user, AVException e) {
         if (null != e) {
           e.printStackTrace();
+          testSucceed = true;
         }
+        latch.countDown();
       }
     };
     AVUser.logIn(username, password+1).subscribe(ObserverBuilder.buildSingleObserver(cb));
+    latch.await();
+    assertTrue(testSucceed);
   }
 
   public void currentUser(AVUser user) {

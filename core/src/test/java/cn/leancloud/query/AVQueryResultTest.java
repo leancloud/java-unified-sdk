@@ -59,6 +59,7 @@ public class AVQueryResultTest extends TestCase {
     tmp.setResults(tt);
     String jsonOutput = JSON.toJSONString(tmp);
     System.out.println("first output: " + jsonOutput);
+    jsonOutput = jsonOutput.replaceAll("\"@type\":\\s*\"cn.leancloud.[A-Za-z\\.]+\",", "");
 
     AVQueryResult tmp2 = JSON.parseObject(jsonOutput, AVQueryResult.class);
     System.out.println("dummy count: " + tmp2.getCount());

@@ -9,7 +9,12 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.util.concurrent.CountDownLatch;
+
 public class AVCloudQueryTest extends TestCase {
+  private boolean testSucceed = false;
+  private CountDownLatch latch = null;
+
   @AVClassName("Student")
   static class Student extends AVObject {
     public String getContent() {
@@ -30,7 +35,10 @@ public class AVCloudQueryTest extends TestCase {
     return new TestSuite(AVCloudQueryTest.class);
   }
 
-  public void testQueryAVObject() {
+  public void testQueryAVObject() throws Exception {
+    testSucceed = false;
+    latch = new CountDownLatch(1);
+
     String cql = "select * from Post";
     AVCloudQuery.executeInBackground(cql, AVObject.class).subscribe(new Observer<AVCloudQueryResult>() {
       public void onSubscribe(Disposable disposable) {
@@ -41,18 +49,25 @@ public class AVCloudQueryTest extends TestCase {
         for (AVObject u: avCloudQueryResult.getResults()) {
           System.out.println(u.toString());
         }
+        testSucceed = true;
+        latch.countDown();
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
-  public void testQueryAVUser() {
+  public void testQueryAVUser() throws Exception {
+    testSucceed = false;
+    latch = new CountDownLatch(1);
+
     String cql = "select * from _User";
     AVCloudQuery.executeInBackground(cql, AVUser.class).subscribe(new Observer<AVCloudQueryResult>() {
       public void onSubscribe(Disposable disposable) {
@@ -63,19 +78,26 @@ public class AVCloudQueryTest extends TestCase {
         for (AVObject u: avCloudQueryResult.getResults()) {
           System.out.println(u.toString());
         }
+        testSucceed = true;
+        latch.countDown();
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testQuerySubclass() {
+  public void testQuerySubclass() throws  Exception {
+    testSucceed = false;
+    latch = new CountDownLatch(1);
+
     String cql = "select * from Student";
     AVCloudQuery.executeInBackground(cql, Student.class).subscribe(new Observer<AVCloudQueryResult>() {
       public void onSubscribe(Disposable disposable) {
@@ -86,15 +108,19 @@ public class AVCloudQueryTest extends TestCase {
         for (AVObject u: avCloudQueryResult.getResults()) {
           System.out.println(u.toString());
         }
+        testSucceed = true;
+        latch.countDown();
       }
 
       public void onError(Throwable throwable) {
-        fail();
+        latch.countDown();
       }
 
       public void onComplete() {
 
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
   }
 }

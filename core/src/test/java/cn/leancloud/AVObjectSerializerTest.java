@@ -134,7 +134,7 @@ public class AVObjectSerializerTest extends TestCase {
 
     AVObject s = AVObject.createWithoutData(CLASSNAME_STUDENT, studentId);
     s.refresh();
-    AVObject newV = JSON.parseObject(s.toJSONString(), AVObject.class);
+    AVObject newV = AVObject.parseAVObject(s.toJSONString());
     assertTrue((null != newV) && newV.getObjectId().length() > 0);
     AVObject newS = AVObject.parseAVObject(s.toJSONString());
     assertTrue((null != newS) && newS.getObjectId().length() > 0);

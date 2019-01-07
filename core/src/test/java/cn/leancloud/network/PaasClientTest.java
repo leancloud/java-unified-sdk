@@ -19,7 +19,11 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import io.reactivex.Observer;
 
+import java.util.concurrent.CountDownLatch;
+
 public class PaasClientTest extends TestCase {
+  private CountDownLatch latch = null;
+  private boolean testSucceed = false;
   public PaasClientTest(String testName) {
     super(testName);
   }
@@ -30,63 +34,64 @@ public class PaasClientTest extends TestCase {
   @Override
   protected void setUp() throws Exception {
     Configure.initializeRuntime();
+    latch = new CountDownLatch(1);
+    testSucceed = false;
   }
 
   @Override
   protected void tearDown() throws Exception {
   }
 
-  public void testCurrentTimeStamp() {
-    try {
-      StorageClient storageClient = PaasClient.getStorageClient();
-      storageClient.getServerTime().subscribe(new Observer<AVDate>() {
-        public void onSubscribe(Disposable disposable) {
-        }
+  public void testCurrentTimeStamp() throws Exception{
 
-        public void onNext(AVDate avDate) {
-          System.out.println(avDate);
-        }
+    StorageClient storageClient = PaasClient.getStorageClient();
+    storageClient.getServerTime().subscribe(new Observer<AVDate>() {
+      public void onSubscribe(Disposable disposable) {
+      }
 
-        public void onError(Throwable throwable) {
-          System.out.println("failed! cause: " + throwable);
-          fail();
-        }
+      public void onNext(AVDate avDate) {
+        System.out.println(avDate);
+        testSucceed = true;
+        latch.countDown();
+      }
 
-        public void onComplete() {
+      public void onError(Throwable throwable) {
+        System.out.println("failed! cause: " + throwable);
+        latch.countDown();
+      }
 
-        }
-      });
+      public void onComplete() {
 
-    } catch (Exception ex) {
-      fail(ex.getMessage());
-    }
+      }
+    });
+
+    latch.await();
+    assertTrue(testSucceed);
   }
 
-  public void testFetchOneObject() {
-    try {
+  public void testFetchOneObject() throws Exception{
+
       StorageClient storageClient = PaasClient.getStorageClient();
       GetCallback callback = new GetCallback() {
         @Override
         public void done(AVObject object, AVException e) {
           if (null != e) {
-            fail();
+
           } else {
+            testSucceed = (null != object);
             System.out.println("response is:" + object.toString());
-            assertNotNull(object);
-            System.out.println(JSON.toJSONString(object));
           }
+          latch.countDown();
         }
       };
       storageClient.fetchObject("Student", "5a7a4ac8128fe1003768d2b1", null)
               .subscribe(ObserverBuilder.buildSingleObserver(callback));
-      Thread.sleep(2000);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
+      latch.await();
+      assertTrue(testSucceed);
   }
 
-  public void testCreateUploadToken() {
-    try {
+  public void testCreateUploadToken() throws Exception {
+
       JSONObject fileObject = new JSONObject();
       StorageClient storageClient = PaasClient.getStorageClient();
       storageClient.newUploadToken(fileObject).subscribe(new Observer<FileUploadToken>() {
@@ -96,18 +101,20 @@ public class PaasClientTest extends TestCase {
 
         public void onError(Throwable throwable) {
           System.out.println("failed! cause: " + throwable);
+          testSucceed = true;
+          latch.countDown();
         }
 
         public void onNext(FileUploadToken fileUploadToken) {
           System.out.println(fileUploadToken);
+
+          latch.countDown();
         }
         public void onSubscribe(Disposable disposable) {
           ;
         }
       });
-      Thread.sleep(2000);
-    } catch (Exception ex) {
-      fail(ex.getMessage());
-    }
+      latch.await();
+      assertTrue(testSucceed);
   }
 }
