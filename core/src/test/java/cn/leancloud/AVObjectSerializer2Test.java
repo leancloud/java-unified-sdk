@@ -66,6 +66,13 @@ public class AVObjectSerializer2Test extends TestCase {
     assertTrue(null != obj);
   }
 
+  public void testDeserializedWithOldVersionStatus() throws Exception {
+    String json = "{\"@type\":\"com.avos.avoscloud.AVStatus\",\"objectId\":\"5b4f1e0dfe88c200357fda80\",\"updatedAt\":\"2018-12-25T15:18:51.574Z\",\"createdAt\":\"2018-07-18T11:01:33.931Z\",\"className\":\"_Status\",\"dataMap\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"update\":\"更新至201话\"},\"inboxType\":\"default\", \"messageId\":\"pp-guiding bottom-fixed no-close#c\",\"source\":\"\"}";
+    AVStatus status = (AVStatus) AVObject.parseAVObject(json);
+    assertTrue(null != status);
+    System.out.println(status);
+  }
+
   public void testDeserializAVObject() throws Exception {
     String json = "{ \"@type\":\"com.avos.avoscloud.AVInstallation\",\"objectId\":\"0qYaOiU08hqm8bgpDk4CrTXXBs1NPtSs\",\"updatedAt\":null,\"createdAt\":\"2018-12-28T03:16:19.239Z\",\"className\":\"_Installation\",\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"deviceType\":\"android\",\"timeZone\":\"Asia/Shanghai\",\"installationId\":\"fd6605e9a1679d355457ad5c37fc99b3\"}}";
     AVInstallation installation = (AVInstallation) AVObject.parseAVObject(json);
