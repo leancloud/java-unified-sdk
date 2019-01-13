@@ -91,6 +91,7 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
         objectMap.remove(KEY_SERVERDATA);
         objectMap.putAll(serverData);
       }
+      objectMap.remove("operationQueue");
       serverJson = objectMap;
     } else {
       // leancloud server response.

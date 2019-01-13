@@ -992,6 +992,8 @@ public class AVObject {
     objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVRole\",", "\"@type\":\"cn.leancloud.AVRole\",");
     objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVFile\",", "\"@type\":\"cn.leancloud.AVFile\",");
 
+    objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.ops.[A-Za-z]+Op\",", "");
+
     return JSON.parseObject(objectString, AVObject.class, Feature.SupportAutoType);
   }
 
