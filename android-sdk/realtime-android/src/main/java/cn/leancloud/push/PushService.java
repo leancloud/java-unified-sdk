@@ -286,6 +286,18 @@ public class PushService extends Service {
   }
 
   /**
+   * Start Service explicitly.
+   * In generally, you don't need to call this method to start service manually.
+   * Only for LiveQuery, while you don't use LeanPush and LeanMessage, it is mandatory to call this method
+   * within Application#onCreate, otherwise you will encounter issue on `cn.leancloud.websocket.AVStandardWebSocketClient.send` invocation.
+   *
+   * @param context context
+   */
+  public static void startIfRequired(android.content.Context context) {
+    startServiceIfRequired(context, null);
+  }
+
+  /**
    * Provides a default Activity class to handle pushes. Setting a default allows your program to
    * handle pushes that aren't registered with a subscribe call. This can happen when your
    * application changes its subscriptions directly through the AVInstallation or via push-to-query.
