@@ -45,6 +45,7 @@ public class AVUser extends AVObject {
   private static final String ILLEGALARGUMENT_MSG_FORMAT = "illegal parameter. %s must not null/empty.";
 
   public static final String CLASS_NAME = "_User";
+  private static Class<? extends AVUser> subClazz = null;
 
   public enum SNS_PLATFORM {
     FACEBOOK("facebook"), TWITTER("twitter"), QQ("qq"), WEIBO("weibo"), WECHAT("weixin");
@@ -217,7 +218,7 @@ public class AVUser extends AVObject {
    * @return
    */
   public static AVUser signUpOrLoginByMobilePhone(String mobilePhoneNumber, String smsCode) {
-    return signUpOrLoginByMobilePhone(mobilePhoneNumber, smsCode, AVUser.class);
+    return signUpOrLoginByMobilePhone(mobilePhoneNumber, smsCode, internalUserClazz());
   }
 
   /**
@@ -238,8 +239,8 @@ public class AVUser extends AVObject {
    * @param smsCode
    * @return
    */
-  public static Observable<AVUser> signUpOrLoginByMobilePhoneInBackground(String mobilePhoneNumber, String smsCode) {
-    return signUpOrLoginByMobilePhoneInBackground(mobilePhoneNumber, smsCode, AVUser.class);
+  public static Observable<? extends AVUser> signUpOrLoginByMobilePhoneInBackground(String mobilePhoneNumber, String smsCode) {
+    return signUpOrLoginByMobilePhoneInBackground(mobilePhoneNumber, smsCode, internalUserClazz());
   }
 
   /**
@@ -273,11 +274,11 @@ public class AVUser extends AVObject {
    * @param password
    * @return
    */
-  public static Observable<AVUser> logIn(String username, String password) {
-    return logIn(username, password, AVUser.class);
+  public static Observable<? extends AVUser> logIn(String username, String password) {
+    return logIn(username, password, internalUserClazz());
   }
 
-  public static Observable<AVUser> logInAnonymously() {
+  public static Observable<? extends AVUser> logInAnonymously() {
     String anonymousId = UUID.randomUUID().toString().toLowerCase();
     Map<String, Object> param = new HashMap<>();
     param.put("id", anonymousId);
@@ -299,8 +300,8 @@ public class AVUser extends AVObject {
     return PaasClient.getStorageClient().logIn(data, clazz);
   }
 
-  public static Observable<AVUser> loginByMobilePhoneNumber(String mobile, String password) {
-    return loginByMobilePhoneNumber(mobile, password, AVUser.class);
+  public static Observable<? extends AVUser> loginByMobilePhoneNumber(String mobile, String password) {
+    return loginByMobilePhoneNumber(mobile, password, internalUserClazz());
   }
 
   public static <T extends AVUser> Observable<T> loginByMobilePhoneNumber(String mobile, String password, final Class<T> clazz) {
@@ -309,8 +310,8 @@ public class AVUser extends AVObject {
     return PaasClient.getStorageClient().logIn(data, clazz);
   }
 
-  public static Observable<AVUser> loginBySMSCode(String mobile, String smsCode) {
-    return loginBySMSCode(mobile, smsCode, AVUser.class);
+  public static Observable<? extends AVUser> loginBySMSCode(String mobile, String smsCode) {
+    return loginBySMSCode(mobile, smsCode, internalUserClazz());
   }
 
   public static <T extends AVUser> Observable<T> loginBySMSCode(String mobile, String smsCode, Class<T> clazz) {
@@ -366,13 +367,13 @@ public class AVUser extends AVObject {
     return map;
   }
 
-  public static Observable<AVUser> loginWithAuthData(final Map<String, Object> authData, final String platform) {
-    return loginWithAuthData(AVUser.class, authData, platform);
+  public static Observable<? extends AVUser> loginWithAuthData(final Map<String, Object> authData, final String platform) {
+    return loginWithAuthData(internalUserClazz(), authData, platform);
   }
 
-  public static Observable<AVUser> loginWithAuthData(final Map<String, Object> authData, final String platform,
+  public static Observable<? extends AVUser> loginWithAuthData(final Map<String, Object> authData, final String platform,
                                                                    final String unionId, final String unionIdPlatform, final boolean asMainAccount) {
-    return loginWithAuthData(AVUser.class, authData, platform, unionId, unionIdPlatform, asMainAccount);
+    return loginWithAuthData(internalUserClazz(), authData, platform, unionId, unionIdPlatform, asMainAccount);
   }
 
   public static <T extends AVUser> Observable<T> loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData, final String platform) {
@@ -542,8 +543,8 @@ public class AVUser extends AVObject {
     return PaasClient.getStorageClient().refreshSessionToken(this);
   }
 
-  public static Observable<AVUser> becomeWithSessionTokenInBackground(String sessionToken) {
-    return becomeWithSessionTokenInBackground(sessionToken, AVUser.class);
+  public static Observable<? extends AVUser> becomeWithSessionTokenInBackground(String sessionToken) {
+    return becomeWithSessionTokenInBackground(sessionToken, internalUserClazz());
   }
 
   public static <T extends AVUser> Observable<T> becomeWithSessionTokenInBackground(String sessionToken, Class<T> clazz) {
@@ -561,8 +562,8 @@ public class AVUser extends AVObject {
     return new AVQuery<T>(CLASS_NAME, clazz);
   }
 
-  public static AVQuery<AVUser> getQuery() {
-    return getQuery(AVUser.class);
+  public static AVQuery<? extends AVUser> getQuery() {
+    return getQuery(internalUserClazz());
   }
 
   public Observable<List<AVRole>> getRolesInBackground() {
@@ -617,7 +618,7 @@ public class AVUser extends AVObject {
   }
 
   public static AVUser getCurrentUser() {
-    return getCurrentUser(AVUser.class);
+    return getCurrentUser(internalUserClazz());
   }
 
   public static <T extends AVUser> T getCurrentUser(Class<T> userClass) {
@@ -742,6 +743,18 @@ public class AVUser extends AVObject {
     query.whereEqualTo("user", AVUser.createWithoutData(CLASS_NAME, userObjectId));
     query.setFriendshipTag("followee");
     return query;
+  }
+
+  /**
+   *
+   * 通过设置此方法，所有关联对象中的AVUser对象都会被强转成注册的AVUser子类对象
+   */
+  public static void alwaysUseSubUserClass(Class<? extends AVUser> clazz) {
+    AVUser.registerSubclass(clazz);
+    subClazz = clazz;
+  }
+  private static Class internalUserClazz() {
+    return subClazz == null ? AVUser.class: subClazz;
   }
 
   /**

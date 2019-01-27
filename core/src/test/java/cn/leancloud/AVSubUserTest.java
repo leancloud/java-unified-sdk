@@ -1,6 +1,5 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observer;
@@ -12,15 +11,16 @@ import junit.framework.TestSuite;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-public class AVUserTest extends TestCase {
+public class AVSubUserTest extends TestCase {
   private boolean operationSucceed = false;
-  public AVUserTest(String name) {
+  public AVSubUserTest(String name) {
     super(name);
+    AVUser.alwaysUseSubUserClass(SubUser.class);
     Configure.initializeRuntime();
   }
 
   public static Test suite() {
-    return new TestSuite(AVUserTest.class);
+    return new TestSuite(AVSubUserTest.class);
   }
 
   @Override
@@ -34,7 +34,7 @@ public class AVUserTest extends TestCase {
   }
 
   public void testSingupWithEmail() throws Exception {
-    AVUser user = new AVUser();
+    SubUser user = new SubUser();
     user.setEmail("jfeng@test.com");
     user.setUsername("jfeng");
     user.setPassword("FER$@$@#Ffwe");
@@ -75,6 +75,7 @@ public class AVUserTest extends TestCase {
         System.out.println("onNext. result=" + JSON.toJSONString(avUser, ObjectValueFilter.instance,
                 SerializerFeature.WriteClassName,
                 SerializerFeature.DisableCircularReferenceDetect));
+        operationSucceed = avUser instanceof SubUser;
 
         AVUser currentUser = AVUser.getCurrentUser();
         System.out.println("currentUser. result=" + JSON.toJSONString(currentUser, ObjectValueFilter.instance,
@@ -82,7 +83,7 @@ public class AVUserTest extends TestCase {
                 SerializerFeature.DisableCircularReferenceDetect));
         System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
-        operationSucceed = true;
+        operationSucceed = operationSucceed & (currentUser instanceof SubUser);
         latch.countDown();
       }
 
@@ -109,7 +110,7 @@ public class AVUserTest extends TestCase {
       @Override
       public void onNext(AVUser avUser) {
         System.out.println("onNext. result=" + avUser.toString());
-        operationSucceed = true;
+        operationSucceed = avUser instanceof SubUser;
         latch.countDown();
       }
 
@@ -125,76 +126,19 @@ public class AVUserTest extends TestCase {
     });
     latch.await();
     assertTrue(operationSucceed);
-  }
-
-  public void testDisassociateAnonymousLogin() throws Exception {
-    final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
-      @Override
-      public void onSubscribe(Disposable disposable) {
-
-      }
-
-      @Override
-      public void onNext(AVUser avUser) {
-        System.out.println("logInAnonymously onNext. result=" + avUser.toString());
-        avUser.dissociateWithAuthData("anonymous").subscribe(new Observer<AVUser>() {
-          @Override
-          public void onSubscribe(Disposable disposable) {
-
-          }
-
-          @Override
-          public void onNext(AVUser avUser) {
-            System.out.println("dissociateWithAuthData onNext. result=" + avUser.toString());
-            operationSucceed = true;
-            latch.countDown();
-          }
-
-          @Override
-          public void onError(Throwable throwable) {
-            System.out.println("failed to dissocaite auth data. cause: " + throwable.getMessage());
-            latch.countDown();
-          }
-
-          @Override
-          public void onComplete() {
-
-          }
-        });
-      }
-
-      @Override
-      public void onError(Throwable throwable) {
-        latch.countDown();
-      }
-
-      @Override
-      public void onComplete() {
-
-      }
-    });
-    latch.await();
-    assertTrue(operationSucceed);
-  }
-
-  public void testCurrentUser() throws Exception {
-    AVUser.disableAutomaticUser();
-    AVUser currentUser = AVUser.getCurrentUser();
-    assertNotNull(currentUser);
   }
 
   public void testQueryUser() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVQuery<AVUser> query = new AVQuery<AVUser>(AVUser.CLASS_NAME);
-    query.findInBackground().subscribe(new Observer<List<AVUser>>() {
+    AVQuery<? extends AVUser> query = AVUser.getQuery();
+    query.findInBackground().subscribe(new Observer<List<? extends AVUser>>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(List<AVUser> avUsers) {
+      public void onNext(List<? extends AVUser> avUsers) {
         operationSucceed = true;
         latch.countDown();
       }
@@ -241,16 +185,14 @@ public class AVUserTest extends TestCase {
   }
 
   public void testCurrentUserWithCached() throws Exception {
-    ;
-  }
-
-  public void testCurrentUserWithSubclass() throws Exception {
-    ;
+    AVUser.changeCurrentUser(null, true);
+    AVUser current = AVUser.getCurrentUser();
+    assertNull(current);
   }
 
   public void testCheckAuthenticatedFalse() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser u = new AVUser();
+    SubUser u = new SubUser();
     u.setEmail("jfeng@test.com");
     u.setUsername("jfeng");
     u.setPassword("FER$@$@#Ffwe");
@@ -276,6 +218,7 @@ public class AVUserTest extends TestCase {
     latch.await();
     assertTrue(!operationSucceed);
   }
+
   public void testCheckAuthenticatedTrue() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {

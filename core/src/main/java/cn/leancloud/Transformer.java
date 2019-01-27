@@ -52,12 +52,18 @@ public class Transformer {
   }
 
   public static <T extends AVObject> T transform(AVObject rawObj, String className) {
+    if (null == rawObj) {
+      return null;
+    }
     AVObject result = objectFromClassName(className);
     result.resetByRawData(rawObj);
     return (T) result;
   }
 
   public static <T extends AVObject> T transform(AVObject rawObj, Class<T> clazz) {
+    if (null == rawObj) {
+      return null;
+    }
     AVObject result = null;
     if (subClassesReverseMAP.containsKey(clazz)) {
       try {
