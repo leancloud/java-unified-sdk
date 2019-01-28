@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "28.0.2"
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         applicationId "cn.leancloud.sample"
@@ -33,6 +33,11 @@ android {
         exclude 'META-INF/NOTICE.txt'
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     lintOptions {
         abortOnError false
     }
@@ -41,11 +46,11 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    compile project(':storage-android')
+    implementation project(':storage-android')
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 
-    implementation('cn.leancloud:storage-core:5.0.8') {
+    implementation('cn.leancloud:storage-core:5.0.9') {
         exclude group: 'com.alibaba', module: 'fastjson'
         exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
     }

@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "28.0.2"
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         minSdkVersion 14
@@ -22,8 +22,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -33,7 +33,7 @@ android.libraryVariants.all { variant ->
         description "Generates Javadoc for $variant.name."
         source = variant.javaCompile.source
         ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
-        options.links("http://docs.oracle.com/javase/7/docs/api/");
+        options.links("http://docs.oracle.com/javase/8/docs/api/");
         options.links("http://d.android.com/reference/");
         exclude '**/BuildConfig.java'
         exclude '**/R.java'
@@ -53,9 +53,9 @@ android.libraryVariants.all { variant ->
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile project(':huawei-hmsagent')
-    compile project(':realtime-android')
-    compile project(':storage-android')
+    implementation project(':huawei-hmsagent')
+    implementation project(':realtime-android')
+    implementation project(':storage-android')
 
     implementation('cn.leancloud:realtime-core:5.0.8'){
         exclude group: 'com.alibaba', module: 'fastjson'
