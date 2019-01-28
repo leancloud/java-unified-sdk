@@ -562,8 +562,8 @@ public class AVUser extends AVObject {
     return new AVQuery<T>(CLASS_NAME, clazz);
   }
 
-  public static AVQuery<? extends AVUser> getQuery() {
-    return getQuery(internalUserClazz());
+  public static AVQuery<AVUser> getQuery() {
+    return getQuery(AVUser.class);
   }
 
   public Observable<List<AVRole>> getRolesInBackground() {

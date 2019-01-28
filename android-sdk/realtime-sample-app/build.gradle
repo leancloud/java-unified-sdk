@@ -47,11 +47,11 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation project(":realtime-android")
+//    implementation project(":realtime-android")
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 
-    implementation('cn.leancloud:realtime-core:5.0.9'){
+    implementation('cn.leancloud:realtime-android:5.0.8'){
         exclude group: 'com.alibaba', module: 'fastjson'
         exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
     }
