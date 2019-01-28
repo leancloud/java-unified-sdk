@@ -5,6 +5,7 @@ import cn.leancloud.callback.*;
 import cn.leancloud.AVException;
 import cn.leancloud.AVObject;
 import cn.leancloud.types.AVNull;
+import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -85,6 +86,9 @@ public class ObserverBuilder {
   }
   public static SingleObjectObserver<AVNull> buildSingleObserver(RequestMobileCodeCallback callback) {
     return new SingleObjectObserver<AVNull>(callback);
+  }
+  public static SingleObjectObserver<JSONObject> buildSingleObserver(FollowersAndFolloweesCallback callback) {
+    return new SingleObjectObserver<>(callback);
   }
   public static SingleObjectObserver<AVNull> buildSingleObserver(RequestPasswordResetCallback callback) {
     return new SingleObjectObserver<AVNull>(callback);

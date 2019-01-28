@@ -172,6 +172,15 @@ public interface APIService {
   @DELETE("/1.1/users/{followee}/friendship/{follower}")
   Observable<JSONObject> unfollowUser(@Path("followee") String followee, @Path("follower") String follower);
 
+  @GET("/1.1/users/{userId}/followers")
+  Observable<JSONObject> getFollowers(@Path("userId") String userId);
+
+  @GET("/1.1/users/{userId}/followees")
+  Observable<JSONObject> getFollowees(@Path("userId") String userId);
+
+  @GET("/1.1/users/{userId}/followersAndFollowees")
+  Observable<JSONObject> getFollowersAndFollowees(@Path("userId") String userId);
+
   /**
    * Status API
    */

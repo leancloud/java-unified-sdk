@@ -1028,6 +1028,21 @@ public class AVObject {
     }
   }
 
+  protected static <T extends AVObject> T cast(AVObject object, Class<T> clazz) throws Exception {
+    if (clazz.getClass().isAssignableFrom(object.getClass())) {
+      return (T) object;
+    } else {
+      T newItem = clazz.newInstance();
+      newItem.className = object.className;
+      newItem.objectId = object.objectId;
+      newItem.serverData.putAll(object.serverData);
+      newItem.operations.putAll(object.operations);
+      newItem.acl = object.acl;
+      newItem.endpointClassName = object.endpointClassName;
+      return newItem;
+    }
+  }
+
   @Override
   public String toString() {
     return toJSONString();

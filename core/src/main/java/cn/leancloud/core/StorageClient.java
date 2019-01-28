@@ -447,6 +447,10 @@ public class StorageClient {
     return wrappObservable(apiService.unfollowUser(followee, follower));
   }
 
+  public Observable<JSONObject> getFollowersAndFollowees(String userId) {
+    return wrappObservable(apiService.getFollowersAndFollowees(userId));
+  }
+
   public Observable<AVNull> deleteStatus(String statusId) {
     return wrappObservable(apiService.deleteStatus(statusId));
   }

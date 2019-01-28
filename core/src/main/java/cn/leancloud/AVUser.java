@@ -2,11 +2,16 @@ package cn.leancloud;
 
 import cn.leancloud.annotation.AVClassName;
 import cn.leancloud.cache.PersistenceUtil;
+import cn.leancloud.callback.AVCallback;
+import cn.leancloud.callback.FollowersAndFolloweesCallback;
+import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.ops.DeleteOperation;
 import cn.leancloud.ops.RemoveOperation;
+import cn.leancloud.ops.Utils;
 import cn.leancloud.types.AVNull;
+import cn.leancloud.utils.ErrorUtils;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -14,14 +19,13 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 // TODO: need transfer Anonymous User/Common User
 
@@ -45,6 +49,9 @@ public class AVUser extends AVObject {
   private static final String ILLEGALARGUMENT_MSG_FORMAT = "illegal parameter. %s must not null/empty.";
 
   public static final String CLASS_NAME = "_User";
+  public static final String FOLLOWER_TAG = "follower";
+  public static final String FOLLOWEE_TAG = "followee";
+
   private static Class<? extends AVUser> subClazz = null;
 
   public enum SNS_PLATFORM {
@@ -707,18 +714,40 @@ public class AVUser extends AVObject {
     return PaasClient.getStorageClient().verifyMobilePhone(verifyCode);
   }
 
+  private boolean checkUserAuthentication(final AVCallback callback) {
+    if (!this.isAuthenticated() || StringUtil.isEmpty(getObjectId())) {
+      if (callback != null) {
+        callback.internalDone(ErrorUtils.createException(AVException.SESSION_MISSING,
+                "No valid session token, make sure signUp or login has been called."));
+      }
+      return false;
+    }
+    return true;
+  }
+
   /**
    * follow-relative opersations
    */
   public Observable<JSONObject> followInBackground(String userObjectId) {
-    return this.followInBackground(userObjectId, null);
+    return this.followInBackground(userObjectId, new JSONObject());
   }
+
   public Observable<JSONObject> followInBackground(String userObjectId, Map<String, Object> attributes) {
+    if (!checkUserAuthentication(null)) {
+      return Observable.error(ErrorUtils.createException(AVException.SESSION_MISSING,
+              "No valid session token, make sure signUp or login has been called."));
+    }
     return PaasClient.getStorageClient().followUser(getObjectId(), userObjectId, attributes);
   }
+
   public Observable<JSONObject> unfollowInBackground(String userObjectId) {
+    if (!checkUserAuthentication(null)) {
+      return Observable.error(ErrorUtils.createException(AVException.SESSION_MISSING,
+              "No valid session token, make sure signUp or login has been called."));
+    }
     return PaasClient.getStorageClient().unfollowUser(getObjectId(), userObjectId);
   }
+
   public <T extends AVUser> AVQuery<T> followerQuery(Class<T> clazz) {
     return AVUser.followerQuery(getObjectId(), clazz);
   }
@@ -732,7 +761,7 @@ public class AVUser extends AVObject {
     }
     AVFellowshipQuery query = new AVFellowshipQuery<T>("_Follower", clazz);
     query.whereEqualTo("user", AVUser.createWithoutData(CLASS_NAME, userObjectId));
-    query.setFriendshipTag("follower");
+    query.setFriendshipTag(FOLLOWER_TAG);
     return query;
   }
   public static <T extends AVUser> AVQuery<T> followeeQuery(final String userObjectId, Class<T> clazz) {
@@ -741,8 +770,68 @@ public class AVUser extends AVObject {
     }
     AVFellowshipQuery query = new AVFellowshipQuery<T>("_Followee", clazz);
     query.whereEqualTo("user", AVUser.createWithoutData(CLASS_NAME, userObjectId));
-    query.setFriendshipTag("followee");
+    query.setFriendshipTag(FOLLOWEE_TAG);
     return query;
+  }
+
+  private void processResultList(List<JSONObject> results, List<AVUser> list, String tag) {
+    for (JSONObject item : results) {
+      if (null != item) {
+        AVUser user = (AVUser) Utils.parseObjectFromMap((Map<String, Object>)item.get(tag));
+        list.add(user);
+      }
+    }
+  }
+  private Map<String, List<AVUser>> parseFollowerAndFollowee(JSONObject jsonObject) {
+    Map<String, List<AVUser>> map = new HashMap<String, List<AVUser>>();
+    if (null != jsonObject) {
+      List<JSONObject> followers = (List<JSONObject>)jsonObject.get("followers");
+      if ( null != followers) {
+        List<AVUser> followerUsers = new LinkedList<AVUser>();
+        processResultList(followers, followerUsers, FOLLOWER_TAG);
+        map.put(FOLLOWER_TAG, followerUsers);
+      }
+      List<JSONObject> followees = (List<JSONObject>)jsonObject.get("followees");
+      if (null != followees) {
+        List<AVUser> followeeUsers = new LinkedList<AVUser>();
+        processResultList(followees, followeeUsers, FOLLOWEE_TAG);
+        map.put(FOLLOWEE_TAG, followeeUsers);
+      }
+    }
+    return map;
+  }
+  public void getFollowersAndFolloweesInBackground(final FollowersAndFolloweesCallback callback) {
+    if (null == callback) {
+      return;
+    }
+    if (!checkUserAuthentication(callback)) {
+      return;
+    }
+    PaasClient.getStorageClient().getFollowersAndFollowees(getObjectId()).subscribe(new Observer<JSONObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(JSONObject jsonObject) {
+        if (null == jsonObject) {
+          callback.done(null, null);
+        } else {
+          Map<String, List<AVUser>> result = parseFollowerAndFollowee(jsonObject);
+          callback.done(result, null);
+        }
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        callback.done(null, new AVException(throwable));
+      }
+
+      @Override
+      public void onComplete() {
+      }
+    });
   }
 
   /**
@@ -755,6 +844,19 @@ public class AVUser extends AVObject {
   }
   private static Class internalUserClazz() {
     return subClazz == null ? AVUser.class: subClazz;
+  }
+
+  /**
+   * 通过这个方法可以将AVUser对象强转为其子类对象
+   */
+  public static <T extends AVUser> T cast(AVUser user, Class<T> clazz) {
+    try {
+      T newUser = AVObject.cast(user, clazz);
+      return newUser;
+    } catch (Exception e) {
+
+    }
+    return null;
   }
 
   /**
