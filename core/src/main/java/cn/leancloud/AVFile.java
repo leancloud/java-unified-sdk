@@ -460,34 +460,11 @@ public final class AVFile extends AVObject {
     if (!file.exists() || !file.isFile()) {
       throw new FileNotFoundException();
     }
-
-    AVFile avFile = new AVFile();
-    avFile.setName(name);
-    long fileSize = file.length();
-    String fileMD5 = "";
-    try {
-      InputStream is = PersistenceUtil.getInputStreamFromFile(file);
-      MD5 md5 = MD5.getInstance();
-      md5.prepare();
-      if (null != is) {
-        byte buf[] = new byte[(int)PersistenceUtil.MAX_FILE_BUF_SIZE];
-        int len;
-        while ((len = is.read(buf)) != -1) {
-          md5.update(buf, 0, len);
-        }
-        byte[] md5bytes = md5.digest();
-        fileMD5 = MD5.hexEncodeBytes(md5bytes);
-        is.close();
-      }
-    } catch (Exception ex) {
-      fileMD5 = "";
-    }
-    avFile.addMetaData("size", fileSize);
-    avFile.addMetaData(FILE_SUM_KEY, fileMD5);
-
+    AVFile avFile = new AVFile(name, file);
     AVUser currentUser = AVUser.getCurrentUser();
-    avFile.addMetaData("owner", currentUser != null ? currentUser.getObjectId() : "");
-    avFile.addMetaData(FILE_NAME_KEY, name);
+    if (null != currentUser && !StringUtil.isEmpty(currentUser.getObjectId())) {
+      avFile.addMetaData("owner", currentUser.getObjectId());
+    }
     return avFile;
   }
 }
