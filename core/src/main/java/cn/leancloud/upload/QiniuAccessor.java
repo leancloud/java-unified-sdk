@@ -51,9 +51,9 @@ class QiniuAccessor {
   private static AVLogger LOGGER = LogUtil.getLogger(QiniuAccessor.class);
 
   static final String QINIU_HOST = "http://upload.qiniu.com";
-  static final String QINIU_CREATE_BLOCK_EP = QINIU_HOST + "/mkblk/%d";
-  static final String QINIU_BRICK_UPLOAD_EP = QINIU_HOST + "/bput/%s/%d";
-  static final String QINIU_MKFILE_EP = QINIU_HOST + "/mkfile/%d/key/%s";
+  static final String QINIU_CREATE_BLOCK_EP = "%s/mkblk/%d";
+  static final String QINIU_BRICK_UPLOAD_EP = "%s/bput/%s/%d";
+  static final String QINIU_MKFILE_EP = "%s/mkfile/%d/key/%s";
 
   static final String HEAD_CONTENT_LENGTH = "Content-Length";
   static final String HEAD_CONTENT_TYPE = "Content-Type";
@@ -140,11 +140,15 @@ class QiniuAccessor {
   private OkHttpClient client;
   private String uploadToken;
   private String fileKey;
+  private String uploadUrl = QINIU_HOST;
 
-  QiniuAccessor(OkHttpClient client, String uploadToken, String fileKey) {
+  QiniuAccessor(OkHttpClient client, String uploadToken, String fileKey, String uploadUrl) {
     this.client = client;
     this.uploadToken = uploadToken;
     this.fileKey = fileKey;
+    if (!StringUtil.isEmpty(uploadUrl)) {
+      this.uploadUrl = uploadUrl;
+    }
   }
 
   private static <T> T parseQiniuResponse(Response resp, Class<T> clazz) throws Exception {
@@ -203,13 +207,14 @@ class QiniuAccessor {
                                                    final byte[] firstChunkData, int retry) {
     try {
 
-      String endPoint = String.format(QINIU_CREATE_BLOCK_EP, blockSize);
+      String endPoint = String.format(QINIU_CREATE_BLOCK_EP, this.uploadUrl, blockSize);
       Request.Builder builder = new Request.Builder();
       builder.url(endPoint);
       builder.addHeader(HEAD_CONTENT_TYPE, DEFAULT_CONTENT_TYPE);
       builder.addHeader(HEAD_CONTENT_LENGTH, String.valueOf(firstChunkSize));
       builder.addHeader(HEAD_AUTHORIZATION, "UpToken " + this.uploadToken);
 
+      LOGGER.d("createBlockInQiniu with uploadUrl: " + endPoint);
       RequestBody requestBody = RequestBody.create(MediaType.parse(DEFAULT_CONTENT_TYPE), firstChunkData, 0, firstChunkSize);
       builder = builder.post(requestBody);
 
@@ -261,12 +266,14 @@ class QiniuAccessor {
                                                      final byte[] currentChunkData,
                                                      int currentChunkSize, int retry) {
     try {
-      String endPoint = String.format(QINIU_BRICK_UPLOAD_EP, lastChunk.ctx, lastChunk.offset);
+      String endPoint = String.format(QINIU_BRICK_UPLOAD_EP, this.uploadUrl, lastChunk.ctx, lastChunk.offset);
       Request.Builder builder = new Request.Builder();
       builder.url(endPoint);
       builder.addHeader(HEAD_CONTENT_TYPE, DEFAULT_CONTENT_TYPE);
       builder.addHeader(HEAD_CONTENT_LENGTH, String.valueOf(currentChunkSize));
       builder.addHeader(HEAD_AUTHORIZATION, "UpToken " + this.uploadToken);
+
+      LOGGER.d("putFileBlocksToQiniu with uploadUrl: " + endPoint);
 
       RequestBody requestBody = RequestBody.create(MediaType.parse(DEFAULT_CONTENT_TYPE),
               currentChunkData, 0, currentChunkSize);
@@ -325,7 +332,7 @@ class QiniuAccessor {
   public QiniuMKFileResponseData makeFile(int fileTotalSize, List<String> uploadFileCtxs, int retry)
           throws Exception {
     try {
-      String endPoint = String.format(QINIU_MKFILE_EP, fileTotalSize,
+      String endPoint = String.format(QINIU_MKFILE_EP, this.uploadUrl, fileTotalSize,
               Base64.encodeToString(this.fileKey.getBytes(), Base64.URL_SAFE | Base64.NO_WRAP));
       final String joinedFileCtx = StringUtil.join(",", uploadFileCtxs);
       Request.Builder builder = new Request.Builder();
@@ -334,6 +341,7 @@ class QiniuAccessor {
       builder.addHeader(HEAD_CONTENT_LENGTH, String.valueOf(joinedFileCtx.length()));
       builder.addHeader(HEAD_AUTHORIZATION, "UpToken " + this.uploadToken);
 
+      LOGGER.d("makeFile to qiniu with uploadUrl: " + endPoint);
       builder = builder.post(RequestBody.create(MediaType.parse(TEXT_CONTENT_TYPE), joinedFileCtx));
       Response response = this.client.newCall(builder.build()).execute();
       return parseQiniuResponse(response, QiniuMKFileResponseData.class);

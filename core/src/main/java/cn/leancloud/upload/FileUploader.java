@@ -57,7 +57,7 @@ public class FileUploader extends HttpClientUploader {
       } else if (gProviderS3.equalsIgnoreCase(provider)) {
         return new S3Uploader(avFile, uploadUrl, progressCallback);
       } else {
-        return new QiniuSlicingUploader(avFile, token, progressCallback);
+        return new QiniuSlicingUploader(avFile, token, uploadUrl, progressCallback);
       }
     } else {
       logger.w("provider doesnot exist, cannot upload any file.");

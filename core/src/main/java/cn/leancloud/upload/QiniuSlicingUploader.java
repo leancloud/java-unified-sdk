@@ -26,11 +26,11 @@ class QiniuSlicingUploader extends HttpClientUploader {
   private String fileKey = null;
   private QiniuAccessor qiniuAccessor;
 
-  QiniuSlicingUploader(AVFile avFile, String token, ProgressCallback progressCallback) {
+  QiniuSlicingUploader(AVFile avFile, String token, String uploadUrl, ProgressCallback progressCallback) {
     super(avFile, progressCallback);
     this.token = token;
     this.fileKey = avFile.getKey();
-    this.qiniuAccessor = new QiniuAccessor(getOKHttpClient(), this.token, this.fileKey);
+    this.qiniuAccessor = new QiniuAccessor(getOKHttpClient(), this.token, this.fileKey, uploadUrl);
     LOGGER.d("Constructor with token=" + token + ", key=" + fileKey + ", accessor=" + qiniuAccessor);
   }
 
@@ -97,8 +97,7 @@ class QiniuSlicingUploader extends HttpClientUploader {
           LOGGER.d("finished to upload block(" + i + "), ctx=" + lastResponse.getCtx());
         } else {
           // error.
-          // FIXME: 2017/8/14 603 is hardcode.
-          return new AVException(603, "failed to upload file to qiniu.");
+          return new AVException(AVException.FILE_UPLOAD_FAILURE, "failed to upload file to qiniu.");
         }
       }
       QiniuAccessor.QiniuMKFileResponseData finalResponse = this.qiniuAccessor.makeFile(fileSize, uploadFileCtxs, DEFAULT_RETRY_TIMES);

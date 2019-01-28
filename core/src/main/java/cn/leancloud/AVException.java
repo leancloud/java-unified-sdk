@@ -235,7 +235,12 @@ public class AVException extends Exception {
   /**
    * Error code indicating the file checkSum value is not equals to original file
    */
-  public static final int FILE_DOWNLOAD_INCONSISTENT_FAILURE = 253;
+  public static final int FILE_DOWNLOAD_INCONSISTENT_FAILURE = 9301;
+
+  /**
+   * Error code indicating there is error whiling uploading AVFile.
+   */
+  public static final int FILE_UPLOAD_FAILURE = 9302;
 
   public static final int CIRCLE_REFERENCE = 100001;
   /**

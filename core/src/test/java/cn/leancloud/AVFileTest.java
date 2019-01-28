@@ -148,7 +148,7 @@ public class AVFileTest extends TestCase {
   }
 
   public void testUploader() throws Exception {
-    String contents = StringUtil.getRandomString(64);
+    String contents = StringUtil.getRandomString(640);
     AVFile file = new AVFile("test", contents.getBytes());
     Observable<AVFile> result = file.saveInBackground();
     result.subscribe(new Observer<AVFile>() {
