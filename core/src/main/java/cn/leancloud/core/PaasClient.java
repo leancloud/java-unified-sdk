@@ -33,6 +33,7 @@ public class PaasClient {
               .writeTimeout(10, TimeUnit.SECONDS)
               .addInterceptor(new RequestPaddingInterceptor())
               .addInterceptor(new LoggingInterceptor())
+//              .addInterceptor(new ErrorInterceptor())
               .dns(new DNSDetoxicant())
               .build();
     }

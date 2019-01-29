@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.callback.FollowersAndFolloweesCallback;
+import cn.leancloud.utils.ErrorUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -59,6 +60,7 @@ public class AVUserFollowshipTest extends TestCase {
 
       public void onError(Throwable throwable) {
         operationSucceed = true;
+        throwable.printStackTrace();
         latch.countDown();
       }
 

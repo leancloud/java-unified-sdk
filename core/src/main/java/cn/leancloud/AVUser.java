@@ -4,11 +4,8 @@ import cn.leancloud.annotation.AVClassName;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.callback.AVCallback;
 import cn.leancloud.callback.FollowersAndFolloweesCallback;
-import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
-import cn.leancloud.ops.DeleteOperation;
-import cn.leancloud.ops.RemoveOperation;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.ErrorUtils;
@@ -17,7 +14,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
@@ -727,7 +723,7 @@ public class AVUser extends AVObject {
   private boolean checkUserAuthentication(final AVCallback callback) {
     if (!this.isAuthenticated() || StringUtil.isEmpty(getObjectId())) {
       if (callback != null) {
-        callback.internalDone(ErrorUtils.createException(AVException.SESSION_MISSING,
+        callback.internalDone(ErrorUtils.propagateException(AVException.SESSION_MISSING,
                 "No valid session token, make sure signUp or login has been called."));
       }
       return false;
@@ -744,7 +740,7 @@ public class AVUser extends AVObject {
 
   public Observable<JSONObject> followInBackground(String userObjectId, Map<String, Object> attributes) {
     if (!checkUserAuthentication(null)) {
-      return Observable.error(ErrorUtils.createException(AVException.SESSION_MISSING,
+      return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
               "No valid session token, make sure signUp or login has been called."));
     }
     return PaasClient.getStorageClient().followUser(getObjectId(), userObjectId, attributes);
@@ -752,7 +748,7 @@ public class AVUser extends AVObject {
 
   public Observable<JSONObject> unfollowInBackground(String userObjectId) {
     if (!checkUserAuthentication(null)) {
-      return Observable.error(ErrorUtils.createException(AVException.SESSION_MISSING,
+      return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
               "No valid session token, make sure signUp or login has been called."));
     }
     return PaasClient.getStorageClient().unfollowUser(getObjectId(), userObjectId);

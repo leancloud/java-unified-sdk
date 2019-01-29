@@ -1,8 +1,11 @@
 package cn.leancloud.core;
 
 import cn.leancloud.service.PushService;
+import cn.leancloud.utils.ErrorUtils;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 
@@ -21,10 +24,10 @@ public class PushClient {
   }
 
   public Observable<JSONObject> sendPushRequest(Map<String, Object> param) {
-    return wrappObservable(service.sendPushRequest(new JSONObject(param)));
+    return wrapObservable(service.sendPushRequest(new JSONObject(param)));
   }
 
-  private Observable wrappObservable(Observable observable) {
+  private Observable wrapObservable(Observable observable) {
     if (null == observable) {
       return null;
     }
@@ -34,6 +37,12 @@ public class PushClient {
     if (null != defaultCreator) {
       observable = observable.observeOn(defaultCreator.create());
     }
+    observable = observable.onErrorResumeNext(new Function<Throwable, ObservableSource>() {
+      @Override
+      public ObservableSource apply(Throwable throwable) throws Exception {
+        return Observable.error(ErrorUtils.propagateException(throwable));
+      }
+    });
     return observable;
   }
 }

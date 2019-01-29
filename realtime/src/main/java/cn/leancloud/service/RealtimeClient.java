@@ -3,8 +3,10 @@ package cn.leancloud.service;
 import cn.leancloud.core.*;
 import cn.leancloud.im.Signature;
 import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
+import cn.leancloud.utils.ErrorUtils;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -54,7 +56,7 @@ public class RealtimeClient {
             });
   }
 
-  private Observable wrappObservable(Observable observable) {
+  private Observable wrapObservable(Observable observable) {
     if (null == observable) {
       return null;
     }
@@ -64,15 +66,21 @@ public class RealtimeClient {
     if (null != defaultCreator) {
       observable = observable.observeOn(defaultCreator.create());
     }
+    observable = observable.onErrorResumeNext(new Function<Throwable, ObservableSource>() {
+      @Override
+      public ObservableSource apply(Throwable throwable) throws Exception {
+        return Observable.error(ErrorUtils.propagateException(throwable));
+      }
+    });
     return observable;
   }
 
   public Observable<Signature> createSignature(Map<String, Object> params) {
-    return wrappObservable(service.createSignature(new JSONObject(params)));
+    return wrapObservable(service.createSignature(new JSONObject(params)));
   }
 
   public Observable<List<AVIMConversationMemberInfo>> queryMemberInfo(Map<String, String> query, String rtmSessionToken) {
-    return wrappObservable(service.queryMemberInfo(rtmSessionToken, query))
+    return wrapObservable(service.queryMemberInfo(rtmSessionToken, query))
             .map(new Function<Map<String, List<JSONObject>>, List<AVIMConversationMemberInfo>>() {
               @Override
               public List<AVIMConversationMemberInfo> apply(Map<String, List<JSONObject>> rawResult) throws Exception {
@@ -88,9 +96,9 @@ public class RealtimeClient {
   }
 
   public Observable<JSONObject> subscribeLiveQuery(Map<String, Object> params) {
-    return wrappObservable(service.subscribe(new JSONObject(params)));
+    return wrapObservable(service.subscribe(new JSONObject(params)));
   }
   public Observable<JSONObject> unsubscribeLiveQuery(Map<String, Object> params) {
-    return wrappObservable(service.unsubscribe(new JSONObject(params)));
+    return wrapObservable(service.unsubscribe(new JSONObject(params)));
   }
 }

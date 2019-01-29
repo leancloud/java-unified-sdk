@@ -11,14 +11,14 @@ import cn.leancloud.sms.AVCaptchaValidateResult;
 import cn.leancloud.types.AVDate;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.upload.FileUploadToken;
+import cn.leancloud.utils.ErrorUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Scheduler;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -49,7 +49,7 @@ public class StorageClient {
   }
 
   // TODO: need to change observable thread in case of AVFile.saveInBackground.
-  private Observable wrappObservable(Observable observable) {
+  private Observable wrapObservable(Observable observable) {
     if (null == observable) {
       return null;
     }
@@ -59,6 +59,12 @@ public class StorageClient {
     if (null != defaultCreator) {
       observable = observable.observeOn(defaultCreator.create());
     }
+    observable = observable.onErrorResumeNext(new Function<Throwable, ObservableSource>() {
+      @Override
+      public ObservableSource apply(Throwable throwable) throws Exception {
+        return Observable.error(ErrorUtils.propagateException(throwable));
+      }
+    });
     return observable;
   }
 
@@ -77,16 +83,16 @@ public class StorageClient {
   }
 
   public Observable<AVDate> getServerTime() {
-    Observable<AVDate> date = wrappObservable(apiService.currentTimeMillis());
+    Observable<AVDate> date = wrapObservable(apiService.currentTimeMillis());
     return date;
   }
 
   public Observable<? extends AVObject> fetchObject(final String className, String objectId, String includeKeys) {
     Observable<AVObject> object = null;
     if (StringUtil.isEmpty(includeKeys)) {
-      object = wrappObservable(apiService.fetchObject(className, objectId));
+      object = wrapObservable(apiService.fetchObject(className, objectId));
     } else {
-      object = wrappObservable(apiService.fetchObject(className, objectId, includeKeys));
+      object = wrapObservable(apiService.fetchObject(className, objectId, includeKeys));
     }
     if (null == object) {
       return object;
@@ -117,10 +123,10 @@ public class StorageClient {
     Observable<AVQueryResult> queryResult = null;
     switch (cachePolicy) {
       case CACHE_ONLY:
-        result = wrappObservable(QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, true));
+        result = wrapObservable(QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, true));
         break;
       case CACHE_ELSE_NETWORK:
-        result = wrappObservable(QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, false));
+        result = wrapObservable(QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, false));
         if (null != result) {
           result = result.onErrorReturn(new Function<Throwable, List<AVObject>>() {
             public List<AVObject> apply(Throwable o) throws Exception {
@@ -142,7 +148,7 @@ public class StorageClient {
         }
         break;
       case NETWORK_ELSE_CACHE:
-        queryResult =  wrappObservable(queryRemoteServer(className, query));
+        queryResult =  wrapObservable(queryRemoteServer(className, query));
         if (null != queryResult) {
           result = queryResult.map(new Function<AVQueryResult, List<AVObject>>() {
             public List<AVObject> apply(AVQueryResult o) throws Exception {
@@ -164,7 +170,7 @@ public class StorageClient {
         break;
       case IGNORE_CACHE:
       default:
-        queryResult = wrappObservable(queryRemoteServer(className, query));
+        queryResult = wrapObservable(queryRemoteServer(className, query));
         if (null != queryResult) {
           result = queryResult.map(new Function<AVQueryResult, List<AVObject>>() {
             public List<AVObject> apply(AVQueryResult o) throws Exception {
@@ -184,11 +190,11 @@ public class StorageClient {
   }
 
   public Observable<AVQueryResult> cloudQuery(Map<String, String> query) {
-    return wrappObservable(apiService.cloudQuery(query));
+    return wrapObservable(apiService.cloudQuery(query));
   }
 
   public Observable<Integer> queryCount(final String className, Map<String, String> query) {
-    Observable<AVQueryResult> queryResult = wrappObservable(this.queryRemoteServer(className, query));
+    Observable<AVQueryResult> queryResult = wrapObservable(this.queryRemoteServer(className, query));
     if (null == queryResult) {
       return null;
     }
@@ -201,11 +207,11 @@ public class StorageClient {
   }
 
   public Observable<AVNull> deleteObject(final String className, String objectId) {
-    return wrappObservable(apiService.deleteObject(className, objectId));
+    return wrapObservable(apiService.deleteObject(className, objectId));
   }
 
   public Observable<? extends AVObject> createObject(final String className, JSONObject data, boolean fetchFlag, JSONObject where) {
-    Observable<AVObject> object = wrappObservable(apiService.createObject(className, data, fetchFlag, where));
+    Observable<AVObject> object = wrapObservable(apiService.createObject(className, data, fetchFlag, where));
     if (null == object) {
       return null;
     }
@@ -219,7 +225,7 @@ public class StorageClient {
 
   public Observable<? extends AVObject> saveObject(final String className, String objectId, JSONObject data,
                                                    boolean fetchFlag, JSONObject where) {
-    Observable<AVObject> object = wrappObservable(apiService.updateObject(className, objectId, data, fetchFlag, where));
+    Observable<AVObject> object = wrapObservable(apiService.updateObject(className, objectId, data, fetchFlag, where));
     if (null == object) {
       return null;
     }
@@ -235,9 +241,9 @@ public class StorageClient {
                                                             JSONObject object, boolean fetchFlag, JSONObject where) {
     Observable<AVObject> result = null;
     if (StringUtil.isEmpty(objectId)) {
-      result = wrappObservable(apiService.saveWholeObject(endpointClass, object, fetchFlag, where));
+      result = wrapObservable(apiService.saveWholeObject(endpointClass, object, fetchFlag, where));
     } else {
-      result = wrappObservable(apiService.saveWholeObject(endpointClass, objectId, object, fetchFlag, where));
+      result = wrapObservable(apiService.saveWholeObject(endpointClass, objectId, object, fetchFlag, where));
     }
 
     if (null == result) {
@@ -252,15 +258,15 @@ public class StorageClient {
   }
 
   public Observable<AVObject> getWholeObject(final String endpointClass, String objectId) {
-    return wrappObservable(apiService.getWholeObject(endpointClass, objectId));
+    return wrapObservable(apiService.getWholeObject(endpointClass, objectId));
   }
 
   public Observable<AVNull> deleteWholeObject(final String endpointClass, String objectId) {
-    return wrappObservable(apiService.deleteWholeObject(endpointClass, objectId));
+    return wrapObservable(apiService.deleteWholeObject(endpointClass, objectId));
   }
 
   public Observable<AVFile> fetchFile(String objectId) {
-    Observable<AVFile> object = wrappObservable(apiService.fetchFile(objectId));
+    Observable<AVFile> object = wrapObservable(apiService.fetchFile(objectId));
     if (null == object) {
       return null;
     }
@@ -286,25 +292,25 @@ public class StorageClient {
     // [{"success":{"updatedAt":"2018-03-30T06:21:08.052Z","objectId":"5abd026d9f54540038791715"}},
     //  {"success":{"updatedAt":"2018-03-30T06:21:08.092Z","objectId":"5abd026d9f54540038791715"}},
     //  {"success":{"updatedAt":"2018-03-30T06:21:08.106Z","objectId":"5abd026d9f54540038791715"}}]
-    Observable<JSONArray> result = wrappObservable(apiService.batchCreate(parameter));
+    Observable<JSONArray> result = wrapObservable(apiService.batchCreate(parameter));
     return result;
   }
 
   public Observable<JSONObject> batchUpdate(JSONObject parameter) {
     // response is:
     // {"5abd026d9f54540038791715":{"updatedAt":"2018-03-30T06:21:46.084Z","objectId":"5abd026d9f54540038791715"}}
-    Observable<JSONObject> result = wrappObservable(apiService.batchUpdate(parameter));
+    Observable<JSONObject> result = wrapObservable(apiService.batchUpdate(parameter));
     return result;
   }
 
   public Observable<AVUser> signUp(JSONObject data) {
-    return wrappObservable(apiService.signup(data));
+    return wrapObservable(apiService.signup(data));
   }
   public Observable<AVUser> signUpWithFlag(JSONObject data, boolean failOnNotExist) {
-    return wrappObservable(apiService.signup(data, failOnNotExist));
+    return wrapObservable(apiService.signup(data, failOnNotExist));
   }
   public <T extends AVUser> Observable<T> signUpOrLoginByMobilephone(JSONObject data, final Class<T> clazz) {
-    return wrappObservable(apiService.signupByMobilePhone(data)).map(new Function<AVUser, T>() {
+    return wrapObservable(apiService.signupByMobilePhone(data)).map(new Function<AVUser, T>() {
       @Override
       public T apply(AVUser avUser) throws Exception {
         T rst = Transformer.transform(avUser, clazz);
@@ -314,7 +320,7 @@ public class StorageClient {
     });
   }
   public <T extends AVUser> Observable<T> logIn(JSONObject data, final Class<T> clazz) {
-    Observable<AVUser> object = wrappObservable(apiService.login(data));
+    Observable<AVUser> object = wrapObservable(apiService.login(data));
     if (null == object) {
       return null;
     }
@@ -330,7 +336,7 @@ public class StorageClient {
   public Observable<Boolean> checkAuthenticated(String sessionToken) {
     Map<String, String> param = new HashMap<String, String>(1);
     param.put("session_token", sessionToken);
-    Observable<AVUser> apiResult = wrappObservable(apiService.checkAuthenticated(param));
+    Observable<AVUser> apiResult = wrapObservable(apiService.checkAuthenticated(param));
     if (null == apiResult) {
       return Observable.just(false);
     }
@@ -359,7 +365,7 @@ public class StorageClient {
   }
 
   public Observable<Boolean> refreshSessionToken(final AVUser user) {
-    return wrappObservable(apiService.refreshSessionToken(user.getObjectId()).map(new Function<AVUser, Boolean>() {
+    return wrapObservable(apiService.refreshSessionToken(user.getObjectId()).map(new Function<AVUser, Boolean>() {
       public Boolean apply(AVUser avUser) throws Exception {
         if (null != avUser && !StringUtil.isEmpty(avUser.getSessionToken())) {
           user.internalChangeSessionToken(avUser.getSessionToken());
@@ -373,7 +379,7 @@ public class StorageClient {
   public Observable<AVNull> requestResetPassword(String email) {
     Map<String, String> map = new HashMap<String, String>();
     map.put("email", email);
-    return wrappObservable(apiService.requestResetPassword(map));
+    return wrapObservable(apiService.requestResetPassword(map));
   }
 
   public Observable<AVNull> requestResetPasswordBySmsCode(String phoneNumber, String validateToken) {
@@ -382,13 +388,13 @@ public class StorageClient {
     if (!StringUtil.isEmpty(validateToken)) {
       map.put("validate_token", validateToken);
     }
-    return wrappObservable(apiService.requestResetPasswordBySmsCode(map));
+    return wrapObservable(apiService.requestResetPasswordBySmsCode(map));
   }
 
   public Observable<AVNull> requestEmailVerify(String email) {
     Map<String, String> map = new HashMap<String, String>();
     map.put("email", email);
-    return wrappObservable(apiService.requestEmailVerify(map));
+    return wrapObservable(apiService.requestEmailVerify(map));
   }
 
   public Observable<AVNull> requestMobilePhoneVerify(String mobilePhone, String validateToken) {
@@ -397,11 +403,11 @@ public class StorageClient {
     if (!StringUtil.isEmpty(validateToken)) {
       map.put("validate_token", validateToken);
     }
-    return wrappObservable(apiService.requestMobilePhoneVerify(map));
+    return wrapObservable(apiService.requestMobilePhoneVerify(map));
   }
 
   public Observable<AVNull> verifyMobilePhone(String verifyCode) {
-    return wrappObservable(apiService.verifyMobilePhone(verifyCode));
+    return wrapObservable(apiService.verifyMobilePhone(verifyCode));
   }
 
   public Observable<AVNull> requestLoginSmsCode(String phoneNumber, String validateToken) {
@@ -410,13 +416,13 @@ public class StorageClient {
     if (!StringUtil.isEmpty(validateToken)) {
       map.put("validate_token", validateToken);
     }
-    return wrappObservable(apiService.requestLoginSmsCode(map));
+    return wrapObservable(apiService.requestLoginSmsCode(map));
   }
 
   public Observable<AVNull> resetPasswordBySmsCode(String smsCode, String newPass) {
     Map<String, String> map = new HashMap<String, String>();
     map.put("password", newPass);
-    return wrappObservable(apiService.resetPasswordBySmsCode(smsCode, map));
+    return wrapObservable(apiService.resetPasswordBySmsCode(smsCode, map));
   }
 
   public Observable<AVNull> updatePassword(final AVUser user, String oldPass, String newPass) {
@@ -429,7 +435,7 @@ public class StorageClient {
     JSONObject param = new JSONObject();
     param.put("old_password", oldPass);
     param.put("new_password", newPass);
-    return wrappObservable(apiService.updatePassword(user.getObjectId(), param).map(new Function<AVUser, AVNull>() {
+    return wrapObservable(apiService.updatePassword(user.getObjectId(), param).map(new Function<AVUser, AVNull>() {
       public AVNull apply(AVUser var1) throws Exception {
         if (null != var1) {
           user.internalChangeSessionToken(var1.getSessionToken());
@@ -440,27 +446,27 @@ public class StorageClient {
   }
 
   public Observable<JSONObject> followUser(String followee, String follower, Map<String, Object> attr) {
-    return wrappObservable(apiService.followUser(followee, follower, attr));
+    return wrapObservable(apiService.followUser(followee, follower, attr));
   }
 
   public Observable<JSONObject> unfollowUser(String followee, String follower) {
-    return wrappObservable(apiService.unfollowUser(followee, follower));
+    return wrapObservable(apiService.unfollowUser(followee, follower));
   }
 
   public Observable<JSONObject> getFollowersAndFollowees(String userId) {
-    return wrappObservable(apiService.getFollowersAndFollowees(userId));
+    return wrapObservable(apiService.getFollowersAndFollowees(userId));
   }
 
   public Observable<AVNull> deleteStatus(String statusId) {
-    return wrappObservable(apiService.deleteStatus(statusId));
+    return wrapObservable(apiService.deleteStatus(statusId));
   }
 
   public Observable<AVNull> deleteInboxStatus(Map<String, String> param) {
-    return wrappObservable(apiService.deleteInboxStatus(param));
+    return wrapObservable(apiService.deleteInboxStatus(param));
   }
 
   public <T> Observable<T> callRPC(String name, Object param) {
-    Observable<Map<String, ?>> cloudCall =  wrappObservable(apiService.cloudRPC(name, param));
+    Observable<Map<String, ?>> cloudCall =  wrapObservable(apiService.cloudRPC(name, param));
     if (null == cloudCall) {
       return null;
     }
@@ -483,7 +489,7 @@ public class StorageClient {
   }
 
   public <T> Observable<T> callFunction(String name, Map<String, Object> params) {
-    Observable<Map<String, ?>> cloudCall = wrappObservable(apiService.cloudFunction(name, params));
+    Observable<Map<String, ?>> cloudCall = wrapObservable(apiService.cloudFunction(name, params));
     if (null == cloudCall) {
       return null;
     }
@@ -506,7 +512,7 @@ public class StorageClient {
   }
 
   public Observable<AVCaptchaDigest> requestCaptcha(AVCaptchaOption option) {
-    return wrappObservable(apiService.requestCaptcha(option.getRequestParam()));
+    return wrapObservable(apiService.requestCaptcha(option.getRequestParam()));
   }
 
   public Observable<AVCaptchaValidateResult> verifyCaptcha(String code, String token) {
@@ -516,12 +522,12 @@ public class StorageClient {
     Map<String, String> param = new HashMap<String, String>(2);
     param.put("captcha_code", code);
     param.put("captcha_token", token);
-    return wrappObservable(apiService.verifyCaptcha(param));
+    return wrapObservable(apiService.verifyCaptcha(param));
   }
 
   public Observable<AVNull> requestSMSCode(String mobilePhone, Map<String, Object> param) {
     param.put("mobilePhoneNumber", mobilePhone);
-    return wrappObservable(apiService.requestSMSCode(param));
+    return wrapObservable(apiService.requestSMSCode(param));
   }
 
   public Observable<AVNull> verifySMSCode(String code, String mobilePhone) {
@@ -530,6 +536,6 @@ public class StorageClient {
     }
     Map<String, Object> param = new HashMap<String, Object>(1);
     param.put("mobilePhoneNumber", mobilePhone);
-    return wrappObservable(apiService.verifySMSCode(code, param));
+    return wrapObservable(apiService.verifySMSCode(code, param));
   }
 }
