@@ -2,7 +2,6 @@ package cn.leancloud.websocket;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
-import cn.leancloud.Messages;
 import cn.leancloud.command.CommandPacket;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -88,15 +87,19 @@ public class AVStandardWebSocketClient extends WebSocketClient {
           Socket socket = socketFactory.createSocket();
           if (sniEnabled) {
             try {
-              SNIHostName serverName = new SNIHostName(getURI().getHost());
-              List<SNIServerName> serverNames = new ArrayList<SNIServerName>(1);
-              serverNames.add(serverName);
+              Class sniHostnameClazz = Class.forName("javax.net.ssl.SNIHostName");
+              Class sslSocketClazz = Class.forName("javax.net.ssl.SSLSocket");
+              if (null != sniHostnameClazz && null != sslSocketClazz && (socket instanceof javax.net.ssl.SSLSocket)) {
+                javax.net.ssl.SNIHostName serverName = new javax.net.ssl.SNIHostName(getURI().getHost());
+                List<SNIServerName> serverNames = new ArrayList<SNIServerName>(1);
+                serverNames.add(serverName);
 
-              SSLParameters params = ((SSLSocket)socket).getSSLParameters();
-              params.setServerNames(serverNames);
-              ((SSLSocket)socket).setSSLParameters(params);
+                SSLParameters params = ((javax.net.ssl.SSLSocket)socket).getSSLParameters();
+                params.setServerNames(serverNames);
+                ((javax.net.ssl.SSLSocket)socket).setSSLParameters(params);
+              }
             } catch (Exception ex) {
-              gLogger.w(ex);
+              gLogger.w("failed to init SSLSocket. cause: " + ex.getMessage());
             }
           }
           setSocket(socket);
@@ -106,7 +109,7 @@ public class AVStandardWebSocketClient extends WebSocketClient {
         }
       }
     } catch (Exception e) {
-      gLogger.e("Socket Error", new AVException(e));
+      gLogger.e("Socket Initializer Error", e);
     }
   }
 
