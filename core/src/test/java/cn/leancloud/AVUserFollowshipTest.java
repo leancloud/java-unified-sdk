@@ -9,6 +9,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import retrofit2.HttpException;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,9 @@ import java.util.concurrent.CountDownLatch;
 
 public class AVUserFollowshipTest extends TestCase {
   private boolean operationSucceed = false;
+  private static String JFENG_OBJECT_ID = "5bff479067f3560066d00676";
+  private static String DENNIS_OBJECT_ID = "5bff452afb4ffe0069a9893e";
+  private static String DEFAULT_PASSWD = "FER$@$@#Ffwe";
   public AVUserFollowshipTest(String name) {
     super(name);
     Configure.initializeRuntime();
@@ -39,7 +43,7 @@ public class AVUserFollowshipTest extends TestCase {
     AVUser user = new AVUser();
     user.setEmail("jfeng@test.com");
     user.setUsername("jfeng");
-    user.setPassword("FER$@$@#Ffwe");
+    user.setPassword(DEFAULT_PASSWD);
     final CountDownLatch latch = new CountDownLatch(1);
     user.signUpInBackground().subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
@@ -68,7 +72,7 @@ public class AVUserFollowshipTest extends TestCase {
 
   public void testFolloweeQuery() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    AVUser.logIn("jfeng", DEFAULT_PASSWD).subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
@@ -87,7 +91,7 @@ public class AVUserFollowshipTest extends TestCase {
         AVQuery<AVUser> query = avUser.followeeQuery(AVUser.class);
         List<AVUser> followees = query.find();
         if (null == followees || followees.size() < 1) {
-          avUser.followInBackground("5bff452afb4ffe0069a9893e").subscribe(new Observer<JSONObject>() {
+          avUser.followInBackground(DENNIS_OBJECT_ID).subscribe(new Observer<JSONObject>() {
             @Override
             public void onSubscribe(Disposable disposable) {
 
@@ -133,7 +137,7 @@ public class AVUserFollowshipTest extends TestCase {
 
   public void testFollowerQuery() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    AVUser.logIn("jfeng", DEFAULT_PASSWD).subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
@@ -168,14 +172,95 @@ public class AVUserFollowshipTest extends TestCase {
     assertTrue(operationSucceed);
   }
 
-  public void testBeFollowed() throws Exception {
-    AVUser user = new AVUser();
-    user.setEmail("jfeng001@test.com");
-    user.setUsername("jfeng001");
-    user.setPassword("FER$@$@#Ffwe");
-    user.signUp();
-    AVUser logginUser = AVUser.logIn("jfeng001", "FER$@$@#Ffwe").blockingFirst();
-    logginUser.followInBackground("5bff479067f3560066d00676").blockingFirst();
+  public void testFollow() throws Exception {
+    try {
+      AVUser user = new AVUser();
+      user.setEmail("jfeng001@test.com");
+      user.setUsername("jfeng001");
+      user.setPassword(DEFAULT_PASSWD);
+      user.signUp();
+    } catch (HttpException ex) {
+      ;
+    }
+
+    AVUser logginUser = AVUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
+    logginUser.followInBackground(JFENG_OBJECT_ID).blockingFirst();
+
+    AVUser jfeng = AVUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
+
+    final CountDownLatch latch = new CountDownLatch(1);
+    AVQuery query = jfeng.followerQuery(AVUser.class);
+    query.findInBackground().subscribe(new Observer<List<AVUser>>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(List<AVUser> o) {
+        operationSucceed = (null != o) && o.size() > 0;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(operationSucceed);
+  }
+
+  public void testUnfollow() throws Exception {
+    try {
+      AVUser user = new AVUser();
+      user.setEmail("jfeng001@test.com");
+      user.setUsername("jfeng001");
+      user.setPassword(DEFAULT_PASSWD);
+      user.signUp();
+    } catch (HttpException ex) {
+      ;
+    }
+
+    AVUser logginUser = AVUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
+    logginUser.unfollowInBackground(JFENG_OBJECT_ID).blockingFirst();
+
+    AVUser jfeng = AVUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
+
+    final CountDownLatch latch = new CountDownLatch(1);
+    AVQuery query = jfeng.followerQuery(AVUser.class);
+    query.findInBackground().subscribe(new Observer<List<AVUser>>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(List<AVUser> o) {
+        System.out.println("onNext");
+        operationSucceed = (null == o) || o.size() < 1;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        System.out.println("onError");
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+        System.out.println("onComplete");
+      }
+    });
+    latch.await();
+    assertTrue(operationSucceed);
   }
 
   public void testFollowUserNotLogin() throws Exception {
@@ -233,7 +318,7 @@ public class AVUserFollowshipTest extends TestCase {
 
   public void testFolloweeAndFollowerQuery() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    AVUser.logIn("jfeng", DEFAULT_PASSWD).subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }

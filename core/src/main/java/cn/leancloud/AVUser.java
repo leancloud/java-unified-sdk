@@ -550,8 +550,18 @@ public class AVUser extends AVObject {
     return PaasClient.getStorageClient().refreshSessionToken(this);
   }
 
+  public static AVUser becomeWithSessionToken(String sessionToken) {
+    AVUser usr = becomeWithSessionTokenInBackground(sessionToken).blockingFirst();
+    return usr;
+  }
+
   public static Observable<? extends AVUser> becomeWithSessionTokenInBackground(String sessionToken) {
     return becomeWithSessionTokenInBackground(sessionToken, internalUserClazz());
+  }
+
+  public static <T extends AVUser> T becomeWithSessionToken(String sessionToken, Class<T> clazz) {
+    T result = becomeWithSessionTokenInBackground(sessionToken, clazz).blockingFirst();
+    return result;
   }
 
   public static <T extends AVUser> Observable<T> becomeWithSessionTokenInBackground(String sessionToken, Class<T> clazz) {
