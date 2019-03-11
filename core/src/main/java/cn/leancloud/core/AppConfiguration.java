@@ -35,6 +35,8 @@ public class AppConfiguration {
   private static String queryResultCacheDir = "./PaasKeyValueCache";
   private static SystemSetting defaultSetting = new InMemorySetting();
 
+  private static boolean enableLocalCache = true;
+
   private static final String SDK_VERSION = "5.0.11";
   private static final String DEFAULT_USER_AGENT = "LeanCloud SDK v" + SDK_VERSION;
 
@@ -73,6 +75,18 @@ public class AppConfiguration {
   public static void config(boolean asyncRequest, SchedulerCreator observerSchedulerCreator) {
     asynchronized = asyncRequest;
     defaultScheduler = observerSchedulerCreator;
+  }
+
+  public static boolean isEnableLocalCache() {
+    return enableLocalCache;
+  }
+
+  /**
+   * set flag to enable local cache or not.
+   * @param enableLocalCache
+   */
+  public static void setEnableLocalCache(boolean enableLocalCache) {
+    AppConfiguration.enableLocalCache = enableLocalCache;
   }
 
   public static boolean isAsynchronized() {
@@ -146,31 +160,49 @@ public class AppConfiguration {
   }
 
   public static String getAnalyticsCacheDir() {
+    if (!enableLocalCache) {
+      return null;
+    }
     makeSureDirExist(analyticsCacheDir);
     return analyticsCacheDir;
   }
 
   public static String getCommandCacheDir() {
+    if (!enableLocalCache) {
+      return null;
+    }
     makeSureDirExist(commandCacheDir);
     return commandCacheDir;
   }
 
   public static String getImportantFileDir() {
+    if (!enableLocalCache) {
+      return null;
+    }
     makeSureDirExist(importantFileDir);
     return importantFileDir;
   }
 
   public static String getDocumentDir() {
+    if (!enableLocalCache) {
+      return null;
+    }
     makeSureDirExist(documentDir);
     return documentDir;
   }
 
   public static String getFileCacheDir() {
+    if (!enableLocalCache) {
+      return null;
+    }
     makeSureDirExist(fileCacheDir);
     return fileCacheDir;
   }
 
   public static String getQueryResultCacheDir() {
+    if (!enableLocalCache) {
+      return null;
+    }
     makeSureDirExist(queryResultCacheDir);
     return queryResultCacheDir;
   }

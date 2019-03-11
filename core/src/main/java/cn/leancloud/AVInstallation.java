@@ -54,26 +54,45 @@ public final class AVInstallation extends AVObject {
     return currentInstallation;
   }
 
+  private static File getCacheFile() {
+    String cacheBase = AppConfiguration.getImportantFileDir();
+    if (StringUtil.isEmpty(cacheBase)) {
+      return null;
+    }
+    return new File(cacheBase, cn.leancloud.core.AVOSCloud.getSimplifiedAppId() + INSTALLATION);
+  }
+
   protected static AVInstallation createInstanceFromLocal(String fileName) {
     boolean needWriteback = true;
-    File installationFile = new File(AppConfiguration.getImportantFileDir(), fileName);
-    if (installationFile.exists()) {
-      String json = PersistenceUtil.sharedInstance().readContentFromFile(installationFile);
-      if (!StringUtil.isEmpty(json)) {
-        if (json.indexOf("{") >= 0) {
-          try {
-            currentInstallation = (AVInstallation) AVObject.parseAVObject(json);
-            currentInstallation.totallyOverwrite = true;
-            needWriteback = false;
-          } catch (Exception ex) {
-            LOGGER.w("failed to parse local installation data.", ex);
-            needWriteback = true;
-          }
-        } else {
-          if (json.length() == UUID_LEN) {
-            // old sdk version.
-            currentInstallation = new AVInstallation();
-            currentInstallation.setInstallationId(json);
+    File installationFile = getCacheFile();
+    if (null == installationFile) {
+      needWriteback = false;
+    } else {
+      if (!installationFile.exists()) {
+        String cacheBase = AppConfiguration.getImportantFileDir();
+        File oldInstallationFile = new File(cacheBase, INSTALLATION);
+        if (oldInstallationFile.exists() && !installationFile.exists()) {
+          oldInstallationFile.renameTo(installationFile);
+        }
+      }
+      if (installationFile.exists()) {
+        String json = PersistenceUtil.sharedInstance().readContentFromFile(installationFile);
+        if (!StringUtil.isEmpty(json)) {
+          if (json.indexOf("{") >= 0) {
+            try {
+              currentInstallation = (AVInstallation) AVObject.parseAVObject(json);
+              currentInstallation.totallyOverwrite = true;
+              needWriteback = false;
+            } catch (Exception ex) {
+              LOGGER.w("failed to parse local installation data.", ex);
+              needWriteback = true;
+            }
+          } else {
+            if (json.length() == UUID_LEN) {
+              // old sdk version.
+              currentInstallation = new AVInstallation();
+              currentInstallation.setInstallationId(json);
+            }
           }
         }
       }
@@ -113,11 +132,13 @@ public final class AVInstallation extends AVObject {
     }
     this.put(DEVICETYPETAG, deviceType());
     this.put(TIMEZONE, timezone());
-    File installationFile = new File(AppConfiguration.getImportantFileDir(), INSTALLATION);
-    String jsonString = JSON.toJSONString(this, ObjectValueFilter.instance,
-            SerializerFeature.WriteClassName,
-            SerializerFeature.DisableCircularReferenceDetect);
-    PersistenceUtil.sharedInstance().saveContentToFile(jsonString, installationFile);
+    File installationFile = getCacheFile();
+    if (null != installationFile) {
+      String jsonString = JSON.toJSONString(this, ObjectValueFilter.instance,
+              SerializerFeature.WriteClassName,
+              SerializerFeature.DisableCircularReferenceDetect);
+      PersistenceUtil.sharedInstance().saveContentToFile(jsonString, installationFile);
+    }
   }
 
   private static String genInstallationId() {

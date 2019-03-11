@@ -1,6 +1,7 @@
 package cn.leancloud.core;
 
 import cn.leancloud.*;
+import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 
@@ -89,6 +90,13 @@ public class AVOSCloud {
   public static String getApplicationId() {
     return applicationId;
   }
+  public static String getSimplifiedAppId() {
+    if (StringUtil.isEmpty(applicationId)) {
+      return "";
+    }
+    return applicationId.substring(0, 8);
+  }
+
   public static String getApplicationKey() {
     return applicationKey;
   }

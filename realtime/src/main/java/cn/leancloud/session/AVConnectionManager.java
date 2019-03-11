@@ -209,6 +209,13 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public void cleanup() {
+    resetConnection();
+
+    this.connectionListeners.clear();
+    this.pendingCallback = null;
+  }
+
+  void resetConnection() {
     if (null != webSocketClient) {
       try {
         webSocketClient.closeConnection(CloseFrame.ABNORMAL_CLOSE, "Connectivity broken");
@@ -218,11 +225,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
         webSocketClient = null;
       }
     }
-    this.connectionListeners.clear();
     connectionEstablished = false;
     retryConnectionCount = 0;
-    this.connecting = false;
-    this.pendingCallback = null;
+    connecting = false;
   }
 
   public void subscribeConnectionListener(String clientId, AVConnectionListener listener) {

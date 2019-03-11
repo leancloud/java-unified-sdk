@@ -50,6 +50,9 @@ public class PersistenceUtil {
     }
   }
   public boolean saveContentToFile(String content, File fileForSave) {
+    if (null == fileForSave) {
+      return false;
+    }
     try {
       return saveContentToFile(content.getBytes("utf-8"), fileForSave);
     } catch (UnsupportedEncodingException e) {

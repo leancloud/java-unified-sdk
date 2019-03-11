@@ -9,22 +9,28 @@ import java.io.InputStream;
 
 public class LocalStorage {
   private String baseDir;
+  private boolean disableLocalCache = false;
+
   public LocalStorage(String baseDir) {
     if (StringUtil.isEmpty(baseDir)) {
-      throw new IllegalArgumentException("baseDir is empty");
-    }
-    if (!baseDir.endsWith("/")) {
-      baseDir += "/";
-    }
-    File root = new File(baseDir);
-    if (!root.exists()) {
-      root.mkdirs();
-    }
+      disableLocalCache = true;
+    } else {
+      if (!baseDir.endsWith("/")) {
+        baseDir += "/";
+      }
+      File root = new File(baseDir);
+      if (!root.exists()) {
+        root.mkdirs();
+      }
 
-    this.baseDir = baseDir;
+      this.baseDir = baseDir;
+    }
   }
 
   public String saveData(String key, byte[] content) {
+    if (disableLocalCache) {
+      return null;
+    }
     if (StringUtil.isEmpty(key) || null == content) {
       return null;
     }
@@ -34,6 +40,9 @@ public class LocalStorage {
   }
 
   public String saveFile(String key, File localFile) {
+    if (disableLocalCache) {
+      return null;
+    }
     if (StringUtil.isEmpty(key)) {
       return null;
     }
@@ -50,6 +59,9 @@ public class LocalStorage {
   }
 
   public byte[] readData(String key) {
+    if (disableLocalCache) {
+      return null;
+    }
     if (StringUtil.isEmpty(key)) {
       return null;
     }
@@ -58,10 +70,16 @@ public class LocalStorage {
   }
 
   public byte[] readData(File file) {
+    if (disableLocalCache) {
+      return null;
+    }
     return PersistenceUtil.sharedInstance().readContentBytesFromFile(file);
   }
 
   public File getCacheFile(String key) {
+    if (disableLocalCache) {
+      return null;
+    }
     if (StringUtil.isEmpty(key)) {
       return null;
     }
@@ -69,6 +87,9 @@ public class LocalStorage {
   }
 
   public InputStream getInputStreamFromFile(File file) {
+    if (disableLocalCache) {
+      return null;
+    }
     try {
       return new FileInputStream(file);
     } catch (FileNotFoundException ex) {
@@ -77,7 +98,7 @@ public class LocalStorage {
   }
 
   public void clearCachedFile(String key) {
-    if (StringUtil.isEmpty(key)) {
+    if (disableLocalCache || StringUtil.isEmpty(key)) {
       return;
     }
     String path = baseDir + key;
@@ -85,10 +106,16 @@ public class LocalStorage {
   }
 
   public void clearAllCachedFiles() {
+    if (disableLocalCache) {
+      return;
+    }
     clearCacheMoreThanDays(0);
   }
 
   public void clearCacheMoreThanDays(int days) {
+    if (disableLocalCache) {
+      return;
+    }
     long curTime = System.currentTimeMillis();
     if ( days > 0) {
       curTime -= 86400000L * days; // 86400000 is one day.

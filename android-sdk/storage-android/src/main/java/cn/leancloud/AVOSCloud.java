@@ -15,6 +15,7 @@ import cn.leancloud.network.AndroidNetworkingDetector;
 import cn.leancloud.util.AndroidMimeTypeDetector;
 import cn.leancloud.util.AndroidUtil;
 import cn.leancloud.utils.LogUtil;
+import cn.leancloud.utils.StringUtil;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -63,14 +64,17 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
     AVCallback.setMainThreadChecker(checker, shuttle);
     LogUtil.getLogger(AVOSCloud.class).i("[LeanCloud] initialize mainThreadChecker and threadShuttle within AVCallback.");
 
+    String appIdPrefix = StringUtil.isEmpty(appId) ? "" : appId.substring(0, 8);
     String importantFileDir = context.getFilesDir().getAbsolutePath();
     String baseDir = context.getCacheDir().getAbsolutePath();
-    String documentDir = context.getDir("PaaS", Context.MODE_PRIVATE).getAbsolutePath();
-    String fileCacheDir = baseDir + "/avfile/";
-    String commandCacheDir = baseDir + "/CommandCache";
-    String analyticsDir = baseDir + "/Analysis";
-    String queryResultCacheDir = baseDir + "/PaasKeyValueCache";
+    String documentDir = context.getDir(appIdPrefix + "Paas", Context.MODE_PRIVATE).getAbsolutePath();
+    String fileCacheDir = baseDir + "/" + appIdPrefix + "avfile";
+    String commandCacheDir = baseDir + "/" + appIdPrefix + "CommandCache";
+    String analyticsDir = baseDir + "/" + appIdPrefix + "Analysis";
+    String queryResultCacheDir = baseDir + "/" + appIdPrefix + "PaasKeyValueCache";
+
     AndroidSystemSetting defaultSetting = new AndroidSystemSetting(context);
+
     AppConfiguration.configCacheSettings(importantFileDir, documentDir, fileCacheDir, queryResultCacheDir,
         commandCacheDir, analyticsDir, defaultSetting);
     AppConfiguration.setApplicationPackagename(context.getPackageName());

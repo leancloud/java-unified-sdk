@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.cache.PersistenceUtil;
+import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -42,7 +43,7 @@ public class AVInstallationTest extends TestCase {
 
   public void testDeserializedFromOldVersionCache() throws Exception {
     String json = "{ \"@type\":\"com.avos.avoscloud.AVInstallation\",\"objectId\":\"wYtTtsc5jnd0tXX8hQQa8oBekQXHBUIG\",\"updatedAt\":null,\"createdAt\":\"2018-12-28T06:37:33.258Z\",\"className\":\"_Installation\",\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"deviceType\":\"android\",\"timeZone\":\"Asia/Shanghai\",\"installationId\":\"007394934f6a1336718c90e196ef8a64\"}}";
-    File installationFile = new File(AppConfiguration.getImportantFileDir(), AVInstallation.INSTALLATION);
+    File installationFile = new File(AppConfiguration.getImportantFileDir(), AVOSCloud.getSimplifiedAppId() + AVInstallation.INSTALLATION);
     PersistenceUtil.sharedInstance().saveContentToFile(json, installationFile);
     AVInstallation installation = AVInstallation.getCurrentInstallation();
     System.out.println(installation.toString());

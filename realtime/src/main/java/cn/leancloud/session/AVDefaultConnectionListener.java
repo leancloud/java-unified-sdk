@@ -3,6 +3,7 @@ package cn.leancloud.session;
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
+import cn.leancloud.callback.AVCallback;
 import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
 import cn.leancloud.im.InternalConfiguration;
@@ -153,6 +154,9 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
             // modified 代表的是服务器端对于客户端请求的相应
             processPatchCommand(peerId, false, requestKey, command.getPatchMessage());
           }
+          break;
+        case Messages.CommandType.goaway_VALUE:
+          processGoawayCommand(peerId);
           break;
         default:
           LOGGER.w("unknown command. Cmd:" + command.getCmd().getNumber());
@@ -498,6 +502,16 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
               operation, bundle);
     }
+  }
+
+  private void processGoawayCommand(String peerId) {
+    AVConnectionManager.getInstance().resetConnection();
+    AVConnectionManager.getInstance().startConnection(new AVCallback() {
+      @Override
+      protected void internalDone0(Object o, AVException avException) {
+        session.reopen();
+      }
+    });
   }
 
   private void onAckError(Integer requestKey, Messages.AckCommand command, Message m) {

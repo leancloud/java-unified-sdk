@@ -29,6 +29,7 @@ public class Configure {
   public static void initializeWithApp(String appId, String appKey, AVOSCloud.REGION region) {
     AVOSCloud.setRegion(region);
     AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
+//    AppConfiguration.setEnableLocalCache(false);
     AVOSCloud.initialize(appId, appKey);
   }
 

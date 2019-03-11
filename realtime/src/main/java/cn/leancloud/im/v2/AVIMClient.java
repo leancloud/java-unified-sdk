@@ -261,7 +261,7 @@ public class AVIMClient {
    */
   public void createConversation(final List<String> members, final String name, final Map<String, Object> attributes,
                                  final boolean isTransient, final AVIMConversationCreatedCallback callback) {
-    this.createConversation(members, name, attributes, isTransient, false, callback);
+    this.createConversation(members, name, attributes, isTransient, !isTransient, callback);
   }
 
   /**
@@ -306,12 +306,12 @@ public class AVIMClient {
    * @param conversationMembers
    * @param name
    * @param attributes
-   * @param isUnique
+   * @param isUnique deprecated chatroom is always not unique.
    * @param callback
    */
   public void createChatRoom(final List<String> conversationMembers, String name, final Map<String, Object> attributes,
                              final boolean isUnique, final AVIMConversationCreatedCallback callback) {
-    this.createConversation(conversationMembers, name, attributes, true, isUnique, callback);
+    this.createConversation(conversationMembers, name, attributes, true, false, callback);
   }
 
   private void createServiceConversation(String name, final Map<String, Object> attributes,

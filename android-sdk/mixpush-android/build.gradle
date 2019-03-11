@@ -57,7 +57,7 @@ dependencies {
     implementation project(':realtime-android')
     implementation project(':storage-android')
 
-    implementation('cn.leancloud:realtime-core:5.0.11'){
+    implementation('cn.leancloud:realtime-core:5.0.12'){
         exclude group: 'com.alibaba', module: 'fastjson'
         exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
     }
