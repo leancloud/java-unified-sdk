@@ -10,8 +10,6 @@ import java.util.List;
 
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
-import cn.leancloud.push.AVNotificationManager;
-import cn.leancloud.push.AVPushMessageListener;
 import cn.leancloud.push.AndroidNotificationManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -35,10 +33,10 @@ public class AVMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
       if (!miRegId.equals(installation.getString(AVInstallation.REGISTRATION_ID))) {
         installation.put(AVInstallation.REGISTRATION_ID, miRegId);
       }
-      String localProfile = installation.getString(AVMixPushManager.MIXPUSH_PRIFILE);
+      String localProfile = installation.getString(AVMixPushManager.MIXPUSH_PROFILE);
       localProfile = (null != localProfile ? localProfile : "");
       if (!localProfile.equals(AVMixPushManager.miDeviceProfile)) {
-        installation.put(AVMixPushManager.MIXPUSH_PRIFILE, AVMixPushManager.miDeviceProfile);
+        installation.put(AVMixPushManager.MIXPUSH_PROFILE, AVMixPushManager.miDeviceProfile);
       }
       installation.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
         @Override

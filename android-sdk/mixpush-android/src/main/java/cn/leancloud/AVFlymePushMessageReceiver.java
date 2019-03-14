@@ -5,8 +5,6 @@ import android.content.Intent;
 
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
-import cn.leancloud.push.AVNotificationManager;
-import cn.leancloud.push.AVPushMessageListener;
 import cn.leancloud.push.AndroidNotificationManager;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.utils.LogUtil;
@@ -32,10 +30,10 @@ public class AVFlymePushMessageReceiver extends com.meizu.cloud.pushsdk.MzPushMe
         installation.put(AVInstallation.REGISTRATION_ID, flymePushId);
       }
 
-      String localProfile = installation.getString(AVMixPushManager.MIXPUSH_PRIFILE);
+      String localProfile = installation.getString(AVMixPushManager.MIXPUSH_PROFILE);
       localProfile = (null != localProfile ? localProfile : "");
-      if (!localProfile.equals(AVMixPushManager.flymeDevicePrifile)) {
-        installation.put(AVMixPushManager.MIXPUSH_PRIFILE, AVMixPushManager.flymeDevicePrifile);
+      if (!localProfile.equals(AVMixPushManager.flymeDeviceProfile)) {
+        installation.put(AVMixPushManager.MIXPUSH_PROFILE, AVMixPushManager.flymeDeviceProfile);
       }
 
       installation.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {

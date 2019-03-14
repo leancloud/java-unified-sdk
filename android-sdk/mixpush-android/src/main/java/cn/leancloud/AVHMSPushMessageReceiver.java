@@ -6,7 +6,6 @@ import android.os.Bundle;
 
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
-import cn.leancloud.push.AVPushMessageListener;
 import cn.leancloud.push.AndroidNotificationManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -37,7 +36,7 @@ public class AVHMSPushMessageReceiver extends com.huawei.hms.support.api.push.Pu
       localProfile = "";
     }
     if (!localProfile.equals(AVMixPushManager.hwDeviceProfile)) {
-      installation.put(AVMixPushManager.MIXPUSH_PRIFILE, AVMixPushManager.hwDeviceProfile);
+      installation.put(AVMixPushManager.MIXPUSH_PROFILE, AVMixPushManager.hwDeviceProfile);
     }
 
     installation.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {

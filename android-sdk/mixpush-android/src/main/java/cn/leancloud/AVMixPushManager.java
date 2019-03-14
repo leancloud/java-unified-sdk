@@ -6,6 +6,9 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 
+import java.util.List;
+
+import cn.leancloud.callback.AVCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.utils.LogUtil;
@@ -17,7 +20,7 @@ import cn.leancloud.utils.StringUtil;
 public class AVMixPushManager {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVMixPushManager.class);
 
-  static final String MIXPUSH_PRIFILE = "deviceProfile";
+  static final String MIXPUSH_PROFILE = "deviceProfile";
 
   /**
    * 小米推送的 deviceProfile
@@ -32,8 +35,10 @@ public class AVMixPushManager {
   /**
    * 魅族推送的 deviceProfile
    */
-  static String flymeDevicePrifile = "";
+  static String flymeDeviceProfile = "";
   static int flymeMStatusBarIcon = 0;
+
+  static String vivoDeviceProfile = "";
 
   /**
    * 注册小米推送
@@ -216,7 +221,7 @@ public class AVMixPushManager {
       if (!checkFlymeManifest(context)) {
         printErrorLog("register error, mainifest is incomplete!");
       } else {
-        flymeDevicePrifile = profile;
+        flymeDeviceProfile = profile;
         com.meizu.cloud.pushsdk.PushManager.register(context, flymeId, flymeKey);
         result = true;
         LOGGER.d("start register flyme push");
@@ -239,6 +244,170 @@ public class AVMixPushManager {
     flymeMStatusBarIcon = icon;
   }
 
+  /**
+   * 初始化方法，建议在 Application onCreate 里面调用
+   * @param application
+   */
+  public static boolean registerVIVOPush(Application application) {
+    return AVMixPushManager.registerVIVOPush(application, "");
+  }
+  /**
+   * 初始化方法，建议在 Application onCreate 里面调用
+   * @param application
+   */
+  public static boolean registerVIVOPush(Application application, String profile) {
+    vivoDeviceProfile = profile;
+    com.vivo.push.PushClient client = com.vivo.push.PushClient.getInstance(application.getApplicationContext());
+    try {
+      client.checkManifest();
+      client.initialize();
+      return true;
+    } catch (com.vivo.push.util.VivoPushException ex) {
+      printErrorLog("register error, mainifest is incomplete! details=" + ex.getMessage());
+      return false;
+    }
+  }
+
+  /**
+   * turn off VIVO push.
+   */
+  public static void turnOffVIVOPush(final AVCallback<Boolean> callback) {
+    com.vivo.push.PushClient.getInstance(AVOSCloud.getContext()).turnOffPush(new com.vivo.push.IPushActionListener() {
+      public void onStateChanged(int state) {
+        if (null == callback) {
+          AVException exception = null;
+          if (0 != state) {
+            exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
+          }
+          callback.internalDone(null == exception, exception);
+        }
+      }
+    });
+  }
+
+  /**
+   * turn on VIVO push.
+   */
+  public static void turnOnVIVOPush(final AVCallback<Boolean> callback) {
+    com.vivo.push.PushClient.getInstance(AVOSCloud.getContext()).turnOnPush(new com.vivo.push.IPushActionListener() {
+      public void onStateChanged(int state) {
+        if (null == callback) {
+          AVException exception = null;
+          if (0 != state) {
+            exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
+          }
+          callback.internalDone(null == exception, exception);
+        }
+      }
+    });
+  }
+
+  /**
+   * current device support VIVO push or not.
+   *
+   * @param context
+   * @return
+   */
+  public static boolean isSupportVIVOPush(Context context) {
+    com.vivo.push.PushClient client = com.vivo.push.PushClient.getInstance(context);
+    if (null == client) {
+      return false;
+    }
+    return client.isSupport();
+  }
+
+  public static void bindVIVOAlias(Context context, String alias, final AVCallback<Boolean> callback) {
+    if (null == context) {
+      if (null != callback) {
+        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
+      }
+    } else {
+      com.vivo.push.PushClient.getInstance(context).bindAlias(alias, new com.vivo.push.IPushActionListener() {
+        public void onStateChanged(int state) {
+          if (null == callback) {
+            AVException exception = null;
+            if (0 != state) {
+              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
+            }
+            callback.internalDone(null == exception, exception);
+          }
+        }
+      });
+    }
+  }
+
+  public static void unbindVIVOAlias(Context context, String alias, final AVCallback<Boolean> callback) {
+    if (null == context) {
+      if (null != callback) {
+        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
+      }
+    } else {
+      com.vivo.push.PushClient.getInstance(context).unBindAlias(alias, new com.vivo.push.IPushActionListener() {
+        public void onStateChanged(int state) {
+          if (null == callback) {
+            AVException exception = null;
+            if (0 != state) {
+              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
+            }
+            callback.internalDone(null == exception, exception);
+          }
+        }
+      });
+    }
+  }
+
+  public static String getVIVOAlias(Context context) {
+    if (null == context) {
+      return null;
+    }
+    return com.vivo.push.PushClient.getInstance(context).getAlias();
+  }
+
+  public static void setVIVOTopic(Context context, String alias, final AVCallback<Boolean> callback) {
+    if (null == context) {
+      if (null != callback) {
+        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
+      }
+    } else {
+      com.vivo.push.PushClient.getInstance(context).setTopic(alias, new com.vivo.push.IPushActionListener() {
+        public void onStateChanged(int state) {
+          if (null == callback) {
+            AVException exception = null;
+            if (0 != state) {
+              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
+            }
+            callback.internalDone(null == exception, exception);
+          }
+        }
+      });
+    }
+  }
+  public static void delVIVOTopic(Context context, String alias, final AVCallback<Boolean> callback) {
+    if (null == context) {
+      if (null != callback) {
+        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
+      }
+    } else {
+      com.vivo.push.PushClient.getInstance(context).delTopic(alias, new com.vivo.push.IPushActionListener() {
+        public void onStateChanged(int state) {
+          if (null == callback) {
+            AVException exception = null;
+            if (0 != state) {
+              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
+            }
+            callback.internalDone(null == exception, exception);
+          }
+        }
+      });
+    }
+  }
+
+  public static List<String> getVIVOTopics(Context context) {
+    if (null == context) {
+      return null;
+    }
+    return com.vivo.push.PushClient.getInstance(context).getTopics();
+  }
   /**
    * 取消混合推送的注册
    * 取消成功后，消息会通过 LeanCloud websocket 发送
