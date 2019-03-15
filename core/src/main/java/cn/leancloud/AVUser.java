@@ -28,10 +28,10 @@ import java.util.*;
 @AVClassName("_User")
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVUser extends AVObject {
-  private static final String ATTR_USERNAME = "username";
+  public static final String ATTR_USERNAME = "username";
   private static final String ATTR_PASSWORD = "password";
-  private static final String ATTR_EMAIL = "email";
-  private static final String ATTR_MOBILEPHONE = "mobilePhoneNumber";
+  public static final String ATTR_EMAIL = "email";
+  public static final String ATTR_MOBILEPHONE = "mobilePhoneNumber";
   private static final String ATTR_SMSCODE = "smsCode";
   private static final String ATTR_MOBILEPHONE_VERIFIED = "mobilePhoneVerified";
   public static final String ATTR_SESSION_TOKEN = "sessionToken";
@@ -307,6 +307,11 @@ public class AVUser extends AVObject {
     return loginByMobilePhoneNumber(mobile, password, internalUserClazz());
   }
 
+  public static Observable<? extends AVUser> loginByEmail(String email, String password) {
+    HashMap<String, Object> params = createUserMapAFAP(null, password, email, null, null);
+    return PaasClient.getStorageClient().logIn(new JSONObject(params), internalUserClazz());
+  }
+
   public static <T extends AVUser> Observable<T> loginByMobilePhoneNumber(String mobile, String password, final Class<T> clazz) {
     Map<String, Object> params = createUserMap(null, password, null, mobile, null);
     JSONObject data = new JSONObject(params);
@@ -348,24 +353,24 @@ public class AVUser extends AVObject {
     return map;
   }
 
-  private static Map<String, String> createUserMapAFAP(String username, String password, String email,
+  private static HashMap<String, Object> createUserMapAFAP(String username, String password, String email,
                                                        String phoneNumber, String smsCode) {
-    Map<String, String> map = new HashMap<String, String>();
+    HashMap<String, Object> map = new HashMap<String, Object>();
 
     if (!StringUtil.isEmpty(username)) {
-      map.put("username", username);
+      map.put(ATTR_USERNAME, username);
     }
     if (!StringUtil.isEmpty(password)) {
-      map.put("password", password);
+      map.put(ATTR_PASSWORD, password);
     }
     if (!StringUtil.isEmpty(email)) {
-      map.put("email", email);
+      map.put(ATTR_EMAIL, email);
     }
     if (!StringUtil.isEmpty(phoneNumber)) {
-      map.put("mobilePhoneNumber", phoneNumber);
+      map.put(ATTR_MOBILEPHONE, phoneNumber);
     }
     if (!StringUtil.isEmpty(smsCode)) {
-      map.put("smsCode", smsCode);
+      map.put(ATTR_SMSCODE, smsCode);
     }
     return map;
   }
@@ -432,13 +437,9 @@ public class AVUser extends AVObject {
       return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "platform")));
     }
 
-    Map<String, String> userData = createUserMapAFAP(getUsername(), null, getEmail(), getMobilePhoneNumber(), null);
-    Map<String, Object> data = new HashMap<>();
+    HashMap<String, Object> data = createUserMapAFAP(getUsername(), null, getEmail(), getMobilePhoneNumber(), null);
     Map<String, Object> authMap = new HashMap<String, Object>();
     authMap.put(platform, authData);
-    if(!userData.isEmpty()) {
-      data.putAll(userData);
-    }
     data.put(AUTHDATA_TAG, authMap);
     JSONObject param = new JSONObject(data);
     return PaasClient.getStorageClient().signUpWithFlag(param, failOnNotExist).map(new Function<AVUser, AVUser>() {

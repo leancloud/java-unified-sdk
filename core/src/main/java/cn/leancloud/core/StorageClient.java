@@ -309,17 +309,33 @@ public class StorageClient {
   public Observable<AVUser> signUpWithFlag(JSONObject data, boolean failOnNotExist) {
     return wrapObservable(apiService.signup(data, failOnNotExist));
   }
-  public <T extends AVUser> Observable<T> signUpOrLoginByMobilephone(JSONObject data, final Class<T> clazz) {
+  public <T extends AVUser> Observable<T> signUpOrLoginByMobilephone(final JSONObject data, final Class<T> clazz) {
     return wrapObservable(apiService.signupByMobilePhone(data)).map(new Function<AVUser, T>() {
       @Override
       public T apply(AVUser avUser) throws Exception {
         T rst = Transformer.transform(avUser, clazz);
+        attachLoginInfo(data, rst);
         AVUser.changeCurrentUser(rst, true);
         return rst;
       }
     });
   }
-  public <T extends AVUser> Observable<T> logIn(JSONObject data, final Class<T> clazz) {
+
+  private <T extends AVUser> void attachLoginInfo(final JSONObject data, T rst) {
+    if (null == data || null == rst) {
+      return;
+    }
+    if (data.containsKey(AVUser.ATTR_EMAIL)) {
+      rst.setEmail(data.getString(AVUser.ATTR_EMAIL));
+    }
+    if (data.containsKey(AVUser.ATTR_USERNAME)) {
+      rst.setUsername(data.getString(AVUser.ATTR_USERNAME));
+    }
+    if (data.containsKey(AVUser.ATTR_MOBILEPHONE)) {
+      rst.setMobilePhoneNumber(data.getString(AVUser.ATTR_MOBILEPHONE));
+    }
+  }
+  public <T extends AVUser> Observable<T> logIn(final JSONObject data, final Class<T> clazz) {
     Observable<AVUser> object = wrapObservable(apiService.login(data));
     if (null == object) {
       return null;
@@ -327,6 +343,7 @@ public class StorageClient {
     return object.map(new Function<AVUser, T>() {
       public T apply(AVUser avUser) throws Exception {
         T rst = Transformer.transform(avUser, clazz);
+        attachLoginInfo(data, rst);
         AVUser.changeCurrentUser(rst, true);
         return rst;
       }
