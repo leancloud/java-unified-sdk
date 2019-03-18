@@ -439,10 +439,19 @@ public class AVSession {
   }
 
   void updateLastPatchTime(long patchTime) {
-    long currentTime = getLastPatchTime();
-    if (patchTime > currentTime) {
+    updateLastPatchTime(patchTime, false);
+  }
+
+  void updateLastPatchTime(long patchTime, boolean force) {
+    if (force) {
       lastPatchTime = patchTime;
       AppConfiguration.getDefaultSetting().saveLong(selfId, LAST_PATCH_TIME, patchTime);
+    } else {
+      long currentTime = getLastPatchTime();
+      if (patchTime > currentTime) {
+        lastPatchTime = patchTime;
+        AppConfiguration.getDefaultSetting().saveLong(selfId, LAST_PATCH_TIME, patchTime);
+      }
     }
   }
 

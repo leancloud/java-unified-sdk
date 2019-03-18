@@ -233,6 +233,9 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
         if (command.hasSt() && command.hasStTtl()) {
           session.updateRealtimeSessionToken(command.getSt(), Integer.valueOf(command.getStTtl()));
         }
+        if (command.hasLastPatchTime()) {
+          session.updateLastPatchTime(command.getLastPatchTime(), true);
+        }
       } catch (Exception e) {
         session.sessionListener.onError(session, e);
       }
