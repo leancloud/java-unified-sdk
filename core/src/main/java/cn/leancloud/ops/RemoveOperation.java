@@ -6,9 +6,15 @@ import java.util.*;
 
 public class RemoveOperation extends BaseOperation {
   public RemoveOperation(String key, Object value) {
-    super("Remove", key, value, false);
+    super("Remove", key, null, false);
+    this.value = new ArrayList<>();
+    if (null == value) {
+      return;
+    }
     if (!(value instanceof Collection)) {
-      this.value = Arrays.asList(value);
+      ((List)this.value).add(value);
+    } else {
+      ((List)this.value).addAll((Collection) value);
     }
   }
 

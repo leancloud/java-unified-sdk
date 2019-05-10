@@ -6,9 +6,15 @@ import java.util.*;
 
 public class RemoveRelationOperation extends BaseOperation {
   public RemoveRelationOperation(String key, Object value) {
-    super("RemoveRelation", key, value, false);
-    if (!(value instanceof Collections)) {
-      this.value = Arrays.asList(value);
+    super("RemoveRelation", key, null, false);
+    this.value = new ArrayList<>();
+    if (null == value) {
+      return;
+    }
+    if (!(value instanceof Collection)) {
+      ((List)this.value).add(value);
+    } else {
+      ((List)this.value).addAll((Collection) value);
     }
   }
 

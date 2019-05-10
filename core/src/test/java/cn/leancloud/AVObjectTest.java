@@ -482,6 +482,7 @@ public class AVObjectTest extends TestCase {
 
       public void onNext(AVObject avObject) {
         avObject.removeAll("course", Arrays.asList("Math", "Reading"));
+        avObject.removeAll("course", Arrays.asList("Sport"));
         avObject.setFetchWhenSave(true);
         avObject.saveInBackground().subscribe(new Observer<AVObject>() {
           public void onSubscribe(Disposable disposable) {

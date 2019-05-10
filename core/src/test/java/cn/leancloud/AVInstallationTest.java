@@ -10,6 +10,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.TestCase;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 public class AVInstallationTest extends TestCase {
@@ -86,8 +87,11 @@ public class AVInstallationTest extends TestCase {
   public void testSaveInstallationWithCustomProp() {
     AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
     currentInstall.put("chan", "Chan");
+    currentInstall.addAll("course", Arrays.asList("Artist"));
     currentInstall.saveInBackground().blockingFirst();
     currentInstall.remove("chan");
+    currentInstall.removeAll("course", Arrays.asList("Artist", "Reading"));
+    currentInstall.removeAll("course", Arrays.asList("Sport"));
     currentInstall.saveInBackground().blockingFirst();
   }
 }

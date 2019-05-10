@@ -10,9 +10,15 @@ import java.util.*;
  */
 public class AddOperation extends BaseOperation {
   public AddOperation(String field, Object value) {
-    super("Add", field, value, false);
+    super("Add", field, null, false);
+    this.value = new ArrayList<>();
+    if (null == value) {
+      return;
+    }
     if (!(value instanceof Collection)) {
-      this.value = Arrays.asList(value);
+      ((List)this.value).add(value);
+    } else {
+      ((List)this.value).addAll((Collection) value);
     }
   }
 

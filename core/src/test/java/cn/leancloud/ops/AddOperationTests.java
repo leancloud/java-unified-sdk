@@ -11,6 +11,9 @@ import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import junit.framework.TestCase;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class AddOperationTests extends TestCase {
@@ -35,5 +38,11 @@ public class AddOperationTests extends TestCase {
             OperationBuilder.OperationType.Add, "classmate", s);
     Map<String, Object> result = op.encode();
     System.out.println(new JSONObject(result).toJSONString());
+    Student a = new Student();
+    a.setObjectId("StudentObjectId-a");
+    List<Student> newS = new ArrayList<>();
+    newS.add(a);
+    Object n = op.apply(newS);
+    System.out.println(n.toString());
   }
 }
