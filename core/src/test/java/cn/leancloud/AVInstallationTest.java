@@ -87,5 +87,7 @@ public class AVInstallationTest extends TestCase {
     AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
     currentInstall.put("chan", "Chan");
     currentInstall.saveInBackground().blockingFirst();
+    currentInstall.remove("chan");
+    currentInstall.saveInBackground().blockingFirst();
   }
 }

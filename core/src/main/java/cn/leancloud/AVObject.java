@@ -395,9 +395,17 @@ public class AVObject {
       return;
     }
     if (totallyOverwrite) {
-      Object oldValue = this.serverData.get(op.getField());
-      Object newValue = op.apply(oldValue);
-      this.serverData.put(op.getField(), newValue);
+      if ("Delete".equalsIgnoreCase(op.getOperation())) {
+        this.serverData.remove(op.getField());
+      } else {
+        Object oldValue = this.serverData.get(op.getField());
+        Object newValue = op.apply(oldValue);
+        if (null == newValue) {
+          this.serverData.remove(op.getField());
+        } else {
+          this.serverData.put(op.getField(), newValue);
+        }
+      }
     } else {
       ObjectFieldOperation previous = null;
       if (this.operations.containsKey(op.getField())) {
