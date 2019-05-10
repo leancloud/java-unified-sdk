@@ -30,8 +30,13 @@ android {
 android.libraryVariants.all { variant ->
     def name = variant.buildType.name
     def task = project.tasks.create "jar${name.capitalize()}", Jar
-    task.dependsOn variant.javaCompile
-    task.from variant.javaCompile.destinationDir
+    if (variant.hasProperty('javaCompileProvider')) {
+        task.dependsOn variant.javaCompileProvider.get()
+        task.from variant.javaCompileProvider.get().destinationDir
+    } else {
+        task.dependsOn variant.javaCompile
+        task.from variant.javaCompile.destinationDir
+    }
     task.exclude '**/BuildConfig.class'
     task.exclude '**/R.class'
     task.exclude '**/R$*.class'
