@@ -100,7 +100,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private String updateTargetServer(RTMConnectionServerResponse rtmConnectionServerResponse) {
     String primaryServer = rtmConnectionServerResponse.getServer();
     String secondary = rtmConnectionServerResponse.getSecondary();
-    if (null == this.currentRTMConnectionServer || this.currentRTMConnectionServer.equalsIgnoreCase(secondary)) {
+    if (StringUtil.isEmpty(this.currentRTMConnectionServer) || this.currentRTMConnectionServer.equalsIgnoreCase(secondary)) {
       this.currentRTMConnectionServer = primaryServer;
     } else {
       this.currentRTMConnectionServer = secondary;
@@ -118,6 +118,17 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     } catch (NoSuchAlgorithmException exception) {
       LOGGER.e("failed to get SSLContext, cause: " + exception.getMessage());
     }
+    URI targetURI;
+    try {
+      targetURI = URI.create(targetServer);
+    } catch (Exception ex) {
+      LOGGER.e("failed to parse targetServer:" + targetServer + ", cause:" + ex.getMessage());
+      targetURI = null;
+    }
+    if (null == targetURI) {
+      return;
+    }
+
     synchronized (webSocketClientWatcher) {
       if (null != webSocketClient) {
         try {
@@ -130,10 +141,10 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
       }
       int connectTimeout = AVIMOptions.getGlobalOptions().getTimeoutInSecs() * 1000;// milliseconds
       if (AVIMOptions.getGlobalOptions().isOnlyPushCount()) {
-        webSocketClient = new AVStandardWebSocketClient(URI.create(targetServer), AVStandardWebSocketClient.SUB_PROTOCOL_2_3,
+        webSocketClient = new AVStandardWebSocketClient(targetURI, AVStandardWebSocketClient.SUB_PROTOCOL_2_3,
                 true, true, sf, connectTimeout, AVConnectionManager.this);
       } else {
-        webSocketClient = new AVStandardWebSocketClient(URI.create(targetServer), AVStandardWebSocketClient.SUB_PROTOCOL_2_1,
+        webSocketClient = new AVStandardWebSocketClient(targetURI, AVStandardWebSocketClient.SUB_PROTOCOL_2_1,
                 true, true, sf, connectTimeout, AVConnectionManager.this);
       }
       webSocketClient.connect();
