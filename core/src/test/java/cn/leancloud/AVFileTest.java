@@ -1,5 +1,7 @@
 package cn.leancloud;
 
+import cn.leancloud.codec.Base64Encoder;
+import cn.leancloud.codec.MD5;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.StringUtil;
@@ -12,6 +14,8 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class AVFileTest extends TestCase {
@@ -116,6 +120,70 @@ public class AVFileTest extends TestCase {
     assertTrue(testSucceed);
   }
 
+  public void testBase64Data() throws Exception {
+    String contents = StringUtil.getRandomString(640);
+    AVFile file = new AVFile("testfilename", contents.getBytes());
+//    Map<String, Object> metaData = new HashMap<>();
+//    metaData.put("format", "dat file");
+//    file.setMetaData(metaData);
+    file.setACL(new AVACL());
+    file.saveInBackground().subscribe(new Observer<AVFile>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVFile avFile) {
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(file.getObjectId().length() > 0);
+  }
+
+  public void testExternalFile2() throws Exception {
+    String url = "http://i1.wp.com/blog.avoscloud.com/wp-content/uploads/2014/05/screen568x568-1.jpg?resize=202%2C360";
+    AVFile file = new AVFile("screen.jpg", url);
+    file.saveInBackground().subscribe(new Observer<AVFile>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVFile avFile) {
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
   public void testExternalFile() throws Exception {
     AVFile portrait = new AVFile("thumbnail", "https://tvax1.sinaimg.cn/crop.0.0.200.200.180/a8d43f7ely1fnxs86j4maj205k05k74f.jpg");
     portrait.saveInBackground().subscribe(new Observer<AVFile>() {
@@ -145,6 +213,11 @@ public class AVFileTest extends TestCase {
 
     latch.await();
     assertTrue(testSucceed);
+  }
+
+  public void testBlockSave() throws Exception {
+    AVFile leanFile = new AVFile("name.txt", "name".getBytes());
+    leanFile.save();
   }
 
   public void testUploader() throws Exception {

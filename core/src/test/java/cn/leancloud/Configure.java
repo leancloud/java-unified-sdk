@@ -19,6 +19,7 @@ public class Configure {
     String regionStr = System.getenv("APP_REGION");
     reGion = StringUtil.isEmpty(regionStr) ? AVOSCloud.REGION.NorthChina : AVOSCloud.REGION.valueOf(regionStr);
     API_HOST = System.getenv("API_HOST");
+    //API_HOST = "http://localhost:8080";
 
     System.out.println("Test APP_id: " + TEST_APP_ID);
     System.out.println("Test APP_key: " + TEST_APP_KEY);
@@ -28,6 +29,9 @@ public class Configure {
 
   public static void initializeWithApp(String appId, String appKey, AVOSCloud.REGION region) {
     AVOSCloud.setRegion(region);
+    if (!StringUtil.isEmpty(API_HOST)) {
+      AVOSCloud.setServer(AVOSService.API, API_HOST);
+    }
     AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
 //    AppConfiguration.setEnableLocalCache(false);
     AVOSCloud.initialize(appId, appKey);

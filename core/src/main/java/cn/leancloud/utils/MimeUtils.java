@@ -402,4 +402,10 @@ public final class MimeUtils {
     }
     return mimeTypeToExtensionMap.get(mimeType);
   }
+  public static String guessMimeTypeFromExtension(String extension) {
+    if (extension == null || extension.isEmpty()) {
+      return null;
+    }
+    return extensionToMimeTypeMap.get(extension);
+  }
 }

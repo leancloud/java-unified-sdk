@@ -38,6 +38,6 @@ public class DefaultMimeTypeDetector implements FileUtil.MimeTypeDetector{
     if (StringUtil.isEmpty(extension)) {
       return "";
     }
-    return MimeUtils.guessExtensionFromMimeType(extension);
+    return MimeUtils.guessMimeTypeFromExtension(extension);
   }
 }

@@ -1,6 +1,6 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.types.AVNull;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observer;
@@ -899,11 +899,25 @@ public class AVObjectTest extends TestCase {
     assertNotNull(getACL);
   }
 
+  public void testEmbedLocation() throws Exception {
+    final AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 19);
+    object.add("course", "Art");
+    JSONObject localtion = new JSONObject();
+    localtion.put("2ds", new AVGeoPoint(34.6, 76.43));
+    object.put("location", localtion);
+    object.save();
+  }
+
   public void testUpdateWithSaveOptionShouldNotChange() throws Exception {
     final AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 19);
     object.add("course", "Art");
+    JSONObject localtion = new JSONObject();
+    localtion.put("2ds", new AVGeoPoint(34.6, 76.43));
+    object.put("location", localtion);
     object.save();
 
     AVQuery<AVObject> query = new AVQuery<>("Student");

@@ -3,8 +3,13 @@ package cn.leancloud.core;
 import cn.leancloud.AVLogger;
 import cn.leancloud.utils.LogUtil;
 import okhttp3.*;
+import okio.Buffer;
+import okio.BufferedSink;
+import okio.Okio;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class LoggingInterceptor implements Interceptor {
   private static final String CURL_COMMAND = "curl -X %s \n";
@@ -36,6 +41,20 @@ public class LoggingInterceptor implements Interceptor {
         continue;
       }
       sb.append(String.format(CURL_HEADER_FORMAT, name, headers.get(name)));
+    }
+
+    try {
+      ByteArrayOutputStream os = new ByteArrayOutputStream();
+      BufferedSink sink = Okio.buffer(Okio.sink(os));
+      RequestBody body = request.body();
+      if (null != body) {
+        body.writeTo(sink);
+        sink.close();
+        String bodyString = os.toString();
+        sb.append(String.format("-d '%s' \n", bodyString));
+      }
+    } catch (Exception ex) {
+      ex.printStackTrace();
     }
     sb.append(url);
     return sb.toString();
