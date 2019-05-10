@@ -39,6 +39,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
 
   private static AVConnectionManager instance = null;
   private AVStandardWebSocketClient webSocketClient = null;
+  private Object webSocketClientWatcher = new Object();
   private String currentRTMConnectionServer = null;
   private int retryConnectionCount = 0;
   private boolean connectionEstablished = false;
@@ -117,24 +118,26 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     } catch (NoSuchAlgorithmException exception) {
       LOGGER.e("failed to get SSLContext, cause: " + exception.getMessage());
     }
-    if (null != webSocketClient) {
-      try {
-        webSocketClient.close();
-      } catch (Exception ex) {
-        LOGGER.e("failed to close websocket client.", ex);
-      } finally {
-        webSocketClient = null;
+    synchronized (webSocketClientWatcher) {
+      if (null != webSocketClient) {
+        try {
+          webSocketClient.close();
+        } catch (Exception ex) {
+          LOGGER.e("failed to close websocket client.", ex);
+        } finally {
+          webSocketClient = null;
+        }
       }
+      int connectTimeout = AVIMOptions.getGlobalOptions().getTimeoutInSecs() * 1000;// milliseconds
+      if (AVIMOptions.getGlobalOptions().isOnlyPushCount()) {
+        webSocketClient = new AVStandardWebSocketClient(URI.create(targetServer), AVStandardWebSocketClient.SUB_PROTOCOL_2_3,
+                true, true, sf, connectTimeout, AVConnectionManager.this);
+      } else {
+        webSocketClient = new AVStandardWebSocketClient(URI.create(targetServer), AVStandardWebSocketClient.SUB_PROTOCOL_2_1,
+                true, true, sf, connectTimeout, AVConnectionManager.this);
+      }
+      webSocketClient.connect();
     }
-    int connectTimeout = AVIMOptions.getGlobalOptions().getTimeoutInSecs() * 1000;// milliseconds
-    if (AVIMOptions.getGlobalOptions().isOnlyPushCount()) {
-      webSocketClient = new AVStandardWebSocketClient(URI.create(targetServer), AVStandardWebSocketClient.SUB_PROTOCOL_2_3,
-              true, true, sf, connectTimeout, AVConnectionManager.this);
-    } else {
-      webSocketClient = new AVStandardWebSocketClient(URI.create(targetServer), AVStandardWebSocketClient.SUB_PROTOCOL_2_1,
-              true, true, sf, connectTimeout, AVConnectionManager.this);
-    }
-    webSocketClient.connect();
   }
 
   public void startConnection(AVCallback callback) {
@@ -216,15 +219,18 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   void resetConnection() {
-    if (null != webSocketClient) {
-      try {
-        webSocketClient.closeConnection(CloseFrame.ABNORMAL_CLOSE, "Connectivity broken");
-      } catch (Exception ex) {
-        LOGGER.e("failed to close websocket client.", ex);
-      } finally {
-        webSocketClient = null;
+    synchronized (webSocketClientWatcher) {
+      if (null != webSocketClient) {
+        try {
+          webSocketClient.closeConnection(CloseFrame.ABNORMAL_CLOSE, "Connectivity broken");
+        } catch (Exception ex) {
+          LOGGER.e("failed to close websocket client.", ex);
+        } finally {
+          webSocketClient = null;
+        }
       }
     }
+
     connectionEstablished = false;
     retryConnectionCount = 0;
     connecting = false;

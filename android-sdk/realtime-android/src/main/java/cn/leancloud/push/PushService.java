@@ -395,7 +395,7 @@ public class PushService extends Service {
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.N)
+//  @TargetApi(Build.VERSION_CODES.N)
   private static void startServiceIfRequired(Context context,
                                              final java.lang.Class<? extends android.app.Activity> cls) {
     if (isStarted) {
@@ -407,7 +407,7 @@ public class PushService extends Service {
       return;
     }
 
-    if (PackageManager.PERMISSION_GRANTED != context.checkSelfPermission("android.permission.INTERNET")) {
+    if (PackageManager.PERMISSION_GRANTED != context.checkCallingOrSelfPermission("android.permission.INTERNET")) {
       LOGGER.e("Please add <uses-permission android:name=\"android.permission.INTERNET\"/> in your AndroidManifest file");
       return;
     }
