@@ -1,29 +1,31 @@
-package cn.leancloud.cache;
+package cn.leancloud.push.lite.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.util.Map;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.utils.LogUtil;
-
-/**
- * Created by fengjunwen on 2018/4/8.
- */
-
-public class AndroidSystemSetting implements SystemSetting {
-  private static AVLogger LOGGER = LogUtil.getLogger(AndroidSystemSetting.class);
-
+public class AndroidSystemSetting {
   private Context context;
+  private static AndroidSystemSetting instance;
 
-  public AndroidSystemSetting(Context context) {
+  public static AndroidSystemSetting createInstance(Context context) {
+    if (null == instance) {
+      instance = new AndroidSystemSetting(context);
+    }
+    return instance;
+  }
+
+  public static AndroidSystemSetting getInstance() {
+    return instance;
+  }
+
+  private AndroidSystemSetting(Context context) {
     this.context = context;
   }
 
   public boolean getBoolean(String keyZone, String key, boolean defaultValue) {
     if (null == this.context) {
-      LOGGER.w("application context is null");
       return defaultValue;
     }
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
@@ -32,7 +34,6 @@ public class AndroidSystemSetting implements SystemSetting {
 
   public int getInteger(String keyZone, String key, int defaultValue) {
     if (null == this.context) {
-      LOGGER.w("application context is null");
       return defaultValue;
     }
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
@@ -41,7 +42,6 @@ public class AndroidSystemSetting implements SystemSetting {
 
   public float getFloat(String keyZone, String key, float defaultValue) {
     if (null == this.context) {
-      LOGGER.w("application context is null");
       return defaultValue;
     }
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
@@ -50,7 +50,6 @@ public class AndroidSystemSetting implements SystemSetting {
 
   public long getLong(String keyZone, String key, long defaultValue) {
     if (null == this.context) {
-      LOGGER.w("application context is null");
       return defaultValue;
     }
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
@@ -59,7 +58,6 @@ public class AndroidSystemSetting implements SystemSetting {
 
   public String getString(String keyZone, String key, String defaultValue) {
     if (null == this.context) {
-      LOGGER.w("application context is null");
       return defaultValue;
     }
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
@@ -76,7 +74,6 @@ public class AndroidSystemSetting implements SystemSetting {
 
   public void saveBoolean(String keyZone, String key, boolean value) {
     if (null == this.context) {
-      LOGGER.w("application context is null");
       return;
     }
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
@@ -86,7 +83,6 @@ public class AndroidSystemSetting implements SystemSetting {
   }
   public void saveInteger(String keyZone, String key, int value) {
     if (null == this.context) {
-      LOGGER.w("application context is null");
       return;
     }
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
@@ -96,7 +92,6 @@ public class AndroidSystemSetting implements SystemSetting {
   }
   public void saveFloat(String keyZone, String key, float value) {
     if (null == this.context) {
-      LOGGER.w("application context is null");
       return;
     }
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
@@ -106,7 +101,6 @@ public class AndroidSystemSetting implements SystemSetting {
   }
   public void saveLong(String keyZone, String key, long value) {
     if (null == this.context) {
-      LOGGER.w("application context is null");
       return;
     }
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
@@ -116,7 +110,6 @@ public class AndroidSystemSetting implements SystemSetting {
   }
   public void saveString(String keyZone, String key, String value) {
     if (null == this.context) {
-      LOGGER.w("application context is null");
       return;
     }
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
@@ -127,7 +120,6 @@ public class AndroidSystemSetting implements SystemSetting {
 
   public void removeKey(String keyZone, String key) {
     if (null == this.context) {
-      LOGGER.w("application context is null");
       return;
     }
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
@@ -138,7 +130,6 @@ public class AndroidSystemSetting implements SystemSetting {
 
   public void removeKeyZone(String keyZone) {
     if (null == this.context) {
-      LOGGER.w("application context is null");
       return;
     }
     SharedPreferences setting = this.context.getSharedPreferences(keyZone, Context.MODE_PRIVATE);
@@ -146,5 +137,4 @@ public class AndroidSystemSetting implements SystemSetting {
     editor.clear();
     editor.apply();
   }
-
 }
