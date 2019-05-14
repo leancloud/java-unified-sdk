@@ -6,6 +6,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface PushRestAPI {
@@ -15,6 +16,6 @@ public interface PushRestAPI {
   @POST("/1.1/installations")
   Call<JSONObject> saveInstallation(@Body JSONObject param, @Query("fetchWhenSave") boolean fetchFlag);
 
-  @GET("/2/route")
-  Call<JSONObject> getRouter(@Query("appId") String appId);
+  @GET("/1.1/installations/{objectId}")
+  Call<JSONObject> findInstallation(@Path("objectId") String installationId);
 }

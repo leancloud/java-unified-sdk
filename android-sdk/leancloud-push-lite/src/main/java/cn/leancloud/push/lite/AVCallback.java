@@ -1,14 +1,13 @@
 package cn.leancloud.push.lite;
 
-import android.os.Looper;
 import android.util.Log;
 
+import cn.leancloud.push.lite.utils.AVUtils;
+
 public abstract class AVCallback<T> {
-  public static boolean isMainThread() {
-    return Looper.myLooper() == Looper.getMainLooper();
-  }
+
   public void internalDone(final T t, final AVException avException) {
-    if (mustRunOnUIThread() && !isMainThread()) {
+    if (mustRunOnUIThread() && !AVUtils.isMainThread()) {
       if (!AVOSCloud.handler.post(new Runnable() {
         @Override
         public void run() {

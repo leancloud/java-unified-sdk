@@ -32,23 +32,6 @@ public class PacketAssembler {
     }
   }
 
-//  public CommandPacket assembleSessionOpenPacket(String clientId, String tag, Signature signature, long lastNotifyTime,
-//                                                 long lastPatchTime, boolean reConnect, int requestId) {
-//    SessionControlPacket scp = SessionControlPacket.genSessionCommand(
-//        clientId, null,
-//        SessionControlPacket.SessionControlOp.OPEN, signature,
-//        lastNotifyTime, lastPatchTime, requestId);
-//    scp.setTag(tag);
-//    scp.setReconnectionRequest(reConnect);
-//    return scp;
-//  }
-//
-//  public CommandPacket assembleSessionPacket(String selfId, List<String> peers,
-//                                             String op, Signature signature, Integer requestId) {
-//    SessionControlPacket scp = SessionControlPacket.genSessionCommand(selfId, peers, op, signature, requestId);
-//    return scp;
-//  }
-
   public CommandPacket assemblePushAckPacket(String installationId, List<String> messageIds) {
     PushAckPacket pushAckPacket = new PushAckPacket();
     pushAckPacket.setInstallationId(installationId);

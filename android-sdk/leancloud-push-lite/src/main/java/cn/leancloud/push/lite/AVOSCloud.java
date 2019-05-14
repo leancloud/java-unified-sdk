@@ -3,35 +3,103 @@ package cn.leancloud.push.lite;
 import android.content.Context;
 import android.os.Handler;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.parser.ParserConfig;
-import com.alibaba.fastjson.serializer.SerializeConfig;
+import cn.leancloud.push.lite.rest.AVHttpClient;
+import cn.leancloud.push.lite.utils.AVPersistenceUtils;
+import cn.leancloud.push.lite.utils.AVUtils;
+import cn.leancloud.push.lite.utils.StringUtil;
 
 public class AVOSCloud {
+  public enum REGION {
+    EastChina, NorthChina, NorthAmerica
+  }
+
+  /**
+   * 服务区分，注意 name 值不能随意修改修改，要根据这个值来拼 host
+   * RTM is indicating router server.
+   */
+  enum SERVER_TYPE {
+    API("api"), PUSH("push"), RTM("rtm"), STATS("stats"), ENGINE("engine");
+    public final String name;
+
+    SERVER_TYPE(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public String toString() {
+      return this.name;
+    }
+  }
+
   public static Context applicationContext = null;
   public static String applicationId = null;
   public static String clientKey = null;
   protected static Handler handler = null;
 
-  static {
-    JSON.DEFFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    try {
-      Class avInstallationClass = Class.forName("cn.leancloud.push.lite.AVInstallation");
-      ParserConfig.getGlobalInstance().putDeserializer(avInstallationClass,
-          AVObjectDeserializer.instance);
-      SerializeConfig.getGlobalInstance().put(avInstallationClass, AVObjectSerializer.instance);
-    } catch (Exception e) {
-    }
+  private static REGION defaultRegion = REGION.NorthChina;
+
+  public static final int DEFAULT_NETWORK_TIMEOUT = 15000;
+
+  private static int networkTimeoutInMills = DEFAULT_NETWORK_TIMEOUT;
+
+  public static void setNetworkTimeout(int timeoutInMills) {
+    networkTimeoutInMills = timeoutInMills;
+  }
+
+  static void setServer(SERVER_TYPE serverType, String host) {
+    PushRouterManager.setServer(serverType, host);
+  }
+
+  public static void setRegion(REGION region) {
+    defaultRegion = region;
+  }
+
+  public static REGION getRegion() {
+    return defaultRegion;
   }
 
   public static void initialize(Context context, String applicationId, String clientKey) {
-    ;
+    if (handler == null && !AVUtils.isMainThread()) {
+      throw new IllegalStateException("Please call AVOSCloud.initialize in main thread.");
+    }
+    if (null == context || StringUtil.isEmpty(applicationId) || StringUtil.isEmpty(clientKey)) {
+      throw new IllegalArgumentException("Parameter(context or applicationId or clientKey) is illegal.");
+    }
+    if (null != AVOSCloud.applicationContext) {
+      if (applicationId.equals(AVOSCloud.applicationId) && clientKey.equals(AVOSCloud.clientKey)) {
+        // ignore duplicated init.
+        return;
+      } else {
+        throw new IllegalStateException("Can't initialize more than once.");
+      }
+    }
+    AVOSCloud.applicationId = applicationId;
+    AVOSCloud.clientKey = clientKey;
+    AVOSCloud.applicationContext = context;
+
+    if (handler == null) {
+      AVOSCloud.handler = new Handler();
+    }
+    initialize();
   }
+
+  private static void initialize() {
+    AVPersistenceUtils.initAppInfo(applicationId, applicationContext);
+    PushRouterManager.getInstance().fetchRouter(false, new AVCallback() {
+      @Override
+      protected void internalDone0(Object o, AVException avException) {
+        String pushAPIServer = PushRouterManager.getInstance().getPushAPIServer();
+        String pushRouterServer = PushRouterManager.getInstance().getPushRouterServer();
+        AVHttpClient.getInstance().initialize(pushAPIServer, pushRouterServer);
+      }
+    });
+  }
+
   public static String getApplicationId() {
-    return null;
+    return applicationId;
   }
 
   public static Context getContext() {
-    return null;
+    return applicationContext;
   }
 }
