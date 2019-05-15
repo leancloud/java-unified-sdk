@@ -1,5 +1,6 @@
 package cn.leancloud.push.lite.ws;
 
+import android.os.Build;
 import android.util.Log;
 
 import org.java_websocket.client.WebSocketClient;
@@ -81,7 +82,7 @@ public class AVStandardWebSocketClient extends WebSocketClient {
       if (!StringUtil.isEmpty(url)) {
         if (url.startsWith("wss") && null != this.socketFactory) {
           Socket socket = socketFactory.createSocket();
-          if (sniEnabled) {
+          if (sniEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             try {
               Class sniHostnameClazz = Class.forName("javax.net.ssl.SNIHostName");
               Class sslSocketClazz = Class.forName("javax.net.ssl.SSLSocket");

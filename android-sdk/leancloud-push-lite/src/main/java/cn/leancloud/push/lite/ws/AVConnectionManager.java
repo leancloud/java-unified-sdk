@@ -8,7 +8,6 @@ import com.alibaba.fastjson.JSONObject;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,12 +17,10 @@ import javax.net.ssl.SSLSocketFactory;
 import cn.leancloud.push.lite.AVCallback;
 import cn.leancloud.push.lite.AVException;
 import cn.leancloud.push.lite.AVInstallation;
-import cn.leancloud.push.lite.AVNotificationManager;
 import cn.leancloud.push.lite.AVOSCloud;
 import cn.leancloud.push.lite.proto.CommandPacket;
 import cn.leancloud.push.lite.proto.LoginPacket;
 import cn.leancloud.push.lite.proto.Messages;
-import cn.leancloud.push.lite.proto.PushAckPacket;
 import cn.leancloud.push.lite.rest.AVHttpClient;
 import cn.leancloud.push.lite.utils.PacketAssembler;
 import cn.leancloud.push.lite.utils.StringUtil;
@@ -261,7 +258,9 @@ public class AVConnectionManager implements WebSocketClientMonitor {
       return;
     }
 
-    Log.d(TAG, "downlink: " + command.toString());
+    if (AVOSCloud.isDebugLogEnabled()) {
+      Log.d(TAG, "downlink: " + command.toString());
+    }
 
     String peerId = command.getPeerId();
     if (StringUtil.isEmpty(peerId)) {

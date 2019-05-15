@@ -40,14 +40,20 @@ public class AVNotificationManager {
   private final ConcurrentMap<String, String> defaultPushCallback =
       new ConcurrentHashMap<String, String>();
   private int notificationIcon = 0;
+  private Context context;
 
-  private static final AVNotificationManager INSTANCE = new AVNotificationManager();
+  private static AVNotificationManager INSTANCE = null;
 
-  public static AVNotificationManager getInstance() {
+  public synchronized static AVNotificationManager getInstance() {
+    if (null == INSTANCE) {
+      INSTANCE = new AVNotificationManager(AVOSCloud.applicationContext);
+    }
     return INSTANCE;
   }
 
-  private AVNotificationManager() {
+  private AVNotificationManager(Context context) {
+    this.notificationIcon = context.getApplicationInfo().icon;
+    this.context = context;
     readDataFromCache();
   }
 
@@ -218,6 +224,7 @@ public class AVNotificationManager {
       }
 
       String action = getAction(message);
+      Log.d(TAG, "process push message:" + message + ", channel:" + channel + ", action:" + action);
       if (action != null) {
         sendBroadcast(channel, message, action);
       } else {
@@ -238,7 +245,7 @@ public class AVNotificationManager {
     updateIntent.putExtra("com.avoscloud.Channel", channel);
     updateIntent.putExtra("com.avos.avoscloud.Data", msg);
     updateIntent.putExtra("com.avoscloud.Data", msg);
-    updateIntent.setPackage(AVOSCloud.getContext().getPackageName());
+    updateIntent.setPackage(this.context.getPackageName());
     return updateIntent;
   }
 
@@ -254,7 +261,6 @@ public class AVNotificationManager {
       throw new IllegalArgumentException(
           "No default callback found, did you forget to invoke setDefaultPushCallback?");
     }
-    Context context = AVOSCloud.getContext();
     int lastIndex = clsName.lastIndexOf(".");
     if (lastIndex != -1) {
       // String packageName = clsName.substring(0, lastIndex);
@@ -297,7 +303,6 @@ public class AVNotificationManager {
   }
 
   String getApplicationName() {
-    Context context = AVOSCloud.getContext();
     final PackageManager pm = context.getPackageManager();
     ApplicationInfo ai;
     try {
@@ -313,7 +318,7 @@ public class AVNotificationManager {
   void sendBroadcast(String channel, String msg, String action) {
     Intent updateIntent = buildUpdateIntent(channel, msg, action);
     Log.d(TAG, "action: " + updateIntent.getAction());
-    AVOSCloud.getContext().sendBroadcast(updateIntent);
+    context.sendBroadcast(updateIntent);
     Log.d(TAG, "sent broadcast");
   }
 
@@ -379,10 +384,10 @@ public class AVNotificationManager {
           Log.e(TAG, "className is empty, ignore.");
         } else {
           Intent intent = buildUpdateIntent(channel, message, null);
-          ComponentName cn = new ComponentName(AVOSCloud.getContext(), clsName);
+          ComponentName cn = new ComponentName(context, clsName);
           intent.setComponent(cn);
           intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-          PendingIntent pendingIntent = PendingIntent.getActivity(AVOSCloud.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+          PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
           try {
             pendingIntent.send();
           } catch (PendingIntent.CanceledException e) {
@@ -418,7 +423,7 @@ public class AVNotificationManager {
   private void sendNotificationBroadcast(String channel, String msg, String action) {
     Intent updateIntent = buildUpdateIntent(channel, msg, action);
     Log.d(TAG, "action: " + updateIntent.getAction());
-    AVOSCloud.getContext().sendBroadcast(updateIntent);
+    context.sendBroadcast(updateIntent);
     Log.d(TAG, "sent broadcast");
   }
 //  abstract String getApplicationName();

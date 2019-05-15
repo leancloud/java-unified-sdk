@@ -1,5 +1,7 @@
 package cn.leancloud.push.lite.rest;
 
+import android.util.Log;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -70,13 +72,13 @@ public class LoggingInterceptor implements Interceptor {
       return response;
     }
 
-    System.out.println(String.format("Request: %s", generateCURLCommandString(request)));
+    Log.d("LeanCloud", String.format("Request: %s", generateCURLCommandString(request)));
 
     int responseCode = response.code();
     Headers responseHeaders = response.headers();
     String responseBody = response.body().string();
 
-    System.out.println(String.format("Response: %d %n%s %n%s ", response.code(), responseHeaders, responseBody));
+    Log.d("LeanCloud", String.format("Response: %d %n%s %n%s ", response.code(), responseHeaders, responseBody));
 
     return response.newBuilder()
         .code(responseCode)
