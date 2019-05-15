@@ -84,12 +84,18 @@ public class PushRouterManager {
   }
 
   public String getPushAPIServer() {
-    String result = customApiMaps.getOrDefault(AVOSCloud.SERVER_TYPE.PUSH.name, apiMaps.getOrDefault(AVOSCloud.SERVER_TYPE.PUSH.name, ""));
+    String result = customApiMaps.get(AVOSCloud.SERVER_TYPE.PUSH.name);
+    if (StringUtil.isEmpty(result)) {
+      result = apiMaps.get(AVOSCloud.SERVER_TYPE.PUSH.name);
+    }
     return result;
   }
 
   public String getPushRouterServer() {
-    String result = customApiMaps.getOrDefault(AVOSCloud.SERVER_TYPE.RTM.name, apiMaps.getOrDefault(AVOSCloud.SERVER_TYPE.RTM.name, ""));
+    String result = customApiMaps.get(AVOSCloud.SERVER_TYPE.RTM.name);
+    if (StringUtil.isEmpty(result)) {
+      result = apiMaps.get(AVOSCloud.SERVER_TYPE.RTM.name);
+    }
     return result;
   }
 

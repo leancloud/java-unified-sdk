@@ -8,6 +8,7 @@ import android.util.Log;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.io.File;
@@ -116,18 +117,29 @@ public class AVInstallation implements Parcelable {
       if (installationFile.exists()) {
         json = AVPersistenceUtils.readContentFromFile(installationFile);
         if (json.indexOf("{") >= 0) {
-          JSONObject installationJson = JSON.parseObject(json);
+          // replace leading type name to compatible with v4.x android sdk serialized json string.
+          json = json.replaceAll("^\\{\\s*\"@type\":\\s*\"[A-Za-z\\.]+\",", "{");
+
+          JSONObject installationJson = JSON.parseObject(json, Feature.SupportAutoType);
           currentInstallation = new AVInstallation();
-          currentInstallation.setUpdatedAt(installationJson.getString("updatedAt"));
-          currentInstallation.setObjectId(installationJson.getString("objectId"));
-          currentInstallation.setCreatedAt(installationJson.getString("createdAt"));
-          JSONObject serverDataJson = installationJson.getJSONObject("serverData");
-          if (null != serverDataJson) {
-            for (String key: serverDataJson.keySet()) {
-              if (key.startsWith("@")) {
-                continue;
-              } else {
-                currentInstallation.put(key, serverDataJson.get(key));
+          if (installationJson.containsKey("updatedAt")) {
+            currentInstallation.setUpdatedAt(installationJson.getString("updatedAt"));
+          }
+          if (installationJson.containsKey("objectId")) {
+            currentInstallation.setObjectId(installationJson.getString("objectId"));
+          }
+          if (installationJson.containsKey("createdAt")) {
+            currentInstallation.setCreatedAt(installationJson.getString("createdAt"));
+          }
+          if (installationJson.containsKey("serverData")) {
+            JSONObject serverDataJson = installationJson.getJSONObject("serverData");
+            if (null != serverDataJson) {
+              for (String key : serverDataJson.keySet()) {
+                if (key.startsWith("@")) {
+                  continue;
+                } else {
+                  currentInstallation.put(key, serverDataJson.get(key));
+                }
               }
             }
           }
@@ -481,6 +493,8 @@ public class AVInstallation implements Parcelable {
     if (null == data) {
       return;
     }
+    this.serverData.putAll(data.getInnerMap());
+    saveCurrentInstalationToLocal(AVOSCloud.applicationContext);
   }
   /**
    * save operation
@@ -549,7 +563,7 @@ public class AVInstallation implements Parcelable {
     out.writeString(this.updatedAt);
     out.writeString(this.objectId);
     out.writeString(JSON.toJSONString(serverData, new ObjectValueFilter(),
-        SerializerFeature.NotWriteRootClassName, SerializerFeature.WriteClassName));
+        SerializerFeature.NotWriteRootClassName, SerializerFeature.NotWriteDefaultValue));
   }
 
   public static final Creator CREATOR = new InstallationCreator();

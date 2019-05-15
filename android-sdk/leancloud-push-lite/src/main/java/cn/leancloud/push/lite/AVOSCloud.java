@@ -20,6 +20,9 @@ public class AVOSCloud {
   public static final int LOG_LEVEL_ERROR = 1 << 5;
   public static final int LOG_LEVEL_NONE = ~0;
 
+  private static final String SDK_VERSION = "5.0.13";
+  private static final String DEFAULT_USER_AGENT = "LeanCloud Push(lite) SDK v" + SDK_VERSION;
+
   /**
    * 服务区分，注意 name 值不能随意修改修改，要根据这个值来拼 host
    * RTM is indicating router server.
@@ -137,5 +140,9 @@ public class AVOSCloud {
   // for compatible with old version.
   public static boolean showInternalDebugLog() {
     return isDebugLogEnabled();
+  }
+
+  public static String getUserAgent(){
+    return DEFAULT_USER_AGENT;
   }
 }

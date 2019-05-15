@@ -51,6 +51,13 @@ public class StringUtil {
     return computeMD5(hash);
   }
 
+  public static String computeMD5(String data) {
+    if (null == data) {
+      return null;
+    }
+    return computeMD5(data.getBytes());
+  }
+
   public static String computeMD5(byte[] input) {
     try {
       if (null == input) {

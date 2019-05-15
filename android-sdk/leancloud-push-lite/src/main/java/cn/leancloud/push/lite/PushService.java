@@ -133,7 +133,7 @@ public class PushService extends Service {
   @TargetApi(Build.VERSION_CODES.N)
   private static boolean isConnected(Context context) {
     try {
-      int hasPermission = context.checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE);
+      int hasPermission = context.checkCallingOrSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE);
       if (PackageManager.PERMISSION_GRANTED != hasPermission) {
         Log.w(TAG,"android.Manifest.permission.ACCESS_NETWORK_STATE is not granted.");
       } else {
@@ -232,7 +232,7 @@ public class PushService extends Service {
     _installationSaveHandler.sendMessage(Message.obtain());
 
     if (cls != null) {
-      AVNotificationManager manager = AVPushMessageListener.getInstance().getNotificationManager();
+      AVNotificationManager manager = AVNotificationManager.getInstance();
       manager.addDefaultPushCallback(channel, cls.getName());
 
       // set default push callback if it's not exist yet
@@ -243,7 +243,7 @@ public class PushService extends Service {
   }
 
   public static void setNotificationIcon(int icon) {
-    AVPushMessageListener.getInstance().getNotificationManager().setNotificationIcon(icon);
+    AVNotificationManager.getInstance().setNotificationIcon(icon);
   }
 
   public static void startIfRequired(android.content.Context context) {
@@ -254,7 +254,7 @@ public class PushService extends Service {
                                             java.lang.Class<? extends android.app.Activity> cls) {
     Log.d(TAG, "setDefaultPushCallback cls=" + cls.getName());
     startServiceIfRequired(context, cls);
-    AVPushMessageListener.getInstance().getNotificationManager().addDefaultPushCallback(AVOSCloud.getApplicationId(), cls.getName());
+    AVNotificationManager.getInstance().addDefaultPushCallback(AVOSCloud.getApplicationId(), cls.getName());
   }
 
   public static void setAutoWakeUp(boolean isAutoWakeUp) {
@@ -287,7 +287,7 @@ public class PushService extends Service {
     if (channel == null) {
       return;
     }
-    AVPushMessageListener.getInstance().getNotificationManager().removeDefaultPushCallback(channel);
+    AVNotificationManager.getInstance().removeDefaultPushCallback(channel);
     final java.lang.String finalChannel = channel;
     if (StringUtil.isEmpty(AVInstallation.getCurrentInstallation().getObjectId())) {
       AVInstallation.getCurrentInstallation().saveInBackground(new AVCallback<Void>() {
