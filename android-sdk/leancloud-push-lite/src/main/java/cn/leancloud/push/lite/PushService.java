@@ -56,11 +56,27 @@ public class PushService extends Service {
   @Override
   public void onCreate() {
     super.onCreate();
+    Log.d(TAG, "PushServer#onCreate");
     connectionManager = AVConnectionManager.getInstance();
     new Thread(new Runnable() {
       @Override
       public void run() {
-        connectionManager.startConnection();
+        boolean connected = isConnected();
+        if (connected && !connectionManager.isConnectionEstablished()) {
+          Log.d(TAG,"networking is fine and try to start connection to leancloud.");
+          synchronized (connecting) {
+            connectionManager.startConnection(new AVCallback<Integer>() {
+              @Override
+              protected void internalDone0(Integer resultCode, AVException exception) {
+                if (null == exception) {
+                  Log.d(TAG, "succeed to establish connection.");
+                } else {
+                  Log.w(TAG,"failed to start connection. cause:", exception);
+                }
+              }
+            });
+          }
+        }
       }
     }).start();
     connectivityReceiver = new AVConnectivityReceiver(new AVConnectivityListener() {
@@ -94,19 +110,6 @@ public class PushService extends Service {
         }
         Log.d(TAG, "Connectivity broken");
         connectEstablished = false;
-//        if (false) {
-//          cleanupTimer.schedule(new TimerTask() {
-//            @Override
-//            public void run() {
-//              if (!connectEstablished) {
-//                Log.d(TAG, "Connection cleanup now.");
-//                connectionManager.cleanup();
-//              } else {
-//                Log.d(TAG, "Connection has been resumed");
-//              }
-//            }
-//          }, 3000);
-//        }
       }
     });
     registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
@@ -161,17 +164,13 @@ public class PushService extends Service {
           protected void internalDone0(Integer resultCode, AVException exception) {
             if (null == exception) {
               Log.d(TAG, "succeed to establish connection.");
-              // TODO: login?
             } else {
               Log.w(TAG,"failed to start connection. cause:", exception);
             }
           }
         });
       }
-    } else {
-      // TODO: login?
     }
-
     return START_STICKY;
   }
 
@@ -207,7 +206,6 @@ public class PushService extends Service {
   @Override
   public void onTaskRemoved(Intent rootIntent) {
     Log.d(TAG, "try to restart service on task Removed");
-
     if (isAutoWakeUp) {
       Intent restartServiceIntent = new Intent(getApplicationContext(), this.getClass());
       restartServiceIntent.setPackage(getPackageName());
@@ -331,7 +329,7 @@ public class PushService extends Service {
     }
 
     if (!isPushServiceAvailable(context, PushService.class)) {
-      Log.e(TAG, "Please add <service android:name=\"cn.leancloud.push.PushService\"/> in your AndroidManifest file");
+      Log.e(TAG, "Please add <service android:name=\"cn.leancloud.push.lite.PushService\"/> in your AndroidManifest file");
       return;
     }
 
@@ -374,14 +372,14 @@ public class PushService extends Service {
     if (isNeedNotifyApplication && !SERVICE_RESTART_ACTION.equals(action)) {
       // 每次 app 启动只需要唤醒一次就行了
       isNeedNotifyApplication = false;
-
       try {
         ServiceInfo info = getApplicationContext().getPackageManager().getServiceInfo(
             new ComponentName(getApplicationContext(), PushService.class), 0);
         if(info.exported) {
-          // FIXME:
+          NotifyUtil.notifyHandler.sendEmptyMessage(NotifyUtil.SERVICE_RESTART);
         }
-      } catch (PackageManager.NameNotFoundException e) {
+      } catch (Exception e) {
+        Log.d(TAG, "failed to call notifyOtherApplication. cause: " + e.getMessage());
       }
     }
   }

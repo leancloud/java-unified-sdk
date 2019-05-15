@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 
 import java.util.Objects;
 
+import cn.leancloud.push.lite.PushRouterManager;
+import cn.leancloud.push.lite.utils.StringUtil;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
@@ -29,20 +31,49 @@ public class AVHttpClient {
     return gInstance;
   }
 
+  private String currentPushAPIServer = "";
+  private String currentPushRouterServer = "";
+
   private AVHttpClient() {
     ;
   }
 
-  public void initialize(String pushAPIServer, String pushRouterServer) {
+  /**
+   * initialize push api and router server.
+   * this method is called by PushRouterManager after calling app router.
+   *
+   * @param pushAPIServer
+   * @param pushRouterServer
+   */
+  public synchronized void initialize(String pushAPIServer, String pushRouterServer) {
     if (initialized) {
       return;
     }
-    pushRouterRetrofit = new Retrofit.Builder().baseUrl(pushRouterServer).build();
-    pushRouterAPI = pushRouterRetrofit.create(PushRouterRestAPI.class);
-
-    pushAPIRetrofit = new Retrofit.Builder().baseUrl(pushAPIServer).build();
-    pushAPI = pushAPIRetrofit.create(PushRestAPI.class);
+    createRetrofitClient(pushAPIServer, pushRouterServer);
     initialized = true;
+  }
+
+  private void createRetrofitClient(String pushAPIServer, String pushRouterServer) {
+    if (!StringUtil.isEmpty(pushAPIServer) && !currentPushAPIServer.equals(pushAPIServer)) {
+      pushRouterRetrofit = new Retrofit.Builder().baseUrl(pushRouterServer).build();
+      pushRouterAPI = pushRouterRetrofit.create(PushRouterRestAPI.class);
+      currentPushAPIServer = pushAPIServer;
+    }
+
+    if (!StringUtil.isEmpty(pushRouterServer) && !currentPushRouterServer.equals(pushRouterServer)) {
+      pushAPIRetrofit = new Retrofit.Builder().baseUrl(pushAPIServer).build();
+      pushAPI = pushAPIRetrofit.create(PushRestAPI.class);
+      currentPushRouterServer = pushRouterServer;
+    }
+  }
+
+  private synchronized void makeSurePushRetrofit() {
+    if (initialized) {
+      return;
+    }
+    String pushAPIServer = PushRouterManager.getInstance().getPushAPIServer();
+    String pushRouterServer = PushRouterManager.getInstance().getPushRouterServer();
+    createRetrofitClient(pushAPIServer, pushRouterServer);
   }
 
   public static void fetchAccessServers(String appId, Callback<JSONObject> callback) {
@@ -55,6 +86,7 @@ public class AVHttpClient {
   public void fetchPushWSServer(String appId, String installationId, int secure, Callback<JSONObject> callback) {
     Objects.requireNonNull(appId);
     Objects.requireNonNull(callback);
+    makeSurePushRetrofit();
     Call<JSONObject> call = pushRouterAPI.getWSServer(appId, installationId, secure);
     call.enqueue(callback);
   }
@@ -62,6 +94,7 @@ public class AVHttpClient {
   public void saveInstallation(JSONObject param, boolean fetchWhenSave, Callback<JSONObject> callback) {
     Objects.requireNonNull(param);
     Objects.requireNonNull(callback);
+    makeSurePushRetrofit();
     Call<JSONObject> call = pushAPI.saveInstallation(param, fetchWhenSave);
     call.enqueue(callback);
   }
@@ -69,6 +102,7 @@ public class AVHttpClient {
   public void findInstallation(String installationId, Callback<JSONObject> callback) {
     Objects.requireNonNull(installationId);
     Objects.requireNonNull(callback);
+    makeSurePushRetrofit();
     Call<JSONObject> call = pushAPI.findInstallation(installationId);
     call.enqueue(callback);
   }

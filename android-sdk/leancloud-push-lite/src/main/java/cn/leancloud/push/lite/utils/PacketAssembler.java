@@ -14,23 +14,23 @@ import cn.leancloud.push.lite.proto.PushAckPacket;
 
 public class PacketAssembler {
   private static final String TAG = PacketAssembler.class.getSimpleName();
-  static AtomicInteger acu = new AtomicInteger(-65536);
+//  static AtomicInteger acu = new AtomicInteger(-65536);
   private static PacketAssembler instance = new PacketAssembler();
   public static PacketAssembler getInstance() {
     return instance;
   }
 
-  public static int getNextIMRequestId() {
-    int val = acu.incrementAndGet();
-    if (val > 65535) {
-      while (val > 65535 && !acu.compareAndSet(val, -65536)) {
-        val = acu.get();
-      }
-      return val;
-    } else {
-      return val;
-    }
-  }
+//  public static int getNextIMRequestId() {
+//    int val = acu.incrementAndGet();
+//    if (val > 65535) {
+//      while (val > 65535 && !acu.compareAndSet(val, -65536)) {
+//        val = acu.get();
+//      }
+//      return val;
+//    } else {
+//      return val;
+//    }
+//  }
 
   public CommandPacket assemblePushAckPacket(String installationId, List<String> messageIds) {
     PushAckPacket pushAckPacket = new PushAckPacket();

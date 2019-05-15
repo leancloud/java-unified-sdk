@@ -22,8 +22,12 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import cn.leancloud.push.lite.rest.AVHttpClient;
 import cn.leancloud.push.lite.utils.AVPersistenceUtils;
 import cn.leancloud.push.lite.utils.StringUtil;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AVInstallation implements Parcelable {
   private static final String CLASSNAME = "_Installation";
@@ -114,7 +118,6 @@ public class AVInstallation implements Parcelable {
         if (json.indexOf("{") >= 0) {
           JSONObject installationJson = JSON.parseObject(json);
           currentInstallation = new AVInstallation();
-          // TODO:
           currentInstallation.setUpdatedAt(installationJson.getString("updatedAt"));
           currentInstallation.setObjectId(installationJson.getString("objectId"));
           currentInstallation.setCreatedAt(installationJson.getString("createdAt"));
@@ -444,7 +447,26 @@ public class AVInstallation implements Parcelable {
   }
 
   public void refreshInBackground(String includeKeys, AVCallback<AVInstallation> callback) {
-    ;
+    if (StringUtil.isEmpty(this.objectId)) {
+      throw new IllegalStateException("objectId is null.");
+    }
+    AVHttpClient.getInstance().findInstallation(this.objectId, new Callback<JSONObject>() {
+      @Override
+      public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+        JSONObject result = response.body();
+        mergeServerData(result);
+        if (null != callback) {
+          callback.internalDone(AVInstallation.this, null);
+        }
+      }
+
+      @Override
+      public void onFailure(Call<JSONObject> call, Throwable t) {
+        if (null != callback) {
+          callback.internalDone(new AVException(t));
+        }
+      }
+    });
   }
 
   public void fetchInBackground(AVCallback<AVInstallation> callback) {
@@ -455,24 +477,34 @@ public class AVInstallation implements Parcelable {
     refreshInBackground(includeKeys, callback);
   }
 
+  private void mergeServerData(JSONObject data) {
+    if (null == data) {
+      return;
+    }
+  }
   /**
    * save operation
    */
-  public void deleteEventually() {
-    deleteEventually(null);
-  }
-
-  public void deleteEventually(AVCallback<Void> callback) {
-    ;
-  }
-
-  public void deleteInBackground() {
-    this.deleteInBackground(null);
-  }
-
-  public void deleteInBackground(AVCallback<Void> callback) {
-    ;
-  }
+//  public void deleteEventually() {
+//    deleteEventually(null);
+//  }
+//
+//  public void deleteEventually(AVCallback<Void> callback) {
+//    if (StringUtil.isEmpty(this.objectId)) {
+//      throw new IllegalStateException("objectId is null.");
+//    }
+//    if (null != callback) {
+//
+//    }
+//  }
+//
+//  public void deleteInBackground() {
+//    this.deleteInBackground(null);
+//  }
+//
+//  public void deleteInBackground(AVCallback<Void> callback) {
+//    ;
+//  }
 
   public void saveInBackground() {
     this.saveInBackground(null);
@@ -483,7 +515,23 @@ public class AVInstallation implements Parcelable {
   }
 
   public void saveInBackground(boolean fetchWhenSave, AVCallback<Void> callback) {
-    ;
+    AVHttpClient.getInstance().saveInstallation(new JSONObject(this.serverData), fetchWhenSave, new Callback<JSONObject>() {
+      @Override
+      public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+        JSONObject result = response.body();
+        mergeServerData(result);
+        if (null != callback) {
+          callback.internalDone(null);
+        }
+      }
+
+      @Override
+      public void onFailure(Call<JSONObject> call, Throwable t) {
+        if (null != callback) {
+          callback.internalDone(new AVException(t));
+        }
+      }
+    });
   }
 
   /**

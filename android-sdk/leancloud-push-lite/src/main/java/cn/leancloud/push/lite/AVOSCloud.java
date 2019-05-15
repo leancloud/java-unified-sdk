@@ -13,6 +13,13 @@ public class AVOSCloud {
     EastChina, NorthChina, NorthAmerica
   }
 
+  public static final int LOG_LEVEL_VERBOSE = 1 << 1;
+  public static final int LOG_LEVEL_DEBUG = 1 << 2;
+  public static final int LOG_LEVEL_INFO = 1 << 3;
+  public static final int LOG_LEVEL_WARNING = 1 << 4;
+  public static final int LOG_LEVEL_ERROR = 1 << 5;
+  public static final int LOG_LEVEL_NONE = ~0;
+
   /**
    * 服务区分，注意 name 值不能随意修改修改，要根据这个值来拼 host
    * RTM is indicating router server.
@@ -30,6 +37,8 @@ public class AVOSCloud {
       return this.name;
     }
   }
+
+  private static int logLevel = LOG_LEVEL_NONE;
 
   public static Context applicationContext = null;
   public static String applicationId = null;
@@ -101,5 +110,32 @@ public class AVOSCloud {
 
   public static Context getContext() {
     return applicationContext;
+  }
+
+  public static int getLogLevel() {
+    return logLevel;
+  }
+
+  public static void setLogLevel(int logLevel) {
+    AVOSCloud.logLevel = logLevel;
+  }
+
+  // for compatible with old version.
+  public static void setDebugLogEnabled(boolean enable) {
+    if (enable) {
+      setLogLevel(LOG_LEVEL_DEBUG);
+    } else {
+      setLogLevel(LOG_LEVEL_INFO);
+    }
+  }
+
+  // for compatible with old version.
+  public static boolean isDebugLogEnabled() {
+    return logLevel <= LOG_LEVEL_DEBUG;
+  }
+
+  // for compatible with old version.
+  public static boolean showInternalDebugLog() {
+    return isDebugLogEnabled();
   }
 }

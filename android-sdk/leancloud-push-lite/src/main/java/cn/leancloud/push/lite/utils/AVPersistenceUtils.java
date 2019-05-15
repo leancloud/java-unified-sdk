@@ -2,6 +2,7 @@ package cn.leancloud.push.lite.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;
@@ -12,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -19,6 +21,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import cn.leancloud.push.lite.AVOSCloud;
 
 public class AVPersistenceUtils {
+  private static final String TAG = AVPersistenceUtils.class.getSimpleName();
+
   private static final String INSTALLATION = "installation";
   private static AVPersistenceUtils instance = null;
   private static String currentAppPrefix = "";
@@ -58,23 +62,27 @@ public class AVPersistenceUtils {
     }
     currentAppPrefix = appId.substring(0, 8);
 
-    // cache data migration
-    File oldDocumentDir = getPaasDocumentDir_old();
-    File newDocumentDir = getPaasDocumentDir();
-    if (!newDocumentDir.exists() && oldDocumentDir.exists()) {
-      boolean ret = oldDocumentDir.renameTo(newDocumentDir);
-    }
-
-    File oldCommandCacheDir = getCommandCacheDir_old();
-    File newCommandCacheDir = getCommandCacheDir();
-    if (!newCommandCacheDir.exists() && oldCommandCacheDir.exists()) {
-      boolean ret = oldCommandCacheDir.renameTo(newCommandCacheDir);
-    }
+//    // cache data migration
+//    File oldDocumentDir = getPaasDocumentDir_old();
+//    File newDocumentDir = getPaasDocumentDir();
+//    if (!newDocumentDir.exists() && oldDocumentDir.exists()) {
+//      boolean ret = oldDocumentDir.renameTo(newDocumentDir);
+//    }
+//
+//    File oldCommandCacheDir = getCommandCacheDir_old();
+//    File newCommandCacheDir = getCommandCacheDir();
+//    if (!newCommandCacheDir.exists() && oldCommandCacheDir.exists()) {
+//      boolean ret = oldCommandCacheDir.renameTo(newCommandCacheDir);
+//    }
 
     File oldInstallationFile = getInstallationFile_old(ctx);
     File newInstallationFile = getInstallationFile(ctx);
     if (oldInstallationFile.exists() && !newInstallationFile.exists()) {
       boolean ret = oldInstallationFile.renameTo(newInstallationFile);
+      if (!ret) {
+        Log.w(TAG, "failed to rename installation file. old=" + oldInstallationFile.getAbsolutePath()
+            + ", new=" + newInstallationFile.getAbsolutePath());
+      }
     }
   }
 
@@ -82,31 +90,31 @@ public class AVPersistenceUtils {
     return currentAppPrefix;
   }
 
-  public static File getPaasDocumentDir() {
-    if (AVOSCloud.applicationContext == null) {
-      throw new IllegalStateException(
-          "applicationContext is null, Please call AVOSCloud.initialize first");
-    }
-    return AVOSCloud.applicationContext.getDir(currentAppPrefix + "Paas", Context.MODE_PRIVATE);
-  }
-
-  public static File getCacheDir() {
-    if (AVOSCloud.applicationContext == null) {
-      throw new IllegalStateException(
-          "applicationContext is null, Please call AVOSCloud.initialize first");
-    }
-    return AVOSCloud.applicationContext.getCacheDir();
-  }
-
-  public static File getCommandCacheDir() {
-    if (AVOSCloud.applicationContext == null) {
-      throw new IllegalStateException(
-          "applicationContext is null, Please call AVOSCloud.initialize first");
-    }
-    File dir = new File(getCacheDir(), currentAppPrefix + "CommandCache");
-    dir.mkdirs();
-    return dir;
-  }
+//  public static File getPaasDocumentDir() {
+//    if (AVOSCloud.applicationContext == null) {
+//      throw new IllegalStateException(
+//          "applicationContext is null, Please call AVOSCloud.initialize first");
+//    }
+//    return AVOSCloud.applicationContext.getDir(currentAppPrefix + "Paas", Context.MODE_PRIVATE);
+//  }
+//
+//  public static File getCacheDir() {
+//    if (AVOSCloud.applicationContext == null) {
+//      throw new IllegalStateException(
+//          "applicationContext is null, Please call AVOSCloud.initialize first");
+//    }
+//    return AVOSCloud.applicationContext.getCacheDir();
+//  }
+//
+//  public static File getCommandCacheDir() {
+//    if (AVOSCloud.applicationContext == null) {
+//      throw new IllegalStateException(
+//          "applicationContext is null, Please call AVOSCloud.initialize first");
+//    }
+//    File dir = new File(getCacheDir(), currentAppPrefix + "CommandCache");
+//    dir.mkdirs();
+//    return dir;
+//  }
 
   public static File getInstallationFile(Context ctx) {
     return new File(getFilesDir(ctx), currentAppPrefix + INSTALLATION);
@@ -125,35 +133,35 @@ public class AVPersistenceUtils {
     return validContext.getFilesDir();
   }
 
-  public static File getAnalysisCacheDir() {
-    if (AVOSCloud.applicationContext == null) {
-      throw new IllegalStateException(
-          "applicationContext is null, Please call AVOSCloud.initialize first");
-    }
-    File dir = new File(getCacheDir(), currentAppPrefix + "Analysis");
-    dir.mkdirs();
-    return dir;
-  }
-
-  @Deprecated
-  private static File getPaasDocumentDir_old() {
-    if (AVOSCloud.applicationContext == null) {
-      throw new IllegalStateException(
-          "applicationContext is null, Please call AVOSCloud.initialize first");
-    }
-    return AVOSCloud.applicationContext.getDir("Paas", Context.MODE_PRIVATE);
-  }
-
-  @Deprecated
-  private static File getCommandCacheDir_old() {
-    if (AVOSCloud.applicationContext == null) {
-      throw new IllegalStateException(
-          "applicationContext is null, Please call AVOSCloud.initialize first");
-    }
-    File dir = new File(getCacheDir(), "CommandCache");
-    dir.mkdirs();
-    return dir;
-  }
+//  public static File getAnalysisCacheDir() {
+//    if (AVOSCloud.applicationContext == null) {
+//      throw new IllegalStateException(
+//          "applicationContext is null, Please call AVOSCloud.initialize first");
+//    }
+//    File dir = new File(getCacheDir(), currentAppPrefix + "Analysis");
+//    dir.mkdirs();
+//    return dir;
+//  }
+//
+//  @Deprecated
+//  private static File getPaasDocumentDir_old() {
+//    if (AVOSCloud.applicationContext == null) {
+//      throw new IllegalStateException(
+//          "applicationContext is null, Please call AVOSCloud.initialize first");
+//    }
+//    return AVOSCloud.applicationContext.getDir("Paas", Context.MODE_PRIVATE);
+//  }
+//
+//  @Deprecated
+//  private static File getCommandCacheDir_old() {
+//    if (AVOSCloud.applicationContext == null) {
+//      throw new IllegalStateException(
+//          "applicationContext is null, Please call AVOSCloud.initialize first");
+//    }
+//    File dir = new File(getCacheDir(), "CommandCache");
+//    dir.mkdirs();
+//    return dir;
+//  }
 
   public static void closeQuietly(Closeable closeable) {
     try {
@@ -163,32 +171,32 @@ public class AVPersistenceUtils {
     }
   }
 
-  static private File getFile(String folderName, String fileName) {
-    File file;
-    if (StringUtil.isEmpty(folderName)) {
-      file = new File(getPaasDocumentDir(), fileName);
-    } else {
-      File folder = new File(getPaasDocumentDir(), folderName);
-      if (!folder.exists()) {
-        folder.mkdirs();
-      }
-      file = new File(folder, fileName);
-    }
-    return file;
-  }
+//  static private File getFile(String folderName, String fileName) {
+//    File file;
+//    if (StringUtil.isEmpty(folderName)) {
+//      file = new File(getPaasDocumentDir(), fileName);
+//    } else {
+//      File folder = new File(getPaasDocumentDir(), folderName);
+//      if (!folder.exists()) {
+//        folder.mkdirs();
+//      }
+//      file = new File(folder, fileName);
+//    }
+//    return file;
+//  }
 
   // ================================================================================
   // Save to File
   // ================================================================================
 
-  public void saveToDocumentDir(String content, String fileName) {
-    saveToDocumentDir(content, null, fileName);
-  }
-
-  public void saveToDocumentDir(String content, String folderName, String fileName) {
-    File fileForSave = getFile(folderName, fileName);
-    saveContentToFile(content, fileForSave);
-  }
+//  public void saveToDocumentDir(String content, String fileName) {
+//    saveToDocumentDir(content, null, fileName);
+//  }
+//
+//  public void saveToDocumentDir(String content, String folderName, String fileName) {
+//    File fileForSave = getFile(folderName, fileName);
+//    saveContentToFile(content, fileForSave);
+//  }
 
   public static boolean saveContentToFile(String content, File fileForSave) {
     try {
@@ -226,14 +234,14 @@ public class AVPersistenceUtils {
   // Read from file
   // ================================================================================
 
-  public String getFromDocumentDir(String folderName, String fileName) {
-    File fileForRead = getFile(folderName, fileName);
-    return readContentFromFile(fileForRead);
-  }
+//  public String getFromDocumentDir(String folderName, String fileName) {
+//    File fileForRead = getFile(folderName, fileName);
+//    return readContentFromFile(fileForRead);
+//  }
 
-  public String getFromDocumentDir(String fileName) {
-    return getFromDocumentDir(null, fileName);
-  }
+//  public String getFromDocumentDir(String fileName) {
+//    return getFromDocumentDir(null, fileName);
+//  }
 
   public static String readContentFromFile(File fileForRead) {
     byte[] data = readContentBytesFromFile(fileForRead);
@@ -300,6 +308,15 @@ public class AVPersistenceUtils {
 
   public boolean getPersistentSettingBoolean(String keyzone, String key) {
     return getPersistentSettingBoolean(keyzone, key, false);
+  }
+
+  public Map<String, ?> getPersistentSetting(String keyzone) {
+    if (AVOSCloud.applicationContext == null) {
+      return null;
+    }
+    SharedPreferences settings =
+        AVOSCloud.applicationContext.getSharedPreferences(keyzone, Context.MODE_PRIVATE);
+    return settings.getAll();
   }
 
   public boolean getPersistentSettingBoolean(String keyzone, String key, Boolean defaultValue) {

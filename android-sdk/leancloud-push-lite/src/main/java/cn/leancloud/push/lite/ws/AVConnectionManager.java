@@ -3,10 +3,12 @@ package cn.leancloud.push.lite.ws;
 import android.util.Log;
 
 import org.java_websocket.framing.CloseFrame;
+import com.alibaba.fastjson.JSONObject;
 
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,15 +18,22 @@ import javax.net.ssl.SSLSocketFactory;
 import cn.leancloud.push.lite.AVCallback;
 import cn.leancloud.push.lite.AVException;
 import cn.leancloud.push.lite.AVInstallation;
+import cn.leancloud.push.lite.AVNotificationManager;
 import cn.leancloud.push.lite.AVOSCloud;
 import cn.leancloud.push.lite.proto.CommandPacket;
 import cn.leancloud.push.lite.proto.LoginPacket;
 import cn.leancloud.push.lite.proto.Messages;
+import cn.leancloud.push.lite.proto.PushAckPacket;
+import cn.leancloud.push.lite.rest.AVHttpClient;
 import cn.leancloud.push.lite.utils.PacketAssembler;
 import cn.leancloud.push.lite.utils.StringUtil;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AVConnectionManager implements WebSocketClientMonitor {
   private static final String TAG = AVConnectionManager.class.getSimpleName();
+
   private static AVConnectionManager instance = null;
   private AVStandardWebSocketClient webSocketClient = null;
   private Object webSocketClientWatcher = new Object();
@@ -85,16 +94,16 @@ public class AVConnectionManager implements WebSocketClientMonitor {
     }
   }
 
-//  private String updateTargetServer(RTMConnectionServerResponse rtmConnectionServerResponse) {
-//    String primaryServer = rtmConnectionServerResponse.getServer();
-//    String secondary = rtmConnectionServerResponse.getSecondary();
-//    if (StringUtil.isEmpty(this.currentRTMConnectionServer) || this.currentRTMConnectionServer.equalsIgnoreCase(secondary)) {
-//      this.currentRTMConnectionServer = primaryServer;
-//    } else {
-//      this.currentRTMConnectionServer = secondary;
-//    }
-//    return this.currentRTMConnectionServer;
-//  }
+  private String updateTargetServer(JSONObject rtmConnectionServerResponse) {
+    String primaryServer = rtmConnectionServerResponse.getString("server");
+    String secondary = rtmConnectionServerResponse.getString("secondary");
+    if (StringUtil.isEmpty(this.currentRTMConnectionServer) || this.currentRTMConnectionServer.equalsIgnoreCase(secondary)) {
+      this.currentRTMConnectionServer = primaryServer;
+    } else {
+      this.currentRTMConnectionServer = secondary;
+    }
+    return this.currentRTMConnectionServer;
+  }
 
   private void initWebSocketClient(String targetServer) {
     Log.d(TAG, "try to connect server: " + targetServer);
@@ -167,42 +176,22 @@ public class AVConnectionManager implements WebSocketClientMonitor {
   }
 
   private void startConnectionInternal() {
-//    String specifiedServer = AVIMOptions.getGlobalOptions().getRtmServer();
-//    if (!StringUtil.isEmpty(specifiedServer)) {
-//      initWebSocketClient(specifiedServer);
-//      return;
-//    }
-//    final AppRouter appRouter = AppRouter.getInstance();
-//    final String installationId = AVInstallation.getCurrentInstallation().getInstallationId();
-//    appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.RTM, retryConnectionCount > 0)
-//        .map(new Function<String, RTMConnectionServerResponse>() {
-//          @Override
-//          public RTMConnectionServerResponse apply(@NonNull String var1) throws Exception {
-//            String routerHost = var1.startsWith("http")? var1 : "https://" + var1;
-//            return appRouter.fetchRTMConnectionServer(routerHost, AVOSCloud.getApplicationId(), installationId,
-//                1, retryConnectionCount < 1).blockingFirst();
-//          }
-//        }).subscribe(new Observer<RTMConnectionServerResponse>() {
-//      @Override
-//      public void onSubscribe(Disposable disposable) {
-//      }
-//
-//      @Override
-//      public void onNext(RTMConnectionServerResponse rtmConnectionServerResponse) {
-//        String targetServer = updateTargetServer(rtmConnectionServerResponse);
-//        initWebSocketClient(targetServer);
-//      }
-//
-//      @Override
-//      public void onError(Throwable throwable) {
-//        Log.e(TAG, "failed to query RTM Connection Server. cause: " + throwable.getMessage());
-//        reConnectionRTMServer();
-//      }
-//
-//      @Override
-//      public void onComplete() {
-//      }
-//    });
+    final String appId = AVOSCloud.applicationId;
+    final String installationId = AVInstallation.getCurrentInstallation().getInstallationId();
+    AVHttpClient.getInstance().fetchPushWSServer(appId, installationId, 1, new Callback<JSONObject>() {
+      public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+        JSONObject result = response.body();
+        if (null != result) {
+          String targetServer = updateTargetServer(result);
+          initWebSocketClient(targetServer);
+        }
+      }
+
+      public void onFailure(Call<JSONObject> call, Throwable t) {
+        Log.w(TAG, "failed to fetch WebSocket Server.", t);
+        reConnectionRTMServer();
+      }
+    });
   }
 
   public void cleanup() {
@@ -228,15 +217,6 @@ public class AVConnectionManager implements WebSocketClientMonitor {
     connectionEstablished = false;
     retryConnectionCount = 0;
     connecting = false;
-  }
-
-  public void subscribeConnectionListener(String clientId, AVConnectionListener listener) {
-    if (null != listener) {
-      this.connectionListeners.put(clientId, listener);
-    }
-  }
-  public void unsubscribeConnectionListener(String clientId) {
-    this.connectionListeners.remove(clientId);
   }
 
   public void sendPacket(CommandPacket packet) {
@@ -284,12 +264,10 @@ public class AVConnectionManager implements WebSocketClientMonitor {
     Log.d(TAG, "downlink: " + command.toString());
 
     String peerId = command.getPeerId();
+    if (StringUtil.isEmpty(peerId)) {
+      peerId = AVPushMessageListener.DEFAULT_ID;
+    }
     Integer requestKey = command.hasI() ? command.getI() : null;
-//    if (command.hasService() && command.getService() == LiveQueryLoginPacket.SERVICE_LIVE_QUERY) {
-//      peerId = LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID;
-//    } else if (command.getCmd().getNumber() == Messages.CommandType.data_VALUE) {
-//      peerId = AVPushMessageListener.DEFAULT_ID;
-//    }
     AVConnectionListener listener = this.connectionListeners.get(peerId);
     if (null != listener) {
       listener.onMessageArriving(peerId, requestKey, command);

@@ -1,5 +1,7 @@
 package cn.leancloud.push.lite;
 
+import android.util.Log;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -15,30 +17,28 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PushRouterManager {
+  private static final String TAG = PushRouterManager.class.getSimpleName();
 
   /**
    * Push API 默认地址
    */
-  private static final String DEFAULT_CN_EAST_PUSH_API_SERVER = "https://api.leancloud.cn";
-  private static final String DEFAULT_CN_NORTH_PUSH_API_SERVER = "https://api.leancloud.cn";
-  private static final String DEFAULT_US_PUSH_API_SERVER = "https://api.leancloud.cn";
+  private static final String CN_EAST_PUSH_API_SERVER_FORMAT = "https://%s.push.lncldapi.com";
+  private static final String CN_NOTRH_PUSH_API_SERVER_FORMAT = "https://%s.push.lncld.net";
+  private static final String US_PUSH_API_SERVER_FORMAT = "https://%s.push.lncldglobal.com";
 
   /**
    * push router 默认地址
    */
-  private static final String DEFAULT_CN_EAST_ROUTER_SERVER = "https://router-q0-push.leancloud.cn";
-  private static final String DEFAULT_CN_NORTH_ROUTER_SERVER = "https://router-g0-push.leancloud.cn";
-  private static final String DEFAULT_US_ROUTER_SERVER = "https://router-a0-push.leancloud.cn";
+  private static final String CN_EAST_PUSH_ROUTER_SERVER_FORMAT = "https://%s.rtm.lncldapi.com";
+  private static final String CN_NOTRH_PUSH_ROUTER_SERVER_FORMAT = "https://%s.rtm.lncld.net";
+  private static final String US_PUSH_ROUTER_SERVER_FORMAT = "https://%s.rtm.lncldglobal.com";
 
   /**
    * share preference 的 key 值
    */
-  private static final String API_SERVER_KEY = "api_server";
   private static final String RTM_ROUTER_SERVRE_KEY = "rtm_router_server";
   private static final String PUSH_SERVRE_KEY = "push_server";
-  private static final String ENGINE_SERVRE_KEY = "engine_server";
   private static final String TTL_KEY = "ttl";
-
   private static final String LATEST_UPDATE_TIME_KEY = "latest_update_time";
 
   private Map<String, String> apiMaps = new ConcurrentHashMap<>();
@@ -54,6 +54,29 @@ public class PushRouterManager {
   }
 
   private PushRouterManager() {
+    String appidPrefix = AVPersistenceUtils.getCurrentAppPrefix();
+    String defaultPushServer = "";
+    String defaultPushRouterServer = "";
+    if (StringUtil.isEmpty(appidPrefix)) {
+      Log.w(TAG, "invalid appId. AVOSCloud#initialize should be invoke at first!!");
+    } else if (AVOSCloud.getRegion() == AVOSCloud.REGION.NorthAmerica) {
+      defaultPushRouterServer = String.format(US_PUSH_ROUTER_SERVER_FORMAT, appidPrefix);
+      defaultPushServer = String.format(US_PUSH_API_SERVER_FORMAT, appidPrefix);
+    } else if (AVOSCloud.getRegion() == AVOSCloud.REGION.NorthChina) {
+      defaultPushRouterServer = String.format(CN_NOTRH_PUSH_ROUTER_SERVER_FORMAT, appidPrefix);
+      defaultPushServer = String.format(CN_NOTRH_PUSH_API_SERVER_FORMAT, appidPrefix);
+    } else if (AVOSCloud.getRegion() == AVOSCloud.REGION.EastChina) {
+      defaultPushRouterServer = String.format(CN_EAST_PUSH_ROUTER_SERVER_FORMAT, appidPrefix);
+      defaultPushServer = String.format(CN_EAST_PUSH_API_SERVER_FORMAT, appidPrefix);
+    } else {
+      Log.w(TAG, "invalid REGION:" + AVOSCloud.getRegion());
+    }
+    if (!StringUtil.isEmpty(defaultPushServer)) {
+      apiMaps.put(AVOSCloud.SERVER_TYPE.PUSH.name, defaultPushServer);
+    }
+    if (!StringUtil.isEmpty(defaultPushRouterServer)) {
+      apiMaps.put(AVOSCloud.SERVER_TYPE.RTM.name, defaultPushRouterServer);
+    }
   }
 
   static void setServer(AVOSCloud.SERVER_TYPE server, String host) {
@@ -62,37 +85,11 @@ public class PushRouterManager {
 
   public String getPushAPIServer() {
     String result = customApiMaps.getOrDefault(AVOSCloud.SERVER_TYPE.PUSH.name, apiMaps.getOrDefault(AVOSCloud.SERVER_TYPE.PUSH.name, ""));
-    if (StringUtil.isEmpty(result)) {
-      switch (AVOSCloud.getRegion()) {
-        case EastChina:
-          result = DEFAULT_CN_EAST_PUSH_API_SERVER;
-          break;
-        case NorthChina:
-          result = DEFAULT_CN_NORTH_PUSH_API_SERVER;
-          break;
-        case NorthAmerica:
-          result = DEFAULT_US_PUSH_API_SERVER;
-          break;
-      }
-    }
     return result;
   }
 
   public String getPushRouterServer() {
     String result = customApiMaps.getOrDefault(AVOSCloud.SERVER_TYPE.RTM.name, apiMaps.getOrDefault(AVOSCloud.SERVER_TYPE.RTM.name, ""));
-    if (StringUtil.isEmpty(result)) {
-      switch (AVOSCloud.getRegion()) {
-        case EastChina:
-          result = DEFAULT_CN_EAST_ROUTER_SERVER;
-          break;
-        case NorthChina:
-          result = DEFAULT_CN_NORTH_ROUTER_SERVER;
-          break;
-        case NorthAmerica:
-          result = DEFAULT_US_ROUTER_SERVER;
-          break;
-      }
-    }
     return result;
   }
 
@@ -164,8 +161,6 @@ public class PushRouterManager {
     if (null != response) {
       updateMapAndSaveLocal(apiMaps, response, AVOSCloud.SERVER_TYPE.RTM.name, RTM_ROUTER_SERVRE_KEY);
       updateMapAndSaveLocal(apiMaps, response, AVOSCloud.SERVER_TYPE.PUSH.name, PUSH_SERVRE_KEY);
-      updateMapAndSaveLocal(apiMaps, response, AVOSCloud.SERVER_TYPE.API.name, API_SERVER_KEY);
-      updateMapAndSaveLocal(apiMaps, response, AVOSCloud.SERVER_TYPE.ENGINE.name, ENGINE_SERVRE_KEY);
 
       if (response.containsKey(TTL_KEY)) {
         AVPersistenceUtils.sharedInstance().savePersistentSettingInteger(
@@ -207,8 +202,6 @@ public class PushRouterManager {
   private void updateServers() {
     refreshMap(apiMaps, AVOSCloud.SERVER_TYPE.RTM.name, RTM_ROUTER_SERVRE_KEY);
     refreshMap(apiMaps, AVOSCloud.SERVER_TYPE.PUSH.name, PUSH_SERVRE_KEY);
-    refreshMap(apiMaps, AVOSCloud.SERVER_TYPE.API.name, API_SERVER_KEY);
-    refreshMap(apiMaps, AVOSCloud.SERVER_TYPE.ENGINE.name, ENGINE_SERVRE_KEY);
   }
 
   /**

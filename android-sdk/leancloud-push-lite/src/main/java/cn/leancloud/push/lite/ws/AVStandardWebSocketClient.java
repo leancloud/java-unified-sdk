@@ -30,7 +30,7 @@ import cn.leancloud.push.lite.proto.CommandPacket;
 import cn.leancloud.push.lite.utils.StringUtil;
 
 public class AVStandardWebSocketClient extends WebSocketClient {
-  public static final String SUB_PROTOCOL_2_1 = "lc.protobuf2.1";
+  //public static final String SUB_PROTOCOL_2_1 = "lc.protobuf2.1";
   public static final String SUB_PROTOCOL_2_3 = "lc.protobuf2.3";
 
   private static final String HEADER_SUB_PROTOCOL = "Sec-WebSocket-Protocol";

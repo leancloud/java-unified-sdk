@@ -26,7 +26,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import cn.leancloud.push.lite.utils.AndroidSystemSetting;
+import cn.leancloud.push.lite.utils.AVPersistenceUtils;
 import cn.leancloud.push.lite.utils.StringUtil;
 
 public class AVNotificationManager {
@@ -52,8 +52,8 @@ public class AVNotificationManager {
   }
 
   private void readDataFromCache() {
-    AndroidSystemSetting setting = AndroidSystemSetting.getInstance();
-    for (Map.Entry entry : setting.getAll(AV_PUSH_SERVICE_APP_DATA).entrySet()) {
+    Map<String, ?> data = AVPersistenceUtils.sharedInstance().getPersistentSetting(AV_PUSH_SERVICE_APP_DATA);
+    for (Map.Entry entry : data.entrySet()) {
       String channel = (String) entry.getKey();
       if (channel.equals(ICON_KEY)) {
         try {
@@ -75,21 +75,19 @@ public class AVNotificationManager {
 
   void setNotificationIcon(int icon) {
     notificationIcon = icon;
-    AndroidSystemSetting setting = AndroidSystemSetting.getInstance();
-    setting.saveString(AV_PUSH_SERVICE_APP_DATA,
+    AVPersistenceUtils.sharedInstance().savePersistentSettingString(AV_PUSH_SERVICE_APP_DATA,
         ICON_KEY, String.valueOf(icon));
   }
 
   void addDefaultPushCallback(String channel, String clsName) {
     defaultPushCallback.put(channel, clsName);
-    AndroidSystemSetting setting = AndroidSystemSetting.getInstance();
-    setting.saveString(AV_PUSH_SERVICE_APP_DATA, channel, String.valueOf(clsName));
+    AVPersistenceUtils.sharedInstance().savePersistentSettingString(AV_PUSH_SERVICE_APP_DATA, channel,
+        String.valueOf(clsName));
   }
 
   void removeDefaultPushCallback(String channel) {
     defaultPushCallback.remove(channel);
-    AndroidSystemSetting setting = AndroidSystemSetting.getInstance();
-    setting.removeKey(AV_PUSH_SERVICE_APP_DATA, channel);
+    AVPersistenceUtils.sharedInstance().removePersistentSettingString(AV_PUSH_SERVICE_APP_DATA, channel);
   }
 
   boolean containsDefaultPushCallback(String channel) {
