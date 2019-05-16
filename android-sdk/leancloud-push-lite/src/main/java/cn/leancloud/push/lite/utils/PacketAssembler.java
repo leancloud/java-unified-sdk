@@ -39,7 +39,6 @@ public class PacketAssembler {
     return pushAckPacket;
   }
 
-
   public Messages.GenericCommand disassemblePacket(ByteBuffer bytes) {
     try {
       return Messages.GenericCommand.parseFrom(bytes);

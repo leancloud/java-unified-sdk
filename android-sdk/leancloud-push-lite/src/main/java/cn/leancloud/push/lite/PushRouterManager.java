@@ -5,6 +5,7 @@ import android.util.Log;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -46,7 +47,7 @@ public class PushRouterManager {
 
   private static PushRouterManager pushRouterManager;
 
-  public synchronized static PushRouterManager getInstance() {
+  public static PushRouterManager getInstance() {
     if (null == pushRouterManager) {
       pushRouterManager = new PushRouterManager();
     }
@@ -129,33 +130,51 @@ public class PushRouterManager {
    * @param force
    * @param callback
    */
-  void fetchRouter(boolean force, final AVCallback callback) {
-    updateServers();
+  void fetchRouter(boolean force, final AVCallback<Void> callback) {
+    if (force || apiMaps.size() < 1) {
+      String keyZone = getAppRouterSPName();
+      AVPersistenceUtils persistenceUtils = AVPersistenceUtils.sharedInstance();
+      String routerServer = persistenceUtils.getPersistentSettingString(keyZone, RTM_ROUTER_SERVRE_KEY, "");
+      if (!StringUtil.isEmpty(routerServer)) {
+        apiMaps.put(AVOSCloud.SERVER_TYPE.RTM.name, routerServer);
+      }
+      String pushServer = persistenceUtils.getPersistentSettingString(keyZone, PUSH_SERVRE_KEY, "");
+      if (!StringUtil.isEmpty(pushServer)) {
+        apiMaps.put(AVOSCloud.SERVER_TYPE.PUSH.name, pushServer);
+      }
+      Long lastTime = persistenceUtils.getPersistentSettingLong(keyZone, LATEST_UPDATE_TIME_KEY, 0L);
+      int ttl = persistenceUtils.getPersistentSettingInteger(keyZone, TTL_KEY, 0);
 
-    Long lastTime = AVPersistenceUtils.sharedInstance().getPersistentSettingLong(
-        getAppRouterSPName(), LATEST_UPDATE_TIME_KEY, 0L);
-
-    int ttl = AVPersistenceUtils.sharedInstance().getPersistentSettingInteger(
-        getAppRouterSPName(), TTL_KEY, 0);
-
-    if (force || System.currentTimeMillis() - lastTime > ttl * 1000 || apiMaps.size() < 1) {
-      AVHttpClient.fetchAccessServers(AVOSCloud.applicationId, new Callback<JSONObject>() {
-        @Override
-        public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
-          JSONObject result = response.body();
-          saveRouterResult(result);
-          if (null != callback) {
-            callback.internalDone(null);
-          }
+      if (force || System.currentTimeMillis() - lastTime > ttl * 1000) {
+        if (AVOSCloud.isDebugLogEnabled()) {
+          Log.d(TAG, "begin to fetch app router.");
         }
-
-        @Override
-        public void onFailure(Call<JSONObject> call, Throwable t) {
-          if (null != callback) {
-            callback.internalDone(new AVException(t));
+        AVHttpClient.fetchAccessServers(AVOSCloud.applicationId, new Callback<JSONObject>() {
+          @Override
+          public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+            JSONObject result = response.body();
+            saveRouterResult(result);
+            if (AVOSCloud.isDebugLogEnabled()) {
+              Log.d(TAG, "fetch app router result: " + result.toJSONString());
+            }
+            if (null != callback) {
+              callback.internalDone(null);
+            }
           }
+
+          @Override
+          public void onFailure(Call<JSONObject> call, Throwable t) {
+            Log.w(TAG, "failed to fetch app router. cause: ", t);
+            if (null != callback) {
+              callback.internalDone(new AVException(t));
+            }
+          }
+        });
+      } else {
+        if (null != callback) {
+          callback.internalDone(null);
         }
-      });
+      }
     } else {
       if (null != callback) {
         callback.internalDone(null);
@@ -165,49 +184,33 @@ public class PushRouterManager {
 
   private void saveRouterResult(JSONObject response) {
     if (null != response) {
-      updateMapAndSaveLocal(apiMaps, response, AVOSCloud.SERVER_TYPE.RTM.name, RTM_ROUTER_SERVRE_KEY);
-      updateMapAndSaveLocal(apiMaps, response, AVOSCloud.SERVER_TYPE.PUSH.name, PUSH_SERVRE_KEY);
+      AVPersistenceUtils persistenceUtils = AVPersistenceUtils.sharedInstance();
+      updateMapAndSaveLocal(persistenceUtils, apiMaps, response, AVOSCloud.SERVER_TYPE.RTM.name, RTM_ROUTER_SERVRE_KEY);
+      updateMapAndSaveLocal(persistenceUtils, apiMaps, response, AVOSCloud.SERVER_TYPE.PUSH.name, PUSH_SERVRE_KEY);
 
       if (response.containsKey(TTL_KEY)) {
-        AVPersistenceUtils.sharedInstance().savePersistentSettingInteger(
+        persistenceUtils.savePersistentSettingInteger(
             getAppRouterSPName(), TTL_KEY, response.getIntValue(TTL_KEY));
       }
 
-      AVPersistenceUtils.sharedInstance().savePersistentSettingLong(
+      persistenceUtils.savePersistentSettingLong(
           getAppRouterSPName(), LATEST_UPDATE_TIME_KEY, System.currentTimeMillis());
     }
   }
 
-  private void updateMapAndSaveLocal(Map<String, String> maps, JSONObject jsonObject, String mapKey, String jsonKey) {
+  private void updateMapAndSaveLocal(AVPersistenceUtils persistenceUtils, Map<String, String> maps,
+                                     JSONObject jsonObject, String mapKey, String jsonKey) {
     if (jsonObject.containsKey(jsonKey)) {
       String value = addHttpsPrefix(jsonObject.getString(jsonKey));
-      AVPersistenceUtils.sharedInstance().savePersistentSettingString(
-          getAppRouterSPName(), jsonKey, value);
+      persistenceUtils.savePersistentSettingString(getAppRouterSPName(), jsonKey, value);
       if (!StringUtil.isEmpty(value)) {
         maps.put(mapKey, value);
       }
     }
   }
 
-  private void refreshMap(Map<String, String> maps, String mapKey, String spKey) {
-    String value = AVPersistenceUtils.sharedInstance().getPersistentSettingString(
-        getAppRouterSPName(), spKey, "");
-    if (!StringUtil.isEmpty(value)) {
-      maps.put(mapKey, value);
-    }
-  }
-
   private String getAppRouterSPName() {
     return "com.avos.avoscloud.approuter." + AVOSCloud.applicationId;
-  }
-
-  /**
-   * 根据当前 appId 更新 shareprefenence 的 name
-   * 这样如果运行过程中动态切换了 appId，app router 仍然可以正常 work
-   */
-  private void updateServers() {
-    refreshMap(apiMaps, AVOSCloud.SERVER_TYPE.RTM.name, RTM_ROUTER_SERVRE_KEY);
-    refreshMap(apiMaps, AVOSCloud.SERVER_TYPE.PUSH.name, PUSH_SERVRE_KEY);
   }
 
   /**

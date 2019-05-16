@@ -33,14 +33,16 @@ public class AVNotificationManager {
   private static final String TAG = AVNotificationManager.class.getSimpleName();
 
   private static final String PUSH_INTENT_KEY = "com.avoscloud.push";
-  private static final Random random = new Random();
   private static final String AV_PUSH_SERVICE_APP_DATA = "AV_PUSH_SERVICE_APP_DATA";
   private static final String ICON_KEY = "_notification_icon";
 
+  private static final Random random = new Random();
+
   private final ConcurrentMap<String, String> defaultPushCallback =
       new ConcurrentHashMap<String, String>();
+  private final ConcurrentMap<String, String> processedMessages = new ConcurrentHashMap<>();
   private int notificationIcon = 0;
-  private Context context;
+  private Context context = null;
 
   private static AVNotificationManager INSTANCE = null;
 
@@ -52,9 +54,13 @@ public class AVNotificationManager {
   }
 
   private AVNotificationManager(Context context) {
-    this.notificationIcon = context.getApplicationInfo().icon;
-    this.context = context;
-    readDataFromCache();
+    if (null != context) {
+      this.notificationIcon = context.getApplicationInfo().icon;
+      this.context = context;
+      readDataFromCache();
+    } else {
+      Log.w(TAG, "Context is null, please call AVOSCloud#initialize at first.");
+    }
   }
 
   private void readDataFromCache() {
@@ -209,6 +215,12 @@ public class AVNotificationManager {
   }
 
   public void processPushMessage(String message, String messageId) {
+    if (processedMessages.containsKey(messageId)) {
+      Log.w(TAG, "duplicated push message: " + message);
+      return;
+    }
+    processedMessages.put(messageId, "");
+
     try {
       String channel = getChannel(message);
       if (channel == null || !containsDefaultPushCallback(channel)) {
@@ -224,14 +236,16 @@ public class AVNotificationManager {
       }
 
       String action = getAction(message);
-      Log.d(TAG, "process push message:" + message + ", channel:" + channel + ", action:" + action);
+      if (AVOSCloud.isDebugLogEnabled()) {
+        Log.d(TAG, "process push message:" + message + ", channel:" + channel + ", action:" + action);
+      }
       if (action != null) {
         sendBroadcast(channel, message, action);
       } else {
         sendNotification(channel, message);
       }
     } catch (Exception e) {
-      Log.e(TAG,"Process notification failed.", e);
+      Log.e(TAG,"Process notification failed. cause: " + e.getMessage());
     }
   }
 
@@ -326,77 +340,77 @@ public class AVNotificationManager {
    * 处理透传消息（华为只有透传）
    * @param message
    */
-  public void processMixPushMessage(String message) {
-    if (!StringUtil.isEmpty(message)) {
-      String channel = getChannel(message);
-      if (channel == null || !containsDefaultPushCallback(channel)) {
-        channel = AVOSCloud.getApplicationId();
-      }
-
-      String action = getAction(message);
-      boolean isSlient = getSilent(message);
-      if (action != null) {
-        sendBroadcast(channel, message, action);
-      } else if (!isSlient) {
-        sendNotification(channel, message);
-      } else {
-        Log.e(TAG, "ignore push silent message: " + message);
-      }
-    }
-  }
+//  public void processMixPushMessage(String message) {
+//    if (!StringUtil.isEmpty(message)) {
+//      String channel = getChannel(message);
+//      if (channel == null || !containsDefaultPushCallback(channel)) {
+//        channel = AVOSCloud.getApplicationId();
+//      }
+//
+//      String action = getAction(message);
+//      boolean isSlient = getSilent(message);
+//      if (action != null) {
+//        sendBroadcast(channel, message, action);
+//      } else if (!isSlient) {
+//        sendNotification(channel, message);
+//      } else {
+//        Log.e(TAG, "ignore push silent message: " + message);
+//      }
+//    }
+//  }
 
   /**
    * 处理混合推送到达事件（暂只支持小米）
    * @param message
    * @param action
    */
-  public void porcessMixNotificationArrived(String message, String action) {
-    if (!StringUtil.isEmpty(message) && !StringUtil.isEmpty(action)) {
-      String channel = getChannel(message);
-      if (channel == null || !containsDefaultPushCallback(channel)) {
-        channel = AVOSCloud.getApplicationId();
-      }
-
-      sendNotificationBroadcast(channel, message, action);
-    }
-  }
+//  public void porcessMixNotificationArrived(String message, String action) {
+//    if (!StringUtil.isEmpty(message) && !StringUtil.isEmpty(action)) {
+//      String channel = getChannel(message);
+//      if (channel == null || !containsDefaultPushCallback(channel)) {
+//        channel = AVOSCloud.getApplicationId();
+//      }
+//
+//      sendNotificationBroadcast(channel, message, action);
+//    }
+//  }
 
   /**
    * 处理混合推送通知栏消息点击后的事件（现在支持小米、魅族，华为不支持）
    * 处理逻辑：如果是自定义 action 的消息点击事件，则发送 broadcast，否则按照 sdk 自有逻辑打开相应的 activity
    * @param message
    */
-  public void processMixNotification(String message, String defaultAction) {
-    if (StringUtil.isEmpty(message)) {
-      Log.e(TAG, "message is empty, ignore.");
-    } else {
-      String channel = getChannel(message);
-      if (channel == null || !containsDefaultPushCallback(channel)) {
-        channel = AVOSCloud.getApplicationId();
-      }
-
-      String action = getAction(message);
-      if (null != action) {
-        sendNotificationBroadcast(channel, message, defaultAction);
-      } else {
-        String clsName = getDefaultPushCallback(channel);
-        if (StringUtil.isEmpty(clsName)) {
-          Log.e(TAG, "className is empty, ignore.");
-        } else {
-          Intent intent = buildUpdateIntent(channel, message, null);
-          ComponentName cn = new ComponentName(context, clsName);
-          intent.setComponent(cn);
-          intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-          PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-          try {
-            pendingIntent.send();
-          } catch (PendingIntent.CanceledException e) {
-            Log.e(TAG, "Ocurred PendingIntent.CanceledException", e);
-          }
-        }
-      }
-    }
-  }
+//  public void processMixNotification(String message, String defaultAction) {
+//    if (StringUtil.isEmpty(message)) {
+//      Log.e(TAG, "message is empty, ignore.");
+//    } else {
+//      String channel = getChannel(message);
+//      if (channel == null || !containsDefaultPushCallback(channel)) {
+//        channel = AVOSCloud.getApplicationId();
+//      }
+//
+//      String action = getAction(message);
+//      if (null != action) {
+//        sendNotificationBroadcast(channel, message, defaultAction);
+//      } else {
+//        String clsName = getDefaultPushCallback(channel);
+//        if (StringUtil.isEmpty(clsName)) {
+//          Log.e(TAG, "className is empty, ignore.");
+//        } else {
+//          Intent intent = buildUpdateIntent(channel, message, null);
+//          ComponentName cn = new ComponentName(context, clsName);
+//          intent.setComponent(cn);
+//          intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+//          PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//          try {
+//            pendingIntent.send();
+//          } catch (PendingIntent.CanceledException e) {
+//            Log.e(TAG, "Ocurred PendingIntent.CanceledException", e);
+//          }
+//        }
+//      }
+//    }
+//  }
 
   /**
    * 处理 GCM 的透传消息
@@ -404,31 +418,26 @@ public class AVNotificationManager {
    * @param action
    * @param message
    */
-  public void processGcmMessage(String channel, String action, String message) {
-    if (channel == null || !containsDefaultPushCallback(channel)) {
-      channel = AVOSCloud.getApplicationId();
-      if (action != null) {
-        sendBroadcast(channel, message, action);
-      } else {
-        sendNotification(channel, message);
-      }
-    }
-  }
+//  public void processGcmMessage(String channel, String action, String message) {
+//    if (channel == null || !containsDefaultPushCallback(channel)) {
+//      channel = AVOSCloud.getApplicationId();
+//      if (action != null) {
+//        sendBroadcast(channel, message, action);
+//      } else {
+//        sendNotification(channel, message);
+//      }
+//    }
+//  }
 
   /**
    * 给订阅了小米 action 的 broadcastreciver 发 broadcast
    * @param channel
    * @param msg
    */
-  private void sendNotificationBroadcast(String channel, String msg, String action) {
-    Intent updateIntent = buildUpdateIntent(channel, msg, action);
-    Log.d(TAG, "action: " + updateIntent.getAction());
-    context.sendBroadcast(updateIntent);
-    Log.d(TAG, "sent broadcast");
-  }
-//  abstract String getApplicationName();
-//
-//  abstract void sendNotification(String from, String msg) throws IllegalArgumentException;
-//
-//  abstract void sendBroadcast(String channel, String msg, String action);
+//  private void sendNotificationBroadcast(String channel, String msg, String action) {
+//    Intent updateIntent = buildUpdateIntent(channel, msg, action);
+//    Log.d(TAG, "action: " + updateIntent.getAction());
+//    context.sendBroadcast(updateIntent);
+//    Log.d(TAG, "sent broadcast");
+//  }
 }

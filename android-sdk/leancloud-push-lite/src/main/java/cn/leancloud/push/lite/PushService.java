@@ -49,7 +49,7 @@ public class PushService extends Service {
 
   AVConnectivityReceiver connectivityReceiver;
   AVShutdownReceiver shutdownReceiver;
-  private Timer cleanupTimer = new Timer();
+//  private Timer cleanupTimer = new Timer();
 
   public static String DefaultChannelId = "";
 
@@ -157,7 +157,9 @@ public class PushService extends Service {
 
     boolean connected = isConnected();
     if (connected && !connectionManager.isConnectionEstablished()) {
-      Log.d(TAG,"networking is fine and try to start connection to leancloud.");
+      if (AVOSCloud.isDebugLogEnabled()) {
+        Log.d(TAG, "networking is fine and try to start connection to leancloud.");
+      }
       synchronized (connecting) {
         connectionManager.startConnection(new AVCallback<Integer>() {
           @Override
@@ -314,7 +316,7 @@ public class PushService extends Service {
     }
 
     if (context == null) {
-      Log.d(TAG,"context is null");
+      Log.e(TAG,"context is null");
       return;
     }
 
@@ -323,10 +325,10 @@ public class PushService extends Service {
       return;
     }
 
-    if (!isConnected(context)) {
-      Log.d(TAG, "No network available now");
-      return;
-    }
+//    if (!isConnected(context)) {
+//      Log.d(TAG, "No network available now");
+//      return;
+//    }
 
     if (!isPushServiceAvailable(context, PushService.class)) {
       Log.e(TAG, "Please add <service android:name=\"cn.leancloud.push.lite.PushService\"/> in your AndroidManifest file");
@@ -347,19 +349,18 @@ public class PushService extends Service {
     return false;
   }
 
-  private static synchronized void startService(Context context, final java.lang.Class cls) {
-    final Context finalContext = context;
+  private static synchronized void startService(final Context context, final java.lang.Class cls) {
     new Thread(new Runnable() {
       @Override
       public void run() {
         Log.d(TAG, "Start service");
         try {
-          Intent intent = new Intent(finalContext, PushService.class);
+          Intent intent = new Intent(context, PushService.class);
           intent.putExtra(AV_PUSH_SERVICE_APPLICATION_ID, AVOSCloud.getApplicationId());
           if (cls != null) {
             intent.putExtra(AV_PUSH_SERVICE_DEFAULT_CALLBACK, cls.getName());
           }
-          finalContext.startService(intent);
+          context.startService(intent);
         } catch (Exception ex) {
           // i have tried my best.
           Log.e(TAG, "failed to start PushService. cause: " + ex.getMessage());
@@ -379,7 +380,9 @@ public class PushService extends Service {
           NotifyUtil.notifyHandler.sendEmptyMessage(NotifyUtil.SERVICE_RESTART);
         }
       } catch (Exception e) {
-        Log.d(TAG, "failed to call notifyOtherApplication. cause: " + e.getMessage());
+        if (AVOSCloud.isDebugLogEnabled()) {
+          Log.d(TAG, "failed to call notifyOtherApplication. cause: " + e.getMessage());
+        }
       }
     }
   }

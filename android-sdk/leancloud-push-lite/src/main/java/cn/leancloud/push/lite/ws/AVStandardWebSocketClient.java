@@ -27,6 +27,7 @@ import javax.net.ssl.SNIServerName;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocketFactory;
 
+import cn.leancloud.push.lite.AVOSCloud;
 import cn.leancloud.push.lite.proto.CommandPacket;
 import cn.leancloud.push.lite.utils.StringUtil;
 
@@ -96,7 +97,7 @@ public class AVStandardWebSocketClient extends WebSocketClient {
                 ((javax.net.ssl.SSLSocket)socket).setSSLParameters(params);
               }
             } catch (Exception ex) {
-              ex.printStackTrace();
+              Log.w("WebSocketClient", ex.getMessage());
             }
           }
           setSocket(socket);
@@ -117,7 +118,9 @@ public class AVStandardWebSocketClient extends WebSocketClient {
   }
 
   public void send(CommandPacket packet) {
-    Log.d(TAG, "uplink : " + packet.getGenericCommand().toString());
+    if (AVOSCloud.isDebugLogEnabled()) {
+      Log.d(TAG, "uplink : " + packet.getGenericCommand().toString());
+    }
     try {
       send(packet.getGenericCommand().toByteArray());
     } catch (Exception e) {
@@ -142,7 +145,9 @@ public class AVStandardWebSocketClient extends WebSocketClient {
   }
 
   public void onClose(int var1, String var2, boolean var3) {
-    Log.d(TAG, "onClose code=" + var1 + ", message=" + var2);
+    if (AVOSCloud.isDebugLogEnabled()) {
+      Log.d(TAG, "onClose code=" + var1 + ", message=" + var2);
+    }
     this.heartBeatPolicy.stop();
     if (null != this.socketClientMonitor) {
       this.socketClientMonitor.onClose(var1, var2, var3);

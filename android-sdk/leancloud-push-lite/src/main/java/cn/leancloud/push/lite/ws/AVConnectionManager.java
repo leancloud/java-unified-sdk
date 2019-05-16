@@ -78,7 +78,9 @@ public class AVConnectionManager implements WebSocketClientMonitor {
           try {
             long sleepMS = (long)Math.pow(2, retryConnectionCount) * 1000;
             Thread.sleep(sleepMS);
-            Log.d(TAG, "reConnect rtm server. count=" + retryConnectionCount);
+            if (AVOSCloud.isDebugLogEnabled()) {
+              Log.d(TAG, "reConnect rtm server. count=" + retryConnectionCount);
+            }
             startConnectionInternal();
           } catch (InterruptedException ex) {
             Log.w(TAG,"failed to start connection.", ex);
@@ -103,7 +105,9 @@ public class AVConnectionManager implements WebSocketClientMonitor {
   }
 
   private void initWebSocketClient(String targetServer) {
-    Log.d(TAG, "try to connect server: " + targetServer);
+    if (AVOSCloud.isDebugLogEnabled()) {
+      Log.d(TAG, "try to connect server: " + targetServer);
+    }
 
     SSLSocketFactory sf = null;
     try {
@@ -142,17 +146,14 @@ public class AVConnectionManager implements WebSocketClientMonitor {
 
   public void startConnection(AVCallback callback) {
     if (this.connectionEstablished) {
-      Log.d(TAG, "connection is established, directly response callback...");
       if (null != callback) {
         callback.internalDone(null);
       }
     } else if (this.connecting) {
-      Log.d(TAG, "on starting connection, save callback...");
       if (null != callback) {
         this.pendingCallback = callback;
       }
     } else {
-      Log.d(TAG,"start connection with callback...");
       this.connecting = true;
       this.pendingCallback = callback;
       startConnectionInternal();
@@ -160,21 +161,13 @@ public class AVConnectionManager implements WebSocketClientMonitor {
   }
 
   public void startConnection() {
-    if (this.connectionEstablished) {
-      Log.d(TAG, "connection is established...");
-    } else if (this.connecting) {
-      Log.d(TAG, "on starting connection, ignore.");
-      return;
-    } else {
-      Log.d(TAG, "start connection...");
-      this.connecting = true;
-      startConnectionInternal();
-    }
+    startConnection(null);
   }
 
   private void startConnectionInternal() {
     final String appId = AVOSCloud.applicationId;
     final String installationId = AVInstallation.getCurrentInstallation().getInstallationId();
+
     AVHttpClient.getInstance().fetchPushWSServer(appId, installationId, 1, new Callback<JSONObject>() {
       public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
         JSONObject result = response.body();
@@ -228,7 +221,9 @@ public class AVConnectionManager implements WebSocketClientMonitor {
    * WebSocketClientMonitor interfaces
    */
   public void onOpen() {
-    Log.d(TAG, "webSocket established...");
+    if (AVOSCloud.isDebugLogEnabled()) {
+      Log.d(TAG, "webSocket established...");
+    }
     connectionEstablished = true;
     retryConnectionCount = 0;
     for (AVConnectionListener listener: connectionListeners.values()) {
@@ -245,7 +240,9 @@ public class AVConnectionManager implements WebSocketClientMonitor {
   }
 
   public void onClose(int var1, String var2, boolean var3) {
-    Log.d(TAG,"webSocket closed...");
+    if (AVOSCloud.isDebugLogEnabled()) {
+      Log.d(TAG, "webSocket closed...");
+    }
     connectionEstablished = false;
     for (AVConnectionListener listener: connectionListeners.values()) {
       listener.onWebSocketClose();

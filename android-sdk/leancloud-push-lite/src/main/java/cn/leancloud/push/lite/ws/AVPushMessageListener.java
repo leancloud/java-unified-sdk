@@ -32,16 +32,7 @@ public class AVPushMessageListener implements AVConnectionListener {
     switch (genericCommand.getCmd().getNumber()) {
       case Messages.CommandType.data_VALUE:
         Messages.DataCommand dataCommand = genericCommand.getDataMessage();
-        List<String> messageIds = dataCommand.getIdsList();
-        List<Messages.JsonObjectMessage> messages = dataCommand.getMsgList();
-        for (int i = 0; i < messages.size() && i < messageIds.size(); i++) {
-          if (null != messages.get(i)) {
-            AVNotificationManager.getInstance().processPushMessage(messages.get(i).getData(), messageIds.get(i));
-          }
-        }
-
-        CommandPacket packet = PacketAssembler.getInstance().assemblePushAckPacket(AVInstallation.getCurrentInstallation().getInstallationId(), messageIds);
-        AVConnectionManager.getInstance().sendPacket(packet);
+        processDataCommand(dataCommand);
         break;
       case Messages.CommandType.goaway_VALUE:
         processGoawayCommand();
@@ -50,7 +41,7 @@ public class AVPushMessageListener implements AVConnectionListener {
   }
 
   public void onError(Integer requestKey, Messages.ErrorCommand errorCommand) {
-
+    processGoawayCommand();
   }
 
 

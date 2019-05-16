@@ -45,13 +45,14 @@ public class AVInstallation implements Parcelable {
   public static final String VENDOR = "vendor";
 
   private static final String TAG = AVInstallation.class.getSimpleName();
-
+  private static final JSONObject deleteOP = JSON.parseObject("{\"__op\":\"Delete\"}");
   private static volatile AVInstallation currentInstallation;
 
   protected String objectId = null;
   protected String updatedAt = null;
   protected String createdAt = null;
   Map<String, Object> serverData = new ConcurrentHashMap<String, Object>();
+  Map<String, JSONObject> removedAttr = new ConcurrentHashMap<>();
 
   public static AVInstallation getCurrentInstallation() {
     return getCurrentInstallation(null);
@@ -59,16 +60,12 @@ public class AVInstallation implements Parcelable {
 
   public static AVInstallation getCurrentInstallation(Context ctx) {
     Context usingCtx = (null == ctx)? AVOSCloud.applicationContext : ctx;
-
     if (currentInstallation == null) {
       synchronized (AVInstallation.class) {
         if (currentInstallation == null && readInstallationFile(usingCtx) == null) {
           createNewInstallation(usingCtx);
         }
       }
-    }
-    if (currentInstallation != null) {
-      currentInstallation.initialize();
     }
     return currentInstallation;
   }
@@ -116,11 +113,13 @@ public class AVInstallation implements Parcelable {
 
       if (installationFile.exists()) {
         json = AVPersistenceUtils.readContentFromFile(installationFile);
+
         if (json.indexOf("{") >= 0) {
           // replace leading type name to compatible with v4.x android sdk serialized json string.
           json = json.replaceAll("^\\{\\s*\"@type\":\\s*\"[A-Za-z\\.]+\",", "{");
 
           JSONObject installationJson = JSON.parseObject(json, Feature.SupportAutoType);
+
           currentInstallation = new AVInstallation();
           if (installationJson.containsKey("updatedAt")) {
             currentInstallation.setUpdatedAt(installationJson.getString("updatedAt"));
@@ -244,9 +243,10 @@ public class AVInstallation implements Parcelable {
 
   public void remove(String key) {
     if (StringUtil.isEmpty(key)) {
-      return;
+      throw new IllegalArgumentException("key should not be null or empty.");
     }
     this.serverData.remove(key);
+    this.removedAttr.put(key, deleteOP);
   }
 
   public void removeAll(final String key, final Collection<?> values) {
@@ -259,14 +259,14 @@ public class AVInstallation implements Parcelable {
 
   public void put(final String key, final Object value) {
     if (StringUtil.isEmpty(key)) {
-      return;
+      throw new IllegalArgumentException("key should not be null or empty.");
     }
     this.serverData.put(key, value);
   }
 
   public void increment(final String key, final Number amount) {
     if (StringUtil.isEmpty(key)) {
-      return;
+      throw new IllegalArgumentException("key should not be null or empty.");
     }
     Number oldValue = getNumber(key);
     if (null == oldValue) {
@@ -279,21 +279,21 @@ public class AVInstallation implements Parcelable {
 
   public void increment(String key) {
     if (StringUtil.isEmpty(key)) {
-      return;
+      throw new IllegalArgumentException("key should not be null or empty.");
     }
     this.increment(key, 1);
   }
 
   public void addUnique(String key, Object value) {
     if (StringUtil.isEmpty(key)) {
-      return;
+      throw new IllegalArgumentException("key should not be null or empty.");
     }
     this.addObjectToArray(key, value, true);
   }
 
   public void addAllUnique(String key, Collection<?> values) {
     if (StringUtil.isEmpty(key)) {
-      return;
+      throw new IllegalArgumentException("key should not be null or empty.");
     }
     for (Object item : values) {
       this.addObjectToArray(key, item, true);
@@ -302,7 +302,7 @@ public class AVInstallation implements Parcelable {
 
   public void addAll(String key, Collection<?> values) {
     if (StringUtil.isEmpty(key)) {
-      return;
+      throw new IllegalArgumentException("key should not be null or empty.");
     }
     for (Object item : values) {
       this.addObjectToArray(key, item, false);
@@ -311,7 +311,7 @@ public class AVInstallation implements Parcelable {
 
   public void add(String key, Object value) {
     if (StringUtil.isEmpty(key)) {
-      return;
+      throw new IllegalArgumentException("key should not be null or empty.");
     }
     this.addObjectToArray(key, value, false);
   }
@@ -321,6 +321,7 @@ public class AVInstallation implements Parcelable {
     if (null == oldValue) {
       oldValue = new ArrayList(1);
       oldValue.add(value);
+      put(key, oldValue);
     } else {
       boolean needAdd = true;
       if (unique) {
@@ -458,6 +459,11 @@ public class AVInstallation implements Parcelable {
     refreshInBackground(null, callback);
   }
 
+  /**
+   * refresh data in background.
+   * @param includeKeys project attr names, ignored by Installation.
+   * @param callback
+   */
   public void refreshInBackground(String includeKeys, AVCallback<AVInstallation> callback) {
     if (StringUtil.isEmpty(this.objectId)) {
       throw new IllegalStateException("objectId is null.");
@@ -496,6 +502,7 @@ public class AVInstallation implements Parcelable {
     this.serverData.putAll(data.getInnerMap());
     saveCurrentInstalationToLocal(AVOSCloud.applicationContext);
   }
+
   /**
    * save operation
    */
@@ -529,11 +536,24 @@ public class AVInstallation implements Parcelable {
   }
 
   public void saveInBackground(boolean fetchWhenSave, AVCallback<Void> callback) {
-    AVHttpClient.getInstance().saveInstallation(new JSONObject(this.serverData), fetchWhenSave, new Callback<JSONObject>() {
+    JSONObject param = new JSONObject(this.serverData);
+    if (param.containsKey(UPDATED_AT)) {
+      param.remove(UPDATED_AT);
+    }
+    if (param.containsKey(CREATED_AT)) {
+      param.remove(CREATED_AT);
+    }
+    if (param.containsKey(OBJECT_ID)) {
+      param.putAll(removedAttr);
+    } else {
+      removedAttr.clear();
+    }
+    AVHttpClient.getInstance().saveInstallation(param, fetchWhenSave, new Callback<JSONObject>() {
       @Override
       public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
         JSONObject result = response.body();
         mergeServerData(result);
+        removedAttr.clear();
         if (null != callback) {
           callback.internalDone(null);
         }

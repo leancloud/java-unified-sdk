@@ -18,7 +18,7 @@ public class AVOSCloud {
   public static final int LOG_LEVEL_INFO = 1 << 3;
   public static final int LOG_LEVEL_WARNING = 1 << 4;
   public static final int LOG_LEVEL_ERROR = 1 << 5;
-  public static final int LOG_LEVEL_NONE = ~0;
+  public static final int LOG_LEVEL_NONE = 1 << 16;
 
   private static final String SDK_VERSION = "5.0.13";
   private static final String DEFAULT_USER_AGENT = "LeanCloud Push(lite) SDK v" + SDK_VERSION;
@@ -92,16 +92,28 @@ public class AVOSCloud {
     if (handler == null) {
       AVOSCloud.handler = new Handler();
     }
-    initialize();
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        initialize();
+      }
+    }).start();
   }
 
   private static void initialize() {
     AVPersistenceUtils.initAppInfo(applicationId, applicationContext);
-    PushRouterManager.getInstance().fetchRouter(false, new AVCallback() {
+
+    final PushRouterManager pushRouterManager = PushRouterManager.getInstance();
+    pushRouterManager.fetchRouter(false, new AVCallback<Void>() {
       @Override
-      protected void internalDone0(Object o, AVException avException) {
-        String pushAPIServer = PushRouterManager.getInstance().getPushAPIServer();
-        String pushRouterServer = PushRouterManager.getInstance().getPushRouterServer();
+      protected boolean mustRunOnUIThread() {
+        return false;
+      }
+      @Override
+      protected void internalDone0(Void o, AVException avException) {
+        String pushAPIServer = pushRouterManager.getPushAPIServer();
+        String pushRouterServer = pushRouterManager.getPushRouterServer();
+
         AVHttpClient.getInstance().initialize(pushAPIServer, pushRouterServer);
       }
     });

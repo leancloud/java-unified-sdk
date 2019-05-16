@@ -61,6 +61,7 @@ public class AVHttpClient {
     if (initialized) {
       return;
     }
+
     createRetrofitClient(pushAPIServer, pushRouterServer);
     initialized = true;
   }

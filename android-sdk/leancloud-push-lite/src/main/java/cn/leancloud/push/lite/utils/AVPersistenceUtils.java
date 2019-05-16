@@ -55,7 +55,7 @@ public class AVPersistenceUtils {
     return instance;
   }
 
-  public static synchronized void initAppInfo(String appId, Context ctx) {
+  public static void initAppInfo(String appId, Context ctx) {
     if (StringUtil.isEmpty(appId) || null == ctx) {
       return;
     }
