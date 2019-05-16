@@ -1,6 +1,7 @@
 package cn.leancloud.demo.push.lite.demo;
 
 import android.app.Application;
+import android.util.Log;
 
 import cn.leancloud.push.lite.AVCallback;
 import cn.leancloud.push.lite.AVException;
@@ -15,13 +16,17 @@ public class MyApp extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
+
     AVOSCloud.setLogLevel(AVOSCloud.LOG_LEVEL_DEBUG);
     AVOSCloud.initialize(this, appId, appKey);
-    AVInstallation.getCurrentInstallation().saveInBackground(new AVCallback<Void>() {
+
+    final AVInstallation curInstall = AVInstallation.getCurrentInstallation();
+
+    curInstall.saveInBackground(new AVCallback<Void>() {
       protected void internalDone0(Void t, AVException ex) {
         if (ex == null) {
           // 保存成功
-          String installationId = AVInstallation.getCurrentInstallation().getInstallationId();
+          String installationId = curInstall.getInstallationId();
           // 关联  installationId 到用户表等操作……
           System.out.println("succeed to save installation with id: " + installationId);
         } else {
