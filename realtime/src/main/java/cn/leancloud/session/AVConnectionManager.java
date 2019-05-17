@@ -310,6 +310,11 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     } else if (StringUtil.isEmpty(peerId)) {
       peerId = AVIMClient.getDefaultClient();
     }
+    if (command.hasService() && command.getService() == LiveQueryLoginPacket.SERVICE_PUSH
+            && command.getCmd().getNumber() == Messages.CommandType.loggedin_VALUE) {
+      // push login response.
+      return;
+    }
     AVConnectionListener listener = this.connectionListeners.get(peerId);
     if (null != listener) {
       listener.onMessageArriving(peerId, requestKey, command);

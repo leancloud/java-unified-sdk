@@ -24,6 +24,7 @@ public abstract class AVNotificationManager {
 
   private final ConcurrentMap<String, String> defaultPushCallback =
           new ConcurrentHashMap<String, String>();
+  protected final Map<String, String> processedMessages = new ConcurrentHashMap<>();
   private int notificationIcon = 0;
 
   AVNotificationManager() {
@@ -184,6 +185,12 @@ public abstract class AVNotificationManager {
   }
 
   public void processPushMessage(String message, String messageId) {
+    if (processedMessages.containsKey(messageId)) {
+      LOGGER.w("duplicated push message, ignore it. data=" + message);
+      return;
+    } else {
+      processedMessages.put(messageId, "");
+    }
     try {
       String channel = getChannel(message);
       if (channel == null || !containsDefaultPushCallback(channel)) {

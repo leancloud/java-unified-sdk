@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.support.v4.app.ActivityCompat;
 
 import com.alibaba.fastjson.JSON;
 
@@ -90,6 +91,9 @@ public class PushService extends Service {
   public void onCreate() {
     LOGGER.d("PushService#onCreate");
     super.onCreate();
+
+    AndroidNotificationManager.getInstance().setServiceContext(this);
+    AndroidNotificationManager.getInstance().setNotificationIcon(this.getApplicationInfo().icon);
 
     directlyOperationTube = new DirectlyOperationTube(true);
 
@@ -407,7 +411,7 @@ public class PushService extends Service {
       return;
     }
 
-    if (PackageManager.PERMISSION_GRANTED != context.checkCallingOrSelfPermission("android.permission.INTERNET")) {
+    if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(context, "android.permission.INTERNET")) {
       LOGGER.e("Please add <uses-permission android:name=\"android.permission.INTERNET\"/> in your AndroidManifest file");
       return;
     }
@@ -440,19 +444,18 @@ public class PushService extends Service {
     return false;
   }
 
-  private static synchronized void startService(Context context, final java.lang.Class cls) {
-    final Context finalContext = context;
+  private static synchronized void startService(final Context context, final java.lang.Class cls) {
     new Thread(new Runnable() {
       @Override
       public void run() {
         LOGGER.d( "Start service");
         try {
-          Intent intent = new Intent(finalContext, PushService.class);
+          Intent intent = new Intent(context, PushService.class);
           intent.putExtra(AV_PUSH_SERVICE_APPLICATION_ID, AVOSCloud.getApplicationId());
           if (cls != null) {
             intent.putExtra(AV_PUSH_SERVICE_DEFAULT_CALLBACK, cls.getName());
           }
-          finalContext.startService(intent);
+          context.startService(intent);
         } catch (Exception ex) {
           // i have tried my best.
           LOGGER.e("failed to start PushService. cause: " + ex.getMessage());

@@ -45,8 +45,7 @@ public class NotifyUtil {
             String appPackage = Base64Decoder.decode(encodedAppPackage);
             if (!AVOSCloud.getContext().getPackageName().equals(appPackage)) {
               Intent intent = new Intent();
-              intent.setClassName(appPackage,
-                  "com.avos.avoscloud.PushService");
+              intent.setClassName(appPackage, PushService.class.getName());
               intent.setAction(SERVICE_RESTART_ACTION);
               LOGGER.d("try to start:" + appPackage + " from:"
                   + AVOSCloud.getContext().getPackageName());

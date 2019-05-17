@@ -99,6 +99,7 @@ public class AVStandardWebSocketClient extends WebSocketClient {
                 ((javax.net.ssl.SSLSocket)socket).setSSLParameters(params);
               }
             } catch (Exception ex) {
+              // for Android OS before Build.VERSION_CODES.N, we can't find out javax.net.ssl.SNIHostName.
               gLogger.w("failed to init SSLSocket. cause: " + ex.getMessage());
             }
           }

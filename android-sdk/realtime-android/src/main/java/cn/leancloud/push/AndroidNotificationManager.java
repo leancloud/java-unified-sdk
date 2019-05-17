@@ -36,12 +36,17 @@ public class AndroidNotificationManager extends AVNotificationManager {
   private static final String PUSH_INTENT_KEY = "com.avoscloud.push";
   private static final Random random = new Random();
   private static final AndroidNotificationManager INSTANCE = new AndroidNotificationManager();
+  private Context serviceContext;
 
   public static AndroidNotificationManager getInstance() {
     return INSTANCE;
   }
 
   private AndroidNotificationManager() {
+  }
+
+  public void setServiceContext(Context context) {
+    this.serviceContext = context;
   }
 
   private Intent buildUpdateIntent(String channel, String msg, String action) {
@@ -54,7 +59,11 @@ public class AndroidNotificationManager extends AVNotificationManager {
     updateIntent.putExtra("com.avoscloud.Channel", channel);
     updateIntent.putExtra("com.avos.avoscloud.Data", msg);
     updateIntent.putExtra("com.avoscloud.Data", msg);
-    updateIntent.setPackage(AVOSCloud.getContext().getPackageName());
+    if (null != AVOSCloud.getContext()) {
+      updateIntent.setPackage(AVOSCloud.getContext().getPackageName());
+    } else {
+      updateIntent.setPackage(this.serviceContext.getPackageName());
+    }
     return updateIntent;
   }
 
@@ -71,7 +80,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
       throw new IllegalArgumentException(
           "No default callback found, did you forget to invoke setDefaultPushCallback?");
     }
-    Context context = AVOSCloud.getContext();
+    Context context = null != AVOSCloud.getContext()? AVOSCloud.getContext() : serviceContext;
     int lastIndex = clsName.lastIndexOf(".");
     if (lastIndex != -1) {
       // String packageName = clsName.substring(0, lastIndex);
@@ -115,7 +124,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
 
   @Override
   String getApplicationName() {
-    Context context = AVOSCloud.getContext();
+    Context context = null != AVOSCloud.getContext()? AVOSCloud.getContext() : serviceContext;
     final PackageManager pm = context.getPackageManager();
     ApplicationInfo ai;
     try {
@@ -132,7 +141,8 @@ public class AndroidNotificationManager extends AVNotificationManager {
   void sendBroadcast(String channel, String msg, String action) {
     Intent updateIntent = buildUpdateIntent(channel, msg, action);
     LOGGER.d("action: " + updateIntent.getAction());
-    AVOSCloud.getContext().sendBroadcast(updateIntent);
+    Context context = null != AVOSCloud.getContext()? AVOSCloud.getContext() : serviceContext;
+    context.sendBroadcast(updateIntent);
     LOGGER.d("sent broadcast");
   }
 
@@ -197,11 +207,13 @@ public class AndroidNotificationManager extends AVNotificationManager {
         if (StringUtil.isEmpty(clsName)) {
           LOGGER.e("className is empty, ignore.");
         } else {
+          Context context = null != AVOSCloud.getContext()? AVOSCloud.getContext() : serviceContext;
           Intent intent = buildUpdateIntent(channel, message, null);
-          ComponentName cn = new ComponentName(AVOSCloud.getContext(), clsName);
+          ComponentName cn = new ComponentName(context, clsName);
           intent.setComponent(cn);
           intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-          PendingIntent pendingIntent = PendingIntent.getActivity(AVOSCloud.getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+          PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
+              PendingIntent.FLAG_UPDATE_CURRENT);
           try {
             pendingIntent.send();
           } catch (PendingIntent.CanceledException e) {
@@ -237,7 +249,8 @@ public class AndroidNotificationManager extends AVNotificationManager {
   private void sendNotificationBroadcast(String channel, String msg, String action) {
     Intent updateIntent = buildUpdateIntent(channel, msg, action);
     LOGGER.d("action: " + updateIntent.getAction());
-    AVOSCloud.getContext().sendBroadcast(updateIntent);
+    Context context = null != AVOSCloud.getContext()? AVOSCloud.getContext() : serviceContext;
+    context.sendBroadcast(updateIntent);
     LOGGER.d("sent broadcast");
   }
 }

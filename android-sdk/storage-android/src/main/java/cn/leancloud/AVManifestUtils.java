@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
+import android.support.v4.app.ActivityCompat;
 
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -27,7 +28,7 @@ public class AVManifestUtils {
    */
   public static boolean checkPermission(Context context, String permission) {
     boolean hasPermission =
-        (PackageManager.PERMISSION_GRANTED == context.checkCallingOrSelfPermission(permission));
+        (PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(context, permission));
     if (!hasPermission) {
       printErrorLog("permission " + permission + " is missing!");
     }
