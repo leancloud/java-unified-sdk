@@ -57,7 +57,7 @@ public class PushService extends Service {
   public void onCreate() {
     super.onCreate();
     Log.d(TAG, "PushServer#onCreate");
-    connectionManager = AVConnectionManager.getInstance();
+    connectionManager = AVConnectionManager.getInstance(this);
     new Thread(new Runnable() {
       @Override
       public void run() {

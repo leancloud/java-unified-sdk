@@ -2,8 +2,12 @@ package cn.leancloud.push.lite.ws;
 
 import java.util.List;
 
+import cn.leancloud.push.lite.AVCallback;
+import cn.leancloud.push.lite.AVException;
 import cn.leancloud.push.lite.AVInstallation;
 import cn.leancloud.push.lite.AVNotificationManager;
+import cn.leancloud.push.lite.AVOSCloud;
+import cn.leancloud.push.lite.PushRouterManager;
 import cn.leancloud.push.lite.proto.CommandPacket;
 import cn.leancloud.push.lite.proto.Messages;
 import cn.leancloud.push.lite.proto.PushAckPacket;
@@ -56,11 +60,11 @@ public class AVPushMessageListener implements AVConnectionListener {
     PushAckPacket pap = new PushAckPacket();
     pap.setInstallationId(AVInstallation.getCurrentInstallation().getInstallationId());
     pap.setMessageIds(messageIds);
-    AVConnectionManager.getInstance().sendPacket(pap);
+    AVConnectionManager.getInstance(AVOSCloud.applicationContext).sendPacket(pap);
   }
 
   private void processGoawayCommand() {
-    AVConnectionManager.getInstance().cleanup();
-    AVConnectionManager.getInstance().startConnection();
+    AVConnectionManager.getInstance(AVOSCloud.applicationContext).cleanup();
+    AVConnectionManager.getInstance(AVOSCloud.applicationContext).startConnection();
   }
 }

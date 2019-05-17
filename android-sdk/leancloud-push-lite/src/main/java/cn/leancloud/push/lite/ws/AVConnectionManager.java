@@ -1,5 +1,6 @@
 package cn.leancloud.push.lite.ws;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.java_websocket.framing.CloseFrame;
@@ -40,17 +41,18 @@ public class AVConnectionManager implements WebSocketClientMonitor {
 
   private volatile boolean connecting = false;
   private volatile AVCallback pendingCallback = null;
-
+  private Context context;
   private Map<String, AVConnectionListener> connectionListeners = new ConcurrentHashMap<>(1);
 
-  public synchronized static AVConnectionManager getInstance() {
+  public synchronized static AVConnectionManager getInstance(Context context) {
     if (instance == null) {
-      instance = new AVConnectionManager(false);
+      instance = new AVConnectionManager(context, false);
     }
     return instance;
   }
 
-  private AVConnectionManager(boolean autoConnection) {
+  private AVConnectionManager(Context context, boolean autoConnection) {
+    this.context = context;
     connectionListeners.put(AVPushMessageListener.DEFAULT_ID, AVPushMessageListener.getInstance());
     if (autoConnection) {
       startConnection();
@@ -166,7 +168,7 @@ public class AVConnectionManager implements WebSocketClientMonitor {
 
   private void startConnectionInternal() {
     final String appId = AVOSCloud.applicationId;
-    final String installationId = AVInstallation.getCurrentInstallation().getInstallationId();
+    final String installationId = AVInstallation.getCurrentInstallation(this.context).getInstallationId();
 
     AVHttpClient.getInstance().fetchPushWSServer(appId, installationId, 1, new Callback<JSONObject>() {
       public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
@@ -235,7 +237,7 @@ public class AVConnectionManager implements WebSocketClientMonitor {
     // auto send login packet.
     LoginPacket lp = new LoginPacket();
     lp.setAppId(AVOSCloud.getApplicationId());
-    lp.setInstallationId(AVInstallation.getCurrentInstallation().getInstallationId());
+    lp.setInstallationId(AVInstallation.getCurrentInstallation(this.context).getInstallationId());
     this.sendPacket(lp);
   }
 
