@@ -9,10 +9,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class AVObjectTest extends TestCase {
@@ -909,6 +906,51 @@ public class AVObjectTest extends TestCase {
     localtion.put("2ds", new AVGeoPoint(34.6, 76.43));
     object.put("location", localtion);
     object.save();
+  }
+
+  public void testStringIndexOutOfBoundsException() throws Exception {
+    try {
+      Map<String, String> payMap = new HashMap<>();
+      AVObject payInfo = new AVObject("PayInfo");
+      payInfo.put("notifyState", 0);
+      payInfo.put("prepayId", payMap.get("prepayid"));
+      payInfo.put("payState", 0);
+      payInfo.put("transactionId", "");
+      payInfo.put("vip_expiry_date", "");
+      payInfo.put("tradeType", "APP");
+      payInfo.put("bankType", "");
+      payInfo.put("timeEnd", "");
+      payInfo.put("totalFee", 432423);
+      payInfo.put("outTradeNo", payMap.get("mchTradeNo"));
+      payInfo.put("vipStatus", "");
+      payInfo.put("userPhone", "18600433132");
+      payInfo.put("vipStatus", false);
+      payInfo.put("body", "body");
+      payInfo.put("cashFee", "");
+      payInfo.saveInBackground().subscribe(new Observer<AVObject>() {
+        public void onSubscribe(Disposable disposable) {
+
+        }
+
+        public void onNext(AVObject avObject) {
+          System.out.println("succeed to save Object. objectId:" + avObject.getObjectId());
+          testSucceed = true;
+          latch.countDown();
+        }
+
+        public void onError(Throwable throwable) {
+          latch.countDown();
+        }
+
+        public void onComplete() {
+
+        }
+      });
+      latch.await();
+      assertTrue(testSucceed);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
   }
 
   public void testUpdateWithSaveOptionShouldNotChange() throws Exception {

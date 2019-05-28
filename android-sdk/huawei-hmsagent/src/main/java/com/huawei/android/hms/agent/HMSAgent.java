@@ -17,11 +17,15 @@ import com.huawei.android.hms.agent.common.INoProguard;
 import com.huawei.android.hms.agent.common.handler.CheckUpdateHandler;
 import com.huawei.android.hms.agent.common.handler.ConnectHandler;
 import com.huawei.android.hms.agent.game.FloatWindowApi;
+import com.huawei.android.hms.agent.game.GetCertificationInfoApi;
+import com.huawei.android.hms.agent.game.GetCertificationIntentApi;
 import com.huawei.android.hms.agent.game.GetTemperatureApi;
 import com.huawei.android.hms.agent.game.LoginApi;
 import com.huawei.android.hms.agent.game.RegisterHardwareCapabilityApi;
 import com.huawei.android.hms.agent.game.SavePlayerInfoApi;
 import com.huawei.android.hms.agent.game.UpdateGameInfoApi;
+import com.huawei.android.hms.agent.game.handler.GetCertificationInfoHandler;
+import com.huawei.android.hms.agent.game.handler.GetCertificationIntentHandler;
 import com.huawei.android.hms.agent.game.handler.GetTemperatureHandler;
 import com.huawei.android.hms.agent.game.handler.LoginHandler;
 import com.huawei.android.hms.agent.game.handler.RegisterHardwareCapabilityHandler;
@@ -106,10 +110,12 @@ public final class HMSAgent implements INoProguard {
 
     private static final String VER_020601302 = "020601302";
 
+    private static final String VER_020603300 = "020603300";
+
     /**
      * 当前版本号 | Current version number
      */
-    public static final String CURVER = VER_020601302;
+    public static final String CURVER = VER_020603300;
 
     public static final class AgentResultCode {
 
@@ -355,6 +361,22 @@ public final class HMSAgent implements INoProguard {
          */
         public static long updateGameInfo(GameInfo info){
             return new UpdateGameInfoApi().updateGameInfo(info);
+        }
+
+        /**
+         * 获取玩家实名认证信息 | get player certification info
+         * @param handler 获取玩家实名认证信息结果回调 | get player certification info Result Callback
+         */
+        public static void getCertificationInfo(GetCertificationInfoHandler handler) {
+            new GetCertificationInfoApi().getCertificationInfo(handler);
+        }
+
+        /**
+         * 获取玩家实名认证Intent | get player certification intent
+         * @param handler 获取玩家实名认证Intent结果回调 | get player certification intent Result Callback
+         */
+        public static void getCertificationIntent(GetCertificationIntentHandler handler) {
+            new GetCertificationIntentApi().getCertificationIntent(handler);
         }
     }
 
