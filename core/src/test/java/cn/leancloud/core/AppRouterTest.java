@@ -1,6 +1,6 @@
 package cn.leancloud.core;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.AVUser;
 import cn.leancloud.Configure;
 import cn.leancloud.service.RTMConnectionServerResponse;
 import junit.framework.TestCase;
@@ -9,6 +9,8 @@ public class AppRouterTest extends TestCase {
   public AppRouterTest(String name) {
     super(name);
     Configure.initializeRuntime();
+    AVUser currentUser = AVUser.getCurrentUser();
+    System.out.println("currentUser = " + currentUser);
   }
 
   public void testFetchApiEndpoint() {
@@ -30,4 +32,6 @@ public class AppRouterTest extends TestCase {
     assertNotNull(response.getSecondary());
     assertTrue(response.getTtl() > System.currentTimeMillis() / 1000);
   }
+
+
 }

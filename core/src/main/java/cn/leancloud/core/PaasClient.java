@@ -42,12 +42,12 @@ public class PaasClient {
 
   static void initializeGlobalClient() {
     if (null == apiService) {
-      final OkHttpClient okHttpClient = getGlobalOkHttpClient();
       AppRouter appRouter = AppRouter.getInstance();
       appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.API, false).subscribe(
               new Consumer<String>() {
                 @Override
                 public void accept(String apiHost) throws Exception {
+                  OkHttpClient okHttpClient = getGlobalOkHttpClient();
                   Retrofit retrofit = new Retrofit.Builder()
                           .baseUrl(apiHost)
                           .addConverterFactory(FastJsonConverterFactory.create())

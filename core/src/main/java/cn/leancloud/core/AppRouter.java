@@ -85,7 +85,13 @@ public class AppRouter {
   private AppAccessEndpoint fixedAccessEndpoint = new AppAccessEndpoint();
 
   protected AppRouter() {
-    OkHttpClient httpClient = PaasClient.getGlobalOkHttpClient();
+    OkHttpClient httpClient = new OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .addInterceptor(new LoggingInterceptor())
+            .dns(new DNSDetoxicant())
+            .build();
     retrofit = new Retrofit.Builder()
             .baseUrl(APP_ROUTER_HOST)
             .addConverterFactory(FastJsonConverterFactory.create())
