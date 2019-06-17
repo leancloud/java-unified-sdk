@@ -20,7 +20,7 @@ public class AVOSCloud {
   public static final int LOG_LEVEL_ERROR = 1 << 5;
   public static final int LOG_LEVEL_NONE = 1 << 16;
 
-  private static final String SDK_VERSION = "5.0.13";
+  private static final String SDK_VERSION = "5.0.14";
   private static final String DEFAULT_USER_AGENT = "LeanCloud Push(lite) SDK v" + SDK_VERSION;
 
   /**
