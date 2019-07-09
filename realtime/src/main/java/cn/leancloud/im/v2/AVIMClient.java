@@ -314,6 +314,16 @@ public class AVIMClient {
     this.createConversation(conversationMembers, name, attributes, true, false, callback);
   }
 
+  /**
+   * Create a new Chatroom
+   * @param name
+   * @param attributes
+   * @param callback
+   */
+  public void createChatRoom(String name, final Map<String, Object> attributes, final AVIMConversationCreatedCallback callback) {
+    this.createConversation(null, name, attributes, true, false, callback);
+  }
+
   private void createServiceConversation(String name, final Map<String, Object> attributes,
                                          final AVIMConversationCreatedCallback callback) {
     throw new UnsupportedOperationException("can't invoke createServiceConversation within SDK.");
@@ -322,12 +332,6 @@ public class AVIMClient {
   private void createConversation(final List<String> members, final String name,
                                   final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
                                   final boolean isTemp, int tempTTL, final AVIMConversationCreatedCallback callback) {
-    if (null == members || members.size() < 1) {
-      if (callback != null) {
-        callback.internalDone(null, AVIMException.wrapperAVException(new IllegalArgumentException("members should not be empty")));
-      }
-      return;
-    }
     final HashMap<String, Object> conversationAttributes = new HashMap<String, Object>();
     if (attributes != null) {
       conversationAttributes.putAll(attributes);
@@ -340,7 +344,9 @@ public class AVIMClient {
       assembledAttributes = AVIMConversation.processAttributes(conversationAttributes, true);
     }
     final List<String> conversationMembers = new ArrayList<String>();
-    conversationMembers.addAll(members);
+    if (null != members && members.size() > 0) {
+      conversationMembers.addAll(members);
+    }
     if (!conversationMembers.contains(clientId)) {
       conversationMembers.add(clientId);
     }
