@@ -509,17 +509,22 @@ public class AVIMConversationsQuery {
   }
 
   public void findInBackground(final AVIMConversationQueryCallback callback) {
-    Map<String, String> queryParams = conditions.assembleParameters();
+    final Map<String, String> queryParams = conditions.assembleParameters();
 
     switch (policy) {
       case CACHE_THEN_NETWORK:
       case CACHE_ELSE_NETWORK:
-        try {
-          queryFromCache(callback, queryParams);
-        } catch (Exception ex) {
-          LOGGER.d("encounter exception while query from cache.", ex);
-          queryFromNetwork(callback, queryParams);
-        }
+        queryFromCache(new AVIMConversationQueryCallback() {
+          @Override
+          public void done(List<AVIMConversation> conversations, AVIMException e) {
+            if (null != e) {
+              LOGGER.d("failed to query cache. cause:" + e.getMessage());
+              queryFromNetwork(callback, queryParams);
+            } else if (null != callback ){
+              callback.internalDone(conversations, null);
+            }
+          }
+        }, queryParams);
         break;
       case NETWORK_ELSE_CACHE:
         if (AppConfiguration.getGlobalNetworkingDetector().isConnected()) {
@@ -540,7 +545,7 @@ public class AVIMConversationsQuery {
 
   private void queryFromCache(final AVIMConversationQueryCallback callback,
                               final Map<String, String> queryParams) {
-    List<AVIMConversation> result = QueryResultCache.getInstance().getCacheRawResult(CONVERSATION_CLASS_NAME, queryParams,
+    QueryResultCache.getInstance().getCacheRawResult(CONVERSATION_CLASS_NAME, queryParams,
             maxAge, true).map(new Function<String, List<AVIMConversation>>() {
               @Override
               public List<AVIMConversation> apply(@NonNull String content) throws Exception {
@@ -551,10 +556,30 @@ public class AVIMConversationsQuery {
                 LOGGER.d("map function. output: " + conversations.size());
                 return conversations;
               }
-            }).blockingFirst();
-    if (null != callback) {
-      callback.internalDone(result, null);
-    }
+            }).subscribe(new Observer<List<AVIMConversation>>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+      }
+
+      @Override
+      public void onNext(List<AVIMConversation> avimConversations) {
+        if (null != callback) {
+          callback.internalDone(avimConversations, null);
+        }
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        if (null != callback) {
+          callback.internalDone(null, new AVException(throwable));
+        }
+      }
+
+      @Override
+      public void onComplete() {
+      }
+    });
+
   }
 
   private void queryFromNetwork(final AVIMConversationQueryCallback callback,
