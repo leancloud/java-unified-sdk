@@ -77,6 +77,15 @@ public class AppRouter {
   private static final String DEFAULT_REGION_NORTH_AMERICA = "lncldglobal.com";
 
   public static AVOSCloud.REGION getAppRegion(String applicationId) {
+    if (StringUtil.isEmpty(applicationId)) {
+      return AVOSCloud.REGION.NorthChina;
+    }
+    if (applicationId.endsWith("-MdYXbMMI")) {
+      return AVOSCloud.REGION.NorthAmerica;
+    }
+    if (applicationId.endsWith("-9Nh9j0Va")) {
+      return AVOSCloud.REGION.EastChina;
+    }
     return AVOSCloud.REGION.NorthChina;
   }
 
@@ -103,7 +112,7 @@ public class AppRouter {
   protected AppAccessEndpoint buildDefaultEndpoint(String appId) {
     AppAccessEndpoint result = new AppAccessEndpoint();
     String appIdPrefix = appId.substring(0, 8).toLowerCase();
-    AVOSCloud.REGION region = AVOSCloud.getRegion();
+    AVOSCloud.REGION region = getAppRegion(appId);
     String lastHost = "";
     switch (region) {
       case NorthChina:

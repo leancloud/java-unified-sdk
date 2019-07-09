@@ -9,6 +9,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.AVOSService;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.RequestSignImplementation;
 import cn.leancloud.logging.Log4jAdapter;

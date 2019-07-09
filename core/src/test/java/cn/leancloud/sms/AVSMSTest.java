@@ -10,7 +10,10 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.util.concurrent.CountDownLatch;
+
 public class AVSMSTest extends TestCase {
+  private boolean testSuccess;
   public AVSMSTest(String name) {
     super(name);
     Configure.initializeRuntime();
@@ -20,8 +23,16 @@ public class AVSMSTest extends TestCase {
     return new TestSuite(AVSMSTest.class);
   }
 
-  public void testNormalMobilePhone() {
-    AVSMS.requestSMSCodeInBackground("18600345198", null).subscribe(new Observer<AVNull>() {
+  public void testNormalMobilePhone() throws Exception {
+    AVSMSOption option = new AVSMSOption();
+    option.setApplicationName("LeanCloud");
+    option.setOperation("Register");
+    option.setTemplateName("my Template");
+    option.setSignatureName("LeanCloud");
+
+    final CountDownLatch latch = new CountDownLatch(1);
+    testSuccess = false;
+    AVSMS.requestSMSCodeInBackground("18600345198", option).subscribe(new Observer<AVNull>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
@@ -29,21 +40,23 @@ public class AVSMSTest extends TestCase {
 
       @Override
       public void onNext(AVNull avNull) {
-        fail();
+        testSuccess = true;
+        latch.countDown();
       }
 
       @Override
       public void onError(Throwable throwable) {
-        assertTrue(throwable.getMessage().equalsIgnoreCase("smsOption is null"));
+        latch.countDown();
       }
 
       @Override
       public void onComplete() {
-
       }
     });
-
+    latch.await();
+    assertTrue(testSuccess);
   }
+
   public void testTooLongMobilePhone() {
     AVSMS.requestSMSCodeInBackground("218600345198", null).subscribe(new Observer<AVNull>() {
       @Override

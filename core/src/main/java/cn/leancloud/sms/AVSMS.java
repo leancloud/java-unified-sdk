@@ -12,7 +12,7 @@ public class AVSMS {
   static Pattern phoneNumPattern = Pattern.compile("^[1+]\\d+$");
 
   public enum TYPE {
-    VOICE_SMS("voice"), TEXT_SMS("text");
+    VOICE_SMS("voice"), TEXT_SMS("sms");
 
     private String name;
 
