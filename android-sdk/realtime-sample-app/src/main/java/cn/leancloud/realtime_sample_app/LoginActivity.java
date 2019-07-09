@@ -36,7 +36,6 @@ import java.util.List;
 import cn.leancloud.AVLogger;
 import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.im.v2.AVIMException;
-import cn.leancloud.im.v2.AVIMMessage;
 import cn.leancloud.im.v2.callback.AVIMClientCallback;
 import cn.leancloud.utils.LogUtil;
 
