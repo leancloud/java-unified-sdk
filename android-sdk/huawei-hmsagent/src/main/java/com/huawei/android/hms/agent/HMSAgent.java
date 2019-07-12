@@ -110,12 +110,12 @@ public final class HMSAgent implements INoProguard {
 
     private static final String VER_020601302 = "020601302";
 
-    private static final String VER_020603300 = "020603300";
+    private static final String VER_020603306 = "020603306";
 
     /**
      * 当前版本号 | Current version number
      */
-    public static final String CURVER = VER_020603300;
+    public static final String CURVER = VER_020603306;
 
     public static final class AgentResultCode {
 
