@@ -41,6 +41,14 @@ allprojects {
     }
 }
 
+ext {
+    sdkVersion = "5.0.16"
+    supportLibVersion = "26.1.0"
+    fastjsonVersion = "1.1.70.android"
+    converterVersion = "2.1.0"
+    rxandroidVersion = "2.1.0"
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
