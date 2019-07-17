@@ -1446,7 +1446,7 @@ public class AVIMConversation {
    * 清除未读消息
    */
   public void read() {
-    if (isTransient) {
+    if (!isTransient) {
       AVIMMessage lastMessage = getLastMessage();
       Map<String, Object> params = new HashMap<String, Object>();
       if (null != lastMessage) {
