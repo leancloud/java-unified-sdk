@@ -151,6 +151,7 @@ public class PushService extends Service {
         }
       }
     });
+
     registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
     shutdownReceiver = new AVShutdownReceiver(new AVShutdownListener() {

@@ -50,7 +50,7 @@ dependencies {
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 
-    implementation('cn.leancloud:storage-android:5.0.15') {
+    implementation('cn.leancloud:storage-android:5.0.16') {
         exclude group: 'com.alibaba', module: 'fastjson'
         exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
     }

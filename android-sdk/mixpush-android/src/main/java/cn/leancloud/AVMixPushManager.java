@@ -39,6 +39,7 @@ public class AVMixPushManager {
   static int flymeMStatusBarIcon = 0;
 
   static String vivoDeviceProfile = "";
+  static String oppoDeviceProfile = "";
 
   /**
    * 注册小米推送
@@ -245,6 +246,10 @@ public class AVMixPushManager {
   }
 
   /**
+   * VIVO push
+   */
+
+  /**
    * 初始化方法，建议在 Application onCreate 里面调用
    * @param application
    */
@@ -316,6 +321,13 @@ public class AVMixPushManager {
     return client.isSupport();
   }
 
+  /**
+   * bind vivo alias
+   *
+   * @param context
+   * @param alias
+   * @param callback
+   */
   public static void bindVIVOAlias(Context context, String alias, final AVCallback<Boolean> callback) {
     if (null == context) {
       if (null != callback) {
@@ -336,6 +348,13 @@ public class AVMixPushManager {
     }
   }
 
+  /**
+   * unbind vivo alias
+   *
+   * @param context
+   * @param alias
+   * @param callback
+   */
   public static void unbindVIVOAlias(Context context, String alias, final AVCallback<Boolean> callback) {
     if (null == context) {
       if (null != callback) {
@@ -356,6 +375,12 @@ public class AVMixPushManager {
     }
   }
 
+  /**
+   * get vivo alias
+   *
+   * @param context
+   * @return
+   */
   public static String getVIVOAlias(Context context) {
     if (null == context) {
       return null;
@@ -363,13 +388,20 @@ public class AVMixPushManager {
     return com.vivo.push.PushClient.getInstance(context).getAlias();
   }
 
-  public static void setVIVOTopic(Context context, String alias, final AVCallback<Boolean> callback) {
+  /**
+   * set vivo topic
+   *
+   * @param context
+   * @param topic
+   * @param callback
+   */
+  public static void setVIVOTopic(Context context, String topic, final AVCallback<Boolean> callback) {
     if (null == context) {
       if (null != callback) {
         callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
       }
     } else {
-      com.vivo.push.PushClient.getInstance(context).setTopic(alias, new com.vivo.push.IPushActionListener() {
+      com.vivo.push.PushClient.getInstance(context).setTopic(topic, new com.vivo.push.IPushActionListener() {
         public void onStateChanged(int state) {
           if (null == callback) {
             AVException exception = null;
@@ -382,6 +414,13 @@ public class AVMixPushManager {
       });
     }
   }
+
+  /**
+   * delete vivo topic
+   * @param context
+   * @param alias
+   * @param callback
+   */
   public static void delVIVOTopic(Context context, String alias, final AVCallback<Boolean> callback) {
     if (null == context) {
       if (null != callback) {
@@ -402,12 +441,168 @@ public class AVMixPushManager {
     }
   }
 
+  /**
+   * get vivo topics
+   * @param context
+   * @return
+   */
   public static List<String> getVIVOTopics(Context context) {
     if (null == context) {
       return null;
     }
     return com.vivo.push.PushClient.getInstance(context).getTopics();
   }
+
+  /**
+   * Oppo push
+   */
+
+  /**
+   * register Oppo Push.
+   *
+   * @param context
+   * @param appKey
+   * @param appSecret
+   * @param callback
+   * @return
+   */
+  public static boolean registerOppoPush(Context context, String appKey, String appSecret,
+                                         AVOPPOPushAdapter callback) {
+    if (!isSupportOppoPush(context)) {
+      return false;
+    }
+    com.coloros.mcssdk.PushManager.getInstance().register(context, appKey, appSecret, callback);
+    return true;
+  }
+
+  /**
+   * judgement if support oppo push or not.
+   *
+   * @param context
+   * @return
+   */
+  public static boolean isSupportOppoPush(Context context) {
+    return com.coloros.mcssdk.PushManager.isSupportPush(context);
+  }
+
+  /**
+   * pause oppo push
+   */
+  public static void pauseOppoPush() {
+    com.coloros.mcssdk.PushManager.getInstance().pausePush();
+  }
+
+  /**
+   * resume oppo push
+   */
+  public static void resumeOppoPush() {
+    com.coloros.mcssdk.PushManager.getInstance().resumePush();
+  }
+
+  /**
+   * set oppo push time.
+   * @param weekDays
+   * @param startHour
+   * @param startMinute
+   * @param endHour
+   * @param endMinute
+   */
+  public static void setOppoPushTime(List<Integer> weekDays, int startHour, int startMinute,
+                                     int endHour, int endMinute) {
+    com.coloros.mcssdk.PushManager.getInstance().setPushTime(weekDays, startHour, startMinute,
+        endHour, endMinute);
+  }
+
+  /**
+   * retrieve oppo push time.
+   */
+  public static void getOppoPushTime() {
+    com.coloros.mcssdk.PushManager.getInstance().getPushTime();
+  }
+
+  /**
+   * set oppo push aliases.
+   * @param aliases
+   */
+  public static void setOppoAliases(List<String> aliases) {
+    com.coloros.mcssdk.PushManager.getInstance().setAliases(aliases);
+  }
+
+  /**
+   * unset oppo push aliases.
+   * @param alias
+   */
+  public static void unsetOppoAlias(String alias) {
+    com.coloros.mcssdk.PushManager.getInstance().unsetAlias(alias);
+  }
+
+  /**
+   * get oppo aliases.
+   */
+  public static void getOppoAliases() {
+    com.coloros.mcssdk.PushManager.getInstance().getAliases();
+  }
+
+  /**
+   * set oppo push account.
+   * @param account
+   */
+  public static void setOppoUserAccount(String account) {
+    com.coloros.mcssdk.PushManager.getInstance().setUserAccount(account);
+  }
+
+  /**
+   * unset oppo push accounts.
+   * @param accounts
+   */
+  public static void unsetOppoUserAccouts(List<String> accounts) {
+    com.coloros.mcssdk.PushManager.getInstance().unsetUserAccounts(accounts);
+  }
+
+  /**
+   * get oppo push accounts.
+   */
+  public static void getOppoUserAccounts() {
+    com.coloros.mcssdk.PushManager.getInstance().getUserAccounts();
+  }
+
+  /**
+   * set oppo push tags.
+   * @param tags
+   */
+  public static void setOppoTags(List<String> tags) {
+    com.coloros.mcssdk.PushManager.getInstance().setTags(tags);
+  }
+
+  /**
+   * unset oppo push tags.
+   * @param tags
+   */
+  public static void unsetOppoTags(List<String> tags) {
+    com.coloros.mcssdk.PushManager.getInstance().unsetTags(tags);
+  }
+
+  /**
+   * retrieve oppo push tags.
+   */
+  public static void getOppoTags() {
+    com.coloros.mcssdk.PushManager.getInstance().getTags();
+  }
+
+  /**
+   * get oppo push status
+   */
+  public static void getOppoPushStatus() {
+    com.coloros.mcssdk.PushManager.getInstance().getPushStatus();
+  }
+
+  /**
+   * get oppo notification status.
+   */
+  public static void getOppoNotificationStatus() {
+    com.coloros.mcssdk.PushManager.getInstance().getNotificationStatus();
+  }
+
   /**
    * 取消混合推送的注册
    * 取消成功后，消息会通过 LeanCloud websocket 发送
