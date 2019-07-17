@@ -80,6 +80,10 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
 
   @Override
   public void onError(Integer requestKey, Messages.ErrorCommand errorCommand) {
+    if (null == errorCommand) {
+      return;
+    }
+
     if (null != requestKey && requestKey != CommandPacket.UNSUPPORTED_OPERATION) {
       Operation op = session.conversationOperationCache.poll(requestKey);
       if (null != op && op.operation == AVIMOperation.CLIENT_OPEN.getCode()) {

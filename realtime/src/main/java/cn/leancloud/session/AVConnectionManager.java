@@ -20,9 +20,11 @@ import cn.leancloud.service.RTMConnectionServerResponse;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.websocket.AVStandardWebSocketClient;
+import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import org.java_websocket.framing.CloseFrame;
 
@@ -30,8 +32,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.Map;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketClientMonitor {
@@ -192,34 +194,41 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     final AppRouter appRouter = AppRouter.getInstance();
     final String installationId = AVInstallation.getCurrentInstallation().getInstallationId();
     appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.RTM, retryConnectionCount > 0)
-            .map(new Function<String, RTMConnectionServerResponse>() {
-              @Override
-              public RTMConnectionServerResponse apply(@NonNull String var1) throws Exception {
+            .subscribe(new Observer<String>() {
+              public void onSubscribe(@NonNull Disposable var1) { }
+
+              public void onNext(@NonNull String var1) {
                 String routerHost = var1.startsWith("http")? var1 : "https://" + var1;
-                return appRouter.fetchRTMConnectionServer(routerHost, AVOSCloud.getApplicationId(), installationId,
-                        1, retryConnectionCount < 1).blockingFirst();
+                appRouter.fetchRTMConnectionServer(routerHost, AVOSCloud.getApplicationId(), installationId,
+                        1, retryConnectionCount < 1)
+                        .subscribe(new Observer<RTMConnectionServerResponse>() {
+                  @Override
+                  public void onSubscribe(Disposable disposable) { }
+
+                  @Override
+                  public void onNext(RTMConnectionServerResponse rtmConnectionServerResponse) {
+                    String targetServer = updateTargetServer(rtmConnectionServerResponse);
+                    initWebSocketClient(targetServer);
+                  }
+
+                  @Override
+                  public void onError(Throwable throwable) {
+                    LOGGER.e("failed to query RTM Connection Server. cause: " + throwable.getMessage());
+                    reConnectionRTMServer();
+                  }
+
+                  @Override
+                  public void onComplete() { }
+                });
               }
-            }).subscribe(new Observer<RTMConnectionServerResponse>() {
-      @Override
-      public void onSubscribe(Disposable disposable) {
-      }
 
-      @Override
-      public void onNext(RTMConnectionServerResponse rtmConnectionServerResponse) {
-        String targetServer = updateTargetServer(rtmConnectionServerResponse);
-        initWebSocketClient(targetServer);
-      }
+              public void onError(@NonNull Throwable var1) {
+                LOGGER.e("failed to get RTM Endpoint. cause: " + var1.getMessage());
+                reConnectionRTMServer();
+              }
 
-      @Override
-      public void onError(Throwable throwable) {
-        LOGGER.e("failed to query RTM Connection Server. cause: " + throwable.getMessage());
-        reConnectionRTMServer();
-      }
-
-      @Override
-      public void onComplete() {
-      }
-    });
+              public void onComplete() { }
+            });
   }
 
   public void cleanup() {
