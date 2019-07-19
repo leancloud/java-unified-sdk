@@ -5,6 +5,8 @@ import android.os.Handler;
 
 import com.alibaba.fastjson.parser.ParserConfig;
 
+import java.lang.reflect.Method;
+
 import cn.leancloud.cache.AndroidSystemSetting;
 
 import cn.leancloud.callback.AVCallback;
@@ -62,7 +64,8 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
       }
     };
     AVCallback.setMainThreadChecker(checker, shuttle);
-    LogUtil.getLogger(AVOSCloud.class).i("[LeanCloud] initialize mainThreadChecker and threadShuttle within AVCallback.");
+    final AVLogger logger = LogUtil.getLogger(AVOSCloud.class);
+    logger.i("[LeanCloud] initialize mainThreadChecker and threadShuttle within AVCallback.");
 
     String appIdPrefix = StringUtil.isEmpty(appId) ? "" : appId.substring(0, 8);
     String importantFileDir = context.getFilesDir().getAbsolutePath();
@@ -79,8 +82,8 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
         commandCacheDir, analyticsDir, defaultSetting);
     AppConfiguration.setApplicationPackagename(context.getPackageName());
 
-    LogUtil.getLogger(AVOSCloud.class).d("docDir=" + documentDir + ", fileDir=" + fileCacheDir
-        + ", cmdDir=" + commandCacheDir + ", statDir=" + analyticsDir);
+    logger.d("docDir=" + documentDir + ", fileDir=" + fileCacheDir + ", cmdDir="
+        + commandCacheDir + ", statDir=" + analyticsDir);
 
     AppConfiguration.config(true, new AppConfiguration.SchedulerCreator() {
       public Scheduler create() {
@@ -89,6 +92,20 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
     });
 
     cn.leancloud.core.AVOSCloud.initialize(appId, appKey);
+
+    try {
+      Class androidInit = context.getClassLoader().loadClass("cn.leancloud.im.AndroidInitializer");
+      //Class androidInit = Class.forName("cn.leancloud.im.v2.AndroidInitializer");
+      Method initMethod = androidInit.getDeclaredMethod("init", Context.class);
+      initMethod.invoke(null, context);
+      logger.d("succeed to call cn.leancloud.im.AndroidInitializer#init(Context)");
+    } catch (ClassNotFoundException ex) {
+      logger.d("not found class: cn.leancloud.im.AndroidInitializer.");
+    } catch (NoSuchMethodException ex) {
+      logger.d("invalid AndroidInitializer, init(Context) method not found.");
+    } catch (Exception ex) {
+      logger.d("failed to call AndroidInitializer#init(Context), cause:" + ex.getMessage());
+    }
 
     setContext(context);
   }

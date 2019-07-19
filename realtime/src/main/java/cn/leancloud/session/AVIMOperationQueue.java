@@ -84,6 +84,10 @@ public class AVIMOperationQueue {
     return this.poll();
   }
 
+  public boolean containRequest(int requestId) {
+    return cache.get(requestId) != null;
+  }
+  
   public Operation poll() {
     return operationQueue.poll();
   }

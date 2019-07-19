@@ -83,9 +83,9 @@ public class PushService extends Service {
   DirectlyOperationTube directlyOperationTube;
   private Timer cleanupTimer = new Timer();
 
-  static {
-    AndroidInitializer.init();
-  }
+//  static {
+//    AndroidInitializer.init();
+//  }
 
   @Override
   public void onCreate() {
@@ -174,6 +174,24 @@ public class PushService extends Service {
     boolean connected = AppConfiguration.getGlobalNetworkingDetector().isConnected();
     if (connected && !connectionManager.isConnectionEstablished()) {
       LOGGER.d("networking is fine and try to start connection to leancloud.");
+      synchronized (connecting) {
+        connectionManager.startConnection(new AVCallback<Integer>() {
+          @Override
+          protected void internalDone0(Integer resultCode, AVException exception) {
+            if (null == exception) {
+              processIMRequests(intent);
+            } else {
+              LOGGER.w("failed to start connection. cause:", exception);
+              processRequestsWithException(intent, exception);
+            }
+          }
+        });
+      }
+    } else if (!connected) {
+      LOGGER.d("network is broken, try to re-connect to leancloud for user action.");
+      if (connectionManager.isConnectionEstablished()) {
+        connectionManager.cleanup();
+      }
       synchronized (connecting) {
         connectionManager.startConnection(new AVCallback<Integer>() {
           @Override
@@ -417,19 +435,16 @@ public class PushService extends Service {
       return;
     }
 
-    if (!AppConfiguration.getGlobalNetworkingDetector().isConnected()) {
-      LOGGER.d( "No network available now");
-      return;
-    }
-
     if (!isPushServiceAvailable(context, PushService.class)) {
       LOGGER.e("Please add <service android:name=\"cn.leancloud.push.PushService\"/> in your AndroidManifest file");
       return;
     }
 
-    InternalConfiguration.setFileMetaAccessor(new AndroidFileMetaAccessor());
-    InternalConfiguration.setOperationTube(new AndroidOperationTube());
-    InternalConfiguration.setDatabaseDelegateFactory(new AndroidDatabaseDelegateFactory(context));
+    if (!AppConfiguration.getGlobalNetworkingDetector().isConnected()) {
+      LOGGER.d( "No network available now");
+    }
+
+    AndroidInitializer.init(context);
 
     startService(context, cls);
   }

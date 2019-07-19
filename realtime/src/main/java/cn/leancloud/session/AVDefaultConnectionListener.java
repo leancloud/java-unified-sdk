@@ -225,7 +225,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
         session.setSessionStatue(AVSession.Status.Opened);
 
 
-        if (AVSession.Status.Closed == prevStatus) {
+        if (AVSession.Status.Closed == prevStatus || session.conversationOperationCache.containRequest(requestId)) {
           if (requestId != CommandPacket.UNSUPPORTED_OPERATION) {
             session.conversationOperationCache.poll(requestId);
           }

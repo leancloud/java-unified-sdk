@@ -58,11 +58,13 @@ public class AndroidOperationTube implements OperationTube {
     params.put(Conversation.PARAM_CLIENT_USERSESSIONTOKEN, userSessionToken);
     params.put(Conversation.PARAM_CLIENT_RECONNECTION, reConnect);
 
+    LOGGER.d("openClient. clientId:" + clientId + ", tag:" + tag + ", callback:" + callback);
     BroadcastReceiver receiver = null;
     if (callback != null) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
+          LOGGER.d("openClient get response. error:" + error);
           callback.internalDone(AVIMClient.getInstance(clientId), AVIMException.wrapperAVException(error));
         }
       };

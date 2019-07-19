@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.support.annotation.RequiresPermission;
 import android.support.v4.app.ActivityCompat;
 
 import cn.leancloud.AVLogger;

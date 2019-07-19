@@ -1,5 +1,7 @@
 package cn.leancloud.im;
 
+import android.content.Context;
+
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVOSCloud;
 import cn.leancloud.internal.ThreadModel.MainThreadChecker;
@@ -17,7 +19,7 @@ import cn.leancloud.utils.LogUtil;
 public class AndroidInitializer {
   private static AVLogger LOGGER = LogUtil.getLogger(AndroidInitializer.class);
 
-  public static void init() {
+  private static void init() {
     MainThreadChecker checker = new MainThreadChecker() {
       @Override
       public boolean isMainThread() {
@@ -35,5 +37,19 @@ public class AndroidInitializer {
     LOGGER.i("[LeanCloud] initialize mainThreadChecker and threadShuttle within AVLiveQueryEventHandler.");
     AVLiveQueryEventHandler.setMainThreadChecker(checker, shuttle);
     AVPushMessageListener.getInstance().setNotificationManager(AndroidNotificationManager.getInstance());
+  }
+
+  public static void init(Context context) {
+    if (InternalConfiguration.getDatabaseDelegateFactory() != null) {
+      LOGGER.i("[LeanCloud] re-initialize InternalConfiguration.");
+      return;
+    }
+
+    init();
+
+    LOGGER.i("[LeanCloud] initialize InternalConfiguration within AVIMEventHandler.");
+    InternalConfiguration.setFileMetaAccessor(new AndroidFileMetaAccessor());
+    InternalConfiguration.setOperationTube(new AndroidOperationTube());
+    InternalConfiguration.setDatabaseDelegateFactory(new AndroidDatabaseDelegateFactory(context));
   }
 }
