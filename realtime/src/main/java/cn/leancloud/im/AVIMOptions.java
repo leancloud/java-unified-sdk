@@ -7,7 +7,6 @@ public class AVIMOptions {
   private int timeoutInSecs = 10;
   private boolean isAutoOpen = true;
   private boolean messageQueryCacheEnabled = true;
-  private boolean resetConnectionWhileBroken = false;
   /**
    * 离线消息推送模式
    * true 为仅推送数量，false 为推送具体消息
@@ -104,17 +103,20 @@ public class AVIMOptions {
   /**
    * 是否被设置为即时重置网络连接
    * @return
+   *
+   * @Deprecated Since 5.0.18
    */
   public boolean isResetConnectionWhileBroken() {
-    return resetConnectionWhileBroken;
+    return true;
   }
 
   /**
    * 设置为即时重置网络连接
    * @param resetConnectionWhileBroken
+   *
+   * @Deprecated Since 5.0.18
    */
   public void setResetConnectionWhileBroken(boolean resetConnectionWhileBroken) {
-    this.resetConnectionWhileBroken = resetConnectionWhileBroken;
   }
 
   private AVIMOptions() {

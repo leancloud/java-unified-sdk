@@ -238,7 +238,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     this.pendingCallback = null;
   }
 
-  void resetConnection() {
+  public void resetConnection() {
     synchronized (webSocketClientWatcher) {
       if (null != webSocketClient) {
         try {
@@ -280,10 +280,6 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     LOGGER.d("webSocket established...");
     connectionEstablished = true;
     retryConnectionCount = 0;
-    for (AVConnectionListener listener: connectionListeners.values()) {
-      listener.onWebSocketOpen();
-    }
-
     resetConnectingStatus(true);
 
     // auto send login packet.
@@ -291,6 +287,10 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     lp.setAppId(AVOSCloud.getApplicationId());
     lp.setInstallationId(AVInstallation.getCurrentInstallation().getInstallationId());
     this.sendPacket(lp);
+
+    for (AVConnectionListener listener: connectionListeners.values()) {
+      listener.onWebSocketOpen();
+    }
   }
 
   public void onClose(int var1, String var2, boolean var3) {

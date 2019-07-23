@@ -607,17 +607,27 @@ public class AVObject {
     }
 
     Observable<List<AVObject>> needSaveFirstly = getCascadingSaveObjects();
-
-    return needSaveFirstly.to(new Function<Observable<List<AVObject>>, Observable<? extends AVObject>>() {
+    return needSaveFirstly.flatMap(new Function<List<AVObject>, Observable<? extends AVObject>>() {
       @Override
-      public Observable<? extends AVObject> apply(Observable<List<AVObject>> avNullObservable) throws Exception {
-        for (AVObject o: avNullObservable.blockingLast()) {
+      public Observable<? extends AVObject> apply(List<AVObject> objects) throws Exception {
+        logger.d("try to execute save operations in thread: " + Thread.currentThread());
+        for (AVObject o: objects) {
           o.save();
         }
         logger.d("secondly, save object itself...");
         return saveSelfOperations(option);
       }
     });
+//    return needSaveFirstly.to(new Function<Observable<List<AVObject>>, Observable<? extends AVObject>>() {
+//      @Override
+//      public Observable<? extends AVObject> apply(Observable<List<AVObject>> avNullObservable) throws Exception {
+//        for (AVObject o: avNullObservable.blockingLast()) {
+//          o.save();
+//        }
+//        logger.d("secondly, save object itself...");
+//        return saveSelfOperations(option);
+//      }
+//    });
   }
 
   /**

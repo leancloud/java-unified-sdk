@@ -7,11 +7,7 @@ import cn.leancloud.callback.AVCallback;
 import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
 import cn.leancloud.im.InternalConfiguration;
-import cn.leancloud.im.WindTalker;
 import cn.leancloud.im.v2.*;
-import cn.leancloud.livequery.AVLiveQuery;
-import cn.leancloud.livequery.LiveQueryOperationDelegate;
-import cn.leancloud.AVInstallation;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.session.PendingMessageCache.Message;
@@ -20,7 +16,6 @@ import cn.leancloud.im.v2.Conversation.AVIMOperation;
 
 import com.google.protobuf.ByteString;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,9 +36,9 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
   @Override
   public void onWebSocketOpen() {
     LOGGER.d("web socket opened, send session open.");
-    if (AVSession.Status.Closed == session.getCurrentStatus()) {
-      session.reopen();
-    }
+//  if (AVSession.Status.Closed == session.getCurrentStatus()) {
+    session.reopen();
+//  }
   }
 
   @Override
@@ -87,7 +82,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     if (null != requestKey && requestKey != CommandPacket.UNSUPPORTED_OPERATION) {
       Operation op = session.conversationOperationCache.poll(requestKey);
       if (null != op && op.operation == AVIMOperation.CLIENT_OPEN.getCode()) {
-        session.setSessionStatue(AVSession.Status.Closed);
+        session.setSessionStatus(AVSession.Status.Closed);
       }
       int code = errorCommand.getCode();
       int appCode = (errorCommand.hasAppCode() ? errorCommand.getAppCode() : 0);
@@ -222,7 +217,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     if (op.equals(SessionControlPacket.SessionControlOp.OPENED)) {
       try {
         AVSession.Status prevStatus = session.getCurrentStatus();
-        session.setSessionStatue(AVSession.Status.Opened);
+        session.setSessionStatus(AVSession.Status.Opened);
 
 
         if (AVSession.Status.Closed == prevStatus || session.conversationOperationCache.containRequest(requestId)) {
@@ -383,7 +378,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     if (null != requestKey && requestKey != CommandPacket.UNSUPPORTED_OPERATION) {
       Operation op = session.conversationOperationCache.poll(requestKey);
       if (null != op && op.operation == AVIMOperation.CLIENT_OPEN.getCode()) {
-        session.setSessionStatue(AVSession.Status.Closed);
+        session.setSessionStatus(AVSession.Status.Closed);
       }
       int code = errorCommand.getCode();
       int appCode = (errorCommand.hasAppCode() ? errorCommand.getAppCode() : 0);
@@ -524,7 +519,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
   private void onAckError(Integer requestKey, Messages.AckCommand command, Message m) {
     Operation op = session.conversationOperationCache.poll(requestKey);
     if (op.operation == Conversation.AVIMOperation.CLIENT_OPEN.getCode()) {
-      session.setSessionStatue(AVSession.Status.Closed);
+      session.setSessionStatus(AVSession.Status.Closed);
     }
     Conversation.AVIMOperation operation = Conversation.AVIMOperation.getAVIMOperation(op.operation);
     int code = command.getCode();

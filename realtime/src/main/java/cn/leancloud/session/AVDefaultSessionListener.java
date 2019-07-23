@@ -13,7 +13,6 @@ import cn.leancloud.utils.LogUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AVDefaultSessionListener extends AVSessionListener {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVDefaultSessionListener.class);
@@ -103,7 +102,7 @@ public class AVDefaultSessionListener extends AVSessionListener {
 
   private void cleanSession(AVSession session) {
     AVSessionCacheHelper.getTagCacheInstance().removeSession(session.getSelfPeerId());
-    session.setSessionStatue(AVSession.Status.Closed);
+    session.setSessionStatus(AVSession.Status.Closed);
     // 如果session都已不在，缓存消息静静地等到桑田沧海
     session.cleanUp();
     AVSessionManager.getInstance().removeSession(session.getSelfPeerId());

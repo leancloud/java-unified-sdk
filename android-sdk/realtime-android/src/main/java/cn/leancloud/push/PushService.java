@@ -110,16 +110,16 @@ public class PushService extends Service {
 
       @Override
       public void onMobile(Context context) {
+        LOGGER.d("Connection resumed with Mobile...");
         connectEstablished = true;
         connectionManager.startConnection();
-        LOGGER.d("Connection resumed with Mobile...");
       }
 
       @Override
       public void onWifi(Context context) {
+        LOGGER.d("Connection resumed with Wifi...");
         connectEstablished = true;
         connectionManager.startConnection();
-        LOGGER.d("Connection resumed with Wifi...");
       }
 
       public void onOtherConnected(Context context) {
@@ -136,18 +136,19 @@ public class PushService extends Service {
         }
         LOGGER.d("Connectivity broken");
         connectEstablished = false;
-        if (AVIMOptions.getGlobalOptions().isResetConnectionWhileBroken()) {
-          cleanupTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-              if (!connectEstablished) {
-                LOGGER.d("Connection cleanup now.");
-                connectionManager.cleanup();
-              } else {
-                LOGGER.d("Connection has been resumed");
-              }
+        cleanupTimer.schedule(new TimerTask() {
+          @Override
+          public void run() {
+            if (!connectEstablished) {
+              LOGGER.d("reset Connection now.");
+              connectionManager.resetConnection();
+            } else {
+              LOGGER.d("Connection has been resumed");
             }
-          }, 3000);
+          }
+        }, 3000);
+        if (AVIMOptions.getGlobalOptions().isResetConnectionWhileBroken()) {
+
         }
       }
     });

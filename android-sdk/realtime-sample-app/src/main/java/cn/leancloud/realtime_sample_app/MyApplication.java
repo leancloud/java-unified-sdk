@@ -1,6 +1,7 @@
 package cn.leancloud.realtime_sample_app;
 
 import android.app.Application;
+import android.os.StrictMode;
 
 import cn.leancloud.AVInstallation;
 import cn.leancloud.AVLogger;
@@ -23,11 +24,26 @@ public class MyApplication extends Application {
 
   @Override
   public void onCreate() {
-    LOGGER.d("onCreate");
+    StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+        .detectNetwork()   // or .detectAll() for all detectable problems
+        .penaltyLog()
+        .build());
+    StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+        .detectLeakedSqlLiteObjects()
+        .detectLeakedClosableObjects()
+        .penaltyLog()
+        .penaltyDeath()
+        .build());
+
     super.onCreate();
+
     AVOSCloud.setLogLevel(AVLogger.Level.DEBUG);
     AVOSCloud.initialize(this, APPID, APPKEY);
-    AVInstallation.getCurrentInstallation().saveInBackground().subscribe(new Observer<AVObject>() {
+
+    LOGGER.d("onCreate in thread:" + this.getMainLooper().getThread().getId());
+
+    AVInstallation currentInstallation = AVInstallation.getCurrentInstallation();
+    currentInstallation.saveInBackground().subscribe(new Observer<AVObject>() {
       @Override
       public void onSubscribe(Disposable d) {
 
@@ -35,11 +51,13 @@ public class MyApplication extends Application {
 
       @Override
       public void onNext(AVObject avObject) {
+        LOGGER.d("saveInstallation response in thread:" + Thread.currentThread().getId());
         System.out.println("succeed to save Installation. result: " + avObject);
       }
 
       @Override
       public void onError(Throwable e) {
+        LOGGER.d("saveInstallation response in thread:" + Thread.currentThread().getId());
         System.out.println("failed to save Installation. cause:" + e.getMessage());
       }
 

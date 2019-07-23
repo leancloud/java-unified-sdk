@@ -111,7 +111,7 @@ public class AVSession {
     return this.sessionResume.getAndSet(flag);
   }
 
-  public void setSessionStatue(Status curStatus) {
+  public void setSessionStatus(Status curStatus) {
     this.currentStatus = curStatus;
   }
 

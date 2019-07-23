@@ -20,6 +20,9 @@ import cn.leancloud.sample.DemoUtils;
 import cn.leancloud.sample.Student;
 import cn.leancloud.callback.FindCallback;
 import cn.leancloud.convertor.ObserverBuilder;
+import cn.leancloud.types.AVNull;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by fengjunwen on 2018/5/10.
@@ -130,6 +133,33 @@ public class QueryDemoActivity extends DemoBaseActivity {
     List<Student> students = query.find();
     log("找回了爱好至少有 swimming 和 running 的学生：");
     logObjects(students, Student.HOBBIES);
+  }
+
+  public void testDeleteAllInBackground() throws AVException {
+    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+    query.limit(40);
+    query.deleteAllInBackground().subscribe(new Observer<AVNull>() {
+      @Override
+      public void onSubscribe(Disposable d) {
+
+      }
+
+      @Override
+      public void onNext(AVNull avNull) {
+        log("testDeleteAll finishe.");
+      }
+
+      @Override
+      public void onError(Throwable e) {
+        log("testDeleteAll failed.");
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+
   }
 
   public void testLimitSize() throws AVException {
