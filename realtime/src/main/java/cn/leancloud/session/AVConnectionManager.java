@@ -193,8 +193,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
     final AppRouter appRouter = AppRouter.getInstance();
     final String installationId = AVInstallation.getCurrentInstallation().getInstallationId();
-    appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.RTM, retryConnectionCount > 0)
-            .subscribe(new Observer<String>() {
+    appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.RTM).subscribe(new Observer<String>() {
               public void onSubscribe(@NonNull Disposable var1) { }
 
               public void onNext(@NonNull String var1) {

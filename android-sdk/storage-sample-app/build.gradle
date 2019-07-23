@@ -46,11 +46,11 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-//    implementation project(':storage-android')
+    implementation project(':storage-android')
 
     implementation "io.reactivex.rxjava2:rxandroid:${rootProject.ext.rxandroidVersion}"
 
-    implementation("cn.leancloud:storage-android:${rootProject.ext.sdkVersion}") {
+    implementation("cn.leancloud:storage-core:${rootProject.ext.sdkVersion}") {
         exclude group: 'com.alibaba', module: 'fastjson'
         exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
     }

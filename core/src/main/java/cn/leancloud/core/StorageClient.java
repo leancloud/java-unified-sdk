@@ -123,10 +123,12 @@ public class StorageClient {
     Observable<AVQueryResult> queryResult = null;
     switch (cachePolicy) {
       case CACHE_ONLY:
-        result = wrapObservable(QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, true));
+        result = wrapObservable(
+                QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, true));
         break;
       case CACHE_ELSE_NETWORK:
-        result = wrapObservable(QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, false));
+        result = wrapObservable(
+                QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, false));
         if (null != result) {
           result = result.onErrorReturn(new Function<Throwable, List<AVObject>>() {
             public List<AVObject> apply(Throwable o) throws Exception {
@@ -139,7 +141,8 @@ public class StorageClient {
                             obj.setClassName(className);
                           }
                           QueryResultCache.getInstance().cacheResult(cacheKey, o.toJSONString());
-                          LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:" + ((null != o.getResults())? o.getResults().size(): 0));
+                          LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:"
+                                  + ((null != o.getResults())? o.getResults().size(): 0));
                           return o.getResults();
                         }
                       }).blockingFirst();
@@ -157,13 +160,17 @@ public class StorageClient {
                 obj.setClassName(className);
               }
               QueryResultCache.getInstance().cacheResult(cacheKey, o.toJSONString());
-              LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:" + ((null != o.getResults()) ? o.getResults().size() : 0));
+              LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:"
+                      + ((null != o.getResults()) ? o.getResults().size() : 0));
               return o.getResults();
             }
           }).onErrorReturn(new Function<Throwable, List<AVObject>>() {
                     public List<AVObject> apply(Throwable o) throws Exception {
-                      LOGGER.d("failed to query networking, cause: " + o.getMessage() + ", try to query local cache.");
-                      return QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, true).blockingFirst();
+                      LOGGER.d("failed to query networking, cause: " + o.getMessage()
+                              + ", try to query local cache.");
+                      return QueryResultCache.getInstance()
+                              .getCacheResult(className, query, maxAgeInMilliseconds, true)
+                              .blockingFirst();
                     }
                   });
         }
@@ -179,7 +186,8 @@ public class StorageClient {
                 obj.setClassName(className);
               }
               QueryResultCache.getInstance().cacheResult(cacheKey, o.toJSONString());
-              LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:" + ((null != o.getResults())? o.getResults().size(): 0));
+              LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:"
+                      + ((null != o.getResults())? o.getResults().size(): 0));
               return o.getResults();
             }
           });
@@ -210,7 +218,8 @@ public class StorageClient {
     return wrapObservable(apiService.deleteObject(className, objectId));
   }
 
-  public Observable<? extends AVObject> createObject(final String className, JSONObject data, boolean fetchFlag, JSONObject where) {
+  public Observable<? extends AVObject> createObject(final String className, JSONObject data, boolean fetchFlag,
+                                                     JSONObject where) {
     Observable<AVObject> object = wrapObservable(apiService.createObject(className, data, fetchFlag, where));
     if (null == object) {
       return null;
@@ -237,7 +246,8 @@ public class StorageClient {
     });
   }
 
-  public <E extends AVObject> Observable<E> saveWholeObject(final Class<E> clazz, final String endpointClass, String objectId,
+  public <E extends AVObject> Observable<E> saveWholeObject(final Class<E> clazz, final String endpointClass,
+                                                            String objectId,
                                                             JSONObject object, boolean fetchFlag, JSONObject where) {
     Observable<AVObject> result = null;
     if (StringUtil.isEmpty(objectId)) {

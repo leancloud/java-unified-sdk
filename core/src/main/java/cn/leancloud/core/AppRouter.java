@@ -20,7 +20,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.fastjson.FastJsonConverterFactory;
 
-import java.net.PasswordAuthentication;
 import java.util.concurrent.TimeUnit;
 
 public class AppRouter {
@@ -90,8 +89,8 @@ public class AppRouter {
   }
 
   private Retrofit retrofit = null;
-  private AppAccessEndpoint appAccessEndpoint = null;
-  private AppAccessEndpoint fixedAccessEndpoint = new AppAccessEndpoint();
+  private AppAccessEndpoint defaultEndpoint = null;
+  private AppAccessEndpoint customizedEndpoint = new AppAccessEndpoint();
 
   protected AppRouter() {
     OkHttpClient httpClient = new OkHttpClient.Builder()
@@ -170,11 +169,15 @@ public class AppRouter {
   }
 
   public void freezeEndpoint(final AVOSService service, String host) {
-    this.fixedAccessEndpoint.freezeEndpoint(service, host);
+    this.customizedEndpoint.freezeEndpoint(service, host);
   }
 
-  public Observable<String> getEndpoint(final String appId, final AVOSService service, boolean forceUpdate) {
-    String fixedHost = this.fixedAccessEndpoint.getServerHost(service);
+  public Observable<String> getEndpoint(final String appId, final AVOSService service) {
+    return getEndpoint(appId, service, false);
+  }
+
+  private Observable<String> getEndpoint(final String appId, final AVOSService service, boolean forceUpdate) {
+    String fixedHost = this.customizedEndpoint.getServerHost(service);
     if (!StringUtil.isEmpty(fixedHost)) {
       return Observable.just(fixedHost);
     }
@@ -184,50 +187,52 @@ public class AppRouter {
       return fetchServerFromRemote(appId, service);
     }
 
-    if (null == this.appAccessEndpoint) {
+    if (null == this.defaultEndpoint) {
       SystemSetting setting = AppConfiguration.getDefaultSetting();
       String cachedResult = null;
       if (null != setting) {
         cachedResult = setting.getString(getPersistenceKeyZone(appId, true), appId, "");
       }
       if (!StringUtil.isEmpty(cachedResult)) {
-        appAccessEndpoint = JSON.parseObject(cachedResult, AppAccessEndpoint.class);
+        defaultEndpoint = JSON.parseObject(cachedResult, AppAccessEndpoint.class);
         long currentSeconds = System.currentTimeMillis() / 1000;
-        if (currentSeconds > appAccessEndpoint.getTtl()) {
-          appAccessEndpoint = null;
+        if (currentSeconds > defaultEndpoint.getTtl()) {
+          defaultEndpoint = null;
         }
-      } else {
-        appAccessEndpoint = buildDefaultEndpoint(appId);
+      }
+      if (null == defaultEndpoint) {
+        defaultEndpoint = buildDefaultEndpoint(appId);
       }
     }
+
     String result = null;
-    if (null != this.appAccessEndpoint) {
-      switch (service) {
-        case API:
-          result = this.appAccessEndpoint.getApiServer();
-          break;
-        case ENGINE:
-          result = this.appAccessEndpoint.getEngineServer();
-          break;
-        case PUSH:
-          result = this.appAccessEndpoint.getPushServer();
-          break;
-        case RTM:
-          result = this.appAccessEndpoint.getRtmRouterServer();
-          break;
-        case STATS:
-          result = this.appAccessEndpoint.getStatServer();
-          break;
-          default:
-            break;
-      }
-      if (!StringUtil.isEmpty(result) && !result.startsWith("http")) {
-        result = "https://" + result;
-      }
-      return Observable.just(result);
-    } else {
-      return fetchServerFromRemote(appId, service);
+    switch (service) {
+      case API:
+        result = this.defaultEndpoint.getApiServer();
+        break;
+      case ENGINE:
+        result = this.defaultEndpoint.getEngineServer();
+        break;
+      case PUSH:
+        result = this.defaultEndpoint.getPushServer();
+        break;
+      case RTM:
+        result = this.defaultEndpoint.getRtmRouterServer();
+        break;
+      case STATS:
+        result = this.defaultEndpoint.getStatServer();
+        break;
+      default:
+        break;
     }
+    if (!StringUtil.isEmpty(result) && !result.startsWith("http")) {
+      result = "https://" + result;
+    }
+    return Observable.just(result);
+//    if (null != this.defaultEndpoint) {
+//    } else {
+//      return fetchServerFromRemote(appId, service);
+//    }
   }
 
   public Observable<AppAccessEndpoint> fetchServerHostsInBackground(final String appId) {
@@ -245,14 +250,14 @@ public class AppRouter {
       public AppAccessEndpoint apply(AppAccessEndpoint appAccessEndpoint) throws Exception {
         // save result to local cache.
         LOGGER.d(appAccessEndpoint.toString());
-        AppRouter.this.appAccessEndpoint = appAccessEndpoint;
-        AppRouter.this.appAccessEndpoint.setTtl(appAccessEndpoint.getTtl() + System.currentTimeMillis() / 1000);
+        AppRouter.this.defaultEndpoint = appAccessEndpoint;
+        AppRouter.this.defaultEndpoint.setTtl(appAccessEndpoint.getTtl() + System.currentTimeMillis() / 1000);
         SystemSetting setting = AppConfiguration.getDefaultSetting();
         if (null != setting) {
-          String endPoints = JSON.toJSONString(AppRouter.this.appAccessEndpoint);
+          String endPoints = JSON.toJSONString(AppRouter.this.defaultEndpoint);
           setting.saveString(getPersistenceKeyZone(appId, true), appId, endPoints);
         }
-        return AppRouter.this.appAccessEndpoint;
+        return AppRouter.this.defaultEndpoint;
       }
     });
   }

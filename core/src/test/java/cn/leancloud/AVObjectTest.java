@@ -773,6 +773,35 @@ public class AVObjectTest extends TestCase {
     assertTrue(testSucceed);
   }
 
+  public void testUpdateInBackground() throws Exception {
+    AVObject student = new AVObject("Student");
+    student.setObjectId("fparuew3r141233");
+    student.put("age", 20);
+    student.saveInBackground().subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        testSucceed = (null != avObject);
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+  }
   public void testUpdateWithSaveOptionShouldChange() throws Exception {
     final AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");
@@ -903,8 +932,7 @@ public class AVObjectTest extends TestCase {
     object.put("age", 19);
     object.add("course", "Art");
     JSONObject localtion = new JSONObject();
-    localtion.put("2ds", new AVGeoPoint(34.6, 76.43));
-    object.put("location", localtion);
+    object.put("location", new AVGeoPoint(34.6, 76.43));
     object.save();
   }
 
@@ -958,9 +986,7 @@ public class AVObjectTest extends TestCase {
     object.put("name", "Automatic Tester");
     object.put("age", 19);
     object.add("course", "Art");
-    JSONObject localtion = new JSONObject();
-    localtion.put("2ds", new AVGeoPoint(34.6, 76.43));
-    object.put("location", localtion);
+    object.put("location", new AVGeoPoint(34.6, 76.43));
     object.save();
 
     AVQuery<AVObject> query = new AVQuery<>("Student");

@@ -41,7 +41,7 @@ public class RealtimeClient {
     this.defaultCreator = AppConfiguration.getDefaultScheduler();
     final OkHttpClient httpClient = PaasClient.getGlobalOkHttpClient();
     AppRouter appRouter = AppRouter.getInstance();
-    appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.API, false).subscribe(
+    appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.API).subscribe(
             new Consumer<String>() {
               @Override
               public void accept(String apiHost) throws Exception {

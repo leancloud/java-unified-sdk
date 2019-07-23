@@ -15,15 +15,15 @@ public class AppRouterTest extends TestCase {
 
   public void testFetchApiEndpoint() {
     AppRouter router = AppRouter.getInstance();
-    String apiHost = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.API, false).blockingSingle();
+    String apiHost = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.API).blockingSingle();
     assertEquals("https://ohqhxu3m.api.lncld.net", apiHost);
-    String pushHost = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.PUSH, true).blockingSingle();
+    String pushHost = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.PUSH).blockingSingle();
     assertEquals("https://ohqhxu3m.push.lncld.net", pushHost);
   }
 
   public void testFetchRTMEndpoint() {
     AppRouter router = AppRouter.getInstance();
-    String rtmRouterServer = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.RTM, false).blockingSingle();
+    String rtmRouterServer = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.RTM).blockingSingle();
     RTMConnectionServerResponse response = router.fetchRTMConnectionServer(rtmRouterServer, Configure.TEST_APP_ID,
             null, 1, false).blockingSingle();
     assertNotNull(response.getServer());

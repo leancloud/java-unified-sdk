@@ -62,8 +62,27 @@ public class ObjectDemoActivity extends DemoBaseActivity {
     student.setObjectId("fparuew3rl4l233");
 
     student.put("age", 20);
-    student.saveInBackground();
-    log("更改后学生的年龄：" + student.getInt("age"));
+    student.saveInBackground().subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable d) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        log("更改后学生的年龄：" + student.getInt("age"));
+      }
+
+      @Override
+      public void onError(Throwable e) {
+        log("Error:" + e.getMessage());
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
   }
 
 
