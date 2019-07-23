@@ -7,6 +7,7 @@ import cn.leancloud.types.AVDate;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.types.AVNull;
+import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
@@ -17,6 +18,7 @@ import com.alibaba.fastjson.annotation.JSONType;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 
 import com.alibaba.fastjson.parser.Feature;
@@ -51,8 +53,8 @@ public class AVObject {
   protected String endpointClassName = null;
 
   protected String objectId = "";
-  protected Map<String, Object> serverData = new ConcurrentHashMap<String, Object>();
-  protected Map<String, ObjectFieldOperation> operations = new ConcurrentHashMap<String, ObjectFieldOperation>();
+  protected ConcurrentMap<String, Object> serverData = new ConcurrentHashMap<String, Object>();
+  protected ConcurrentMap<String, ObjectFieldOperation> operations = new ConcurrentHashMap<String, ObjectFieldOperation>();
   protected AVACL acl = null;
   private String uuid = null;
 
@@ -107,7 +109,7 @@ public class AVObject {
 
   public void setObjectId(String objectId) {
     this.objectId = objectId;
-    if (null != this.serverData) {
+    if (null != this.serverData && !StringUtil.isEmpty(objectId)) {
       this.serverData.put(KEY_OBJECT_ID, objectId);
     }
   }
@@ -293,7 +295,7 @@ public class AVObject {
     return (List) get(key);
   }
 
-  public Map<String, Object> getServerData() {
+  public ConcurrentMap<String, Object> getServerData() {
     return this.serverData;
   }
 
@@ -533,7 +535,8 @@ public class AVObject {
 
               Map<String, Object> lastResult = object.getObject(object.size() - 1, Map.class);
               if (null != lastResult) {
-                AVObject.this.serverData.putAll(lastResult);
+                AVUtils.mergeConcurrentMap(serverData, lastResult);
+                //AVObject.this.serverData.putAll(lastResult);
                 AVObject.this.operations.clear();
               }
             }
@@ -547,7 +550,8 @@ public class AVObject {
               logger.d("batchUpdate result: " + object.toJSONString());
               Map<String, Object> lastResult = object.getObject(currentObjectId, Map.class);
               if (null != lastResult) {
-                AVObject.this.serverData.putAll(lastResult);
+                AVUtils.mergeConcurrentMap(serverData, lastResult);
+                //AVObject.this.serverData.putAll(lastResult);
                 AVObject.this.operations.clear();
               }
             }
@@ -690,7 +694,8 @@ public class AVObject {
             JSONObject oneResult = batchResults.getJSONObject(i);
             AVObject originObject = (AVObject) it.next();
             if (oneResult.containsKey("success")) {
-              originObject.serverData.putAll(oneResult.getJSONObject("success"));
+              AVUtils.mergeConcurrentMap(originObject.serverData, oneResult.getJSONObject("success"));
+              //originObject.serverData.putAll(oneResult.getJSONObject("success"));
               originObject.operations.clear();
             } else if (oneResult.containsKey("error")) {
               ;
@@ -906,13 +911,7 @@ public class AVObject {
 
   public void resetServerData(Map<String, Object> data) {
     this.serverData.clear();
-    if (null != data) {
-      for (Map.Entry<String, Object> entry : data.entrySet()) {
-        if (null != entry.getKey() && null != entry.getValue()) {
-          this.serverData.put(entry.getKey(), entry.getValue());
-        }
-      }
-    }
+    AVUtils.mergeConcurrentMap(this.serverData, data);
     this.operations.clear();
   }
 

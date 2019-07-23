@@ -1,6 +1,6 @@
 include ':storage-android'
 include ':leancloud-fcm'
-include ':leancloud-push-lite'
+//include ':leancloud-push-lite'
 include ':mixpush-android'
 include ':huawei-hmsagent'
 include ':realtime-android'

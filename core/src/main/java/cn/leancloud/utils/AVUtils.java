@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 public class AVUtils {
   public static final double earthMeanRadiusInKM = 6378.140;
@@ -89,4 +90,15 @@ public class AVUtils {
     }
   }
 
+  public static void mergeConcurrentMap(ConcurrentMap<String, Object> left, Map<String, Object> right) {
+    if (null == left || null == right) {
+      return;
+    }
+    for (Map.Entry<String, Object> entry : right.entrySet()) {
+      if (null == entry.getKey() || null == entry.getValue()) {
+        continue;
+      }
+      left.put(entry.getKey(), entry.getValue());
+    }
+  }
 }
