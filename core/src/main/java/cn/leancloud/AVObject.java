@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observable;
+import io.reactivex.ObservableTransformer;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -606,6 +607,7 @@ public class AVObject {
     }
 
     Observable<List<AVObject>> needSaveFirstly = getCascadingSaveObjects();
+
     return needSaveFirstly.to(new Function<Observable<List<AVObject>>, Observable<? extends AVObject>>() {
       @Override
       public Observable<? extends AVObject> apply(Observable<List<AVObject>> avNullObservable) throws Exception {
@@ -892,9 +894,15 @@ public class AVObject {
     this.operations.clear();
   }
 
-  public void resetServerData(Map data) {
+  public void resetServerData(Map<String, Object> data) {
     this.serverData.clear();
-    this.serverData.putAll(data);
+    if (null != data) {
+      for (Map.Entry<String, Object> entry : data.entrySet()) {
+        if (null != entry.getKey() && null != entry.getValue()) {
+          this.serverData.put(entry.getKey(), entry.getValue());
+        }
+      }
+    }
     this.operations.clear();
   }
 
