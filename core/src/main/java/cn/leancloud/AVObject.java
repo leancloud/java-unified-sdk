@@ -614,17 +614,18 @@ public class AVObject {
     return needSaveFirstly.flatMap(new Function<List<AVObject>, Observable<? extends AVObject>>() {
       @Override
       public Observable<? extends AVObject> apply(List<AVObject> objects) throws Exception {
-        logger.d("try to execute save operations in thread: " + Thread.currentThread());
+        logger.d("First, try to execute save operations in thread: " + Thread.currentThread());
         for (AVObject o: objects) {
           o.save();
         }
-        logger.d("secondly, save object itself...");
+        logger.d("Second, save object itself...");
         return saveSelfOperations(option);
       }
     });
 //    return needSaveFirstly.to(new Function<Observable<List<AVObject>>, Observable<? extends AVObject>>() {
 //      @Override
 //      public Observable<? extends AVObject> apply(Observable<List<AVObject>> avNullObservable) throws Exception {
+//        logger.d("try to execute blocking save operations in thread: " + Thread.currentThread());
 //        for (AVObject o: avNullObservable.blockingLast()) {
 //          o.save();
 //        }

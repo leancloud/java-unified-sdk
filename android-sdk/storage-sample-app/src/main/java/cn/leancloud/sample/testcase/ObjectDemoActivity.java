@@ -133,6 +133,16 @@ public class ObjectDemoActivity extends DemoBaseActivity {
     log("用 objectId 创建了对象，并获取了数据：" + fetched);
   }
 
+  public void testCreateCascadedObject() throws AVException {
+    AVObject person = new AVObject("Student");
+    person.put("name", "GTO");
+    Student student = new Student();
+    student.setName(getClassName());
+    student.put("teacher", person);
+    student.save();
+    log("保存了 Student，并把 AVObject 作为一个字段保存到了对象。student: " + prettyJSON(student));
+  }
+
   public void testCreateObjectWithFile() throws IOException, AVException {
     AVFile avatar = new AVFile("avatar", getAvatarBytes());
 
