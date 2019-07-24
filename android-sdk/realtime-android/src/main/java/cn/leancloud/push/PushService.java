@@ -147,9 +147,6 @@ public class PushService extends Service {
             }
           }
         }, 3000);
-        if (AVIMOptions.getGlobalOptions().isResetConnectionWhileBroken()) {
-
-        }
       }
     });
 
