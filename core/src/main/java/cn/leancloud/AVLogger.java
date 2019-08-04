@@ -3,6 +3,7 @@ package cn.leancloud;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.logging.InternalLogger;
+import cn.leancloud.utils.StringUtil;
 
 public class AVLogger {
   public enum Level {
@@ -86,11 +87,23 @@ public class AVLogger {
     if (!isEnabled(level)) {
       return;
     }
+    if (null == msg) {
+      msg = "";
+    }
     InternalLogger internalLogger = getInternalLogger();
     internalLogger.writeLog(level, msg);
   }
 
   protected void writeLog(Level level, String msg, Throwable tr) {
+    if (null == tr) {
+      writeLog(level, msg);
+      return;
+    }
+    if (StringUtil.isEmpty(msg)) {
+      writeLog(level, tr);
+      return;
+    }
+
     if (!isEnabled(level)) {
       return;
     }
@@ -100,6 +113,9 @@ public class AVLogger {
 
   protected void writeLog(Level level, Throwable tr) {
     if (!isEnabled(level)) {
+      return;
+    }
+    if (null == tr) {
       return;
     }
     InternalLogger internalLogger = getInternalLogger();

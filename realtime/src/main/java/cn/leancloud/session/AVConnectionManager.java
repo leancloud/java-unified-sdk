@@ -20,12 +20,9 @@ import cn.leancloud.service.RTMConnectionServerResponse;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.websocket.AVStandardWebSocketClient;
-import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import org.java_websocket.framing.CloseFrame;
 
 import javax.net.ssl.SSLContext;
@@ -238,6 +235,8 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public void resetConnection() {
+    connectionEstablished = false;
+
     synchronized (webSocketClientWatcher) {
       if (null != webSocketClient) {
         try {
@@ -250,7 +249,6 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
       }
     }
 
-    connectionEstablished = false;
     retryConnectionCount = 0;
     connecting = false;
   }
@@ -265,7 +263,11 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public void sendPacket(CommandPacket packet) {
-    this.webSocketClient.send(packet);
+    if (null != this.webSocketClient) {
+      this.webSocketClient.send(packet);
+    } else {
+      LOGGER.w("StateException: web socket client is null, drop CommandPacket: " + packet);
+    }
   }
 
   public boolean isConnectionEstablished() {
