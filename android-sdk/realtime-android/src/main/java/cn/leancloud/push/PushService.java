@@ -36,13 +36,9 @@ import cn.leancloud.AVOSCloud;
 import cn.leancloud.AVObject;
 import cn.leancloud.callback.AVCallback;
 import cn.leancloud.core.AppConfiguration;
-import cn.leancloud.im.AndroidDatabaseDelegateFactory;
-import cn.leancloud.im.AndroidFileMetaAccessor;
 import cn.leancloud.im.AndroidInitializer;
-import cn.leancloud.im.AndroidOperationTube;
 import cn.leancloud.im.DirectlyOperationTube;
 import cn.leancloud.im.InternalConfiguration;
-import cn.leancloud.im.AVIMOptions;
 import cn.leancloud.im.v2.AVIMMessage;
 import cn.leancloud.im.v2.AVIMMessageOption;
 import cn.leancloud.im.v2.Conversation;
@@ -83,10 +79,6 @@ public class PushService extends Service {
   DirectlyOperationTube directlyOperationTube;
   private Timer cleanupTimer = new Timer();
 
-//  static {
-//    AndroidInitializer.init();
-//  }
-
   @Override
   public void onCreate() {
     LOGGER.d("PushService#onCreate");
@@ -106,40 +98,40 @@ public class PushService extends Service {
     }).start();
 
     connectivityReceiver = new AVConnectivityReceiver(new AVConnectivityListener() {
-      private volatile boolean connectEstablished = false;
+      private volatile boolean connectionEstablished = false;
 
       @Override
       public void onMobile(Context context) {
         LOGGER.d("Connection resumed with Mobile...");
-        connectEstablished = true;
+        connectionEstablished = true;
         connectionManager.startConnection();
       }
 
       @Override
       public void onWifi(Context context) {
         LOGGER.d("Connection resumed with Wifi...");
-        connectEstablished = true;
+        connectionEstablished = true;
         connectionManager.startConnection();
       }
 
       public void onOtherConnected(Context context) {
         LOGGER.d("Connectivity resumed with Others");
-        connectEstablished = true;
+        connectionEstablished = true;
         connectionManager.startConnection();
       }
 
       @Override
       public void onNotConnected(Context context) {
-        if(!connectEstablished) {
+        if(!connectionEstablished) {
           LOGGER.d("Connectivity isn't established yet.");
           return;
         }
         LOGGER.d("Connectivity broken");
-        connectEstablished = false;
+        connectionEstablished = false;
         cleanupTimer.schedule(new TimerTask() {
           @Override
           public void run() {
-            if (!connectEstablished) {
+            if (!connectionEstablished) {
               LOGGER.d("reset Connection now.");
               connectionManager.resetConnection();
             } else {

@@ -41,8 +41,8 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private Object webSocketClientWatcher = new Object();
   private String currentRTMConnectionServer = null;
   private int retryConnectionCount = 0;
-  private boolean connectionEstablished = false;
 
+  private volatile boolean connectionEstablished = false;
   private volatile boolean connecting = false;
   private volatile AVCallback pendingCallback = null;
 
@@ -263,10 +263,12 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public void sendPacket(CommandPacket packet) {
-    if (null != this.webSocketClient) {
-      this.webSocketClient.send(packet);
-    } else {
-      LOGGER.w("StateException: web socket client is null, drop CommandPacket: " + packet);
+    synchronized (webSocketClientWatcher) {
+      if (null != this.webSocketClient) {
+        this.webSocketClient.send(packet);
+      } else {
+        LOGGER.w("StateException: web socket client is null, drop CommandPacket: " + packet);
+      }
     }
   }
 
@@ -287,7 +289,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     LoginPacket lp = new LoginPacket();
     lp.setAppId(AVOSCloud.getApplicationId());
     lp.setInstallationId(AVInstallation.getCurrentInstallation().getInstallationId());
-    this.sendPacket(lp);
+    sendPacket(lp);
 
     for (AVConnectionListener listener: connectionListeners.values()) {
       listener.onWebSocketOpen();
