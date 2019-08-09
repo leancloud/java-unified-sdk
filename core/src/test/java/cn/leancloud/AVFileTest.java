@@ -215,6 +215,13 @@ public class AVFileTest extends TestCase {
     assertTrue(testSucceed);
   }
 
+  public void testDownloadExternalFile() throws Exception {
+    AVFile portrait = new AVFile("thumbnail", "http://file.everydaydiary.luyunxinchen.cn/437K25F9DpoWnJcJgbQECCV994ntJKpCGGudo6af.png");
+    byte[] contents = portrait.getData();
+    System.out.println("data length:" + contents.length);
+    assertTrue(contents.length == 80830);
+  }
+
   public void testBlockSave() throws Exception {
     AVFile leanFile = new AVFile("name.txt", "name".getBytes());
     leanFile.save();

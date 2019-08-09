@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 public class FileDownloader {
@@ -32,13 +33,21 @@ public class FileDownloader {
     return downloadFileFromNetwork(url, localFile);
   }
 
+  private OkHttpClient getHttpClient() {
+    return new OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .build();
+  }
+
   private AVException downloadFileFromNetwork(final String url, File cacheFile) {
 
     AVException errors = null;
     Request.Builder requestBuilder = new Request.Builder();
     requestBuilder.url(url);
 
-    OkHttpClient client = PaasClient.getGlobalOkHttpClient();
+    OkHttpClient client = getHttpClient();
     try {
       Response response = client.newCall(requestBuilder.build()).execute();
       int statusCode = response.code();
