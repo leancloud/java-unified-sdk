@@ -224,6 +224,7 @@ public class AVQueryTest extends TestCase {
     AVQuery query = new AVQuery("Student");
     query.orderByDescending(AVObject.KEY_CREATED_AT);
     query.limit(5);
+    query.skip(1);
     query.setCachePolicy(AVQuery.CachePolicy.CACHE_ELSE_NETWORK);
     query.findInBackground().subscribe(new Observer<List<AVObject>>() {
       public void onSubscribe(Disposable disposable) {

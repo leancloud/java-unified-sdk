@@ -246,13 +246,34 @@ public class QueryDemoActivity extends DemoBaseActivity {
     // 单位毫秒
     q.setMaxCacheAge(1000 * 60 * 60); // 一小时
     q.limit(1);
+    q.skip(1);
     if (q.hasCachedResult()) {
       log("有本地缓存，将从本地获取");
     } else {
       log("无本地缓存，将从服务器获取");
     }
-    List<Student> students = q.find();
-    log("查找结果为：" + prettyJSON(students));
+    q.findInBackground().subscribe(new Observer<List<Student>>() {
+      @Override
+      public void onSubscribe(Disposable d) {
+
+      }
+
+      @Override
+      public void onNext(List<Student> students) {
+        log("查找结果为：" + prettyJSON(students));
+      }
+
+      @Override
+      public void onError(Throwable e) {
+        log("exception occurred! cause:" + e.getMessage());
+        e.printStackTrace();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
   }
 
   public void testQueryPolicyNetworkElseCache() throws AVException {

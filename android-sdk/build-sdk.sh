@@ -12,7 +12,7 @@ version=$1
 echo "Building sdk $version..."
 
 sed -i '' "s/VERSION_NAME=.*/VERSION_NAME=$version/" gradle.properties
-sed -i '' "s/SDK_VERSION = .*;/SDK_VERSION = \"$version\";/" leancloud-push-lite/src/main/java/cn/leancloud/push/lite/AVOSCloud.java
+#sed -i '' "s/SDK_VERSION = .*;/SDK_VERSION = \"$version\";/" leancloud-push-lite/src/main/java/cn/leancloud/push/lite/AVOSCloud.java
 sed -i '' "s/include ':storage-sample-app'//" settings.gradle
 sed -i '' "s/include ':realtime-sample-app'//" settings.gradle
 sed -i '' "s/include ':push_lite_demo'//" settings.gradle

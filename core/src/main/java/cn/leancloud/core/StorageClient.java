@@ -110,9 +110,9 @@ public class StorageClient {
 
   private Observable<AVQueryResult> queryRemoteServer(String className, final Map<String, String> query) {
     if (AVUser.CLASS_NAME.equalsIgnoreCase(className)) {
-      return apiService.queryUsers(query);
+      return wrapObservable(apiService.queryUsers(query));
     } else {
-      return apiService.queryObjects(className, query);
+      return wrapObservable(apiService.queryObjects(className, query));
     }
   }
 
@@ -130,9 +130,11 @@ public class StorageClient {
         result = wrapObservable(
                 QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, false));
         if (null != result) {
-          result = result.onErrorReturn(new Function<Throwable, List<AVObject>>() {
-            public List<AVObject> apply(Throwable o) throws Exception {
-              LOGGER.d("failed to query local cache, cause: " + o.getMessage() + ", try to query networking");
+          result = result.onErrorResumeNext(new Function<Throwable, ObservableSource<? extends List<AVObject>>>() {
+            @Override
+            public ObservableSource<? extends List<AVObject>> apply(Throwable throwable) throws Exception {
+              LOGGER.d("failed to query local cache, cause: " + throwable.getMessage() + ", try to query networking");
+
               return queryRemoteServer(className, query)
                       .map(new Function<AVQueryResult, List<AVObject>>() {
                         public List<AVObject> apply(AVQueryResult o) throws Exception {
@@ -145,13 +147,13 @@ public class StorageClient {
                                   + ((null != o.getResults())? o.getResults().size(): 0));
                           return o.getResults();
                         }
-                      }).blockingFirst();
+                      });
             }
           });
         }
         break;
       case NETWORK_ELSE_CACHE:
-        queryResult =  wrapObservable(queryRemoteServer(className, query));
+        queryResult =  queryRemoteServer(className, query);
         if (null != queryResult) {
           result = queryResult.map(new Function<AVQueryResult, List<AVObject>>() {
             public List<AVObject> apply(AVQueryResult o) throws Exception {
@@ -164,20 +166,19 @@ public class StorageClient {
                       + ((null != o.getResults()) ? o.getResults().size() : 0));
               return o.getResults();
             }
-          }).onErrorReturn(new Function<Throwable, List<AVObject>>() {
-                    public List<AVObject> apply(Throwable o) throws Exception {
-                      LOGGER.d("failed to query networking, cause: " + o.getMessage()
-                              + ", try to query local cache.");
-                      return QueryResultCache.getInstance()
-                              .getCacheResult(className, query, maxAgeInMilliseconds, true)
-                              .blockingFirst();
-                    }
-                  });
+          }).onErrorResumeNext(new Function<Throwable, ObservableSource<? extends List<AVObject>>>() {
+            @Override
+            public ObservableSource<? extends List<AVObject>> apply(Throwable throwable) throws Exception {
+              LOGGER.d("failed to query networking, cause: " + throwable.getMessage()
+                      + ", try to query local cache.");
+              return QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, true);
+            }
+          });
         }
         break;
       case IGNORE_CACHE:
       default:
-        queryResult = wrapObservable(queryRemoteServer(className, query));
+        queryResult = queryRemoteServer(className, query);
         if (null != queryResult) {
           result = queryResult.map(new Function<AVQueryResult, List<AVObject>>() {
             public List<AVObject> apply(AVQueryResult o) throws Exception {
@@ -202,7 +203,7 @@ public class StorageClient {
   }
 
   public Observable<Integer> queryCount(final String className, Map<String, String> query) {
-    Observable<AVQueryResult> queryResult = wrapObservable(this.queryRemoteServer(className, query));
+    Observable<AVQueryResult> queryResult = this.queryRemoteServer(className, query);
     if (null == queryResult) {
       return null;
     }
