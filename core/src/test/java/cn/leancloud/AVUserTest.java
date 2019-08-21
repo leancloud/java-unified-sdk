@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.utils.AVUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -112,8 +113,66 @@ public class AVUserTest extends TestCase {
       @Override
       public void onNext(AVUser avUser) {
         System.out.println("onNext. result=" + avUser.toString());
-        operationSucceed = true;
-        latch.countDown();
+        System.out.println("current user is authenticated? " + avUser.isAuthenticated() + ", isAnonymous? " + avUser.isAnonymous());
+        String openId = "openid3322dr";
+        String accessToken = "access_token";
+        String expiresAt = "313830732382";
+        final Map<String,Object> userAuth = new HashMap<>();
+        userAuth.put("access_token",accessToken);
+        userAuth.put("expires_in", expiresAt);
+        userAuth.put("openid",openId);
+
+        avUser.put("gender", "male");
+        avUser.associateWithAuthData(userAuth, "qq").subscribe(new Observer<AVUser>() {
+          @Override
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(AVUser tmp) {
+            System.out.println("onNext. result=" + tmp.toString());
+            System.out.println("current user is authenticated? " + tmp.isAuthenticated() + ", isAnonymous? " + tmp.isAnonymous());
+
+            tmp.associateWithAuthData(userAuth, "weixin_test").subscribe(new Observer<AVUser>() {
+              @Override
+              public void onSubscribe(Disposable disposable) {
+
+              }
+
+              @Override
+              public void onNext(AVUser tmp2) {
+                System.out.println("onNext. result=" + tmp2.toString());
+                System.out.println("current user is authenticated? " + tmp2.isAuthenticated() + ", isAnonymous? " + tmp2.isAnonymous());
+
+                operationSucceed = true;
+                latch.countDown();
+              }
+
+              @Override
+              public void onError(Throwable throwable) {
+                latch.countDown();
+              }
+
+              @Override
+              public void onComplete() {
+
+              }
+            });
+
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
+
       }
 
       @Override
@@ -315,6 +374,48 @@ public class AVUserTest extends TestCase {
       }
     });
     latch.await();
+    assertTrue(operationSucceed);
+  }
+
+
+  public void testSaveCurrentUserData() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    operationSucceed = false;
+    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVUser avUser) {
+        avUser.put("nickname", "Developer Fong");
+        avUser.setFetchWhenSave(true);
+        avUser.save();
+        String nickName1 = avUser.getString("nickname");
+        String nkName2 = AVUser.currentUser().getString("nickname");
+        operationSucceed = nickName1.equals(nkName2) && nickName1.equals("Developer Fong");
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(operationSucceed);
+  }
+
+  public void testGetCurrentUserAfterSave() throws Exception {
+    operationSucceed = false;
+    String nkName = AVUser.currentUser().getString("nickname");
+    operationSucceed = nkName.equals("Developer Fong");
     assertTrue(operationSucceed);
   }
 

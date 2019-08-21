@@ -520,6 +520,14 @@ public class AVObject {
     return Observable.just(result).subscribeOn(Schedulers.io());
   }
 
+  protected void onSaveSuccess() {
+    this.operations.clear();
+  }
+
+  protected void onSaveFailure() {
+
+  }
+
   private Observable<? extends AVObject> saveSelfOperations(AVSaveOption option) {
     final boolean needFetch = (null != option) ? option.fetchWhenSave : isFetchWhenSave();
 
@@ -547,8 +555,7 @@ public class AVObject {
               Map<String, Object> lastResult = object.getObject(object.size() - 1, Map.class);
               if (null != lastResult) {
                 AVUtils.mergeConcurrentMap(serverData, lastResult);
-                //AVObject.this.serverData.putAll(lastResult);
-                AVObject.this.operations.clear();
+                AVObject.this.onSaveSuccess();
               }
             }
             return AVObject.this;
@@ -562,8 +569,7 @@ public class AVObject {
               Map<String, Object> lastResult = object.getObject(currentObjectId, Map.class);
               if (null != lastResult) {
                 AVUtils.mergeConcurrentMap(serverData, lastResult);
-                //AVObject.this.serverData.putAll(lastResult);
-                AVObject.this.operations.clear();
+                AVObject.this.onSaveSuccess();
               }
             }
             return AVObject.this;
@@ -585,18 +591,9 @@ public class AVObject {
                   @Override
                   public AVObject apply(AVObject avObject) throws Exception {
                     AVObject.this.mergeRawData(avObject);
+                    AVObject.this.onSaveSuccess();
                     return AVObject.this;
                   }
-//                }).doOnError(new Consumer<Throwable>() {
-//                  @Override
-//                  public void accept(Throwable throwable) throws Exception {
-//                    if (throwable instanceof HttpException) {
-//                      HttpException httpException = (HttpException) throwable;
-//                      throw new AVException(httpException.code(), httpException.message());
-//                    } else {
-//                      throw new AVException(throwable);
-//                    }
-//                  }
                 });
       } else {
         return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData, needFetch, whereCondition)
@@ -604,6 +601,7 @@ public class AVObject {
                   @Override
                   public AVObject apply(AVObject avObject) throws Exception {
                     AVObject.this.mergeRawData(avObject);
+                    AVObject.this.onSaveSuccess();
                     return AVObject.this;
                   }
                 });
@@ -633,17 +631,6 @@ public class AVObject {
         return saveSelfOperations(option);
       }
     });
-//    return needSaveFirstly.to(new Function<Observable<List<AVObject>>, Observable<? extends AVObject>>() {
-//      @Override
-//      public Observable<? extends AVObject> apply(Observable<List<AVObject>> avNullObservable) throws Exception {
-//        logger.d("try to execute blocking save operations in thread: " + Thread.currentThread());
-//        for (AVObject o: avNullObservable.blockingLast()) {
-//          o.save();
-//        }
-//        logger.d("secondly, save object itself...");
-//        return saveSelfOperations(option);
-//      }
-//    });
   }
 
   /**
@@ -707,10 +694,9 @@ public class AVObject {
             AVObject originObject = (AVObject) it.next();
             if (oneResult.containsKey("success")) {
               AVUtils.mergeConcurrentMap(originObject.serverData, oneResult.getJSONObject("success"));
-              //originObject.serverData.putAll(oneResult.getJSONObject("success"));
-              originObject.operations.clear();
+              originObject.onSaveSuccess();
             } else if (oneResult.containsKey("error")) {
-              ;
+              originObject.onSaveFailure();
             }
           }
         }

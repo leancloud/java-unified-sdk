@@ -37,6 +37,7 @@ public class AVUser extends AVObject {
   public static final String ATTR_SESSION_TOKEN = "sessionToken";
 
   private static final String AUTHDATA_TAG = "authData";
+  private static final String AUTHDATA_PLATFORM_ANONYMOUS = "anonymous";
 
   private static final String AUTHDATA_ATTR_UNIONID = "unionid";
   private static final String AUTHDATA_ATTR_UNIONID_PLATFORM = "platform";
@@ -190,6 +191,29 @@ public class AVUser extends AVObject {
     return !StringUtil.isEmpty(sessionToken);
   }
 
+  @Override
+  protected void onSaveSuccess() {
+    super.onSaveSuccess();
+    if (!StringUtil.isEmpty(getSessionToken())) {
+      changeCurrentUser(this, true);
+    }
+  }
+
+  @Override
+  protected void onSaveFailure() {
+    super.onSaveFailure();
+  }
+
+  public boolean isAnonymous() {
+    JSONObject existedAuthData = this.getJSONObject(AUTHDATA_TAG);
+    if (existedAuthData != null) {
+      if (existedAuthData.size() == 1 && existedAuthData.containsKey(AUTHDATA_PLATFORM_ANONYMOUS)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * sign up(blocking).
    */
@@ -285,7 +309,7 @@ public class AVUser extends AVObject {
     String anonymousId = UUID.randomUUID().toString().toLowerCase();
     Map<String, Object> param = new HashMap<>();
     param.put("id", anonymousId);
-    return loginWithAuthData(param, "anonymous");
+    return loginWithAuthData(param, AUTHDATA_PLATFORM_ANONYMOUS);
   }
 
   /**
@@ -486,7 +510,7 @@ public class AVUser extends AVObject {
       authDataAttr.putAll((Map<String, Object>)existedAuthData);
     }
     this.put(AUTHDATA_TAG, authDataAttr);
-    return (Observable<AVUser>) saveInBackground();
+    return (Observable<AVUser>) saveInBackground(new AVSaveOption().setFetchWhenSave(true));
   }
 
   public Observable<AVUser> associateWithAuthData(Map<String, Object> authData, String platform, String unionId, String unionIdPlatform,
