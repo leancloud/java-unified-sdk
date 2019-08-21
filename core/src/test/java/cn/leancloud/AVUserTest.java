@@ -2,6 +2,7 @@ package cn.leancloud;
 
 import cn.leancloud.core.AVOSCloud;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -9,7 +10,9 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class AVUserTest extends TestCase {
@@ -311,6 +314,75 @@ public class AVUserTest extends TestCase {
       public void onComplete() {
       }
     });
+    latch.await();
+    assertTrue(operationSucceed);
+  }
+
+  public void testAssociateAuthDataTwice() throws Exception {
+    AVUser user = new AVUser();
+    user.setEmail("jfeng987@test.com");
+    user.setUsername("jfeng987");
+    user.setPassword("FER$@$@#Ffwe");
+
+    String openId = "openid";
+    String accessToken = "access_token";
+    String expiresAt = "313830732382";
+    final Map<String,Object> userAuth = new HashMap<>();
+    userAuth.put("access_token",accessToken);
+    userAuth.put("expires_in", expiresAt);
+    userAuth.put("openid",openId);
+    AVUser tmp = user.associateWithAuthData(userAuth, "qq").blockingSingle();
+    assertTrue(tmp != null);
+
+    final CountDownLatch latch = new CountDownLatch(1);
+    operationSucceed = false;
+
+    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(final AVUser two) {
+        two.associateWithAuthData(userAuth, "qq").subscribe(new Observer<AVUser>() {
+          @Override
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(AVUser avUser) {
+            latch.countDown();
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            two.abortOperations();
+            JSONObject authData = two.getJSONObject("authData");
+            System.out.println(authData);
+            operationSucceed = authData.size() < 1;
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+
     latch.await();
     assertTrue(operationSucceed);
   }

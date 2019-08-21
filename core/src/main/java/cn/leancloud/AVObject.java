@@ -393,6 +393,17 @@ public class AVObject {
     addNewOperation(op);
   }
 
+  /**
+   * abort all modify operations.
+   * @Notice: this method doesn't work for AVInstallation.
+   */
+  public void abortOperations() {
+    if (totallyOverwrite) {
+      logger.w("Can't abort modify operations under TotalOverWrite mode.");
+    }
+    this.operations.clear();
+  }
+
   protected void addNewOperation(ObjectFieldOperation op) {
     if (null == op) {
       return;
