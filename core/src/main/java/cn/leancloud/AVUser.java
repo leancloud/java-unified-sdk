@@ -191,17 +191,30 @@ public class AVUser extends AVObject {
     return !StringUtil.isEmpty(sessionToken);
   }
 
-  @Override
-  protected void onSaveSuccess() {
-    super.onSaveSuccess();
-    if (!StringUtil.isEmpty(getSessionToken())) {
+  private void updateCurrentUserCache() {
+    String sessionToken = getSessionToken();
+    AVUser currentUser = AVUser.currentUser();
+    if (null != currentUser && !StringUtil.isEmpty(currentUser.getObjectId())
+            && currentUser.getObjectId().equals(getObjectId()) && !StringUtil.isEmpty(sessionToken)) {
       changeCurrentUser(this, true);
     }
   }
 
   @Override
+  protected void onSaveSuccess() {
+    super.onSaveSuccess();
+    updateCurrentUserCache();
+  }
+
+  @Override
   protected void onSaveFailure() {
     super.onSaveFailure();
+  }
+
+  @Override
+  protected void onDataSynchronized() {
+    super.onDataSynchronized();
+    updateCurrentUserCache();
   }
 
   public boolean isAnonymous() {

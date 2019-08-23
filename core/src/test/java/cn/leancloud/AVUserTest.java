@@ -419,6 +419,167 @@ public class AVUserTest extends TestCase {
     assertTrue(operationSucceed);
   }
 
+  public void testFetchThenUpdateCurrentUser() throws Exception {
+    operationSucceed = false;
+    final CountDownLatch latch = new CountDownLatch(1);
+    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+      }
+
+      @Override
+      public void onNext(final AVUser avUser) {
+        System.out.println("currentUser:" + AVUser.currentUser());
+        avUser.fetchInBackground("sessionToken,nickname").subscribe(new Observer<AVObject>() {
+          @Override
+          public void onSubscribe(Disposable disposable) {
+          }
+
+          @Override
+          public void onNext(AVObject avObject) {
+            System.out.println("currentUser:" + AVUser.currentUser());
+            AVUser.changeCurrentUser(avUser, true);
+            System.out.println("currentUser:" + AVUser.currentUser());
+            final String newName = String.valueOf(System.currentTimeMillis());
+            avUser.put("nickname", newName);
+            avUser.setFetchWhenSave(true);
+            avUser.saveInBackground().subscribe(new Observer<AVObject>() {
+              @Override
+              public void onSubscribe(Disposable disposable) {
+              }
+
+              @Override
+              public void onNext(AVObject finalObject) {
+                System.out.println("currentUser:" + AVUser.currentUser());
+                operationSucceed = AVUser.currentUser().getString("nickname").equals(newName);
+                latch.countDown();
+              }
+
+              @Override
+              public void onError(Throwable throwable) {
+                System.out.println("failed to save user info. cause: " + throwable.getMessage());
+                latch.countDown();
+              }
+
+              @Override
+              public void onComplete() {
+              }
+            });
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            System.out.println("failed to fetch user info. cause: " + throwable.getMessage());
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+          }
+        });
+
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        System.out.println("failed to login. cause: " + throwable.getMessage());
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+      }
+    });
+    latch.await();
+    assertTrue(operationSucceed);
+  }
+
+  public void testFetchThenUpdateAnotherUserObject() throws Exception {
+    operationSucceed = false;
+    final CountDownLatch latch = new CountDownLatch(1);
+    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+      }
+
+      @Override
+      public void onNext(final AVUser avUser) {
+        System.out.println("currentUser:" + AVUser.currentUser());
+        try {
+          final AVUser another = AVObject.createWithoutData(AVUser.class, avUser.getObjectId());
+          another.fetchInBackground().subscribe(new Observer<AVObject>() {
+            @Override
+            public void onSubscribe(Disposable disposable) {
+            }
+
+            @Override
+            public void onNext(AVObject avObject) {
+              String nickName = avObject.getString("nickname");
+              System.out.println("currentUser:" + AVUser.currentUser());
+              String currentUserNickname = AVUser.currentUser().getString("nickname");
+
+              final String newName = String.valueOf(System.currentTimeMillis());
+              another.put("nickname", newName);
+              another.setFetchWhenSave(true);
+
+              System.out.println("nickname(currentUser)=" + currentUserNickname + ", nickname(server)=" + nickName
+                      + ", nickname(new)=" + newName);
+
+              another.saveInBackground().subscribe(new Observer<AVObject>() {
+                @Override
+                public void onSubscribe(Disposable disposable) {
+                }
+
+                @Override
+                public void onNext(AVObject finalObject) {
+                  System.out.println("currentUser:" + AVUser.currentUser());
+                  operationSucceed = !finalObject.getString("nickname").equals(AVUser.currentUser().getString("nickname"));
+                  latch.countDown();
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                  System.out.println("failed to save user info. cause: " + throwable.getMessage());
+                  latch.countDown();
+                }
+
+                @Override
+                public void onComplete() {
+                }
+              });
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+              System.out.println("failed to fetch user info.");
+              throwable.printStackTrace();
+              latch.countDown();
+            }
+
+            @Override
+            public void onComplete() {
+            }
+          });
+        } catch (Exception ex) {
+          System.out.println("failed to create Empty User Object with objectId. cause: " + ex.getMessage());
+          latch.countDown();
+        }
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        System.out.println("failed to login. cause: " + throwable.getMessage());
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+      }
+    });
+    latch.await();
+    assertTrue(operationSucceed);
+  }
+
   public void testAssociateAuthDataTwice() throws Exception {
     AVUser user = new AVUser();
     user.setEmail("jfeng987@test.com");

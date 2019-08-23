@@ -525,7 +525,9 @@ public class AVObject {
   }
 
   protected void onSaveFailure() {
+  }
 
+  protected void onDataSynchronized() {
   }
 
   private Observable<? extends AVObject> saveSelfOperations(AVSaveOption option) {
@@ -836,7 +838,7 @@ public class AVObject {
 
   }
 
-  public Observable<AVObject> refreshInBackground(String includeKeys) {
+  public Observable<AVObject> refreshInBackground(final String includeKeys) {
     if (totallyOverwrite) {
       return PaasClient.getStorageClient().getWholeObject(this.endpointClassName, getObjectId())
               .map(new Function<AVObject, AVObject>() {
@@ -844,6 +846,7 @@ public class AVObject {
                 public AVObject apply(AVObject avObject) throws Exception {
                   AVObject.this.serverData.clear();
                   AVObject.this.serverData.putAll(avObject.serverData);
+                  AVObject.this.onDataSynchronized();
                   return AVObject.this;
                 }
               });
@@ -851,8 +854,19 @@ public class AVObject {
     return PaasClient.getStorageClient().fetchObject(this.className, getObjectId(), includeKeys)
             .map(new Function<AVObject, AVObject>() {
               public AVObject apply(AVObject avObject) throws Exception {
-                AVObject.this.serverData.clear();
+                if (StringUtil.isEmpty(includeKeys)) {
+                  if (className.equals(AVUser.CLASS_NAME) || AVObject.this instanceof AVUser) {
+                    Object userSessionToken = AVObject.this.serverData.get(AVUser.ATTR_SESSION_TOKEN);
+                    AVObject.this.serverData.clear();
+                    if (null != userSessionToken){
+                      AVObject.this.serverData.put(AVUser.ATTR_SESSION_TOKEN, userSessionToken);
+                    }
+                  } else {
+                    AVObject.this.serverData.clear();
+                  }
+                }
                 AVObject.this.serverData.putAll(avObject.serverData);
+                AVObject.this.onDataSynchronized();
                 return AVObject.this;
               }
             });
