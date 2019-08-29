@@ -291,8 +291,20 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     lp.setInstallationId(AVInstallation.getCurrentInstallation().getInstallationId());
     sendPacket(lp);
 
+    initSessionsIfExists();
     for (AVConnectionListener listener: connectionListeners.values()) {
       listener.onWebSocketOpen();
+    }
+  }
+
+  private void initSessionsIfExists() {
+    Map<String, String> cachedSessions = AVSessionCacheHelper.getTagCacheInstance().getAllSession();
+    for (Map.Entry<String, String> entry : cachedSessions.entrySet()) {
+      AVSession s = AVSessionManager.getInstance().getOrCreateSession(entry.getKey());
+      s.setTag(entry.getValue());
+      s.setSessionStatus(AVSession.Status.Closed);
+      AVDefaultConnectionListener defaultSessionListener = new AVDefaultConnectionListener(s);
+      subscribeConnectionListener(entry.getKey(), defaultSessionListener);
     }
   }
 

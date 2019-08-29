@@ -216,6 +216,7 @@ public class AVSession {
     scp.setReconnectionRequest(true);
     AVConnectionManager.getInstance().sendPacket(scp);
   }
+
   private void openWithSignature(final int requestId, final boolean reconnectionFlag,
                                  final boolean notifyListener) {
     final SignatureCallback callback = new SignatureCallback() {
