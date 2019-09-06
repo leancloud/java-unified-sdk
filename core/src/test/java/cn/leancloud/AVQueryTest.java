@@ -1,12 +1,13 @@
 package cn.leancloud;
 
+import cn.leancloud.core.AVOSCloud;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 public class AVQueryTest extends TestCase {
@@ -17,6 +18,7 @@ public class AVQueryTest extends TestCase {
     super(testName);
     Configure.initializeRuntime();
   }
+
   public static Test suite() {
     return new TestSuite(AVQueryTest.class);
   }
@@ -250,5 +252,25 @@ public class AVQueryTest extends TestCase {
     });
     latch.await();
     assertTrue(testSucceed);
+  }
+
+  public void testDeepIncludeQuery() throws Exception {
+    AVQuery<AVObject> queryLikeRed = new AVQuery<>("hb_Praise");
+    queryLikeRed.include("taskId");
+    queryLikeRed.include("taskId.userId");
+    queryLikeRed.selectKeys(Arrays.asList("taskId.userId.nickName", "taskId.userId.username", "createdAt"));
+    queryLikeRed.whereEqualTo("userId", AVObject.createWithoutData("_User", "userobjectid000000100008"));
+    int total = queryLikeRed.count();
+    List<AVObject> queryList = queryLikeRed.find();
+    Map<String, Object> result = new HashMap<>();
+    List<Map<String, Object>> redList = new ArrayList<>();
+    for (AVObject redPacket: queryList) {
+      Map<String, Object> save = new HashMap<>();
+      AVObject task = redPacket.getAVObject("taskId");
+      System.out.println(task);
+      AVUser user = task.getAVObject("userId");
+      System.out.println(user);
+    }
+
   }
 }

@@ -7,6 +7,7 @@ import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.utils.StringUtil;
 
 import cn.leancloud.codec.Base64;
+import com.alibaba.fastjson.JSONObject;
 
 public class Utils {
   private static final String typeTag = "__type";
@@ -226,7 +227,7 @@ public class Utils {
           if (v instanceof String || v instanceof Number || v instanceof Boolean || v instanceof Byte || v instanceof Character) {
             // primitive type
             decodedValues.put(k, v);
-          } else if (v instanceof Map) {
+          } else if (v instanceof Map || v instanceof JSONObject) {
             decodedValues.put(k, Utils.getObjectFrom(v));
           } else if (v instanceof Collection) {
             decodedValues.put(k, Utils.getObjectFrom(v));
@@ -250,7 +251,20 @@ public class Utils {
     map.remove("__type");
     if (type.equals("Pointer") || type.equals("Object")) {
       AVObject avObject = Transformer.objectFromClassName((String) map.get("className"));
-      avObject.resetServerData(map);
+//      avObject.resetServerData(map);
+      for (String k : map.keySet()) {
+        Object v = map.get(k);
+        if (v instanceof String || v instanceof Number || v instanceof Boolean || v instanceof Byte || v instanceof Character) {
+          // primitive type
+          avObject.getServerData().put(k, v);
+        } else if (v instanceof Map || v instanceof JSONObject) {
+          avObject.getServerData().put(k, Utils.getObjectFrom(v));
+        } else if (v instanceof Collection) {
+          avObject.getServerData().put(k, Utils.getObjectFrom(v));
+        } else if (null != v) {
+          avObject.getServerData().put(k, v);
+        }
+      }
       return avObject;
     } else if (type.equals("GeoPoint")) {
       return geoPointFromMap(map);
@@ -269,7 +283,7 @@ public class Utils {
   public static Object getObjectFrom(Object obj) {
     if (obj instanceof Collection) {
       return getObjectFrom((Collection) obj);
-    } else if (obj instanceof Map) {
+    } else if (obj instanceof Map || obj instanceof JSONObject) {
       return getObjectFrom((Map<String, Object>) obj);
     }
 

@@ -1,16 +1,9 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
-import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.utils.LogUtil;
-import com.alibaba.fastjson.JSON;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 public class AVObjectSerializer2Test extends TestCase {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVObjectSerializer2Test.class);
@@ -108,6 +101,16 @@ public class AVObjectSerializer2Test extends TestCase {
     } catch (Exception ex) {
       ex.printStackTrace();
     }
+  }
+
+  public void testDeserializeDeepObject() throws Exception {
+    String json = "{\"updatedAt\":\"2019-09-05T08:32:31.200Z\",\"createdAt\":\"2019-09-05T08:32:31.200Z\",\"taskId\":{\"updatedAt\":\"2019-09-05T08:14:29.183Z\",\"createdAt\":\"2019-09-05T08:14:29.183Z\",\"userId\":{\"updatedAt\":\"2019-06-18T08:28:23.812Z\",\"username\":\"100364\",\"createdAt\":\"2019-06-18T08:28:23.618Z\",\"nickName\":\"\\u5b66\\u5458100364\",\"objectId\":\"5d08a0a712215f00718cbc71\",\"__type\":\"Pointer\",\"className\":\"_User\"},\"objectId\":\"5d70c3e5c8959c0074f13310\",\"__type\":\"Pointer\",\"className\":\"hb_Task\"},\"objectId\":\"5d70c81f17b54d00680ddba3\"}";
+    AVObject object = AVObject.parseAVObject(json);
+    System.out.println("object=" + object);
+    AVObject taskId = object.getAVObject("taskId");
+    System.out.println("task=" + taskId);
+    AVUser user = taskId.getAVObject("userId");
+    assertTrue(null != user);
   }
 
 }

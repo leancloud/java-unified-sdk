@@ -95,8 +95,18 @@ public class AVObject {
     return (String) this.serverData.get(KEY_CREATED_AT);
   }
 
+  public Date getCreatedDate() {
+    String value = getCreatedAt();
+    return StringUtil.dateFromString(value);
+  }
+
   public String getUpdatedAt() {
     return (String) this.serverData.get(KEY_UPDATED_AT);
+  }
+
+  public Date getUpdatedDate() {
+    String value = getUpdatedAt();
+    return StringUtil.dateFromString(value);
   }
 
   public String getObjectId() {

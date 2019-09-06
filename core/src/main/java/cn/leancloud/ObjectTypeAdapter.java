@@ -118,7 +118,7 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
       if (v instanceof String || v instanceof Number || v instanceof Boolean || v instanceof Byte || v instanceof Character) {
         // primitive type
         obj.serverData.put(k, v);
-      } else if (v instanceof Map) {
+      } else if (v instanceof Map || v instanceof JSONObject) {
         obj.serverData.put(k, Utils.getObjectFrom(v));
       } else if (v instanceof Collection) {
         obj.serverData.put(k, Utils.getObjectFrom(v));
