@@ -199,6 +199,8 @@ public class DirectlyOperationTube implements OperationTube {
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
       RequestCache.getInstance().addRequestCallback(LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID, null, requestId, callback);
+    } else {
+      LOGGER.d("don't cache livequery login request.");
     }
     return loginLiveQueryDirectly(subscriptionId, requestId);
   }
@@ -383,7 +385,10 @@ public class DirectlyOperationTube implements OperationTube {
   public void onLiveQueryCompleted(int requestId, Throwable throwable) {
     AVCallback callback = getCachedCallback(LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID, null, requestId, null);
     if (null != callback) {
+      LOGGER.d("call livequery login callback with exception:" + throwable);
       callback.internalDone(null == throwable? null : new AVException(throwable));
+    } else {
+      LOGGER.d("no callback found for livequery login request.");
     }
     RequestCache.getInstance().cleanRequestCallback(LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID, null, requestId);
   }

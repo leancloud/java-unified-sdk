@@ -10,9 +10,6 @@ import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.service.RealtimeClient;
 import cn.leancloud.session.AVConnectionManager;
-import cn.leancloud.session.AVDefaultConnectionListener;
-import cn.leancloud.session.AVSessionManager;
-import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
@@ -37,6 +34,13 @@ public class AVLiveQuery {
   public static final String SUBSCRIBE_ID = "id";
   public static final String LIVEQUERY_PRIFIX = "live_query_";
   public static final String ACTION_LIVE_QUERY_LOGIN = "action_live_query_login";
+
+  private static final LiveQueryConnectionListener liveQueryConnectionListener = new LiveQueryConnectionListener();
+
+  static {
+    AVConnectionManager.getInstance().subscribeConnectionListener(LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID,
+            liveQueryConnectionListener);
+  }
 
   public enum EventType {
     CREATE("create"), UPDATE("update"), ENTER("enter"), LEAVE("leave"), DELETE("delete"), LOGIN("login"), UNKONWN("unknown");
@@ -105,11 +109,6 @@ public class AVLiveQuery {
     }
   }
 
-  static {
-    AVConnectionManager.getInstance().subscribeConnectionListener(LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID,
-            new LiveQueryConnectionListener());
-  }
-
   private static String subscribeId;
   private String queryId;
   private AVQuery query;
@@ -138,7 +137,7 @@ public class AVLiveQuery {
     Map<String, String> params = query.assembleParameters();
     params.put("className", query.getClassName());
 
-    Map<String, Object> dataMap = new HashMap<>();
+    final Map<String, Object> dataMap = new HashMap<>();
     dataMap.put(QUERY, params);
     String session = getSessionToken();
     if (!StringUtil.isEmpty(session)) {
@@ -147,6 +146,25 @@ public class AVLiveQuery {
 
     dataMap.put(SUBSCRIBE_ID, getSubscribeId());
 
+    if (liveQueryConnectionListener.connectionIsOpen()) {
+      subscribeThroughRESTAPI(dataMap, callback);
+    } else {
+    }loginLiveQuery(new AVLiveQuerySubscribeCallback() {
+      @Override
+      public void done(AVException e) {
+        if (null != e) {
+          if (null != callback) {
+            callback.internalDone(e);
+          }
+          return;
+        } else {
+          subscribeThroughRESTAPI(dataMap, callback);
+        }
+      }
+    });
+  }
+
+  private void subscribeThroughRESTAPI(final Map<String, Object> dataMap, final AVLiveQuerySubscribeCallback callback) {
     RealtimeClient.getInstance().subscribeLiveQuery(dataMap).subscribe(new Observer<JSONObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
@@ -158,8 +176,12 @@ public class AVLiveQuery {
         if (null != jsonObject && jsonObject.containsKey(QUERY_ID)) {
           queryId = jsonObject.getString(QUERY_ID);
           liveQuerySet.add(AVLiveQuery.this);
-          loginLiveQuery(callback);
-        } else if (null != callback) {
+          if (null != callback) {
+            callback.internalDone(null);
+          }
+          return;
+        }
+        if (null != callback) {
           callback.internalDone(new AVException(AVException.UNKNOWN, "response isn't recognized"));
         }
       }
@@ -173,7 +195,6 @@ public class AVLiveQuery {
 
       @Override
       public void onComplete() {
-
       }
     });
   }
@@ -228,7 +249,7 @@ public class AVLiveQuery {
     });
   }
 
-  private String getSubscribeId() {
+  private static String getSubscribeId() {
     if (StringUtil.isEmpty(subscribeId)) {
       subscribeId = AppConfiguration.getDefaultSetting().getString(SP_LIVEQUERY_KEY,SP_SUBSCRIBE_ID, "");
       if (StringUtil.isEmpty(subscribeId)) {

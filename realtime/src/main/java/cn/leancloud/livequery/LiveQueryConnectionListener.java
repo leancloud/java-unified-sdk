@@ -16,12 +16,20 @@ import java.util.List;
 class LiveQueryConnectionListener implements AVConnectionListener {
   private static final AVLogger LOGGER = LogUtil.getLogger(LiveQueryConnectionListener.class);
 
+  private volatile boolean connectionIsOpen = false;
+
   public void onWebSocketOpen() {
-    LOGGER.d("connection opened, ready to send packet");
+    LOGGER.d("livequery connection opened, ready to send packet");
+
   }
 
   public void onWebSocketClose() {
-    LOGGER.d("connection closed.");
+    LOGGER.d("livequery connection closed.");
+    connectionIsOpen = false;
+  }
+
+  public boolean connectionIsOpen() {
+    return connectionIsOpen;
   }
 
   @Override
@@ -36,6 +44,7 @@ class LiveQueryConnectionListener implements AVConnectionListener {
       return;
     }
     int commandCode = genericCommand.getCmd().getNumber();
+    LOGGER.d("new message arriving. peerId=" + peerId + ", requestKey=" + requestKey + ", commandCode=" + commandCode);
     if (commandCode == Messages.CommandType.loggedin_VALUE) {
       processLoggedinCommand(requestKey);
     } else if (commandCode == Messages.CommandType.data_VALUE) {
@@ -50,10 +59,14 @@ class LiveQueryConnectionListener implements AVConnectionListener {
   @Override
   public void onError(Integer requestKey, Messages.ErrorCommand errorCommand) {
     LOGGER.e("encounter error.");
+    connectionIsOpen = false;
   }
 
   private void processLoggedinCommand(Integer requestKey) {
-    if (null != requestKey) {
+    if (null == requestKey) {
+      LOGGER.d("request key is null, ignore.");
+    } else {
+      connectionIsOpen = true;
       LiveQueryOperationDelegate.getInstance().ackOperationReplied(requestKey);
       InternalConfiguration.getOperationTube().onLiveQueryCompleted(requestKey, null);
     }

@@ -127,6 +127,74 @@ public class AVObjectTest extends TestCase {
     assertTrue(testSucceed);
   }
 
+  public void testIncrementField() throws Exception {
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 18);
+    object.put("grade", 9);
+    object.put("ratings", 3.5);
+    object.saveInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVObject avObject) {
+        System.out.println("try to increment grade and ratings field.");
+        avObject.increment("grade", -1);
+        avObject.increment("ratings", 0.8);
+        avObject.setFetchWhenSave(true);
+        avObject.saveInBackground().subscribe(new Observer<AVObject>() {
+          public void onSubscribe(Disposable disposable) {
+          }
+
+          public void onNext(AVObject avObject2) {
+            System.out.println("update finished: " + avObject2);
+            avObject2.deleteInBackground().subscribe(new Observer<AVNull>() {
+              @Override
+              public void onSubscribe(Disposable disposable) {
+
+              }
+
+              @Override
+              public void onNext(AVNull avNull) {
+                testSucceed = true;
+                latch.countDown();
+              }
+
+              @Override
+              public void onError(Throwable throwable) {
+                latch.countDown();
+              }
+
+              @Override
+              public void onComplete() {
+
+              }
+            });
+          }
+
+          public void onError(Throwable throwable) {
+            latch.countDown();
+          }
+
+          public void onComplete() {
+          }
+        });
+
+      }
+
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
   public void testCreateObjectWithPublicACL() throws Exception {
     AVACL acl = new AVACL();
     acl.setPublicWriteAccess(true);

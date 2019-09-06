@@ -29,6 +29,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.Map;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,6 +48,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private volatile AVCallback pendingCallback = null;
 
   private Map<String, AVConnectionListener> connectionListeners = new ConcurrentHashMap<>(1);
+  private Map<String, AVConnectionListener> defaultConnectionListeners = new HashMap<>(2);
 
   public synchronized static AVConnectionManager getInstance() {
     if (instance == null) {
@@ -56,7 +58,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   private AVConnectionManager(boolean autoConnection) {
-    connectionListeners.put(AVPushMessageListener.DEFAULT_ID, AVPushMessageListener.getInstance());
+    subscribeDefaultConnectionListener(AVPushMessageListener.DEFAULT_ID, AVPushMessageListener.getInstance());
     if (autoConnection) {
       startConnection();
     }
@@ -258,6 +260,13 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
       this.connectionListeners.put(clientId, listener);
     }
   }
+
+  public void subscribeDefaultConnectionListener(String clientId, AVConnectionListener listener) {
+    if (null != listener) {
+      this.defaultConnectionListeners.put(clientId, listener);
+    }
+  }
+
   public void unsubscribeConnectionListener(String clientId) {
     this.connectionListeners.remove(clientId);
   }
@@ -295,6 +304,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     for (AVConnectionListener listener: connectionListeners.values()) {
       listener.onWebSocketOpen();
     }
+    for (AVConnectionListener listener: defaultConnectionListeners.values()) {
+      listener.onWebSocketOpen();
+    }
   }
 
   private void initSessionsIfExists() {
@@ -312,6 +324,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     LOGGER.d("webSocket closed...");
     connectionEstablished = false;
     for (AVConnectionListener listener: connectionListeners.values()) {
+      listener.onWebSocketClose();
+    }
+    for (AVConnectionListener listener: defaultConnectionListeners.values()) {
       listener.onWebSocketClose();
     }
   }
@@ -340,6 +355,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
       return;
     }
     AVConnectionListener listener = this.connectionListeners.get(peerId);
+    if (null == listener) {
+      listener = this.defaultConnectionListeners.get(peerId);
+    }
     if (null != listener) {
       listener.onMessageArriving(peerId, requestKey, command);
     } else {
@@ -352,6 +370,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     connectionEstablished = false;
     reConnectionRTMServer();
     for (AVConnectionListener listener: connectionListeners.values()) {
+      listener.onError(null, null);
+    }
+    for (AVConnectionListener listener: defaultConnectionListeners.values()) {
       listener.onError(null, null);
     }
   }
