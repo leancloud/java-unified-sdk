@@ -358,6 +358,58 @@ public class AVObjectTest extends TestCase {
     assertTrue(testSucceed);
   }
 
+  public void testCreateAndFetchObject() throws Exception {
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 17);
+    object.setFetchWhenSave(true);
+    object.saveInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+      }
+
+      public void onNext(AVObject avObject) {
+        System.out.println("create object finished. objectId=" + avObject.getObjectId()
+                + ", className=" + avObject.getClassName());
+        Date updatedAtDate = avObject.getUpdatedAt();
+        Date createdAtDate = avObject.getCreatedAt();
+        String updatedString = avObject.getUpdatedAtString();
+        String createdString = avObject.getCreatedAtString();
+        System.out.println("updatedAt:" + updatedAtDate + ", createdAt:" + createdAtDate + ", updatedString:"
+                + updatedString + ", createdString:" + createdString);
+        avObject.deleteInBackground().subscribe(new Observer<AVNull>() {
+          public void onSubscribe(Disposable disposable) {
+            ;
+          }
+
+          public void onNext(AVNull aVoid) {
+            System.out.println("delete object finished.");
+            testSucceed = true;
+            latch.countDown();
+          }
+
+          public void onError(Throwable throwable) {
+            System.out.println("delete object failed.");
+            latch.countDown();
+          }
+
+          public void onComplete() {
+          }
+        });
+
+      }
+
+      public void onError(Throwable throwable) {
+        System.out.println("create object failed.");
+        latch.countDown();
+      }
+
+      public void onComplete() {
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
   public void testObjectRefresh() throws Exception {
     AVObject object = new AVObject("Student");
     object.setObjectId("5a7a4ac8128fe1003768d2b1");

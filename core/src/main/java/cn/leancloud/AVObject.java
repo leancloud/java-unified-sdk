@@ -91,22 +91,22 @@ public class AVObject {
     this.className = name;
   }
 
-  public String getCreatedAt() {
+  public Date getCreatedAt() {
+    String value = getCreatedAtString();
+    return StringUtil.dateFromString(value);
+  }
+
+  public String getCreatedAtString() {
     return (String) this.serverData.get(KEY_CREATED_AT);
   }
 
-  public Date getCreatedDate() {
-    String value = getCreatedAt();
+  public Date getUpdatedAt() {
+    String value = getUpdatedAtString();
     return StringUtil.dateFromString(value);
   }
 
-  public String getUpdatedAt() {
+  public String getUpdatedAtString() {
     return (String) this.serverData.get(KEY_UPDATED_AT);
-  }
-
-  public Date getUpdatedDate() {
-    String value = getUpdatedAt();
-    return StringUtil.dateFromString(value);
   }
 
   public String getObjectId() {
