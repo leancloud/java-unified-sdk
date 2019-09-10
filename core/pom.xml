@@ -187,7 +187,7 @@
           <target>${java.version}</target>
         </configuration>
       </plugin>
-      <!--
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
@@ -200,7 +200,7 @@
           </reportPlugins>
         </configuration>
       </plugin>
-      -->
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
