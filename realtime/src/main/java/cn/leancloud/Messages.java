@@ -39250,6 +39250,24 @@ public final class Messages {
     long getServerTs();
 
     /**
+     * <code>optional int64 clientTs = 10;</code>
+     */
+    boolean hasClientTs();
+    /**
+     * <code>optional int64 clientTs = 10;</code>
+     */
+    long getClientTs();
+
+    /**
+     * <code>optional int32 notificationType = 11;</code>
+     */
+    boolean hasNotificationType();
+    /**
+     * <code>optional int32 notificationType = 11;</code>
+     */
+    int getNotificationType();
+
+    /**
      * <code>optional .cn.leancloud.DataCommand dataMessage = 101;</code>
      */
     boolean hasDataMessage();
@@ -39479,6 +39497,8 @@ public final class Messages {
       priority_ = 0;
       service_ = 0;
       serverTs_ = 0L;
+      clientTs_ = 0L;
+      notificationType_ = 0;
     }
 
     @java.lang.Override
@@ -39569,9 +39589,19 @@ public final class Messages {
               serverTs_ = input.readInt64();
               break;
             }
+            case 80: {
+              bitField0_ |= 0x00000200;
+              clientTs_ = input.readInt64();
+              break;
+            }
+            case 88: {
+              bitField0_ |= 0x00000400;
+              notificationType_ = input.readInt32();
+              break;
+            }
             case 810: {
               cn.leancloud.Messages.DataCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000200) == 0x00000200)) {
+              if (((bitField0_ & 0x00000800) == 0x00000800)) {
                 subBuilder = dataMessage_.toBuilder();
               }
               dataMessage_ = input.readMessage(cn.leancloud.Messages.DataCommand.PARSER, extensionRegistry);
@@ -39579,12 +39609,12 @@ public final class Messages {
                 subBuilder.mergeFrom(dataMessage_);
                 dataMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000200;
+              bitField0_ |= 0x00000800;
               break;
             }
             case 818: {
               cn.leancloud.Messages.SessionCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000400) == 0x00000400)) {
+              if (((bitField0_ & 0x00001000) == 0x00001000)) {
                 subBuilder = sessionMessage_.toBuilder();
               }
               sessionMessage_ = input.readMessage(cn.leancloud.Messages.SessionCommand.PARSER, extensionRegistry);
@@ -39592,12 +39622,12 @@ public final class Messages {
                 subBuilder.mergeFrom(sessionMessage_);
                 sessionMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000400;
+              bitField0_ |= 0x00001000;
               break;
             }
             case 826: {
               cn.leancloud.Messages.ErrorCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000800) == 0x00000800)) {
+              if (((bitField0_ & 0x00002000) == 0x00002000)) {
                 subBuilder = errorMessage_.toBuilder();
               }
               errorMessage_ = input.readMessage(cn.leancloud.Messages.ErrorCommand.PARSER, extensionRegistry);
@@ -39605,12 +39635,12 @@ public final class Messages {
                 subBuilder.mergeFrom(errorMessage_);
                 errorMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000800;
+              bitField0_ |= 0x00002000;
               break;
             }
             case 834: {
               cn.leancloud.Messages.DirectCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00001000) == 0x00001000)) {
+              if (((bitField0_ & 0x00004000) == 0x00004000)) {
                 subBuilder = directMessage_.toBuilder();
               }
               directMessage_ = input.readMessage(cn.leancloud.Messages.DirectCommand.PARSER, extensionRegistry);
@@ -39618,12 +39648,12 @@ public final class Messages {
                 subBuilder.mergeFrom(directMessage_);
                 directMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00001000;
+              bitField0_ |= 0x00004000;
               break;
             }
             case 842: {
               cn.leancloud.Messages.AckCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00002000) == 0x00002000)) {
+              if (((bitField0_ & 0x00008000) == 0x00008000)) {
                 subBuilder = ackMessage_.toBuilder();
               }
               ackMessage_ = input.readMessage(cn.leancloud.Messages.AckCommand.PARSER, extensionRegistry);
@@ -39631,12 +39661,12 @@ public final class Messages {
                 subBuilder.mergeFrom(ackMessage_);
                 ackMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00002000;
+              bitField0_ |= 0x00008000;
               break;
             }
             case 850: {
               cn.leancloud.Messages.UnreadCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00004000) == 0x00004000)) {
+              if (((bitField0_ & 0x00010000) == 0x00010000)) {
                 subBuilder = unreadMessage_.toBuilder();
               }
               unreadMessage_ = input.readMessage(cn.leancloud.Messages.UnreadCommand.PARSER, extensionRegistry);
@@ -39644,12 +39674,12 @@ public final class Messages {
                 subBuilder.mergeFrom(unreadMessage_);
                 unreadMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00004000;
+              bitField0_ |= 0x00010000;
               break;
             }
             case 858: {
               cn.leancloud.Messages.ReadCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00008000) == 0x00008000)) {
+              if (((bitField0_ & 0x00020000) == 0x00020000)) {
                 subBuilder = readMessage_.toBuilder();
               }
               readMessage_ = input.readMessage(cn.leancloud.Messages.ReadCommand.PARSER, extensionRegistry);
@@ -39657,12 +39687,12 @@ public final class Messages {
                 subBuilder.mergeFrom(readMessage_);
                 readMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00008000;
+              bitField0_ |= 0x00020000;
               break;
             }
             case 866: {
               cn.leancloud.Messages.RcpCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00010000) == 0x00010000)) {
+              if (((bitField0_ & 0x00040000) == 0x00040000)) {
                 subBuilder = rcpMessage_.toBuilder();
               }
               rcpMessage_ = input.readMessage(cn.leancloud.Messages.RcpCommand.PARSER, extensionRegistry);
@@ -39670,12 +39700,12 @@ public final class Messages {
                 subBuilder.mergeFrom(rcpMessage_);
                 rcpMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00010000;
+              bitField0_ |= 0x00040000;
               break;
             }
             case 874: {
               cn.leancloud.Messages.LogsCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00020000) == 0x00020000)) {
+              if (((bitField0_ & 0x00080000) == 0x00080000)) {
                 subBuilder = logsMessage_.toBuilder();
               }
               logsMessage_ = input.readMessage(cn.leancloud.Messages.LogsCommand.PARSER, extensionRegistry);
@@ -39683,12 +39713,12 @@ public final class Messages {
                 subBuilder.mergeFrom(logsMessage_);
                 logsMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00020000;
+              bitField0_ |= 0x00080000;
               break;
             }
             case 882: {
               cn.leancloud.Messages.ConvCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00040000) == 0x00040000)) {
+              if (((bitField0_ & 0x00100000) == 0x00100000)) {
                 subBuilder = convMessage_.toBuilder();
               }
               convMessage_ = input.readMessage(cn.leancloud.Messages.ConvCommand.PARSER, extensionRegistry);
@@ -39696,12 +39726,12 @@ public final class Messages {
                 subBuilder.mergeFrom(convMessage_);
                 convMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00040000;
+              bitField0_ |= 0x00100000;
               break;
             }
             case 890: {
               cn.leancloud.Messages.RoomCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00080000) == 0x00080000)) {
+              if (((bitField0_ & 0x00200000) == 0x00200000)) {
                 subBuilder = roomMessage_.toBuilder();
               }
               roomMessage_ = input.readMessage(cn.leancloud.Messages.RoomCommand.PARSER, extensionRegistry);
@@ -39709,12 +39739,12 @@ public final class Messages {
                 subBuilder.mergeFrom(roomMessage_);
                 roomMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00080000;
+              bitField0_ |= 0x00200000;
               break;
             }
             case 898: {
               cn.leancloud.Messages.PresenceCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00100000) == 0x00100000)) {
+              if (((bitField0_ & 0x00400000) == 0x00400000)) {
                 subBuilder = presenceMessage_.toBuilder();
               }
               presenceMessage_ = input.readMessage(cn.leancloud.Messages.PresenceCommand.PARSER, extensionRegistry);
@@ -39722,12 +39752,12 @@ public final class Messages {
                 subBuilder.mergeFrom(presenceMessage_);
                 presenceMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00100000;
+              bitField0_ |= 0x00400000;
               break;
             }
             case 906: {
               cn.leancloud.Messages.ReportCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00200000) == 0x00200000)) {
+              if (((bitField0_ & 0x00800000) == 0x00800000)) {
                 subBuilder = reportMessage_.toBuilder();
               }
               reportMessage_ = input.readMessage(cn.leancloud.Messages.ReportCommand.PARSER, extensionRegistry);
@@ -39735,12 +39765,12 @@ public final class Messages {
                 subBuilder.mergeFrom(reportMessage_);
                 reportMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00200000;
+              bitField0_ |= 0x00800000;
               break;
             }
             case 914: {
               cn.leancloud.Messages.PatchCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00400000) == 0x00400000)) {
+              if (((bitField0_ & 0x01000000) == 0x01000000)) {
                 subBuilder = patchMessage_.toBuilder();
               }
               patchMessage_ = input.readMessage(cn.leancloud.Messages.PatchCommand.PARSER, extensionRegistry);
@@ -39748,12 +39778,12 @@ public final class Messages {
                 subBuilder.mergeFrom(patchMessage_);
                 patchMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00400000;
+              bitField0_ |= 0x01000000;
               break;
             }
             case 922: {
               cn.leancloud.Messages.PubsubCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00800000) == 0x00800000)) {
+              if (((bitField0_ & 0x02000000) == 0x02000000)) {
                 subBuilder = pubsubMessage_.toBuilder();
               }
               pubsubMessage_ = input.readMessage(cn.leancloud.Messages.PubsubCommand.PARSER, extensionRegistry);
@@ -39761,12 +39791,12 @@ public final class Messages {
                 subBuilder.mergeFrom(pubsubMessage_);
                 pubsubMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00800000;
+              bitField0_ |= 0x02000000;
               break;
             }
             case 930: {
               cn.leancloud.Messages.BlacklistCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x01000000) == 0x01000000)) {
+              if (((bitField0_ & 0x04000000) == 0x04000000)) {
                 subBuilder = blacklistMessage_.toBuilder();
               }
               blacklistMessage_ = input.readMessage(cn.leancloud.Messages.BlacklistCommand.PARSER, extensionRegistry);
@@ -39774,7 +39804,7 @@ public final class Messages {
                 subBuilder.mergeFrom(blacklistMessage_);
                 blacklistMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x01000000;
+              bitField0_ |= 0x04000000;
               break;
             }
           }
@@ -40020,13 +40050,43 @@ public final class Messages {
       return serverTs_;
     }
 
+    public static final int CLIENTTS_FIELD_NUMBER = 10;
+    private long clientTs_;
+    /**
+     * <code>optional int64 clientTs = 10;</code>
+     */
+    public boolean hasClientTs() {
+      return ((bitField0_ & 0x00000200) == 0x00000200);
+    }
+    /**
+     * <code>optional int64 clientTs = 10;</code>
+     */
+    public long getClientTs() {
+      return clientTs_;
+    }
+
+    public static final int NOTIFICATIONTYPE_FIELD_NUMBER = 11;
+    private int notificationType_;
+    /**
+     * <code>optional int32 notificationType = 11;</code>
+     */
+    public boolean hasNotificationType() {
+      return ((bitField0_ & 0x00000400) == 0x00000400);
+    }
+    /**
+     * <code>optional int32 notificationType = 11;</code>
+     */
+    public int getNotificationType() {
+      return notificationType_;
+    }
+
     public static final int DATAMESSAGE_FIELD_NUMBER = 101;
     private cn.leancloud.Messages.DataCommand dataMessage_;
     /**
      * <code>optional .cn.leancloud.DataCommand dataMessage = 101;</code>
      */
     public boolean hasDataMessage() {
-      return ((bitField0_ & 0x00000200) == 0x00000200);
+      return ((bitField0_ & 0x00000800) == 0x00000800);
     }
     /**
      * <code>optional .cn.leancloud.DataCommand dataMessage = 101;</code>
@@ -40047,7 +40107,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.SessionCommand sessionMessage = 102;</code>
      */
     public boolean hasSessionMessage() {
-      return ((bitField0_ & 0x00000400) == 0x00000400);
+      return ((bitField0_ & 0x00001000) == 0x00001000);
     }
     /**
      * <code>optional .cn.leancloud.SessionCommand sessionMessage = 102;</code>
@@ -40068,7 +40128,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.ErrorCommand errorMessage = 103;</code>
      */
     public boolean hasErrorMessage() {
-      return ((bitField0_ & 0x00000800) == 0x00000800);
+      return ((bitField0_ & 0x00002000) == 0x00002000);
     }
     /**
      * <code>optional .cn.leancloud.ErrorCommand errorMessage = 103;</code>
@@ -40089,7 +40149,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.DirectCommand directMessage = 104;</code>
      */
     public boolean hasDirectMessage() {
-      return ((bitField0_ & 0x00001000) == 0x00001000);
+      return ((bitField0_ & 0x00004000) == 0x00004000);
     }
     /**
      * <code>optional .cn.leancloud.DirectCommand directMessage = 104;</code>
@@ -40110,7 +40170,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.AckCommand ackMessage = 105;</code>
      */
     public boolean hasAckMessage() {
-      return ((bitField0_ & 0x00002000) == 0x00002000);
+      return ((bitField0_ & 0x00008000) == 0x00008000);
     }
     /**
      * <code>optional .cn.leancloud.AckCommand ackMessage = 105;</code>
@@ -40131,7 +40191,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.UnreadCommand unreadMessage = 106;</code>
      */
     public boolean hasUnreadMessage() {
-      return ((bitField0_ & 0x00004000) == 0x00004000);
+      return ((bitField0_ & 0x00010000) == 0x00010000);
     }
     /**
      * <code>optional .cn.leancloud.UnreadCommand unreadMessage = 106;</code>
@@ -40152,7 +40212,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.ReadCommand readMessage = 107;</code>
      */
     public boolean hasReadMessage() {
-      return ((bitField0_ & 0x00008000) == 0x00008000);
+      return ((bitField0_ & 0x00020000) == 0x00020000);
     }
     /**
      * <code>optional .cn.leancloud.ReadCommand readMessage = 107;</code>
@@ -40173,7 +40233,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.RcpCommand rcpMessage = 108;</code>
      */
     public boolean hasRcpMessage() {
-      return ((bitField0_ & 0x00010000) == 0x00010000);
+      return ((bitField0_ & 0x00040000) == 0x00040000);
     }
     /**
      * <code>optional .cn.leancloud.RcpCommand rcpMessage = 108;</code>
@@ -40194,7 +40254,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.LogsCommand logsMessage = 109;</code>
      */
     public boolean hasLogsMessage() {
-      return ((bitField0_ & 0x00020000) == 0x00020000);
+      return ((bitField0_ & 0x00080000) == 0x00080000);
     }
     /**
      * <code>optional .cn.leancloud.LogsCommand logsMessage = 109;</code>
@@ -40215,7 +40275,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.ConvCommand convMessage = 110;</code>
      */
     public boolean hasConvMessage() {
-      return ((bitField0_ & 0x00040000) == 0x00040000);
+      return ((bitField0_ & 0x00100000) == 0x00100000);
     }
     /**
      * <code>optional .cn.leancloud.ConvCommand convMessage = 110;</code>
@@ -40236,7 +40296,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.RoomCommand roomMessage = 111;</code>
      */
     public boolean hasRoomMessage() {
-      return ((bitField0_ & 0x00080000) == 0x00080000);
+      return ((bitField0_ & 0x00200000) == 0x00200000);
     }
     /**
      * <code>optional .cn.leancloud.RoomCommand roomMessage = 111;</code>
@@ -40257,7 +40317,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.PresenceCommand presenceMessage = 112;</code>
      */
     public boolean hasPresenceMessage() {
-      return ((bitField0_ & 0x00100000) == 0x00100000);
+      return ((bitField0_ & 0x00400000) == 0x00400000);
     }
     /**
      * <code>optional .cn.leancloud.PresenceCommand presenceMessage = 112;</code>
@@ -40278,7 +40338,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.ReportCommand reportMessage = 113;</code>
      */
     public boolean hasReportMessage() {
-      return ((bitField0_ & 0x00200000) == 0x00200000);
+      return ((bitField0_ & 0x00800000) == 0x00800000);
     }
     /**
      * <code>optional .cn.leancloud.ReportCommand reportMessage = 113;</code>
@@ -40299,7 +40359,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.PatchCommand patchMessage = 114;</code>
      */
     public boolean hasPatchMessage() {
-      return ((bitField0_ & 0x00400000) == 0x00400000);
+      return ((bitField0_ & 0x01000000) == 0x01000000);
     }
     /**
      * <code>optional .cn.leancloud.PatchCommand patchMessage = 114;</code>
@@ -40320,7 +40380,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.PubsubCommand pubsubMessage = 115;</code>
      */
     public boolean hasPubsubMessage() {
-      return ((bitField0_ & 0x00800000) == 0x00800000);
+      return ((bitField0_ & 0x02000000) == 0x02000000);
     }
     /**
      * <code>optional .cn.leancloud.PubsubCommand pubsubMessage = 115;</code>
@@ -40341,7 +40401,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.BlacklistCommand blacklistMessage = 116;</code>
      */
     public boolean hasBlacklistMessage() {
-      return ((bitField0_ & 0x01000000) == 0x01000000);
+      return ((bitField0_ & 0x04000000) == 0x04000000);
     }
     /**
      * <code>optional .cn.leancloud.BlacklistCommand blacklistMessage = 116;</code>
@@ -40438,51 +40498,57 @@ public final class Messages {
         output.writeInt64(9, serverTs_);
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        output.writeMessage(101, getDataMessage());
+        output.writeInt64(10, clientTs_);
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
-        output.writeMessage(102, getSessionMessage());
+        output.writeInt32(11, notificationType_);
       }
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
-        output.writeMessage(103, getErrorMessage());
+        output.writeMessage(101, getDataMessage());
       }
       if (((bitField0_ & 0x00001000) == 0x00001000)) {
-        output.writeMessage(104, getDirectMessage());
+        output.writeMessage(102, getSessionMessage());
       }
       if (((bitField0_ & 0x00002000) == 0x00002000)) {
-        output.writeMessage(105, getAckMessage());
+        output.writeMessage(103, getErrorMessage());
       }
       if (((bitField0_ & 0x00004000) == 0x00004000)) {
-        output.writeMessage(106, getUnreadMessage());
+        output.writeMessage(104, getDirectMessage());
       }
       if (((bitField0_ & 0x00008000) == 0x00008000)) {
-        output.writeMessage(107, getReadMessage());
+        output.writeMessage(105, getAckMessage());
       }
       if (((bitField0_ & 0x00010000) == 0x00010000)) {
-        output.writeMessage(108, getRcpMessage());
+        output.writeMessage(106, getUnreadMessage());
       }
       if (((bitField0_ & 0x00020000) == 0x00020000)) {
-        output.writeMessage(109, getLogsMessage());
+        output.writeMessage(107, getReadMessage());
       }
       if (((bitField0_ & 0x00040000) == 0x00040000)) {
-        output.writeMessage(110, getConvMessage());
+        output.writeMessage(108, getRcpMessage());
       }
       if (((bitField0_ & 0x00080000) == 0x00080000)) {
-        output.writeMessage(111, getRoomMessage());
+        output.writeMessage(109, getLogsMessage());
       }
       if (((bitField0_ & 0x00100000) == 0x00100000)) {
-        output.writeMessage(112, getPresenceMessage());
+        output.writeMessage(110, getConvMessage());
       }
       if (((bitField0_ & 0x00200000) == 0x00200000)) {
-        output.writeMessage(113, getReportMessage());
+        output.writeMessage(111, getRoomMessage());
       }
       if (((bitField0_ & 0x00400000) == 0x00400000)) {
-        output.writeMessage(114, getPatchMessage());
+        output.writeMessage(112, getPresenceMessage());
       }
       if (((bitField0_ & 0x00800000) == 0x00800000)) {
-        output.writeMessage(115, getPubsubMessage());
+        output.writeMessage(113, getReportMessage());
       }
       if (((bitField0_ & 0x01000000) == 0x01000000)) {
+        output.writeMessage(114, getPatchMessage());
+      }
+      if (((bitField0_ & 0x02000000) == 0x02000000)) {
+        output.writeMessage(115, getPubsubMessage());
+      }
+      if (((bitField0_ & 0x04000000) == 0x04000000)) {
         output.writeMessage(116, getBlacklistMessage());
       }
       unknownFields.writeTo(output);
@@ -40528,65 +40594,73 @@ public final class Messages {
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(101, getDataMessage());
+          .computeInt64Size(10, clientTs_);
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(102, getSessionMessage());
+          .computeInt32Size(11, notificationType_);
       }
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(103, getErrorMessage());
+          .computeMessageSize(101, getDataMessage());
       }
       if (((bitField0_ & 0x00001000) == 0x00001000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(104, getDirectMessage());
+          .computeMessageSize(102, getSessionMessage());
       }
       if (((bitField0_ & 0x00002000) == 0x00002000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(105, getAckMessage());
+          .computeMessageSize(103, getErrorMessage());
       }
       if (((bitField0_ & 0x00004000) == 0x00004000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(106, getUnreadMessage());
+          .computeMessageSize(104, getDirectMessage());
       }
       if (((bitField0_ & 0x00008000) == 0x00008000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(107, getReadMessage());
+          .computeMessageSize(105, getAckMessage());
       }
       if (((bitField0_ & 0x00010000) == 0x00010000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(108, getRcpMessage());
+          .computeMessageSize(106, getUnreadMessage());
       }
       if (((bitField0_ & 0x00020000) == 0x00020000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(109, getLogsMessage());
+          .computeMessageSize(107, getReadMessage());
       }
       if (((bitField0_ & 0x00040000) == 0x00040000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(110, getConvMessage());
+          .computeMessageSize(108, getRcpMessage());
       }
       if (((bitField0_ & 0x00080000) == 0x00080000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(111, getRoomMessage());
+          .computeMessageSize(109, getLogsMessage());
       }
       if (((bitField0_ & 0x00100000) == 0x00100000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(112, getPresenceMessage());
+          .computeMessageSize(110, getConvMessage());
       }
       if (((bitField0_ & 0x00200000) == 0x00200000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(113, getReportMessage());
+          .computeMessageSize(111, getRoomMessage());
       }
       if (((bitField0_ & 0x00400000) == 0x00400000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(114, getPatchMessage());
+          .computeMessageSize(112, getPresenceMessage());
       }
       if (((bitField0_ & 0x00800000) == 0x00800000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(115, getPubsubMessage());
+          .computeMessageSize(113, getReportMessage());
       }
       if (((bitField0_ & 0x01000000) == 0x01000000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(114, getPatchMessage());
+      }
+      if (((bitField0_ & 0x02000000) == 0x02000000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(115, getPubsubMessage());
+      }
+      if (((bitField0_ & 0x04000000) == 0x04000000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(116, getBlacklistMessage());
       }
@@ -40648,6 +40722,16 @@ public final class Messages {
       if (hasServerTs()) {
         result = result && (getServerTs()
             == other.getServerTs());
+      }
+      result = result && (hasClientTs() == other.hasClientTs());
+      if (hasClientTs()) {
+        result = result && (getClientTs()
+            == other.getClientTs());
+      }
+      result = result && (hasNotificationType() == other.hasNotificationType());
+      if (hasNotificationType()) {
+        result = result && (getNotificationType()
+            == other.getNotificationType());
       }
       result = result && (hasDataMessage() == other.hasDataMessage());
       if (hasDataMessage()) {
@@ -40776,6 +40860,15 @@ public final class Messages {
         hash = (37 * hash) + SERVERTS_FIELD_NUMBER;
         hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
             getServerTs());
+      }
+      if (hasClientTs()) {
+        hash = (37 * hash) + CLIENTTS_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+            getClientTs());
+      }
+      if (hasNotificationType()) {
+        hash = (37 * hash) + NOTIFICATIONTYPE_FIELD_NUMBER;
+        hash = (53 * hash) + getNotificationType();
       }
       if (hasDataMessage()) {
         hash = (37 * hash) + DATAMESSAGE_FIELD_NUMBER;
@@ -41004,102 +41097,106 @@ public final class Messages {
         bitField0_ = (bitField0_ & ~0x00000080);
         serverTs_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000100);
+        clientTs_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000200);
+        notificationType_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000400);
         if (dataMessageBuilder_ == null) {
           dataMessage_ = null;
         } else {
           dataMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000800);
         if (sessionMessageBuilder_ == null) {
           sessionMessage_ = null;
         } else {
           sessionMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00001000);
         if (errorMessageBuilder_ == null) {
           errorMessage_ = null;
         } else {
           errorMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000800);
+        bitField0_ = (bitField0_ & ~0x00002000);
         if (directMessageBuilder_ == null) {
           directMessage_ = null;
         } else {
           directMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00004000);
         if (ackMessageBuilder_ == null) {
           ackMessage_ = null;
         } else {
           ackMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00002000);
+        bitField0_ = (bitField0_ & ~0x00008000);
         if (unreadMessageBuilder_ == null) {
           unreadMessage_ = null;
         } else {
           unreadMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00010000);
         if (readMessageBuilder_ == null) {
           readMessage_ = null;
         } else {
           readMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00008000);
+        bitField0_ = (bitField0_ & ~0x00020000);
         if (rcpMessageBuilder_ == null) {
           rcpMessage_ = null;
         } else {
           rcpMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00010000);
+        bitField0_ = (bitField0_ & ~0x00040000);
         if (logsMessageBuilder_ == null) {
           logsMessage_ = null;
         } else {
           logsMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00020000);
+        bitField0_ = (bitField0_ & ~0x00080000);
         if (convMessageBuilder_ == null) {
           convMessage_ = null;
         } else {
           convMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00040000);
+        bitField0_ = (bitField0_ & ~0x00100000);
         if (roomMessageBuilder_ == null) {
           roomMessage_ = null;
         } else {
           roomMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00080000);
+        bitField0_ = (bitField0_ & ~0x00200000);
         if (presenceMessageBuilder_ == null) {
           presenceMessage_ = null;
         } else {
           presenceMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00100000);
+        bitField0_ = (bitField0_ & ~0x00400000);
         if (reportMessageBuilder_ == null) {
           reportMessage_ = null;
         } else {
           reportMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00200000);
+        bitField0_ = (bitField0_ & ~0x00800000);
         if (patchMessageBuilder_ == null) {
           patchMessage_ = null;
         } else {
           patchMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00400000);
+        bitField0_ = (bitField0_ & ~0x01000000);
         if (pubsubMessageBuilder_ == null) {
           pubsubMessage_ = null;
         } else {
           pubsubMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00800000);
+        bitField0_ = (bitField0_ & ~0x02000000);
         if (blacklistMessageBuilder_ == null) {
           blacklistMessage_ = null;
         } else {
           blacklistMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x01000000);
+        bitField0_ = (bitField0_ & ~0x04000000);
         return this;
       }
 
@@ -41163,125 +41260,133 @@ public final class Messages {
         if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
           to_bitField0_ |= 0x00000200;
         }
+        result.clientTs_ = clientTs_;
+        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+          to_bitField0_ |= 0x00000400;
+        }
+        result.notificationType_ = notificationType_;
+        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
+          to_bitField0_ |= 0x00000800;
+        }
         if (dataMessageBuilder_ == null) {
           result.dataMessage_ = dataMessage_;
         } else {
           result.dataMessage_ = dataMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
-          to_bitField0_ |= 0x00000400;
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00001000;
         }
         if (sessionMessageBuilder_ == null) {
           result.sessionMessage_ = sessionMessage_;
         } else {
           result.sessionMessage_ = sessionMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
-          to_bitField0_ |= 0x00000800;
+        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+          to_bitField0_ |= 0x00002000;
         }
         if (errorMessageBuilder_ == null) {
           result.errorMessage_ = errorMessage_;
         } else {
           result.errorMessage_ = errorMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
-          to_bitField0_ |= 0x00001000;
+        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
+          to_bitField0_ |= 0x00004000;
         }
         if (directMessageBuilder_ == null) {
           result.directMessage_ = directMessage_;
         } else {
           result.directMessage_ = directMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
-          to_bitField0_ |= 0x00002000;
+        if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
+          to_bitField0_ |= 0x00008000;
         }
         if (ackMessageBuilder_ == null) {
           result.ackMessage_ = ackMessage_;
         } else {
           result.ackMessage_ = ackMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
-          to_bitField0_ |= 0x00004000;
+        if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
+          to_bitField0_ |= 0x00010000;
         }
         if (unreadMessageBuilder_ == null) {
           result.unreadMessage_ = unreadMessage_;
         } else {
           result.unreadMessage_ = unreadMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
-          to_bitField0_ |= 0x00008000;
+        if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
+          to_bitField0_ |= 0x00020000;
         }
         if (readMessageBuilder_ == null) {
           result.readMessage_ = readMessage_;
         } else {
           result.readMessage_ = readMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
-          to_bitField0_ |= 0x00010000;
+        if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
+          to_bitField0_ |= 0x00040000;
         }
         if (rcpMessageBuilder_ == null) {
           result.rcpMessage_ = rcpMessage_;
         } else {
           result.rcpMessage_ = rcpMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
-          to_bitField0_ |= 0x00020000;
+        if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
+          to_bitField0_ |= 0x00080000;
         }
         if (logsMessageBuilder_ == null) {
           result.logsMessage_ = logsMessage_;
         } else {
           result.logsMessage_ = logsMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
-          to_bitField0_ |= 0x00040000;
+        if (((from_bitField0_ & 0x00100000) == 0x00100000)) {
+          to_bitField0_ |= 0x00100000;
         }
         if (convMessageBuilder_ == null) {
           result.convMessage_ = convMessage_;
         } else {
           result.convMessage_ = convMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
-          to_bitField0_ |= 0x00080000;
+        if (((from_bitField0_ & 0x00200000) == 0x00200000)) {
+          to_bitField0_ |= 0x00200000;
         }
         if (roomMessageBuilder_ == null) {
           result.roomMessage_ = roomMessage_;
         } else {
           result.roomMessage_ = roomMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00100000) == 0x00100000)) {
-          to_bitField0_ |= 0x00100000;
+        if (((from_bitField0_ & 0x00400000) == 0x00400000)) {
+          to_bitField0_ |= 0x00400000;
         }
         if (presenceMessageBuilder_ == null) {
           result.presenceMessage_ = presenceMessage_;
         } else {
           result.presenceMessage_ = presenceMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00200000) == 0x00200000)) {
-          to_bitField0_ |= 0x00200000;
+        if (((from_bitField0_ & 0x00800000) == 0x00800000)) {
+          to_bitField0_ |= 0x00800000;
         }
         if (reportMessageBuilder_ == null) {
           result.reportMessage_ = reportMessage_;
         } else {
           result.reportMessage_ = reportMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00400000) == 0x00400000)) {
-          to_bitField0_ |= 0x00400000;
+        if (((from_bitField0_ & 0x01000000) == 0x01000000)) {
+          to_bitField0_ |= 0x01000000;
         }
         if (patchMessageBuilder_ == null) {
           result.patchMessage_ = patchMessage_;
         } else {
           result.patchMessage_ = patchMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00800000) == 0x00800000)) {
-          to_bitField0_ |= 0x00800000;
+        if (((from_bitField0_ & 0x02000000) == 0x02000000)) {
+          to_bitField0_ |= 0x02000000;
         }
         if (pubsubMessageBuilder_ == null) {
           result.pubsubMessage_ = pubsubMessage_;
         } else {
           result.pubsubMessage_ = pubsubMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x01000000) == 0x01000000)) {
-          to_bitField0_ |= 0x01000000;
+        if (((from_bitField0_ & 0x04000000) == 0x04000000)) {
+          to_bitField0_ |= 0x04000000;
         }
         if (blacklistMessageBuilder_ == null) {
           result.blacklistMessage_ = blacklistMessage_;
@@ -41362,6 +41467,12 @@ public final class Messages {
         }
         if (other.hasServerTs()) {
           setServerTs(other.getServerTs());
+        }
+        if (other.hasClientTs()) {
+          setClientTs(other.getClientTs());
+        }
+        if (other.hasNotificationType()) {
+          setNotificationType(other.getNotificationType());
         }
         if (other.hasDataMessage()) {
           mergeDataMessage(other.getDataMessage());
@@ -41902,6 +42013,70 @@ public final class Messages {
         return this;
       }
 
+      private long clientTs_ ;
+      /**
+       * <code>optional int64 clientTs = 10;</code>
+       */
+      public boolean hasClientTs() {
+        return ((bitField0_ & 0x00000200) == 0x00000200);
+      }
+      /**
+       * <code>optional int64 clientTs = 10;</code>
+       */
+      public long getClientTs() {
+        return clientTs_;
+      }
+      /**
+       * <code>optional int64 clientTs = 10;</code>
+       */
+      public Builder setClientTs(long value) {
+        bitField0_ |= 0x00000200;
+        clientTs_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 clientTs = 10;</code>
+       */
+      public Builder clearClientTs() {
+        bitField0_ = (bitField0_ & ~0x00000200);
+        clientTs_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private int notificationType_ ;
+      /**
+       * <code>optional int32 notificationType = 11;</code>
+       */
+      public boolean hasNotificationType() {
+        return ((bitField0_ & 0x00000400) == 0x00000400);
+      }
+      /**
+       * <code>optional int32 notificationType = 11;</code>
+       */
+      public int getNotificationType() {
+        return notificationType_;
+      }
+      /**
+       * <code>optional int32 notificationType = 11;</code>
+       */
+      public Builder setNotificationType(int value) {
+        bitField0_ |= 0x00000400;
+        notificationType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 notificationType = 11;</code>
+       */
+      public Builder clearNotificationType() {
+        bitField0_ = (bitField0_ & ~0x00000400);
+        notificationType_ = 0;
+        onChanged();
+        return this;
+      }
+
       private cn.leancloud.Messages.DataCommand dataMessage_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
           cn.leancloud.Messages.DataCommand, cn.leancloud.Messages.DataCommand.Builder, cn.leancloud.Messages.DataCommandOrBuilder> dataMessageBuilder_;
@@ -41909,7 +42084,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.DataCommand dataMessage = 101;</code>
        */
       public boolean hasDataMessage() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
+        return ((bitField0_ & 0x00000800) == 0x00000800);
       }
       /**
        * <code>optional .cn.leancloud.DataCommand dataMessage = 101;</code>
@@ -41934,7 +42109,7 @@ public final class Messages {
         } else {
           dataMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000800;
         return this;
       }
       /**
@@ -41948,7 +42123,7 @@ public final class Messages {
         } else {
           dataMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000800;
         return this;
       }
       /**
@@ -41956,7 +42131,7 @@ public final class Messages {
        */
       public Builder mergeDataMessage(cn.leancloud.Messages.DataCommand value) {
         if (dataMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00000200) == 0x00000200) &&
+          if (((bitField0_ & 0x00000800) == 0x00000800) &&
               dataMessage_ != null &&
               dataMessage_ != cn.leancloud.Messages.DataCommand.getDefaultInstance()) {
             dataMessage_ =
@@ -41968,7 +42143,7 @@ public final class Messages {
         } else {
           dataMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000800;
         return this;
       }
       /**
@@ -41981,14 +42156,14 @@ public final class Messages {
         } else {
           dataMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000200);
+        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.DataCommand dataMessage = 101;</code>
        */
       public cn.leancloud.Messages.DataCommand.Builder getDataMessageBuilder() {
-        bitField0_ |= 0x00000200;
+        bitField0_ |= 0x00000800;
         onChanged();
         return getDataMessageFieldBuilder().getBuilder();
       }
@@ -42027,7 +42202,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.SessionCommand sessionMessage = 102;</code>
        */
       public boolean hasSessionMessage() {
-        return ((bitField0_ & 0x00000400) == 0x00000400);
+        return ((bitField0_ & 0x00001000) == 0x00001000);
       }
       /**
        * <code>optional .cn.leancloud.SessionCommand sessionMessage = 102;</code>
@@ -42052,7 +42227,7 @@ public final class Messages {
         } else {
           sessionMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00001000;
         return this;
       }
       /**
@@ -42066,7 +42241,7 @@ public final class Messages {
         } else {
           sessionMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00001000;
         return this;
       }
       /**
@@ -42074,7 +42249,7 @@ public final class Messages {
        */
       public Builder mergeSessionMessage(cn.leancloud.Messages.SessionCommand value) {
         if (sessionMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00000400) == 0x00000400) &&
+          if (((bitField0_ & 0x00001000) == 0x00001000) &&
               sessionMessage_ != null &&
               sessionMessage_ != cn.leancloud.Messages.SessionCommand.getDefaultInstance()) {
             sessionMessage_ =
@@ -42086,7 +42261,7 @@ public final class Messages {
         } else {
           sessionMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00001000;
         return this;
       }
       /**
@@ -42099,14 +42274,14 @@ public final class Messages {
         } else {
           sessionMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000400);
+        bitField0_ = (bitField0_ & ~0x00001000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.SessionCommand sessionMessage = 102;</code>
        */
       public cn.leancloud.Messages.SessionCommand.Builder getSessionMessageBuilder() {
-        bitField0_ |= 0x00000400;
+        bitField0_ |= 0x00001000;
         onChanged();
         return getSessionMessageFieldBuilder().getBuilder();
       }
@@ -42145,7 +42320,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.ErrorCommand errorMessage = 103;</code>
        */
       public boolean hasErrorMessage() {
-        return ((bitField0_ & 0x00000800) == 0x00000800);
+        return ((bitField0_ & 0x00002000) == 0x00002000);
       }
       /**
        * <code>optional .cn.leancloud.ErrorCommand errorMessage = 103;</code>
@@ -42170,7 +42345,7 @@ public final class Messages {
         } else {
           errorMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00002000;
         return this;
       }
       /**
@@ -42184,7 +42359,7 @@ public final class Messages {
         } else {
           errorMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00002000;
         return this;
       }
       /**
@@ -42192,7 +42367,7 @@ public final class Messages {
        */
       public Builder mergeErrorMessage(cn.leancloud.Messages.ErrorCommand value) {
         if (errorMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00000800) == 0x00000800) &&
+          if (((bitField0_ & 0x00002000) == 0x00002000) &&
               errorMessage_ != null &&
               errorMessage_ != cn.leancloud.Messages.ErrorCommand.getDefaultInstance()) {
             errorMessage_ =
@@ -42204,7 +42379,7 @@ public final class Messages {
         } else {
           errorMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00002000;
         return this;
       }
       /**
@@ -42217,14 +42392,14 @@ public final class Messages {
         } else {
           errorMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000800);
+        bitField0_ = (bitField0_ & ~0x00002000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.ErrorCommand errorMessage = 103;</code>
        */
       public cn.leancloud.Messages.ErrorCommand.Builder getErrorMessageBuilder() {
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00002000;
         onChanged();
         return getErrorMessageFieldBuilder().getBuilder();
       }
@@ -42263,7 +42438,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.DirectCommand directMessage = 104;</code>
        */
       public boolean hasDirectMessage() {
-        return ((bitField0_ & 0x00001000) == 0x00001000);
+        return ((bitField0_ & 0x00004000) == 0x00004000);
       }
       /**
        * <code>optional .cn.leancloud.DirectCommand directMessage = 104;</code>
@@ -42288,7 +42463,7 @@ public final class Messages {
         } else {
           directMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00004000;
         return this;
       }
       /**
@@ -42302,7 +42477,7 @@ public final class Messages {
         } else {
           directMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00004000;
         return this;
       }
       /**
@@ -42310,7 +42485,7 @@ public final class Messages {
        */
       public Builder mergeDirectMessage(cn.leancloud.Messages.DirectCommand value) {
         if (directMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00001000) == 0x00001000) &&
+          if (((bitField0_ & 0x00004000) == 0x00004000) &&
               directMessage_ != null &&
               directMessage_ != cn.leancloud.Messages.DirectCommand.getDefaultInstance()) {
             directMessage_ =
@@ -42322,7 +42497,7 @@ public final class Messages {
         } else {
           directMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00004000;
         return this;
       }
       /**
@@ -42335,14 +42510,14 @@ public final class Messages {
         } else {
           directMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00004000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.DirectCommand directMessage = 104;</code>
        */
       public cn.leancloud.Messages.DirectCommand.Builder getDirectMessageBuilder() {
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00004000;
         onChanged();
         return getDirectMessageFieldBuilder().getBuilder();
       }
@@ -42381,7 +42556,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.AckCommand ackMessage = 105;</code>
        */
       public boolean hasAckMessage() {
-        return ((bitField0_ & 0x00002000) == 0x00002000);
+        return ((bitField0_ & 0x00008000) == 0x00008000);
       }
       /**
        * <code>optional .cn.leancloud.AckCommand ackMessage = 105;</code>
@@ -42406,7 +42581,7 @@ public final class Messages {
         } else {
           ackMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00008000;
         return this;
       }
       /**
@@ -42420,7 +42595,7 @@ public final class Messages {
         } else {
           ackMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00008000;
         return this;
       }
       /**
@@ -42428,7 +42603,7 @@ public final class Messages {
        */
       public Builder mergeAckMessage(cn.leancloud.Messages.AckCommand value) {
         if (ackMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00002000) == 0x00002000) &&
+          if (((bitField0_ & 0x00008000) == 0x00008000) &&
               ackMessage_ != null &&
               ackMessage_ != cn.leancloud.Messages.AckCommand.getDefaultInstance()) {
             ackMessage_ =
@@ -42440,7 +42615,7 @@ public final class Messages {
         } else {
           ackMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00008000;
         return this;
       }
       /**
@@ -42453,14 +42628,14 @@ public final class Messages {
         } else {
           ackMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00002000);
+        bitField0_ = (bitField0_ & ~0x00008000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.AckCommand ackMessage = 105;</code>
        */
       public cn.leancloud.Messages.AckCommand.Builder getAckMessageBuilder() {
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00008000;
         onChanged();
         return getAckMessageFieldBuilder().getBuilder();
       }
@@ -42499,7 +42674,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.UnreadCommand unreadMessage = 106;</code>
        */
       public boolean hasUnreadMessage() {
-        return ((bitField0_ & 0x00004000) == 0x00004000);
+        return ((bitField0_ & 0x00010000) == 0x00010000);
       }
       /**
        * <code>optional .cn.leancloud.UnreadCommand unreadMessage = 106;</code>
@@ -42524,7 +42699,7 @@ public final class Messages {
         } else {
           unreadMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00010000;
         return this;
       }
       /**
@@ -42538,7 +42713,7 @@ public final class Messages {
         } else {
           unreadMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00010000;
         return this;
       }
       /**
@@ -42546,7 +42721,7 @@ public final class Messages {
        */
       public Builder mergeUnreadMessage(cn.leancloud.Messages.UnreadCommand value) {
         if (unreadMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00004000) == 0x00004000) &&
+          if (((bitField0_ & 0x00010000) == 0x00010000) &&
               unreadMessage_ != null &&
               unreadMessage_ != cn.leancloud.Messages.UnreadCommand.getDefaultInstance()) {
             unreadMessage_ =
@@ -42558,7 +42733,7 @@ public final class Messages {
         } else {
           unreadMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00010000;
         return this;
       }
       /**
@@ -42571,14 +42746,14 @@ public final class Messages {
         } else {
           unreadMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00010000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.UnreadCommand unreadMessage = 106;</code>
        */
       public cn.leancloud.Messages.UnreadCommand.Builder getUnreadMessageBuilder() {
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00010000;
         onChanged();
         return getUnreadMessageFieldBuilder().getBuilder();
       }
@@ -42617,7 +42792,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.ReadCommand readMessage = 107;</code>
        */
       public boolean hasReadMessage() {
-        return ((bitField0_ & 0x00008000) == 0x00008000);
+        return ((bitField0_ & 0x00020000) == 0x00020000);
       }
       /**
        * <code>optional .cn.leancloud.ReadCommand readMessage = 107;</code>
@@ -42642,7 +42817,7 @@ public final class Messages {
         } else {
           readMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -42656,7 +42831,7 @@ public final class Messages {
         } else {
           readMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -42664,7 +42839,7 @@ public final class Messages {
        */
       public Builder mergeReadMessage(cn.leancloud.Messages.ReadCommand value) {
         if (readMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00008000) == 0x00008000) &&
+          if (((bitField0_ & 0x00020000) == 0x00020000) &&
               readMessage_ != null &&
               readMessage_ != cn.leancloud.Messages.ReadCommand.getDefaultInstance()) {
             readMessage_ =
@@ -42676,7 +42851,7 @@ public final class Messages {
         } else {
           readMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -42689,14 +42864,14 @@ public final class Messages {
         } else {
           readMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00008000);
+        bitField0_ = (bitField0_ & ~0x00020000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.ReadCommand readMessage = 107;</code>
        */
       public cn.leancloud.Messages.ReadCommand.Builder getReadMessageBuilder() {
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00020000;
         onChanged();
         return getReadMessageFieldBuilder().getBuilder();
       }
@@ -42735,7 +42910,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.RcpCommand rcpMessage = 108;</code>
        */
       public boolean hasRcpMessage() {
-        return ((bitField0_ & 0x00010000) == 0x00010000);
+        return ((bitField0_ & 0x00040000) == 0x00040000);
       }
       /**
        * <code>optional .cn.leancloud.RcpCommand rcpMessage = 108;</code>
@@ -42760,7 +42935,7 @@ public final class Messages {
         } else {
           rcpMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -42774,7 +42949,7 @@ public final class Messages {
         } else {
           rcpMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -42782,7 +42957,7 @@ public final class Messages {
        */
       public Builder mergeRcpMessage(cn.leancloud.Messages.RcpCommand value) {
         if (rcpMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00010000) == 0x00010000) &&
+          if (((bitField0_ & 0x00040000) == 0x00040000) &&
               rcpMessage_ != null &&
               rcpMessage_ != cn.leancloud.Messages.RcpCommand.getDefaultInstance()) {
             rcpMessage_ =
@@ -42794,7 +42969,7 @@ public final class Messages {
         } else {
           rcpMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -42807,14 +42982,14 @@ public final class Messages {
         } else {
           rcpMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00010000);
+        bitField0_ = (bitField0_ & ~0x00040000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.RcpCommand rcpMessage = 108;</code>
        */
       public cn.leancloud.Messages.RcpCommand.Builder getRcpMessageBuilder() {
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00040000;
         onChanged();
         return getRcpMessageFieldBuilder().getBuilder();
       }
@@ -42853,7 +43028,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.LogsCommand logsMessage = 109;</code>
        */
       public boolean hasLogsMessage() {
-        return ((bitField0_ & 0x00020000) == 0x00020000);
+        return ((bitField0_ & 0x00080000) == 0x00080000);
       }
       /**
        * <code>optional .cn.leancloud.LogsCommand logsMessage = 109;</code>
@@ -42878,7 +43053,7 @@ public final class Messages {
         } else {
           logsMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00080000;
         return this;
       }
       /**
@@ -42892,7 +43067,7 @@ public final class Messages {
         } else {
           logsMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00080000;
         return this;
       }
       /**
@@ -42900,7 +43075,7 @@ public final class Messages {
        */
       public Builder mergeLogsMessage(cn.leancloud.Messages.LogsCommand value) {
         if (logsMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00020000) == 0x00020000) &&
+          if (((bitField0_ & 0x00080000) == 0x00080000) &&
               logsMessage_ != null &&
               logsMessage_ != cn.leancloud.Messages.LogsCommand.getDefaultInstance()) {
             logsMessage_ =
@@ -42912,7 +43087,7 @@ public final class Messages {
         } else {
           logsMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00080000;
         return this;
       }
       /**
@@ -42925,14 +43100,14 @@ public final class Messages {
         } else {
           logsMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00020000);
+        bitField0_ = (bitField0_ & ~0x00080000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.LogsCommand logsMessage = 109;</code>
        */
       public cn.leancloud.Messages.LogsCommand.Builder getLogsMessageBuilder() {
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00080000;
         onChanged();
         return getLogsMessageFieldBuilder().getBuilder();
       }
@@ -42971,7 +43146,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.ConvCommand convMessage = 110;</code>
        */
       public boolean hasConvMessage() {
-        return ((bitField0_ & 0x00040000) == 0x00040000);
+        return ((bitField0_ & 0x00100000) == 0x00100000);
       }
       /**
        * <code>optional .cn.leancloud.ConvCommand convMessage = 110;</code>
@@ -42996,7 +43171,7 @@ public final class Messages {
         } else {
           convMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00040000;
+        bitField0_ |= 0x00100000;
         return this;
       }
       /**
@@ -43010,7 +43185,7 @@ public final class Messages {
         } else {
           convMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00040000;
+        bitField0_ |= 0x00100000;
         return this;
       }
       /**
@@ -43018,7 +43193,7 @@ public final class Messages {
        */
       public Builder mergeConvMessage(cn.leancloud.Messages.ConvCommand value) {
         if (convMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00040000) == 0x00040000) &&
+          if (((bitField0_ & 0x00100000) == 0x00100000) &&
               convMessage_ != null &&
               convMessage_ != cn.leancloud.Messages.ConvCommand.getDefaultInstance()) {
             convMessage_ =
@@ -43030,7 +43205,7 @@ public final class Messages {
         } else {
           convMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00040000;
+        bitField0_ |= 0x00100000;
         return this;
       }
       /**
@@ -43043,14 +43218,14 @@ public final class Messages {
         } else {
           convMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00040000);
+        bitField0_ = (bitField0_ & ~0x00100000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.ConvCommand convMessage = 110;</code>
        */
       public cn.leancloud.Messages.ConvCommand.Builder getConvMessageBuilder() {
-        bitField0_ |= 0x00040000;
+        bitField0_ |= 0x00100000;
         onChanged();
         return getConvMessageFieldBuilder().getBuilder();
       }
@@ -43089,7 +43264,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.RoomCommand roomMessage = 111;</code>
        */
       public boolean hasRoomMessage() {
-        return ((bitField0_ & 0x00080000) == 0x00080000);
+        return ((bitField0_ & 0x00200000) == 0x00200000);
       }
       /**
        * <code>optional .cn.leancloud.RoomCommand roomMessage = 111;</code>
@@ -43114,7 +43289,7 @@ public final class Messages {
         } else {
           roomMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00080000;
+        bitField0_ |= 0x00200000;
         return this;
       }
       /**
@@ -43128,7 +43303,7 @@ public final class Messages {
         } else {
           roomMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00080000;
+        bitField0_ |= 0x00200000;
         return this;
       }
       /**
@@ -43136,7 +43311,7 @@ public final class Messages {
        */
       public Builder mergeRoomMessage(cn.leancloud.Messages.RoomCommand value) {
         if (roomMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00080000) == 0x00080000) &&
+          if (((bitField0_ & 0x00200000) == 0x00200000) &&
               roomMessage_ != null &&
               roomMessage_ != cn.leancloud.Messages.RoomCommand.getDefaultInstance()) {
             roomMessage_ =
@@ -43148,7 +43323,7 @@ public final class Messages {
         } else {
           roomMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00080000;
+        bitField0_ |= 0x00200000;
         return this;
       }
       /**
@@ -43161,14 +43336,14 @@ public final class Messages {
         } else {
           roomMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00080000);
+        bitField0_ = (bitField0_ & ~0x00200000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.RoomCommand roomMessage = 111;</code>
        */
       public cn.leancloud.Messages.RoomCommand.Builder getRoomMessageBuilder() {
-        bitField0_ |= 0x00080000;
+        bitField0_ |= 0x00200000;
         onChanged();
         return getRoomMessageFieldBuilder().getBuilder();
       }
@@ -43207,7 +43382,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.PresenceCommand presenceMessage = 112;</code>
        */
       public boolean hasPresenceMessage() {
-        return ((bitField0_ & 0x00100000) == 0x00100000);
+        return ((bitField0_ & 0x00400000) == 0x00400000);
       }
       /**
        * <code>optional .cn.leancloud.PresenceCommand presenceMessage = 112;</code>
@@ -43232,7 +43407,7 @@ public final class Messages {
         } else {
           presenceMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00400000;
         return this;
       }
       /**
@@ -43246,7 +43421,7 @@ public final class Messages {
         } else {
           presenceMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00400000;
         return this;
       }
       /**
@@ -43254,7 +43429,7 @@ public final class Messages {
        */
       public Builder mergePresenceMessage(cn.leancloud.Messages.PresenceCommand value) {
         if (presenceMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00100000) == 0x00100000) &&
+          if (((bitField0_ & 0x00400000) == 0x00400000) &&
               presenceMessage_ != null &&
               presenceMessage_ != cn.leancloud.Messages.PresenceCommand.getDefaultInstance()) {
             presenceMessage_ =
@@ -43266,7 +43441,7 @@ public final class Messages {
         } else {
           presenceMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00400000;
         return this;
       }
       /**
@@ -43279,14 +43454,14 @@ public final class Messages {
         } else {
           presenceMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00100000);
+        bitField0_ = (bitField0_ & ~0x00400000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.PresenceCommand presenceMessage = 112;</code>
        */
       public cn.leancloud.Messages.PresenceCommand.Builder getPresenceMessageBuilder() {
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00400000;
         onChanged();
         return getPresenceMessageFieldBuilder().getBuilder();
       }
@@ -43325,7 +43500,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.ReportCommand reportMessage = 113;</code>
        */
       public boolean hasReportMessage() {
-        return ((bitField0_ & 0x00200000) == 0x00200000);
+        return ((bitField0_ & 0x00800000) == 0x00800000);
       }
       /**
        * <code>optional .cn.leancloud.ReportCommand reportMessage = 113;</code>
@@ -43350,7 +43525,7 @@ public final class Messages {
         } else {
           reportMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00200000;
+        bitField0_ |= 0x00800000;
         return this;
       }
       /**
@@ -43364,7 +43539,7 @@ public final class Messages {
         } else {
           reportMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00200000;
+        bitField0_ |= 0x00800000;
         return this;
       }
       /**
@@ -43372,7 +43547,7 @@ public final class Messages {
        */
       public Builder mergeReportMessage(cn.leancloud.Messages.ReportCommand value) {
         if (reportMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00200000) == 0x00200000) &&
+          if (((bitField0_ & 0x00800000) == 0x00800000) &&
               reportMessage_ != null &&
               reportMessage_ != cn.leancloud.Messages.ReportCommand.getDefaultInstance()) {
             reportMessage_ =
@@ -43384,7 +43559,7 @@ public final class Messages {
         } else {
           reportMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00200000;
+        bitField0_ |= 0x00800000;
         return this;
       }
       /**
@@ -43397,14 +43572,14 @@ public final class Messages {
         } else {
           reportMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00200000);
+        bitField0_ = (bitField0_ & ~0x00800000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.ReportCommand reportMessage = 113;</code>
        */
       public cn.leancloud.Messages.ReportCommand.Builder getReportMessageBuilder() {
-        bitField0_ |= 0x00200000;
+        bitField0_ |= 0x00800000;
         onChanged();
         return getReportMessageFieldBuilder().getBuilder();
       }
@@ -43443,7 +43618,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.PatchCommand patchMessage = 114;</code>
        */
       public boolean hasPatchMessage() {
-        return ((bitField0_ & 0x00400000) == 0x00400000);
+        return ((bitField0_ & 0x01000000) == 0x01000000);
       }
       /**
        * <code>optional .cn.leancloud.PatchCommand patchMessage = 114;</code>
@@ -43468,7 +43643,7 @@ public final class Messages {
         } else {
           patchMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00400000;
+        bitField0_ |= 0x01000000;
         return this;
       }
       /**
@@ -43482,7 +43657,7 @@ public final class Messages {
         } else {
           patchMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00400000;
+        bitField0_ |= 0x01000000;
         return this;
       }
       /**
@@ -43490,7 +43665,7 @@ public final class Messages {
        */
       public Builder mergePatchMessage(cn.leancloud.Messages.PatchCommand value) {
         if (patchMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00400000) == 0x00400000) &&
+          if (((bitField0_ & 0x01000000) == 0x01000000) &&
               patchMessage_ != null &&
               patchMessage_ != cn.leancloud.Messages.PatchCommand.getDefaultInstance()) {
             patchMessage_ =
@@ -43502,7 +43677,7 @@ public final class Messages {
         } else {
           patchMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00400000;
+        bitField0_ |= 0x01000000;
         return this;
       }
       /**
@@ -43515,14 +43690,14 @@ public final class Messages {
         } else {
           patchMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00400000);
+        bitField0_ = (bitField0_ & ~0x01000000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.PatchCommand patchMessage = 114;</code>
        */
       public cn.leancloud.Messages.PatchCommand.Builder getPatchMessageBuilder() {
-        bitField0_ |= 0x00400000;
+        bitField0_ |= 0x01000000;
         onChanged();
         return getPatchMessageFieldBuilder().getBuilder();
       }
@@ -43561,7 +43736,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.PubsubCommand pubsubMessage = 115;</code>
        */
       public boolean hasPubsubMessage() {
-        return ((bitField0_ & 0x00800000) == 0x00800000);
+        return ((bitField0_ & 0x02000000) == 0x02000000);
       }
       /**
        * <code>optional .cn.leancloud.PubsubCommand pubsubMessage = 115;</code>
@@ -43586,7 +43761,7 @@ public final class Messages {
         } else {
           pubsubMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00800000;
+        bitField0_ |= 0x02000000;
         return this;
       }
       /**
@@ -43600,7 +43775,7 @@ public final class Messages {
         } else {
           pubsubMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00800000;
+        bitField0_ |= 0x02000000;
         return this;
       }
       /**
@@ -43608,7 +43783,7 @@ public final class Messages {
        */
       public Builder mergePubsubMessage(cn.leancloud.Messages.PubsubCommand value) {
         if (pubsubMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00800000) == 0x00800000) &&
+          if (((bitField0_ & 0x02000000) == 0x02000000) &&
               pubsubMessage_ != null &&
               pubsubMessage_ != cn.leancloud.Messages.PubsubCommand.getDefaultInstance()) {
             pubsubMessage_ =
@@ -43620,7 +43795,7 @@ public final class Messages {
         } else {
           pubsubMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00800000;
+        bitField0_ |= 0x02000000;
         return this;
       }
       /**
@@ -43633,14 +43808,14 @@ public final class Messages {
         } else {
           pubsubMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00800000);
+        bitField0_ = (bitField0_ & ~0x02000000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.PubsubCommand pubsubMessage = 115;</code>
        */
       public cn.leancloud.Messages.PubsubCommand.Builder getPubsubMessageBuilder() {
-        bitField0_ |= 0x00800000;
+        bitField0_ |= 0x02000000;
         onChanged();
         return getPubsubMessageFieldBuilder().getBuilder();
       }
@@ -43679,7 +43854,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.BlacklistCommand blacklistMessage = 116;</code>
        */
       public boolean hasBlacklistMessage() {
-        return ((bitField0_ & 0x01000000) == 0x01000000);
+        return ((bitField0_ & 0x04000000) == 0x04000000);
       }
       /**
        * <code>optional .cn.leancloud.BlacklistCommand blacklistMessage = 116;</code>
@@ -43704,7 +43879,7 @@ public final class Messages {
         } else {
           blacklistMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x01000000;
+        bitField0_ |= 0x04000000;
         return this;
       }
       /**
@@ -43718,7 +43893,7 @@ public final class Messages {
         } else {
           blacklistMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x01000000;
+        bitField0_ |= 0x04000000;
         return this;
       }
       /**
@@ -43726,7 +43901,7 @@ public final class Messages {
        */
       public Builder mergeBlacklistMessage(cn.leancloud.Messages.BlacklistCommand value) {
         if (blacklistMessageBuilder_ == null) {
-          if (((bitField0_ & 0x01000000) == 0x01000000) &&
+          if (((bitField0_ & 0x04000000) == 0x04000000) &&
               blacklistMessage_ != null &&
               blacklistMessage_ != cn.leancloud.Messages.BlacklistCommand.getDefaultInstance()) {
             blacklistMessage_ =
@@ -43738,7 +43913,7 @@ public final class Messages {
         } else {
           blacklistMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x01000000;
+        bitField0_ |= 0x04000000;
         return this;
       }
       /**
@@ -43751,14 +43926,14 @@ public final class Messages {
         } else {
           blacklistMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x01000000);
+        bitField0_ = (bitField0_ & ~0x04000000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.BlacklistCommand blacklistMessage = 116;</code>
        */
       public cn.leancloud.Messages.BlacklistCommand.Builder getBlacklistMessageBuilder() {
-        bitField0_ |= 0x01000000;
+        bitField0_ |= 0x04000000;
         onChanged();
         return getBlacklistMessageFieldBuilder().getBuilder();
       }
@@ -44071,66 +44246,67 @@ public final class Messages {
       "\003(\t\022\023\n\013blockedCids\030\t \003(\t\022\023\n\013allowedPids\030" +
       "\n \003(\t\022.\n\nfailedPids\030\013 \003(\0132\032.cn.leancloud" +
       ".ErrorCommand\022\t\n\001t\030\014 \001(\003\022\t\n\001n\030\r \001(\t\022\t\n\001s" +
-      "\030\016 \001(\t\"\371\007\n\016GenericCommand\022&\n\003cmd\030\001 \001(\0162\031" +
+      "\030\016 \001(\t\"\245\010\n\016GenericCommand\022&\n\003cmd\030\001 \001(\0162\031" +
       ".cn.leancloud.CommandType\022 \n\002op\030\002 \001(\0162\024." +
       "cn.leancloud.OpType\022\r\n\005appId\030\003 \001(\t\022\016\n\006pe" +
       "erId\030\004 \001(\t\022\t\n\001i\030\005 \001(\005\022\026\n\016installationId\030" +
       "\006 \001(\t\022\020\n\010priority\030\007 \001(\005\022\017\n\007service\030\010 \001(\005" +
-      "\022\020\n\010serverTs\030\t \001(\003\022.\n\013dataMessage\030e \001(\0132",
-      "\031.cn.leancloud.DataCommand\0224\n\016sessionMes" +
-      "sage\030f \001(\0132\034.cn.leancloud.SessionCommand" +
-      "\0220\n\014errorMessage\030g \001(\0132\032.cn.leancloud.Er" +
-      "rorCommand\0222\n\rdirectMessage\030h \001(\0132\033.cn.l" +
-      "eancloud.DirectCommand\022,\n\nackMessage\030i \001" +
-      "(\0132\030.cn.leancloud.AckCommand\0222\n\runreadMe" +
-      "ssage\030j \001(\0132\033.cn.leancloud.UnreadCommand" +
-      "\022.\n\013readMessage\030k \001(\0132\031.cn.leancloud.Rea" +
-      "dCommand\022,\n\nrcpMessage\030l \001(\0132\030.cn.leancl" +
-      "oud.RcpCommand\022.\n\013logsMessage\030m \001(\0132\031.cn",
-      ".leancloud.LogsCommand\022.\n\013convMessage\030n " +
-      "\001(\0132\031.cn.leancloud.ConvCommand\022.\n\013roomMe" +
-      "ssage\030o \001(\0132\031.cn.leancloud.RoomCommand\0226" +
-      "\n\017presenceMessage\030p \001(\0132\035.cn.leancloud.P" +
-      "resenceCommand\0222\n\rreportMessage\030q \001(\0132\033." +
-      "cn.leancloud.ReportCommand\0220\n\014patchMessa" +
-      "ge\030r \001(\0132\032.cn.leancloud.PatchCommand\0222\n\r" +
-      "pubsubMessage\030s \001(\0132\033.cn.leancloud.Pubsu" +
-      "bCommand\0228\n\020blacklistMessage\030t \001(\0132\036.cn." +
-      "leancloud.BlacklistCommand*\213\002\n\013CommandTy",
-      "pe\022\013\n\007session\020\000\022\010\n\004conv\020\001\022\n\n\006direct\020\002\022\007\n" +
-      "\003ack\020\003\022\007\n\003rcp\020\004\022\n\n\006unread\020\005\022\010\n\004logs\020\006\022\t\n" +
-      "\005error\020\007\022\t\n\005login\020\010\022\010\n\004data\020\t\022\010\n\004room\020\n\022" +
-      "\010\n\004read\020\013\022\014\n\010presence\020\014\022\n\n\006report\020\r\022\010\n\004e" +
-      "cho\020\016\022\014\n\010loggedin\020\017\022\n\n\006logout\020\020\022\r\n\tlogge" +
-      "dout\020\021\022\t\n\005patch\020\022\022\n\n\006pubsub\020\023\022\r\n\tblackli" +
-      "st\020\024\022\n\n\006goaway\020\025*\215\010\n\006OpType\022\010\n\004open\020\001\022\007\n" +
-      "\003add\020\002\022\n\n\006remove\020\003\022\t\n\005close\020\004\022\n\n\006opened\020" +
-      "\005\022\n\n\006closed\020\006\022\t\n\005query\020\007\022\020\n\014query_result" +
-      "\020\010\022\014\n\010conflict\020\t\022\t\n\005added\020\n\022\013\n\007removed\020\013",
-      "\022\013\n\007refresh\020\014\022\r\n\trefreshed\020\r\022\t\n\005start\020\036\022" +
-      "\013\n\007started\020\037\022\n\n\006joined\020 \022\022\n\016members_join" +
-      "ed\020!\022\010\n\004left\020\'\022\020\n\014members_left\020(\022\013\n\007resu" +
-      "lts\020*\022\t\n\005count\020+\022\n\n\006result\020,\022\n\n\006update\020-" +
-      "\022\013\n\007updated\020.\022\010\n\004mute\020/\022\n\n\006unmute\0200\022\n\n\006s" +
-      "tatus\0201\022\013\n\007members\0202\022\014\n\010max_read\0203\022\r\n\tis" +
-      "_member\0204\022\026\n\022member_info_update\0205\022\027\n\023mem" +
-      "ber_info_updated\0206\022\027\n\023member_info_change" +
-      "d\0207\022\010\n\004join\020P\022\n\n\006invite\020Q\022\t\n\005leave\020R\022\010\n\004" +
-      "kick\020S\022\n\n\006reject\020T\022\013\n\007invited\020U\022\n\n\006kicke",
-      "d\020V\022\n\n\006upload\020d\022\014\n\010uploaded\020e\022\r\n\tsubscri" +
-      "be\020x\022\016\n\nsubscribed\020y\022\017\n\013unsubscribe\020z\022\020\n" +
-      "\014unsubscribed\020{\022\021\n\ris_subscribed\020|\022\013\n\006mo" +
-      "dify\020\226\001\022\r\n\010modified\020\227\001\022\n\n\005block\020\252\001\022\014\n\007un" +
-      "block\020\253\001\022\014\n\007blocked\020\254\001\022\016\n\tunblocked\020\255\001\022\024" +
-      "\n\017members_blocked\020\256\001\022\026\n\021members_unblocke" +
-      "d\020\257\001\022\020\n\013check_block\020\260\001\022\021\n\014check_result\020\261" +
-      "\001\022\017\n\nadd_shutup\020\264\001\022\022\n\rremove_shutup\020\265\001\022\021" +
-      "\n\014query_shutup\020\266\001\022\021\n\014shutup_added\020\267\001\022\023\n\016" +
-      "shutup_removed\020\270\001\022\022\n\rshutup_result\020\271\001\022\r\n",
-      "\010shutuped\020\272\001\022\017\n\nunshutuped\020\273\001\022\025\n\020members" +
-      "_shutuped\020\274\001\022\027\n\022members_unshutuped\020\275\001\022\021\n" +
-      "\014check_shutup\020\276\001*\035\n\nStatusType\022\006\n\002on\020\001\022\007" +
-      "\n\003off\020\002B\007\242\002\004AVIM"
+      "\022\020\n\010serverTs\030\t \001(\003\022\020\n\010clientTs\030\n \001(\003\022\030\n\020",
+      "notificationType\030\013 \001(\005\022.\n\013dataMessage\030e " +
+      "\001(\0132\031.cn.leancloud.DataCommand\0224\n\016sessio" +
+      "nMessage\030f \001(\0132\034.cn.leancloud.SessionCom" +
+      "mand\0220\n\014errorMessage\030g \001(\0132\032.cn.leanclou" +
+      "d.ErrorCommand\0222\n\rdirectMessage\030h \001(\0132\033." +
+      "cn.leancloud.DirectCommand\022,\n\nackMessage" +
+      "\030i \001(\0132\030.cn.leancloud.AckCommand\0222\n\runre" +
+      "adMessage\030j \001(\0132\033.cn.leancloud.UnreadCom" +
+      "mand\022.\n\013readMessage\030k \001(\0132\031.cn.leancloud" +
+      ".ReadCommand\022,\n\nrcpMessage\030l \001(\0132\030.cn.le",
+      "ancloud.RcpCommand\022.\n\013logsMessage\030m \001(\0132" +
+      "\031.cn.leancloud.LogsCommand\022.\n\013convMessag" +
+      "e\030n \001(\0132\031.cn.leancloud.ConvCommand\022.\n\013ro" +
+      "omMessage\030o \001(\0132\031.cn.leancloud.RoomComma" +
+      "nd\0226\n\017presenceMessage\030p \001(\0132\035.cn.leanclo" +
+      "ud.PresenceCommand\0222\n\rreportMessage\030q \001(" +
+      "\0132\033.cn.leancloud.ReportCommand\0220\n\014patchM" +
+      "essage\030r \001(\0132\032.cn.leancloud.PatchCommand" +
+      "\0222\n\rpubsubMessage\030s \001(\0132\033.cn.leancloud.P" +
+      "ubsubCommand\0228\n\020blacklistMessage\030t \001(\0132\036",
+      ".cn.leancloud.BlacklistCommand*\213\002\n\013Comma" +
+      "ndType\022\013\n\007session\020\000\022\010\n\004conv\020\001\022\n\n\006direct\020" +
+      "\002\022\007\n\003ack\020\003\022\007\n\003rcp\020\004\022\n\n\006unread\020\005\022\010\n\004logs\020" +
+      "\006\022\t\n\005error\020\007\022\t\n\005login\020\010\022\010\n\004data\020\t\022\010\n\004roo" +
+      "m\020\n\022\010\n\004read\020\013\022\014\n\010presence\020\014\022\n\n\006report\020\r\022" +
+      "\010\n\004echo\020\016\022\014\n\010loggedin\020\017\022\n\n\006logout\020\020\022\r\n\tl" +
+      "oggedout\020\021\022\t\n\005patch\020\022\022\n\n\006pubsub\020\023\022\r\n\tbla" +
+      "cklist\020\024\022\n\n\006goaway\020\025*\215\010\n\006OpType\022\010\n\004open\020" +
+      "\001\022\007\n\003add\020\002\022\n\n\006remove\020\003\022\t\n\005close\020\004\022\n\n\006ope" +
+      "ned\020\005\022\n\n\006closed\020\006\022\t\n\005query\020\007\022\020\n\014query_re",
+      "sult\020\010\022\014\n\010conflict\020\t\022\t\n\005added\020\n\022\013\n\007remov" +
+      "ed\020\013\022\013\n\007refresh\020\014\022\r\n\trefreshed\020\r\022\t\n\005star" +
+      "t\020\036\022\013\n\007started\020\037\022\n\n\006joined\020 \022\022\n\016members_" +
+      "joined\020!\022\010\n\004left\020\'\022\020\n\014members_left\020(\022\013\n\007" +
+      "results\020*\022\t\n\005count\020+\022\n\n\006result\020,\022\n\n\006upda" +
+      "te\020-\022\013\n\007updated\020.\022\010\n\004mute\020/\022\n\n\006unmute\0200\022" +
+      "\n\n\006status\0201\022\013\n\007members\0202\022\014\n\010max_read\0203\022\r" +
+      "\n\tis_member\0204\022\026\n\022member_info_update\0205\022\027\n" +
+      "\023member_info_updated\0206\022\027\n\023member_info_ch" +
+      "anged\0207\022\010\n\004join\020P\022\n\n\006invite\020Q\022\t\n\005leave\020R",
+      "\022\010\n\004kick\020S\022\n\n\006reject\020T\022\013\n\007invited\020U\022\n\n\006k" +
+      "icked\020V\022\n\n\006upload\020d\022\014\n\010uploaded\020e\022\r\n\tsub" +
+      "scribe\020x\022\016\n\nsubscribed\020y\022\017\n\013unsubscribe\020" +
+      "z\022\020\n\014unsubscribed\020{\022\021\n\ris_subscribed\020|\022\013" +
+      "\n\006modify\020\226\001\022\r\n\010modified\020\227\001\022\n\n\005block\020\252\001\022\014" +
+      "\n\007unblock\020\253\001\022\014\n\007blocked\020\254\001\022\016\n\tunblocked\020" +
+      "\255\001\022\024\n\017members_blocked\020\256\001\022\026\n\021members_unbl" +
+      "ocked\020\257\001\022\020\n\013check_block\020\260\001\022\021\n\014check_resu" +
+      "lt\020\261\001\022\017\n\nadd_shutup\020\264\001\022\022\n\rremove_shutup\020" +
+      "\265\001\022\021\n\014query_shutup\020\266\001\022\021\n\014shutup_added\020\267\001",
+      "\022\023\n\016shutup_removed\020\270\001\022\022\n\rshutup_result\020\271" +
+      "\001\022\r\n\010shutuped\020\272\001\022\017\n\nunshutuped\020\273\001\022\025\n\020mem" +
+      "bers_shutuped\020\274\001\022\027\n\022members_unshutuped\020\275" +
+      "\001\022\021\n\014check_shutup\020\276\001*\035\n\nStatusType\022\006\n\002on" +
+      "\020\001\022\007\n\003off\020\002B\007\242\002\004AVIM"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -44287,7 +44463,7 @@ public final class Messages {
     internal_static_cn_leancloud_GenericCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_GenericCommand_descriptor,
-        new java.lang.String[] { "Cmd", "Op", "AppId", "PeerId", "I", "InstallationId", "Priority", "Service", "ServerTs", "DataMessage", "SessionMessage", "ErrorMessage", "DirectMessage", "AckMessage", "UnreadMessage", "ReadMessage", "RcpMessage", "LogsMessage", "ConvMessage", "RoomMessage", "PresenceMessage", "ReportMessage", "PatchMessage", "PubsubMessage", "BlacklistMessage", });
+        new java.lang.String[] { "Cmd", "Op", "AppId", "PeerId", "I", "InstallationId", "Priority", "Service", "ServerTs", "ClientTs", "NotificationType", "DataMessage", "SessionMessage", "ErrorMessage", "DirectMessage", "AckMessage", "UnreadMessage", "ReadMessage", "RcpMessage", "LogsMessage", "ConvMessage", "RoomMessage", "PresenceMessage", "ReportMessage", "PatchMessage", "PubsubMessage", "BlacklistMessage", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

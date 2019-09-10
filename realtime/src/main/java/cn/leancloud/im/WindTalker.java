@@ -66,6 +66,7 @@ public class WindTalker {
   public CommandPacket assembleLiveQueryLoginPacket(String subscriptionId, int requestId) {
     LiveQueryLoginPacket lp = new LiveQueryLoginPacket();
     lp.setSubscribeId(subscriptionId);
+    lp.setClientTs(System.currentTimeMillis());
     if (0 != requestId) {
       lp.setRequestId(requestId);
     }
