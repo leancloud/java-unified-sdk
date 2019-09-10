@@ -20,7 +20,6 @@ public class AVStandardWebSocketClientTest extends TestCase {
 
   public AVStandardWebSocketClientTest(String testname) {
     super(testname);
-    WebSocketImpl.DEBUG = true;
     AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
     AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
     AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);

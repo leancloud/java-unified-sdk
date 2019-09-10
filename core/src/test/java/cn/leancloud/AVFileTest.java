@@ -60,7 +60,7 @@ public class AVFileTest extends TestCase {
         System.out.println("url=" + url + ", name=" + name + ", key=" + key + ", size=" + size);
         System.out.println("objId=" + objectId + ", thumbnail=" + thumbnailUrl + ", mime=" + mimeType);
         testSucceed = url.length() > 0 && thumbnailUrl.length() > 0 && name.length() > 0 && key.length() > 0;
-        testSucceed = testSucceed && (size > 0 && objectId.equals("5c2a1c4d808ca4565c20f0f2"));
+        testSucceed = testSucceed && (size > 0 && objectId.equals("5d37b425c05a800073b79b3a"));
         testSucceed = testSucceed && (mimeType.length() > 0);
         latch.countDown();
       }
