@@ -118,7 +118,7 @@ public final class AVInstallation extends AVObject {
   }
   private static String timezone() {
     TimeZone defaultTimezone = TimeZone.getDefault();
-    return defaultTimezone != null ? defaultTimezone.getID() : "unknown";
+    return defaultTimezone.getID();
   }
 
   private void initialize() {

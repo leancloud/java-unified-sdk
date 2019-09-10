@@ -119,11 +119,8 @@ public class AVRelation<T extends AVObject> {
     map.put("object", Utils.mapFromPointerObject(AVRelation.this.getParent()));
     map.put("key", AVRelation.this.getKey());
 
-    Map<String, Object> result = new HashMap<String, Object>();
-    result.put("$relatedTo", map);
     String targetClassName = getTargetClass();
-
-    if (StringUtil.isEmpty(getTargetClass())) {
+    if (StringUtil.isEmpty(targetClassName)) {
       targetClassName = getParent().getClassName();
     }
     AVQuery<T> query = new AVQuery<T>(targetClassName, clazz);

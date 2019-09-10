@@ -215,38 +215,42 @@ public class PersistenceUtil {
   public static List<File> listFiles(String dirPath) {
     List<File> result = new ArrayList<>();
     File dir = new File(dirPath);
-    if (null == dir || !dir.exists() || !dir.isDirectory()) {
+    if (!dir.exists() || !dir.isDirectory()) {
       return result;
     }
     File[] files = dir.listFiles();
-    for (File f: files) {
-      if (!f.isFile()) {
-        continue;
+    if (null != files) {
+      for (File f: files) {
+        if (!f.isFile()) {
+          continue;
+        }
+        result.add(f);
       }
-      result.add(f);
     }
     return result;
   }
 
   public void clearDir(String dirPath, long lastModified) {
     File dir = new File(dirPath);
-    if (null == dir || !dir.exists() || !dir.isDirectory()) {
+    if (!dir.exists() || !dir.isDirectory()) {
       return;
     }
     File[] files = dir.listFiles();
-    for (File f: files) {
-      if (f.isFile()) {
-        if (f.lastModified() < lastModified) {
-          if (deleteFile(f)) {
-            gLogger.d("succeed to delete file: " + f.getAbsolutePath());
+    if (null != files) {
+      for (File f: files) {
+        if (f.isFile()) {
+          if (f.lastModified() < lastModified) {
+            if (deleteFile(f)) {
+              gLogger.d("succeed to delete file: " + f.getAbsolutePath());
+            } else {
+              gLogger.d("failed to delete file: " + f.getAbsolutePath());
+            }
           } else {
-            gLogger.d("failed to delete file: " + f.getAbsolutePath());
+            gLogger.d("skip cache file: " + f.getAbsolutePath());
           }
-        } else {
-          gLogger.d("skip cache file: " + f.getAbsolutePath());
+        } else if (f.isDirectory()) {
+          clearDir(f.getAbsolutePath(), lastModified);
         }
-      } else if (f.isDirectory()) {
-        clearDir(f.getAbsolutePath(), lastModified);
       }
     }
   }

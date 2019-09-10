@@ -51,7 +51,6 @@ public class FileDownloader {
     try {
       Response response = client.newCall(requestBuilder.build()).execute();
       int statusCode = response.code();
-      Headers headers = response.headers();
       InputStream data = response.body().byteStream();
       if (statusCode / 100 == 2 && null != data) {
         // read data from InputStream and save to cache File
@@ -86,11 +85,8 @@ public class FileDownloader {
         } else {
           gLogger.w("failed to lock writeLocker, skip to save network streaming to local cache.");
         }
-      } else if (null != data) {
-        errors = new AVException(statusCode, "status code is invalid");
-        gLogger.w(errors);
       } else {
-        errors = new AVException(statusCode, "data is empty!");
+        errors = new AVException(statusCode, "status code is invalid");
         gLogger.w(errors);
       }
     } catch (IOException ex) {

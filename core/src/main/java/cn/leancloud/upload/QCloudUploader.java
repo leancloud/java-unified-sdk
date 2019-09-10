@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
 
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 
@@ -110,8 +111,8 @@ public class QCloudUploader extends HttpClientUploader {
       requestBuilder.header(HEADER_AUTHORIZATION, token);
       requestBuilder.header(HEADER_CONTENT_TYPE, MULTIPART_FORM_DATA);
 
-      for(String key: FileUploader.UPLOAD_HEADERS.keySet()) {
-        requestBuilder.header(key, FileUploader.UPLOAD_HEADERS.get(key));
+      for (Map.Entry<String, String> entry: FileUploader.UPLOAD_HEADERS.entrySet()) {
+        requestBuilder.header(entry.getKey(), entry.getValue());
       }
 
       requestBuilder.post(builder.build());

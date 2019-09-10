@@ -92,9 +92,8 @@ public class FileUploader extends HttpClientUploader {
       blockProgress.put(offset, progress);
       if (callback != null) {
         int progressSum = 0;
-        Set<Integer> keySet = blockProgress.keySet();
-        for (Integer index: keySet) {
-          progressSum += blockProgress.get(index);
+        for (Map.Entry<Integer, Integer> entry: blockProgress.entrySet()) {
+          progressSum += entry.getValue();
         }
         callback.onProgress(gProgressGotToken + (gProgressUploadedFile - gProgressGotToken)
                 * progressSum / (100 * fileBlockCount));

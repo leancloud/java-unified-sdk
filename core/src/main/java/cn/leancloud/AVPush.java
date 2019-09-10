@@ -119,11 +119,10 @@ public class AVPush {
   public void setData(JSONObject data) {
     try {
       Map<String, Object> map = new HashMap<String, Object>();
-      Iterator iter = data.keySet().iterator();
+      Iterator<Map.Entry<String, Object>> iter = data.entrySet().iterator();
       while (iter.hasNext()) {
-        String key = (String) iter.next();
-        Object value = data.get(key);
-        map.put(key, value);
+        Map.Entry<String, Object> entry = iter.next();
+        map.put(entry.getKey(), entry.getValue());
       }
       this.pushData.put("data", map);
     } catch (Exception exception) {
@@ -273,8 +272,8 @@ public class AVPush {
       if (pushParameters.keySet().size() > 0 && !StringUtil.isEmpty(cql)) {
         throw new IllegalStateException("You can't use AVQuery and Cloud query at the same time.");
       }
-      for (String k : pushParameters.keySet()) {
-        map.put(k, JSON.parse(pushParameters.get(k)));
+      for (Map.Entry<String, String> entry: pushParameters.entrySet()) {
+        map.put(entry.getKey(), JSON.parse(entry.getValue()));
       }
     }
     if (!StringUtil.isEmpty(cql)) {
@@ -289,7 +288,7 @@ public class AVPush {
     }
     if (this.expirationTimeInterval > 0) {
       map.put("push_time", StringUtil.stringFromDate(new Date()));
-      map.put("expiration_interval", new Long(this.expirationTimeInterval));
+      map.put("expiration_interval", Long.valueOf(this.expirationTimeInterval));
     }
     if (this.pushDate != null) {
       map.put("push_time", StringUtil.stringFromDate(pushDate));

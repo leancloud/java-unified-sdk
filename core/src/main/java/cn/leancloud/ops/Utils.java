@@ -252,8 +252,9 @@ public class Utils {
     if (type.equals("Pointer") || type.equals("Object")) {
       AVObject avObject = Transformer.objectFromClassName((String) map.get("className"));
 //      avObject.resetServerData(map);
-      for (String k : map.keySet()) {
-        Object v = map.get(k);
+      for (Map.Entry<String, Object> entry: map.entrySet()) {
+        String k = entry.getKey();
+        Object v = entry.getValue();
         if (v instanceof String || v instanceof Number || v instanceof Boolean || v instanceof Byte || v instanceof Character) {
           // primitive type
           avObject.getServerData().put(k, v);

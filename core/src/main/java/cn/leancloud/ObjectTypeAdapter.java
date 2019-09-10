@@ -113,8 +113,9 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
     } else {
       obj = new AVObject();
     }
-    for (String k : serverJson.keySet()) {
-      Object v = serverJson.get(k);
+    for (Map.Entry<String, Object> entry: serverJson.entrySet()) {
+      String k = entry.getKey();
+      Object v = entry.getValue();
       if (v instanceof String || v instanceof Number || v instanceof Boolean || v instanceof Byte || v instanceof Character) {
         // primitive type
         obj.serverData.put(k, v);

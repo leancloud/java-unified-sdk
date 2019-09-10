@@ -22,8 +22,8 @@ public class ErrorInterceptor implements Interceptor {
   }
 
   private void throwError(Response response, int responseCode) throws IOException {
-    String responseBody = response.body().string();
-    AVException avException = ErrorUtils.propagateException(responseBody);
+//    String responseBody = response.body().string();
+//    AVException avException = ErrorUtils.propagateException(responseBody);
 //    throw avException;
   }
 }

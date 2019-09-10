@@ -9,6 +9,7 @@ import okhttp3.*;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 class S3Uploader extends HttpClientUploader {
@@ -76,7 +77,6 @@ class S3Uploader extends HttpClientUploader {
         // setup multi part
         // ================================================================================
 
-        Charset charset = Charset.forName("UTF-8");
         // support file for future
 
         RequestBody requestBody = RequestBody.create(MediaType.parse(mimeType), data);
@@ -86,8 +86,8 @@ class S3Uploader extends HttpClientUploader {
         if (!FileUploader.UPLOAD_HEADERS.containsKey(DEFAULT_HEADER_CACHE_CONTROL)) {
           builder.addHeader(DEFAULT_HEADER_CACHE_CONTROL, DEFAULT_HEADER_CACHE_CONTROL_VALUE);
         }
-        for(String key: FileUploader.UPLOAD_HEADERS.keySet()) {
-          builder.addHeader(key, FileUploader.UPLOAD_HEADERS.get(key));
+        for (Map.Entry<String, String> entry : FileUploader.UPLOAD_HEADERS.entrySet()) {
+          builder.addHeader(entry.getKey(), entry.getValue());
         }
 
         // Send it
@@ -96,7 +96,6 @@ class S3Uploader extends HttpClientUploader {
         response = call.execute();
         // The 204 status code implies no response is needed
         if (2 != (response.code() / 100)) {
-          serverResponse = StringUtil.stringFromBytes(response.body().bytes());
           if(retryTimes>0){
             retryTimes -- ;
             executeWithRetry(data);

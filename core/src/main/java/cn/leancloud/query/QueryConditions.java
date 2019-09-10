@@ -211,12 +211,7 @@ public class QueryConditions implements Cloneable {
   public Map<String, String> assembleParameters() {
     if (where.keySet().size() > 0) {
       Map<String, Object> whereMaps = compileWhereOperationMap();
-      String whereValue = "";
-      if (null == whereMaps) {
-        whereValue = "{}";
-      } else {
-        whereValue = AVUtils.jsonStringFromMapWithNull(Utils.getParsedMap(whereMaps));
-      }
+      String whereValue = AVUtils.jsonStringFromMapWithNull(Utils.getParsedMap(whereMaps));
       parameters.put("where", whereValue);
     }
     if (limit > 0) {

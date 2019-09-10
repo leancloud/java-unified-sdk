@@ -20,7 +20,7 @@ public class PushClient {
     this.service = service;
     this.asynchronized = AppConfiguration.isAsynchronized();
     this.defaultCreator = AppConfiguration.getDefaultScheduler();
-    final OkHttpClient httpClient = PaasClient.getGlobalOkHttpClient();
+    PaasClient.getGlobalOkHttpClient();
   }
 
   public Observable<JSONObject> sendPushRequest(Map<String, Object> param) {
