@@ -15,7 +15,7 @@ import java.util.List;
 public class AVObjectSerializerTest extends TestCase {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVObjectSerializerTest.class);
   private static final String CLASSNAME_STUDENT = "Student";
-  private static final String FILE_OBJECT_ID = "5bff45249f54540066d4d829";
+  private static final String FILE_OBJECT_ID = "5d37b425c05a800073b79b3a";
   private String studentId = null;
   public AVObjectSerializerTest(String name) {
     super(name);

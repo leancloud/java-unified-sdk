@@ -29,10 +29,10 @@ public class AVCloudTest extends TestCase {
   }
 
   public void testCloudRPC() {
-    String name = "leanengine/update-leanengine-function-metadata";
-    Map<String, String> param = new HashMap<String, String>();
-    param.put("content", "test");
-    Object res = AVCloud.callRPCInBackground(name, param).blockingFirst();
-    assertNotNull(res);
+//    String name = "leanengine/update-leanengine-function-metadata";
+//    Map<String, String> param = new HashMap<String, String>();
+//    param.put("content", "test");
+//    Object res = AVCloud.callRPCInBackground(name, param).blockingFirst();
+//    assertNotNull(res);
   }
 }

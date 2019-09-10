@@ -42,7 +42,7 @@ public class AVFileTest extends TestCase {
   }
 
   public void testCreateWithObjectId() throws Exception {
-    String fileObjectId = "5c2a1c4d808ca4565c20f0f2";
+    String fileObjectId = "5d37b425c05a800073b79b3a";
     AVFile.withObjectIdInBackground(fileObjectId).subscribe(new Observer<AVFile>() {
       public void onSubscribe(Disposable disposable) {
 

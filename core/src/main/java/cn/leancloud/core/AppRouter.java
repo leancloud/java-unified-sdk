@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AppRouter {
   private static final AVLogger LOGGER = LogUtil.getLogger(AppRouter.class);
-  private static final String APP_ROUTER_HOST = "https://app-router.leancloud.cn";
+  private static final String APP_ROUTER_HOST = "https://app-router.com";
   private static final AppRouter INSTANCE = new AppRouter();
   public static AppRouter getInstance() {
     return INSTANCE;
