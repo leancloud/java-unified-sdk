@@ -23,6 +23,9 @@ public class QueryConditions implements Cloneable {
     include = new LinkedList<String>();
     parameters = new HashMap<String, String>();
   }
+
+  // It’s also legal to implement clone() without using Object.clone(),
+  // by manually constructing a new object and copying fields.
   public QueryConditions clone() {
     QueryConditions condition = new QueryConditions();
     condition.where.putAll(this.where);

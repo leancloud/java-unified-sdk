@@ -243,6 +243,10 @@ public class AVIMTypedMessage extends AVIMMessage{
     return AVIMMessageManagerHelper.parseTypedMessage(message);
   }
 
+  public int hashCode() {
+    return super.hashCode();
+  }
+
   public boolean equals(Object other) {
     if (!super.equals(other)) {
       return false;

@@ -337,9 +337,24 @@ public class AVIMMessage {
     return uniqueToken;
   }
 
-  // FIXME
   public int hashCode() {
-    return (uniqueToken + messageId + conversationId).hashCode();
+    final int prime = 31;
+    int result = 7;
+    result = result * prime + ((null == conversationId)? 0 : conversationId.hashCode());
+    result = result * prime + ((null == content)? 0 : content.hashCode());
+    result = result * prime + ((null == from)? 0 : from.hashCode());
+    result = result * prime + ((null == messageId)? 0 : messageId.hashCode());
+    result = result * prime + ((null == mentionList)? 0 : mentionList.hashCode());
+    result = result * prime + ((null == uniqueToken)? 0 : uniqueToken.hashCode());
+    result = result * prime + (int)timestamp;
+    result = result * prime + (int)deliveredAt;
+    result = result * prime + (int)readAt;
+    result = result * prime + (int)updateAt;
+    result = result * prime + (mentionAll? 17 : 0);
+    result = result * prime + ioType.hashCode();
+    result = result * prime + status.hashCode();
+
+    return result;
   }
 
   public boolean equals(Object other) {

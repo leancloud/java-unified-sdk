@@ -59,15 +59,8 @@ public class AES {
     // insecure). It could
     // be secure if we kept it on a server accessible through https.
     byte[] skAsByteArray = sk.getEncoded();
-    // Log.d("",
-    // "skAsByteArray=" + skAsByteArray.length + ","
-    // + Base64Encoder.encode(skAsByteArray));
     skforAES = new SecretKeySpec(skAsByteArray, "AES");
-
-    ;
-
     IV = new IvParameterSpec(iv);
-
   }
 
   public String encrypt(byte[] plaintext) {

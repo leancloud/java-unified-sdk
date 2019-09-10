@@ -141,7 +141,9 @@ public class Base64Encoder extends FilterOutputStream {
     byte[] bytes = null;
     try {
       bytes = unencoded.getBytes("UTF-8");
-    } catch (UnsupportedEncodingException ignored) {}
+    } catch (UnsupportedEncodingException ignored) {
+      // do nothing.
+    }
     if (null == bytes) {
       return null;
     }

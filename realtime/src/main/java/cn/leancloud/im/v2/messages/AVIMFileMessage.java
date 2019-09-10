@@ -273,6 +273,10 @@ public class AVIMFileMessage extends AVIMTypedMessage {
     }
   }
 
+  public int hashCode() {
+    return super.hashCode();
+  }
+
   public boolean equals(Object other) {
     return super.equals(other);
   }

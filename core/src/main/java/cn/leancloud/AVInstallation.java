@@ -72,7 +72,10 @@ public final class AVInstallation extends AVObject {
         String cacheBase = AppConfiguration.getImportantFileDir();
         File oldInstallationFile = new File(cacheBase, INSTALLATION);
         if (oldInstallationFile.exists() && !installationFile.exists()) {
-          oldInstallationFile.renameTo(installationFile);
+          boolean tmp = oldInstallationFile.renameTo(installationFile);
+          if (!tmp) {
+            LOGGER.w("failed to rename installation cache file.");
+          }
         }
       }
       if (installationFile.exists()) {

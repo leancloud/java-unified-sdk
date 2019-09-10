@@ -12,8 +12,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class LoggingInterceptor implements Interceptor {
-  private static final String CURL_COMMAND = "curl -X %s \n";
-  private static final String CURL_HEADER_FORMAT = " -H %s: %s \n";
+  private static final String CURL_COMMAND = "curl -X %s %n";
+  private static final String CURL_HEADER_FORMAT = " -H %s: %s %n";
   private static AVLogger LOGGER = LogUtil.getLogger(LoggingInterceptor.class);
 
   private String generateCURLCommandString(Request request) {
@@ -51,7 +51,7 @@ public class LoggingInterceptor implements Interceptor {
         body.writeTo(sink);
         sink.close();
         String bodyString = os.toString();
-        sb.append(String.format("-d '%s' \n", bodyString));
+        sb.append(String.format("-d '%s' %n", bodyString));
       }
     } catch (Exception ex) {
       ex.printStackTrace();

@@ -87,6 +87,15 @@ public class AVIMBinaryMessage extends AVIMMessage {
     return bytes;
   }
 
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    if (null != this.bytes) {
+      result = prime * result + this.bytes.hashCode();
+    }
+    return result;
+  }
+
   public boolean equals(Object other) {
     if (!super.equals(other)) {
       return false;
