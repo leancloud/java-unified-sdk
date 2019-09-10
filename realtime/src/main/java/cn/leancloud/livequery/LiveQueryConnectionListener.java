@@ -17,19 +17,29 @@ class LiveQueryConnectionListener implements AVConnectionListener {
   private static final AVLogger LOGGER = LogUtil.getLogger(LiveQueryConnectionListener.class);
 
   private volatile boolean connectionIsOpen = false;
+  private AVLiveQueryConnectionHandler connectionHandler = null;
 
   public void onWebSocketOpen() {
     LOGGER.d("livequery connection opened, ready to send packet");
-
+    if (null != connectionHandler) {
+      connectionHandler.onConnectionOpen();
+    }
   }
 
   public void onWebSocketClose() {
     LOGGER.d("livequery connection closed.");
     connectionIsOpen = false;
+    if (null != connectionHandler) {
+      connectionHandler.onConnectionClose();
+    }
   }
 
   public boolean connectionIsOpen() {
     return connectionIsOpen;
+  }
+
+  public void setConnectionHandler(AVLiveQueryConnectionHandler handler) {
+    this.connectionHandler = handler;
   }
 
   @Override
@@ -60,6 +70,15 @@ class LiveQueryConnectionListener implements AVConnectionListener {
   public void onError(Integer requestKey, Messages.ErrorCommand errorCommand) {
     LOGGER.e("encounter error.");
     connectionIsOpen = false;
+    if (null != connectionHandler) {
+      if (null == errorCommand) {
+        connectionHandler.onConnectionError(-1, "");
+      } else {
+        int code = errorCommand.hasCode() ? errorCommand.getCode() : -1;
+        String reason = errorCommand.hasReason() ? errorCommand.getReason() : "";
+        connectionHandler.onConnectionError(code, reason);
+      }
+    }
   }
 
   private void processLoggedinCommand(Integer requestKey) {

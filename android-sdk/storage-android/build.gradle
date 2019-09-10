@@ -68,7 +68,7 @@ android.libraryVariants.all { variant ->
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation "io.reactivex.rxjava2:rxandroid:${rootProject.ext.rxandroidVersion}"
 

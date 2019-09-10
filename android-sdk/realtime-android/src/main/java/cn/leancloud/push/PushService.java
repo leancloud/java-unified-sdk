@@ -44,6 +44,7 @@ import cn.leancloud.im.v2.AVIMMessageOption;
 import cn.leancloud.im.v2.Conversation;
 import cn.leancloud.im.v2.Conversation.AVIMOperation;
 import cn.leancloud.im.v2.AVIMClient.AVIMClientStatus;
+import cn.leancloud.livequery.AVLiveQuery;
 import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.session.AVSession;
 import cn.leancloud.session.AVSessionManager;
@@ -636,8 +637,20 @@ public class PushService extends Service {
   }
 
   private void processLiveQueryRequestsFromClient(Intent intent) {
-    ;
+    if (null == intent) {
+      LOGGER.w("intent is null");
+      return;
+    }
+    String action = intent.getAction();
+    if (AVLiveQuery.ACTION_LIVE_QUERY_LOGIN.equals(action)) {
+      int requestId = intent.getExtras().getInt(Conversation.INTENT_KEY_REQUESTID);
+      String subscriptionId = intent.getExtras().getString(AVLiveQuery.SUBSCRIBE_ID);
+      this.directlyOperationTube.loginLiveQueryDirectly(subscriptionId, requestId);
+    } else {
+      LOGGER.w("unknown action: " + action);
+    }
   }
+
   private static Handler _installationSaveHandler = new Handler(Looper.getMainLooper()) {
 
     public void handleMessage(Message m) {

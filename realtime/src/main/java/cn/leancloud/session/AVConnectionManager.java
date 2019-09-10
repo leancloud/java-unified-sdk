@@ -321,7 +321,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public void onClose(int var1, String var2, boolean var3) {
-    LOGGER.d("webSocket closed...");
+    LOGGER.d("websocket closed...");
     connectionEstablished = false;
     for (AVConnectionListener listener: connectionListeners.values()) {
       listener.onWebSocketClose();

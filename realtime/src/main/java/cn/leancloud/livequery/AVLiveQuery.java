@@ -38,7 +38,7 @@ public class AVLiveQuery {
   private static final LiveQueryConnectionListener liveQueryConnectionListener = new LiveQueryConnectionListener();
 
   static {
-    AVConnectionManager.getInstance().subscribeConnectionListener(LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID,
+    AVConnectionManager.getInstance().subscribeDefaultConnectionListener(LiveQueryOperationDelegate.LIVEQUERY_DEFAULT_ID,
             liveQueryConnectionListener);
   }
 
@@ -149,19 +149,20 @@ public class AVLiveQuery {
     if (liveQueryConnectionListener.connectionIsOpen()) {
       subscribeThroughRESTAPI(dataMap, callback);
     } else {
-    }loginLiveQuery(new AVLiveQuerySubscribeCallback() {
-      @Override
-      public void done(AVException e) {
-        if (null != e) {
-          if (null != callback) {
-            callback.internalDone(e);
+      loginLiveQuery(new AVLiveQuerySubscribeCallback() {
+        @Override
+        public void done(AVException e) {
+          if (null != e) {
+            if (null != callback) {
+              callback.internalDone(e);
+            }
+            return;
+          } else {
+            subscribeThroughRESTAPI(dataMap, callback);
           }
-          return;
-        } else {
-          subscribeThroughRESTAPI(dataMap, callback);
         }
-      }
-    });
+      });
+    }
   }
 
   private void subscribeThroughRESTAPI(final Map<String, Object> dataMap, final AVLiveQuerySubscribeCallback callback) {
@@ -197,6 +198,14 @@ public class AVLiveQuery {
       public void onComplete() {
       }
     });
+  }
+
+  /**
+   * set connection handler globally.
+   * @param connectionHandler
+   */
+  public static void setConnectionHandler(AVLiveQueryConnectionHandler connectionHandler) {
+    AVLiveQuery.liveQueryConnectionListener.setConnectionHandler(connectionHandler);
   }
 
   public void setEventHandler(AVLiveQueryEventHandler eventHandler) {
