@@ -42,11 +42,11 @@ allprojects {
 }
 
 ext {
-    sdkVersion = "6.0.0-SNAPSHOT"
+    sdkVersion = "6.0.0"
     supportLibVersion = "26.1.0"
     fastjsonVersion = "1.1.71.android"
     converterVersion = "2.1.0"
-    rxandroidVersion = "2.1.0"
+    rxandroidVersion = "2.1.1"
 }
 
 task clean(type: Delete) {
