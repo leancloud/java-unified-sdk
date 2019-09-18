@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import cn.leancloud.cache.AndroidSystemSetting;
 
 import cn.leancloud.callback.AVCallback;
+import cn.leancloud.core.AppRouter;
 import cn.leancloud.internal.ThreadModel;
 import cn.leancloud.logging.DefaultLoggerAdapter;
 import cn.leancloud.core.AppConfiguration;
@@ -38,8 +39,12 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
   }
 
   public static void initialize(Context context, String appId, String appKey) {
+    if (!hasCustomizedServerURL(appId)) {
+      throw new IllegalStateException("Please call AVOSCloud#initialize(context, appid, appkey, serverURL) instead of" +
+          " AVOSCloud#initialize(context, appid, appkey), or call AVOSCloud#setServer(service, host) at first.");
+    }
     if (null == handler && !AndroidUtil.isMainThread()) {
-      throw new IllegalStateException("Please call AVOSCloud.initialize in main thread.");
+      throw new IllegalStateException("Please call AVOSCloud#initialize() in main thread.");
     }
     if (null == handler) {
       handler = new Handler();
@@ -108,5 +113,18 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
     }
 
     setContext(context);
+  }
+
+  public static void initialize(Context context, String appId, String appKey, String serverURL) {
+    setServerURLs(serverURL);
+    initialize(context, appId, appKey);
+  }
+
+  protected static boolean hasCustomizedServerURL(String applicationId) {
+    REGION region = AppRouter.getAppRegion(applicationId);
+    if (REGION.NorthAmerica == region) {
+      return true;
+    }
+    return AppRouter.getInstance().hasFrozenEndpoint();
   }
 }

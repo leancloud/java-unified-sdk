@@ -59,13 +59,33 @@ public class AVOSCloud {
     PaasClient.initializeGlobalClient();
   }
 
+  public static void initialize(String appId, String appKey, String serverUrl) {
+    setServerURLs(serverUrl);
+    initialize(appId, appKey);
+  }
+
   public static void setMasterKey(String masterKey) {
     RequestSignImplementation.setMasterKey(masterKey);
   }
 
   public static void setServer(AVOSService service, String host) {
+    if (StringUtil.isEmpty(host)) {
+      return;
+    }
+    if (!host.toLowerCase().startsWith("http")) {
+      // default protocol is https
+      host = "https://" + host;
+    }
     AppRouter appRouter = AppRouter.getInstance();
     appRouter.freezeEndpoint(service, host);
+  }
+
+  protected static void setServerURLs(String host) {
+    setServer(AVOSService.API, host);
+    setServer(AVOSService.RTM, host);
+    setServer(AVOSService.ENGINE, host);
+    setServer(AVOSService.PUSH, host);
+    setServer(AVOSService.STATS, host);
   }
 
   @Deprecated

@@ -32,7 +32,7 @@ public class AppRouter {
 
   /**
    * 华北区 app router 请求与结果
-   * https://app-router.leancloud.cn/2/route?appId=EDR0rD8otnmzF7zNGgLasHzi-MdYXbMMI
+   * https://app-router.com/2/route?appId=EDR0rD8otnmzF7zNGgLasHzi-MdYXbMMI
    * {
    *    ttl: 3600,
    *    stats_server: "nlqwjxku.stats.lncld.net",
@@ -43,7 +43,7 @@ public class AppRouter {
    * }
    *
    * 华东区 app router 请求与结果
-   * https://app-router.leancloud.cn/2/route?appId=qwTQb5S80beMUMGg3xtHsEka-9Nh9j0Va
+   * https://app-router.com/2/route?appId=qwTQb5S80beMUMGg3xtHsEka-9Nh9j0Va
    * {
    *    ttl: 3600,
    *    stats_server: "qwtqb5s8.stats.lncldapi.com",
@@ -54,7 +54,7 @@ public class AppRouter {
    * }
    *
    * 美国区 app router 请求与结果
-   * https://app-router.leancloud.cn/2/route?appId=EDR0rD8otnmzF7zNGgLasHzi-MdYXbMMI
+   * https://app-router.com/2/route?appId=EDR0rD8otnmzF7zNGgLasHzi-MdYXbMMI
    * {
    *    ttl: 3600,
    *    stats_server: "us-api.leancloud.cn",
@@ -168,6 +168,10 @@ public class AppRouter {
     });
   }
 
+  public boolean hasFrozenEndpoint() {
+    return this.customizedEndpoint.hasSpecifiedEndpoint();
+  }
+
   public void freezeEndpoint(final AVOSService service, String host) {
     this.customizedEndpoint.freezeEndpoint(service, host);
   }
@@ -229,10 +233,6 @@ public class AppRouter {
       result = "https://" + result;
     }
     return Observable.just(result);
-//    if (null != this.defaultEndpoint) {
-//    } else {
-//      return fetchServerFromRemote(appId, service);
-//    }
   }
 
   public Observable<AppAccessEndpoint> fetchServerHostsInBackground(final String appId) {

@@ -21,6 +21,7 @@ public class MyApplication extends Application {
 
   private static final String APPID = "dYRQ8YfHRiILshUnfFJu2eQM-gzGzoHsz";
   private static final String APPKEY = "ye24iIK6ys8IvaISMC4Bs5WK";
+  private static final String APP_SERVER_HOST = "https://dyrq8yfh.lc-cn-n1-shared.com";
 
   @Override
   public void onCreate() {
@@ -38,7 +39,7 @@ public class MyApplication extends Application {
     super.onCreate();
 
     AVOSCloud.setLogLevel(AVLogger.Level.DEBUG);
-    AVOSCloud.initialize(this, APPID, APPKEY);
+    AVOSCloud.initialize(this, APPID, APPKEY, APP_SERVER_HOST);
 
     LOGGER.d("onCreate in thread:" + this.getMainLooper().getThread().getId());
 
