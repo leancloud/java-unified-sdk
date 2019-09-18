@@ -122,7 +122,8 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
 
   protected static boolean hasCustomizedServerURL(String applicationId) {
     REGION region = AppRouter.getAppRegion(applicationId);
-    if (REGION.NorthAmerica == region) {
+    if (REGION.NorthAmerica == region || REGION.NorthAmerica == getRegion()) {
+      // we use region from both application id and specified manually.
       return true;
     }
     return AppRouter.getInstance().hasFrozenEndpoint();

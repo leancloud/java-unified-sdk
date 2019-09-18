@@ -5,6 +5,9 @@ import cn.leancloud.Configure;
 import cn.leancloud.service.RTMConnectionServerResponse;
 import junit.framework.TestCase;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class AppRouterTest extends TestCase {
   public AppRouterTest(String name) {
     super(name);
@@ -33,5 +36,34 @@ public class AppRouterTest extends TestCase {
     assertTrue(response.getTtl() > System.currentTimeMillis() / 1000);
   }
 
+  public void testRegionCheck() {
+    final Set<String> NorthAmericaSpecialApps = new HashSet<>();
+    NorthAmericaSpecialApps.add("msjqtclsfmfeznwvm29dqvuwddt3cqmziszf0rjddxho8eis");
+    NorthAmericaSpecialApps.add("iuuztdrr4mj683kbsmwoalt1roaypb5d25eu0f23lrfsthgn");
+    NorthAmericaSpecialApps.add("glvame9g0qlj3a4o29j5xdzzrypxvvb30jt4vnvm66klph4r");
+    NorthAmericaSpecialApps.add("nf3udjhnnsbe99qg04j7oslck4w1yp2geewcy1kp6wskbu5w");
+    NorthAmericaSpecialApps.add("143mgzglqmg4d0simqtn1zswggcro2ykugj76th8l38u3cm5");
+    NorthAmericaSpecialApps.add("18ry1wsn1p7808tagf2ka7sy1omna3nihe45cet0ne4xhg46");
+    NorthAmericaSpecialApps.add("7az5r9i0v95acx932a518ygz7mvr26uc7e3xxaq9s389sd2o");
+    NorthAmericaSpecialApps.add("kekxwm8uz1wtgxzvv5kitsgsammjcx4lcgm5b159qia5rqo5");
+    NorthAmericaSpecialApps.add("q3er6vs0dkawy15skjeuktf7l4eam438wn5jkts2j7fpf2y3");
+    NorthAmericaSpecialApps.add("tsvezhhlefbdj1jbkohynipehgtpk353sfonvbtlyxaraqxy");
+    NorthAmericaSpecialApps.add("8FfQwpvihLHK4htqmtEvkNrv");
+    NorthAmericaSpecialApps.add("AjQYwoIyObTeEkD16v1eCq55");
+    NorthAmericaSpecialApps.add("Ol0Cw6zL1xP9IIqJpiSv9uYC");
+    NorthAmericaSpecialApps.add("E0mVu1VMWrwBodUFWBpWzLNV");
+    NorthAmericaSpecialApps.add("wnDg0lPt0wcYGJSiHRwHBhD4");
+    NorthAmericaSpecialApps.add("W9BCIPx2biwKiKfUvVJtc8kF");
+    NorthAmericaSpecialApps.add("J0Ev9alAhaS4IdnxBA95wKgn");
+    NorthAmericaSpecialApps.add("nHptjiXlt3g8mcraXYRDpYFT");
+    NorthAmericaSpecialApps.add("pFcwt2MaALYf70POa7bIqe0J");
+    NorthAmericaSpecialApps.add("YHE5exCaW7UolMFJUtHvXTUY");
+    Object[] appIds = NorthAmericaSpecialApps.toArray();
+    for (int i = 0; i < appIds.length; i++) {
+      if (AVOSCloud.REGION.NorthAmerica != AppRouter.getAppRegion((String) appIds[i])) {
+        fail();
+      }
+    }
+  }
 
 }

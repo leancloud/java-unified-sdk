@@ -20,8 +20,14 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.fastjson.FastJsonConverterFactory;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * app router 请求
+ * https://app-router.com/2/route?appId=EDR0rD8otnmzF7zNGgLasHzi-MdYXbMMI
+ */
 public class AppRouter {
   private static final AVLogger LOGGER = LogUtil.getLogger(AppRouter.class);
   private static final String APP_ROUTER_HOST = "https://app-router.com";
@@ -30,40 +36,6 @@ public class AppRouter {
     return INSTANCE;
   }
 
-  /**
-   * 华北区 app router 请求与结果
-   * https://app-router.com/2/route?appId=EDR0rD8otnmzF7zNGgLasHzi-MdYXbMMI
-   * {
-   *    ttl: 3600,
-   *    stats_server: "nlqwjxku.stats.lncld.net",
-   *    rtm_router_server: "nlqwjxku.rtm.lncld.net",
-   *    push_server: "nlqwjxku.push.lncld.net",
-   *    engine_server: "nlqwjxku.engine.lncld.net",
-   *    api_server: "nlqwjxku.api.lncld.net",
-   * }
-   *
-   * 华东区 app router 请求与结果
-   * https://app-router.com/2/route?appId=qwTQb5S80beMUMGg3xtHsEka-9Nh9j0Va
-   * {
-   *    ttl: 3600,
-   *    stats_server: "qwtqb5s8.stats.lncldapi.com",
-   *    rtm_router_server: "qwtqb5s8.rtm.lncldapi.com",
-   *    push_server: "qwtqb5s8.push.lncldapi.com",
-   *    engine_server: "qwtqb5s8.engine.lncldapi.com",
-   *    api_server: "qwtqb5s8.api.lncldapi.com",
-   * }
-   *
-   * 美国区 app router 请求与结果
-   * https://app-router.com/2/route?appId=EDR0rD8otnmzF7zNGgLasHzi-MdYXbMMI
-   * {
-   *    ttl: 3600,
-   *    stats_server: "us-api.leancloud.cn",
-   *    rtm_router_server: "router-a0-push.leancloud.cn",
-   *    push_server: "us-api.leancloud.cn",
-   *    engine_server: "us-api.leancloud.cn",
-   *    api_server: "us-api.leancloud.cn",
-   * }
-   */
   private static final String DEFAULT_SERVER_HOST_FORMAT = "https://%s.%s.%s";
   private static final String DEFAULT_SERVER_API = AVOSService.API.toString();
   private static final String DEFAULT_SERVER_STAT = AVOSService.STATS.toString();
@@ -75,11 +47,35 @@ public class AppRouter {
   private static final String DEFAULT_REGION_NORTH_CHINA = "lncld.net";
   private static final String DEFAULT_REGION_NORTH_AMERICA = "lncldglobal.com";
 
+  private static final Set<String> NorthAmericaSpecialApps = new HashSet<>();
+  static {
+    NorthAmericaSpecialApps.add("143mgzglqmg4d0simqtn1zswggcro2ykugj76th8l38u3cm5");
+    NorthAmericaSpecialApps.add("18ry1wsn1p7808tagf2ka7sy1omna3nihe45cet0ne4xhg46");
+    NorthAmericaSpecialApps.add("7az5r9i0v95acx932a518ygz7mvr26uc7e3xxaq9s389sd2o");
+    NorthAmericaSpecialApps.add("8FfQwpvihLHK4htqmtEvkNrv");
+    NorthAmericaSpecialApps.add("AjQYwoIyObTeEkD16v1eCq55");
+    NorthAmericaSpecialApps.add("E0mVu1VMWrwBodUFWBpWzLNV");
+    NorthAmericaSpecialApps.add("J0Ev9alAhaS4IdnxBA95wKgn");
+    NorthAmericaSpecialApps.add("Ol0Cw6zL1xP9IIqJpiSv9uYC");
+    NorthAmericaSpecialApps.add("W9BCIPx2biwKiKfUvVJtc8kF");
+    NorthAmericaSpecialApps.add("YHE5exCaW7UolMFJUtHvXTUY");
+    NorthAmericaSpecialApps.add("glvame9g0qlj3a4o29j5xdzzrypxvvb30jt4vnvm66klph4r");
+    NorthAmericaSpecialApps.add("iuuztdrr4mj683kbsmwoalt1roaypb5d25eu0f23lrfsthgn");
+    NorthAmericaSpecialApps.add("kekxwm8uz1wtgxzvv5kitsgsammjcx4lcgm5b159qia5rqo5");
+    NorthAmericaSpecialApps.add("msjqtclsfmfeznwvm29dqvuwddt3cqmziszf0rjddxho8eis");
+    NorthAmericaSpecialApps.add("nHptjiXlt3g8mcraXYRDpYFT");
+    NorthAmericaSpecialApps.add("nf3udjhnnsbe99qg04j7oslck4w1yp2geewcy1kp6wskbu5w");
+    NorthAmericaSpecialApps.add("pFcwt2MaALYf70POa7bIqe0J");
+    NorthAmericaSpecialApps.add("q3er6vs0dkawy15skjeuktf7l4eam438wn5jkts2j7fpf2y3");
+    NorthAmericaSpecialApps.add("tsvezhhlefbdj1jbkohynipehgtpk353sfonvbtlyxaraqxy");
+    NorthAmericaSpecialApps.add("wnDg0lPt0wcYGJSiHRwHBhD4");
+  }
+
   public static AVOSCloud.REGION getAppRegion(String applicationId) {
     if (StringUtil.isEmpty(applicationId)) {
       return AVOSCloud.REGION.NorthChina;
     }
-    if (applicationId.endsWith("-MdYXbMMI")) {
+    if (applicationId.endsWith("-MdYXbMMI") || NorthAmericaSpecialApps.contains(applicationId)) {
       return AVOSCloud.REGION.NorthAmerica;
     }
     if (applicationId.endsWith("-9Nh9j0Va")) {
