@@ -12,7 +12,7 @@ android {
         versionCode 1
         versionName "5.0.0-SNAPSHOT"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     }
 
@@ -74,11 +74,11 @@ dependencies {
     implementation "com.alibaba:fastjson:${rootProject.ext.fastjsonVersion}"
     implementation "org.ligboy.retrofit2:converter-fastjson-android:${rootProject.ext.converterVersion}"
 
-    implementation "com.android.support:support-v4:${rootProject.ext.supportLibVersion}"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
 }
 
 apply from: '../maven_push.gradle'

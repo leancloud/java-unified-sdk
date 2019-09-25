@@ -47,6 +47,8 @@ ext {
     fastjsonVersion = "1.1.71.android"
     converterVersion = "2.1.0"
     rxandroidVersion = "2.1.1"
+    compileSDKVer = 28
+    buildToolVer = "28.0.3"
 }
 
 task clean(type: Delete) {

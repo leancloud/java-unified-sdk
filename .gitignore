@@ -7,4 +7,4 @@
 **/PaasKeyValueCache/**
 **/data/**
 **/file/**
-android-sdk/app/src/main/assets/*.file
+android-sdk/storage-sample-app/src/main/assets/**

@@ -1,4 +1,4 @@
-include ':storage-android'
+include ':storage-android', ':leancloud-search'
 include ':leancloud-fcm'
 //include ':leancloud-push-lite'
 include ':mixpush-android'
