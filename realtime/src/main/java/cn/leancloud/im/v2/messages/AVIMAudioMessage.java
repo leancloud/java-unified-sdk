@@ -96,8 +96,4 @@ public class AVIMAudioMessage extends AVIMFileMessage {
     meta.put(DURATION, durationInDouble);
     meta.put(FORMAT, fileFormat);
   }
-
-  @Override
-  protected void getAdditionalMetaData(final Map<String, Object> meta, final SaveCallback callback) {
-  }
 }
