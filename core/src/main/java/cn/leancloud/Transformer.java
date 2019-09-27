@@ -23,7 +23,7 @@ public class Transformer {
     return subClassesMAP.get(className);
   }
 
-  static String getSubClassName(Class<? extends AVObject> clazz) {
+  public static String getSubClassName(Class<? extends AVObject> clazz) {
     if (AVUser.class.isAssignableFrom(clazz)) {
       return AVUser.CLASS_NAME;
     } else if (AVRole.class.isAssignableFrom(clazz)) {

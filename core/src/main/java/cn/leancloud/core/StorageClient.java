@@ -4,6 +4,7 @@ import cn.leancloud.*;
 import cn.leancloud.cache.QueryResultCache;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.query.AVQueryResult;
+import cn.leancloud.search.AVSearchResponse;
 import cn.leancloud.service.APIService;
 import cn.leancloud.sms.AVCaptchaDigest;
 import cn.leancloud.sms.AVCaptchaOption;
@@ -565,5 +566,9 @@ public class StorageClient {
     Map<String, Object> param = new HashMap<String, Object>(1);
     param.put("mobilePhoneNumber", mobilePhone);
     return wrapObservable(apiService.verifySMSCode(code, param));
+  }
+
+  public Observable<AVSearchResponse> search(Map<String, String> params) {
+    return wrapObservable(apiService.search(params));
   }
 }

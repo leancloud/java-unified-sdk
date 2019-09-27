@@ -2,6 +2,7 @@ package cn.leancloud.service;
 
 import cn.leancloud.*;
 import cn.leancloud.query.AVQueryResult;
+import cn.leancloud.search.AVSearchResponse;
 import cn.leancloud.sms.AVCaptchaDigest;
 import cn.leancloud.sms.AVCaptchaValidateResult;
 import cn.leancloud.types.AVDate;
@@ -220,4 +221,10 @@ public interface APIService {
 
   @POST("/1.1/verifySmsCode/{code}")
   Observable<AVNull> verifySMSCode(@Path("code") String code, @Body Map<String, Object> param);
+
+  /**
+   * FullText Search API
+   */
+  @GET("/1.1/search/select")
+  Observable<AVSearchResponse> search(@QueryMap Map<String, String> query);
 }

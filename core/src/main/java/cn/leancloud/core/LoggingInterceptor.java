@@ -23,10 +23,10 @@ public class LoggingInterceptor implements Interceptor {
     StringBuilder sb = new StringBuilder();
     sb.append(String.format(CURL_COMMAND, method));
     for (String name : headers.names()) {
-      if (RequestPaddingInterceptor.HEADER_KEY_LC_APPID.equals(name)) {
-        sb.append(String.format(CURL_HEADER_FORMAT, name, "{your_app_id}"));
-        continue;
-      }
+//      if (RequestPaddingInterceptor.HEADER_KEY_LC_APPID.equals(name)) {
+//        sb.append(String.format(CURL_HEADER_FORMAT, name, "{your_app_id}"));
+//        continue;
+//      }
       if (RequestPaddingInterceptor.HEADER_KEY_LC_APPKEY.equals(name)) {
         sb.append(String.format(CURL_HEADER_FORMAT, name, "{your_app_key}"));
         continue;
