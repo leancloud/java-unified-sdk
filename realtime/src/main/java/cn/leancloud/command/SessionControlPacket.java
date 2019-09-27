@@ -1,6 +1,7 @@
 package cn.leancloud.command;
 
 import cn.leancloud.Messages;
+import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.Signature;
 import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.AVInstallation;
@@ -45,7 +46,6 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
   private static final long PATCH_FLAG_ACK_4_TRANSIENT_MSG = 0x08; // support to receive ack for transient message.
   private static final long PATCH_FLAG_SUPPORT_CONVMEMBER_INFO = 0x20;
 
-  public static final String USERAGENT = "java/5.0.0";
   private String op;
 
   private Collection<String> sessionPeerIds;
@@ -103,7 +103,7 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
     }
 
     if (op.equals(SessionControlOp.OPEN)) {
-      builder.setUa(USERAGENT);
+      builder.setUa(AppConfiguration.getUserAgent());
       if (!StringUtil.isEmpty(tag)) {
         builder.setTag(tag);
       }
