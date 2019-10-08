@@ -2,13 +2,13 @@
   <parent>
     <groupId>cn.leancloud</groupId>
     <artifactId>leancloud-sdk</artifactId>
-    <version>6.0.1-SNAPSHOT</version>
+    <version>6.0.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.leancloud</groupId>
   <artifactId>realtime-core</artifactId>
   <packaging>jar</packaging>
-  <version>6.0.1-SNAPSHOT</version>
+  <version>6.0.1</version>
   <name>realtime core library</name>
   <url>http://maven.apache.org</url>
 
@@ -37,7 +37,7 @@
     <connection>scm:git:https://github.com/leancloud/java-sdk-all.git</connection>
     <developerConnection>scm:git:git@github.com:leancloud/java-sdk-all.git</developerConnection>
     <url>http://github.com/leancloud/java-sdk-all/tree/master</url>
-    <tag>HEAD</tag>
+    <tag>leancloud-sdk-6.0.1</tag>
   </scm>
 
   <distributionManagement>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>cn.leancloud</groupId>
       <artifactId>storage-core</artifactId>
-      <version>6.0.1-SNAPSHOT</version>
+      <version>6.0.1</version>
     </dependency>
     <dependency>
       <groupId>com.google.protobuf</groupId>
