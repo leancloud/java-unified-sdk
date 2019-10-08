@@ -1,9 +1,11 @@
 package cn.leancloud.search;
 
+import cn.leancloud.AVLogger;
 import cn.leancloud.AVObject;
 import cn.leancloud.Transformer;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.utils.AVUtils;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
@@ -11,9 +13,12 @@ import io.reactivex.functions.Function;
 import java.util.*;
 
 public class AVSearchQuery<T extends AVObject> {
+  private static final AVLogger LOGGER = LogUtil.getLogger(AVSearchQuery.class);
+
   public static final String AVSEARCH_HIGHTLIGHT = "highlight_avoscloud_";
   public static final String AVSEARCH_APP_URL = "app_url_avoscloud_";
   public static final String AVSEARCH_DEEP_LINK = "deep_link_avoscloud_";
+  public static final String DATA_EXTRA_SEARCH_KEY = "com.avos.avoscloud.search.key";
 
   private String sid;
   private int limit = 100;
@@ -373,11 +378,19 @@ public class AVSearchQuery<T extends AVObject> {
         } else {
           object = clazz.newInstance();
         }
-        object.resetServerData(item);// AVUtils.copyPropertiesFromMapToAVObject(item, object);
-
-        object.put(AVSEARCH_HIGHTLIGHT, item.get("_highlight"));
-        object.put(AVSEARCH_APP_URL, item.get("_app_url"));
-        object.put(AVSEARCH_DEEP_LINK, item.get("_deeplink"));
+        if(item.containsKey("_highlight")) {
+          item.put(AVSEARCH_HIGHTLIGHT, item.get("_highlight"));
+          item.remove("_highlight");
+        }
+        if(item.containsKey("_app_url")) {
+          item.put(AVSEARCH_APP_URL, item.get("_app_url"));
+          item.remove("_app_url");
+        }
+        if(item.containsKey("_deeplink")) {
+          item.put(AVSEARCH_DEEP_LINK, item.get("_deeplink"));
+          item.remove("_deeplink");
+        }
+        object.resetServerData(item);
         result.add((T) object);
       }
     }

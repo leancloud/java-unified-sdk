@@ -1,4 +1,4 @@
-package cn.leancloud.search;
+package cn.leancloud.demo.leancloud_search_sample;
 
 import android.content.Context;
 
@@ -17,11 +17,11 @@ import static org.junit.Assert.*;
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
-    @Test
-    public void useAppContext() {
-        // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+  @Test
+  public void useAppContext() {
+    // Context of the app under test.
+    Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("cn.leancloud.searchQuery.test", appContext.getPackageName());
-    }
+    assertEquals("cn.leancloud.demo.leancloud_search_sample", appContext.getPackageName());
+  }
 }
