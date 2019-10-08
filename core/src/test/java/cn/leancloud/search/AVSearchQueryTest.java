@@ -2,7 +2,6 @@ package cn.leancloud.search;
 
 import cn.leancloud.AVObject;
 import cn.leancloud.Configure;
-import cn.leancloud.core.AVOSCloud;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;

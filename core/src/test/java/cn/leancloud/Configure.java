@@ -43,6 +43,12 @@ public class Configure {
     AVOSCloud.initialize(appId, appKey, serverUrl);
   }
 
+  public static void initializeWithMasterKey(String appId, String masterKey, String serverUrl) {
+    AVOSCloud.setLogLevel(AVLogger.Level.DEBUG);
+    AVOSCloud.initialize(appId, "", serverUrl);
+    AVOSCloud.setMasterKey(masterKey);
+  }
+
   public static void initializeRuntime() {
 //    AppConfiguration.setLogAdapter(new DummyLoggerFactory());
     AVOSCloud.setRegion(reGion);
