@@ -1,11 +1,7 @@
 package cn.leancloud;
 
-import cn.leancloud.codec.Base64Encoder;
-import cn.leancloud.codec.MD5;
-import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -14,8 +10,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class AVFileTest extends TestCase {
@@ -239,6 +233,7 @@ public class AVFileTest extends TestCase {
       public void onNext(AVFile avFile) {
         System.out.println("[Thread:" + Thread.currentThread().getId() +
                 "]succeed to upload file. objectId=" + avFile.getObjectId());
+
         avFile.deleteInBackground().subscribe(new Observer<AVNull>() {
           public void onSubscribe(Disposable disposable) {
 

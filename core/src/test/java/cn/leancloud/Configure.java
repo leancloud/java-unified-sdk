@@ -37,6 +37,12 @@ public class Configure {
     AVOSCloud.initialize(appId, appKey);
   }
 
+  public static void initializeWithApp(String appId, String appKey, String serverUrl) {
+    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
+//    AppConfiguration.setEnableLocalCache(false);
+    AVOSCloud.initialize(appId, appKey, serverUrl);
+  }
+
   public static void initializeRuntime() {
 //    AppConfiguration.setLogAdapter(new DummyLoggerFactory());
     AVOSCloud.setRegion(reGion);

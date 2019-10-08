@@ -72,6 +72,9 @@ public class AppRouter {
   }
 
   public static AVOSCloud.REGION getAppRegion(String applicationId) {
+    if (AVOSCloud.getRegion() != AVOSCloud.REGION.NorthChina) {
+      return AVOSCloud.getRegion();
+    }
     if (StringUtil.isEmpty(applicationId)) {
       return AVOSCloud.REGION.NorthChina;
     }
