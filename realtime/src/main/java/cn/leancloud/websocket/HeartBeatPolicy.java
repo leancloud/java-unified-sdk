@@ -51,6 +51,7 @@ abstract class HeartBeatPolicy {
   synchronized void stop() {
     if (null != healthFuture) {
       healthFuture.cancel(true);
+      healthFuture = null;
     }
   }
 

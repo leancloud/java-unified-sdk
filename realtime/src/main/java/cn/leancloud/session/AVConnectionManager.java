@@ -23,6 +23,7 @@ import cn.leancloud.websocket.AVStandardWebSocketClient;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.framing.CloseFrame;
 
 import javax.net.ssl.SSLContext;
@@ -288,8 +289,8 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   /**
    * WebSocketClientMonitor interfaces
    */
-  public void onOpen() {
-    LOGGER.d("webSocket established...");
+  public void onOpen(WebSocketClient client) {
+    LOGGER.d("webSocket(client=" + client + ") established...");
     connectionEstablished = true;
     retryConnectionCount = 0;
     resetConnectingStatus(true);
@@ -320,8 +321,8 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
   }
 
-  public void onClose(int var1, String var2, boolean var3) {
-    LOGGER.d("websocket closed...");
+  public void onClose(WebSocketClient client, int var1, String var2, boolean var3) {
+    LOGGER.d("websocket(client=" + client + ") closed...");
     connectionEstablished = false;
     for (AVConnectionListener listener: connectionListeners.values()) {
       listener.onWebSocketClose();
@@ -331,14 +332,14 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
   }
 
-  public void onMessage(ByteBuffer bytes) {
+  public void onMessage(WebSocketClient client, ByteBuffer bytes) {
     WindTalker windTalker = WindTalker.getInstance();
     Messages.GenericCommand command = windTalker.disassemblePacket(bytes);
     if (null == command) {
       return;
     }
 
-    LOGGER.d("downlink: " + command.toString());
+    LOGGER.d("client(" + client + ") downlink: " + command.toString());
 
     String peerId = command.getPeerId();
     Integer requestKey = command.hasI() ? command.getI() : null;
@@ -365,8 +366,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
   }
 
-  public void onError(Exception exception) {
-    LOGGER.d("webSocket onError. exception:" + ((null != exception)? exception.getMessage(): "null"));
+  public void onError(WebSocketClient client, Exception exception) {
+    LOGGER.d("webSocket onError. client:" + client + ", exception:"
+            + ((null != exception)? exception.getMessage(): "null"));
     connectionEstablished = false;
     reConnectionRTMServer();
     for (AVConnectionListener listener: connectionListeners.values()) {

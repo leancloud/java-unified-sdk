@@ -1,6 +1,5 @@
 package cn.leancloud.websocket;
 
-import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.command.CommandPacket;
 import cn.leancloud.utils.LogUtil;
@@ -123,12 +122,20 @@ public class AVStandardWebSocketClient extends WebSocketClient {
     }
   }
 
+  @Override
+  public void close() {
+    socketClientMonitor = null;
+    this.heartBeatPolicy.stop();
+    super.close();
+  }
+
   // WebSocketClient interfaces.
   public void onOpen(ServerHandshake var1) {
-    gLogger.d("onOpen status=" + var1.getHttpStatus() + ", statusMsg=" + var1.getHttpStatusMessage());
+    gLogger.d("onOpen socket=" + this + ", status=" + var1.getHttpStatus()
+            + ", statusMsg=" + var1.getHttpStatusMessage());
     this.heartBeatPolicy.start();
     if (null != this.socketClientMonitor) {
-      this.socketClientMonitor.onOpen();
+      this.socketClientMonitor.onOpen(this);
     }
   }
 
@@ -138,30 +145,30 @@ public class AVStandardWebSocketClient extends WebSocketClient {
 
   public void onMessage(ByteBuffer bytes) {
     if (null != this.socketClientMonitor) {
-      this.socketClientMonitor.onMessage(bytes);
+      this.socketClientMonitor.onMessage(this, bytes);
     }
   }
 
   public void onClose(int var1, String var2, boolean var3) {
-    gLogger.d("onClose code=" + var1 + ", message=" + var2);
+    gLogger.d("onClose socket=" + this + ", code=" + var1 + ", message=" + var2);
     this.heartBeatPolicy.stop();
     if (null != this.socketClientMonitor) {
-      this.socketClientMonitor.onClose(var1, var2, var3);
+      this.socketClientMonitor.onClose(this, var1, var2, var3);
     }
   }
 
   public void onError(Exception var1) {
-    gLogger.w("onError ", var1);
+    gLogger.w("onError socket=" + this + ", exception=" + var1.getMessage());
     if (null != this.socketClientMonitor) {
-      this.socketClientMonitor.onError(var1);
+      this.socketClientMonitor.onError(this, var1);
     }
   }
   // end of WebSocketClient interfaces.
 
   public interface WebSocketClientMonitor {
-    void onOpen();
-    void onClose(int var1, String var2, boolean var3);
-    void onMessage(ByteBuffer bytes);
-    void onError(Exception exception);
+    void onOpen(WebSocketClient client);
+    void onClose(WebSocketClient client, int var1, String var2, boolean var3);
+    void onMessage(WebSocketClient client, ByteBuffer bytes);
+    void onError(WebSocketClient client, Exception exception);
   }
 }
