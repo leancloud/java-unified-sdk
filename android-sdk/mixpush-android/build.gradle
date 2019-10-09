@@ -49,7 +49,7 @@ android.libraryVariants.all { variant ->
     task.exclude '**/BuildConfig.class'
     task.exclude '**/R.class'
     task.exclude '**/R$*.class'
-    artifacts.add('archives', task)
+//    artifacts.add('archives', task)
 }
 
 dependencies {

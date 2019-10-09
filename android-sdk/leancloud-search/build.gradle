@@ -6,7 +6,7 @@ android {
 
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 14
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -15,13 +15,41 @@ android {
         consumerProguardFiles 'consumer-rules.pro'
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+}
 
+android.libraryVariants.all { variant ->
+    def javadoc = task("generate${variant.name}Javadoc", type: Javadoc) {
+        description "Generates Javadoc for $variant.name."
+        def compileTask = variant.hasProperty('javaCompileProvider')? variant.javaCompileProvider.get() : variant.javaCompile
+        source = compileTask.source
+        ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+        doFirst { classpath = files(compileTask.classpath.files) + files(ext.androidJar) }
+        options.links("http://docs.oracle.com/javase/8/docs/api/");
+        options.links("http://d.android.com/reference/");
+        exclude '**/BuildConfig.java'
+        exclude '**/R.java'
+    }
+    def name = variant.buildType.name
+    def task = project.tasks.create "jar${name.capitalize()}", Jar
+    def compileTask = variant.hasProperty('javaCompileProvider')? variant.javaCompileProvider.get() : variant.javaCompile
+    task.dependsOn compileTask
+    task.dependsOn javadoc
+    task.from compileTask.destinationDir
+    task.exclude '**/BuildConfig.class'
+    task.exclude '**/R.class'
+    task.exclude '**/R$*.class'
+//    artifacts.add('archives', task)
 }
 
 dependencies {
@@ -41,3 +69,5 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
+
+apply from: '../maven_push.gradle'

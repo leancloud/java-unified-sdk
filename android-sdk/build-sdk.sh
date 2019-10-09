@@ -16,7 +16,7 @@ sed -i '' "s/VERSION_NAME=.*/VERSION_NAME=$version/" gradle.properties
 sed -i '' "s/include ':storage-sample-app'//" settings.gradle
 sed -i '' "s/include ':realtime-sample-app'//" settings.gradle
 sed -i '' "s/include ':push_lite_demo'//" settings.gradle
-sed -i '' "s/include ':leancloud-search-app'//" settings.gradle
+sed -i '' "s/include ':leancloud-search-sample'//" settings.gradle
 
 ./gradlew clean assemble uploadArchives
 
