@@ -11,6 +11,8 @@ import cn.leancloud.utils.LogUtil;
 public abstract class AVIMClientEventHandler extends AVIMEventHandler {
   protected static final AVLogger LOGGER = LogUtil.getLogger(AVIMClientEventHandler.class);
 
+  private int prevOperation = Conversation.AVIMOperation.CONVERSATION_UNKNOWN.getCode();
+
   /**
    * 实现本方法以处理网络断开事件
    *
@@ -41,6 +43,11 @@ public abstract class AVIMClientEventHandler extends AVIMEventHandler {
   @Override
   protected final void processEvent0(int operation, Object operator, Object operand,
                                      Object eventScene) {
+    if (prevOperation == operation) {
+      LOGGER.d("ignore duplicated operation: " + operation);
+      return;
+    }
+    prevOperation = operation;
     switch (operation) {
       case Conversation.STATUS_ON_CONNECTION_RESUMED:
         onConnectionResume((AVIMClient) eventScene);
