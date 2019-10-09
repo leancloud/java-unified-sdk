@@ -7,6 +7,8 @@ import cn.leancloud.AVInstallation;
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVOSCloud;
 import cn.leancloud.AVObject;
+import cn.leancloud.im.v2.AVIMClient;
+import cn.leancloud.im.v2.AVIMClientEventHandler;
 import cn.leancloud.push.PushService;
 import cn.leancloud.utils.LogUtil;
 import io.reactivex.Observer;
@@ -41,6 +43,23 @@ public class MyApplication extends Application {
     AVOSCloud.setLogLevel(AVLogger.Level.DEBUG);
     AVOSCloud.initialize(this, APPID, APPKEY, APP_SERVER_HOST);
 
+    AVIMClient.setClientEventHandler(new AVIMClientEventHandler() {
+      @Override
+      public void onConnectionPaused(AVIMClient client) {
+        System.out.println("============ CONNECTION PAUSED ============");
+      }
+
+      @Override
+      public void onConnectionResume(AVIMClient client) {
+        System.out.println("============ CONNECTION RESUMED ============");
+      }
+
+      @Override
+      public void onClientOffline(AVIMClient client, int code) {
+        System.out.println("============ CLIENT OFFLINE ============");
+      }
+    });
+
     LOGGER.d("onCreate in thread:" + this.getMainLooper().getThread().getId());
 
     AVInstallation currentInstallation = AVInstallation.getCurrentInstallation();
@@ -67,6 +86,5 @@ public class MyApplication extends Application {
 
       }
     });
-    PushService.setDefaultPushCallback(this, MainActivity.class);
   }
 }

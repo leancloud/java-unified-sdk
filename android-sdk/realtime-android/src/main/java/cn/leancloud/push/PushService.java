@@ -212,8 +212,8 @@ public class PushService extends Service {
     isStarted = false;
 
     if (isAutoWakeUp && Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
-      // Let's try to wake PushService again
       try {
+        LOGGER.d("Let's try to wake PushService again");
         Intent i = new Intent(AVOSCloud.getContext(), PushService.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startService(i);

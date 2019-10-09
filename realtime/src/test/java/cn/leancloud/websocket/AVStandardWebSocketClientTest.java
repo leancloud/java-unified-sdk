@@ -9,6 +9,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.java_websocket.WebSocketImpl;
+import org.java_websocket.client.WebSocketClient;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -25,22 +26,22 @@ public class AVStandardWebSocketClientTest extends TestCase {
     AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
     this.monitor = new AVStandardWebSocketClient.WebSocketClientMonitor() {
       @Override
-      public void onOpen() {
+      public void onOpen(WebSocketClient client) {
 
       }
 
       @Override
-      public void onClose(int var1, String var2, boolean var3) {
+      public void onClose(WebSocketClient client, int var1, String var2, boolean var3) {
 
       }
 
       @Override
-      public void onMessage(ByteBuffer bytes) {
+      public void onMessage(WebSocketClient client, ByteBuffer bytes) {
 
       }
 
       @Override
-      public void onError(Exception exception) {
+      public void onError(WebSocketClient client, Exception exception) {
 
       }
     };

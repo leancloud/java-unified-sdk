@@ -29,6 +29,9 @@ public class AVDefaultSessionListener extends AVSessionListener {
     if (requestId > CommandPacket.UNSUPPORTED_OPERATION) {
       InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
               AVIMOperation.CLIENT_OPEN, null);
+    } else {
+      LOGGER.d("internal session open.");
+      onSessionResumed(session);
     }
   }
 

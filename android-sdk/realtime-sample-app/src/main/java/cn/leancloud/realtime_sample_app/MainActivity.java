@@ -17,6 +17,7 @@ import cn.leancloud.AVObject;
 import cn.leancloud.AVQuery;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.im.v2.AVIMClient;
+import cn.leancloud.im.v2.AVIMClientEventHandler;
 import cn.leancloud.im.v2.AVIMConversation;
 import cn.leancloud.im.v2.AVIMConversationsQuery;
 import cn.leancloud.im.v2.AVIMException;
@@ -28,6 +29,7 @@ import cn.leancloud.livequery.AVLiveQuery;
 import cn.leancloud.livequery.AVLiveQueryConnectionHandler;
 import cn.leancloud.livequery.AVLiveQueryEventHandler;
 import cn.leancloud.livequery.AVLiveQuerySubscribeCallback;
+import cn.leancloud.push.PushService;
 import cn.leancloud.utils.FileUtil;
 
 public class MainActivity extends AppCompatActivity {
@@ -65,17 +67,18 @@ public class MainActivity extends AppCompatActivity {
           AVLiveQuery.setConnectionHandler(new AVLiveQueryConnectionHandler() {
             @Override
             public void onConnectionOpen() {
-              System.out.println("LiveQuery Connection opened");
+              System.out.println("============ LiveQuery Connection opened ============");
             }
 
             @Override
             public void onConnectionClose() {
-              System.out.println("LiveQuery Connection closed");
+              System.out.println("============ LiveQuery Connection closed ============");
             }
 
             @Override
             public void onConnectionError(int code, String reason) {
-              System.out.println("LiveQuery Connection error. code:" + code + ", reason:" + reason);
+              System.out.println("============ LiveQuery Connection error. code:" + code
+                  + ", reason:" + reason + " ============");
             }
           });
           liveQuery.setEventHandler(new AVLiveQueryEventHandler() {
@@ -177,6 +180,13 @@ public class MainActivity extends AppCompatActivity {
     mTextMessage = (TextView) findViewById(R.id.message);
     BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
     navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
   }
 
+  @Override
+  protected void onStart() {
+    super.onStart();
+    System.out.println("MainActivity onStart()....");
+    PushService.setDefaultPushCallback(this, MainActivity.class);
+  }
 }
