@@ -59,7 +59,7 @@ android.libraryVariants.all { variant ->
     task.exclude '**/BuildConfig.class'
     task.exclude '**/R.class'
     task.exclude '**/R$*.class'
-//    artifacts.add('archives', task);
+    artifacts.add('archives', task);
 }
 
 dependencies {
@@ -81,4 +81,4 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
 }
 
-apply from: '../maven_push.gradle'
+// apply from: '../maven_push.gradle'
