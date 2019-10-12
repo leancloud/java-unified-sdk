@@ -27,8 +27,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation project(':leancloud-search')
-    implementation project(':storage-android')
+    implementation('cn.leancloud:leancloud-search:6.0.2-androidx@aar')
+    implementation('cn.leancloud:storage-android:6.0.2-androidx')
     implementation("cn.leancloud:storage-core:${rootProject.ext.sdkVersion}") {
         exclude group: 'com.alibaba', module: 'fastjson'
         exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'

@@ -7,10 +7,10 @@ import cn.leancloud.AVOSCloud;
 import cn.leancloud.utils.StringUtil;
 
 public class MyApp extends Application {
-  private static final String LeanCloud_APP_ID = "qJnLgVRA9mnzVSw4Ho3HtIaI-gzGzoHsz";
-  private static final String LeanCloud_APP_KEY = "";
-  private static final String LeanCloud_APP_MASTER_KEY = "lWmvnikOKNbJ9A6oj66Fe5aP";
-  private static final String LeanCloud_APP_SERVER_URL = "https://api.leanticket.cn";
+  private static final String LeanCloud_APP_ID = "ohqhxu3mgoj2eyj6ed02yliytmbes3mwhha8ylnc215h0bgk";
+  private static final String LeanCloud_APP_KEY = "6j8fuggqkbc5m86b8mp4pf2no170i5m7vmax5iypmi72wldc";
+  private static final String LeanCloud_APP_MASTER_KEY = "";
+  private static final String LeanCloud_APP_SERVER_URL = "https://ohqhxu3m.lc-cn-n1-shared.com";
   @Override
   public void onCreate() {
     super.onCreate();

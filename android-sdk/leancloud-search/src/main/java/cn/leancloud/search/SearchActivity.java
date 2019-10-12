@@ -69,10 +69,6 @@ public class SearchActivity extends AppCompatActivity {
 
                 @Override
                 public void done(List<AVObject> avObjects, AVException avException) {
-                    for (AVObject o: avObjects) {
-                        LOGGER.d("search result: " + o.toJSONString());
-                    }
-
                     if (avException == null) {
                         searchResults.addAll(avObjects);
                         if (adapter == null) {
