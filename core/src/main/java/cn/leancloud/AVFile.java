@@ -268,7 +268,7 @@ public final class AVFile extends AVObject {
   }
 
   public String getThumbnailUrl(boolean scaleToFit, int width, int height, int quality, String fmt) {
-    if (AVOSCloud.getRegion() != AVOSCloud.REGION.NorthChina) {
+    if (AVOSCloud.getRegion() == AVOSCloud.REGION.NorthAmerica) {
       logger.w("We only support this method for qiniu storage.");
       throw new UnsupportedOperationException("We only support this method for qiniu storage.");
     }
