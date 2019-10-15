@@ -22,13 +22,24 @@ public class AVMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
   private static final AVLogger LOGGER = LogUtil.getLogger(AVMiPushMessageReceiver.class);
   private static final String AV_MIXPUSH_MI_NOTIFICATION_ACTION = "com.avos.avoscloud.mi_notification_action";
   private static final String AV_MIXPUSH_MI_NOTIFICATION_ARRIVED_ACTION = "com.avos.avoscloud.mi_notification_arrived_action";
+  public static final String VENDOR_XIAOMI = "mi";
+  public static final String VENDOR_XIAOMI_INTERNATIONAL = "mi-intl";
+  private static String defaultVendor = VENDOR_XIAOMI;
+
+  public static void setInternationalVendor(boolean isInternationalVendor) {
+    if (isInternationalVendor) {
+      defaultVendor = VENDOR_XIAOMI_INTERNATIONAL;
+    } else {
+      defaultVendor = VENDOR_XIAOMI;
+    }
+  }
 
   private void updateAVInstallation(String miRegId) {
     if (!StringUtil.isEmpty(miRegId)) {
       AVInstallation installation = AVInstallation.getCurrentInstallation();
 
-      if (!"mi".equals(installation.getString(AVInstallation.VENDOR))) {
-        installation.put(AVInstallation.VENDOR, "mi");
+      if (!defaultVendor.equals(installation.getString(AVInstallation.VENDOR))) {
+        installation.put(AVInstallation.VENDOR, defaultVendor);
       }
       if (!miRegId.equals(installation.getString(AVInstallation.REGISTRATION_ID))) {
         installation.put(AVInstallation.REGISTRATION_ID, miRegId);

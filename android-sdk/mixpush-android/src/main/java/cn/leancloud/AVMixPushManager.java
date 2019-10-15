@@ -93,6 +93,22 @@ public class AVMixPushManager {
   }
 
   /**
+   * 注册小米推送
+   * 只有 appId、appKey 有效 且 MIUI 且 manifest 正确填写 才能注册
+   *
+   * @param context
+   * @param miAppId
+   * @param miAppKey
+   * @param profile  小米推送配置
+   * @param isInternationalVendor  是否为小米国际版设备
+   */
+  public static void registerXiaomiPush(Context context, String miAppId, String miAppKey,
+                                        String profile, boolean isInternationalVendor) {
+    AVMiPushMessageReceiver.setInternationalVendor(isInternationalVendor);
+    registerXiaomiPush(context, miAppId, miAppKey, profile);
+  }
+
+  /**
    * 初始化方法，建议在 Application onCreate 里面调用
    * @param application
    */
