@@ -67,6 +67,10 @@ public class AndroidNotificationManager extends AVNotificationManager {
     sendNotification(from, msg, resultIntent);
   }
 
+  static String getNotificationChannel(String msg) {
+    return getJSONValue(msg, "_notificationChannel");
+  }
+
   @TargetApi(Build.VERSION_CODES.O)
   private void sendNotification(String from, String msg, Intent resultIntent) {
     String clsName = getDefaultPushCallback(from);
@@ -86,7 +90,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
           PendingIntent.getActivity(context, notificationId, resultIntent, 0);
       String sound = getSound(msg);
       String title = getTitle(msg);
-      String channel = getChannel(msg);
+      String notificationChannel = getNotificationChannel(msg);
       String content = getText(msg);
       Notification notification = null;
       if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
@@ -97,12 +101,12 @@ public class AndroidNotificationManager extends AVNotificationManager {
                 .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
                 .setContentText(content);
         notification = mBuilder.build();
-      } else if (!StringUtil.isEmpty(channel)) {
+      } else if (!StringUtil.isEmpty(notificationChannel)) {
         Notification.Builder builder = new Notification.Builder(context)
             .setSmallIcon(getNotificationIcon())
             .setContentTitle(title).setContentText(content)
             .setAutoCancel(true).setContentIntent(contentIntent)
-            .setChannelId(channel);
+            .setChannelId(notificationChannel);
 
         notification = builder.build();
       } else {

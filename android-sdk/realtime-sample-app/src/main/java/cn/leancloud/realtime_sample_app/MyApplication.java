@@ -9,6 +9,7 @@ import cn.leancloud.AVOSCloud;
 import cn.leancloud.AVObject;
 import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.im.v2.AVIMClientEventHandler;
+import cn.leancloud.push.PushService;
 import cn.leancloud.utils.LogUtil;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -85,5 +86,6 @@ public class MyApplication extends Application {
 
       }
     });
+    PushService.setDefaultChannelId(this, "1");
   }
 }
