@@ -367,6 +367,46 @@ public class PushService extends Service {
   }
 
   /**
+   * create Notification channel.
+   * @param context
+   * @param channelId
+   * @param channelName
+   * @param description
+   * @param importance
+   * @param enableLights
+   * @param lightColor
+   * @param enableVibration
+   * @param vibrationPattern
+   */
+  @TargetApi(Build.VERSION_CODES.O)
+  public static void createNotificationChannel(Context context, String channelId, String channelName,
+                                            String description, int importance,
+                                            boolean enableLights, int lightColor,
+                                            boolean enableVibration, long[] vibrationPattern) {
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+      // do nothing for Android versions before Ore
+      return;
+    }
+
+    try {
+      NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+      android.app.NotificationChannel channel = new android.app.NotificationChannel(channelId, channelName, importance);
+      channel.setDescription(description);
+      channel.enableLights(enableLights);
+      if (enableLights) {
+        channel.setLightColor(lightColor);
+      }
+      channel.enableVibration(enableVibration);
+      if (enableVibration) {
+        channel.setVibrationPattern(vibrationPattern);
+      }
+      notificationManager.createNotificationChannel(channel);
+    } catch (Exception ex) {
+      LOGGER.w("failed to create NotificationChannel, then perhaps PushNotification doesn't work well on Android O and newer version.");
+    }
+  }
+
+  /**
    * Cancels a previous call to subscribe. If the user is not subscribed to this channel, this is a
    * no-op. This call does not require internet access. It returns without blocking
    *

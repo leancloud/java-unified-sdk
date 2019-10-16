@@ -85,22 +85,32 @@ public class AndroidNotificationManager extends AVNotificationManager {
       PendingIntent contentIntent =
           PendingIntent.getActivity(context, notificationId, resultIntent, 0);
       String sound = getSound(msg);
+      String title = getTitle(msg);
+      String channel = getChannel(msg);
+      String content = getText(msg);
       Notification notification = null;
       if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
         NotificationCompat.Builder mBuilder =
             new NotificationCompat.Builder(context)
                 .setSmallIcon(getNotificationIcon())
-                .setContentTitle(getTitle(msg)).setAutoCancel(true).setContentIntent(contentIntent)
+                .setContentTitle(title).setAutoCancel(true).setContentIntent(contentIntent)
                 .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
-                .setContentText(getText(msg));
+                .setContentText(content);
         notification = mBuilder.build();
+      } else if (!StringUtil.isEmpty(channel)) {
+        Notification.Builder builder = new Notification.Builder(context)
+            .setSmallIcon(getNotificationIcon())
+            .setContentTitle(title).setContentText(content)
+            .setAutoCancel(true).setContentIntent(contentIntent)
+            .setChannelId(channel);
+
+        notification = builder.build();
       } else {
         Notification.Builder builder = new Notification.Builder(context)
             .setSmallIcon(getNotificationIcon())
-            .setContentTitle(getTitle(msg))
+            .setContentTitle(title).setContentText(content)
             .setAutoCancel(true).setContentIntent(contentIntent)
             .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
-            .setContentText(getText(msg))
             .setChannelId(PushService.DefaultChannelId);
 
         notification = builder.build();
