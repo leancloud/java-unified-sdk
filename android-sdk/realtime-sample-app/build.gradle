@@ -49,28 +49,28 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation('cn.leancloud:mixpush-android:6.0.2-androidx@aar') {
-        exclude group: 'cn.leancloud', module: 'huawei-hmsagent'
-    }
-    implementation('cn.leancloud:realtime-android:6.0.2-androidx')
-    implementation('cn.leancloud:storage-android:6.0.2-androidx')
-
-    implementation('cn.leancloud:realtime-core:6.0.2') {
-        exclude group: 'com.alibaba', module: 'fastjson'
-        exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
-    }
-    implementation('cn.leancloud:storage-core:6.0.2') {
-        exclude group: 'com.alibaba', module: 'fastjson'
-        exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
-    }
-
-//    implementation project(":realtime-android")
-//    implementation project(':storage-android')
-
-//    implementation("cn.leancloud:realtime-core:${rootProject.ext.sdkVersion}"){
+//    implementation('cn.leancloud:mixpush-android:6.0.3@aar') {
+//        exclude group: 'cn.leancloud', module: 'huawei-hmsagent'
+//    }
+//    implementation('cn.leancloud:realtime-android:6.0.3')
+//    implementation('cn.leancloud:storage-android:6.0.3')
+//
+//    implementation('cn.leancloud:realtime-core:6.0.3') {
 //        exclude group: 'com.alibaba', module: 'fastjson'
 //        exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
 //    }
+//    implementation('cn.leancloud:storage-core:6.0.3') {
+//        exclude group: 'com.alibaba', module: 'fastjson'
+//        exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
+//    }
+
+    implementation project(":realtime-android")
+    implementation project(':storage-android')
+
+    implementation("cn.leancloud:realtime-core:${rootProject.ext.sdkVersion}"){
+        exclude group: 'com.alibaba', module: 'fastjson'
+        exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
+    }
 
     implementation "io.reactivex.rxjava2:rxandroid:${rootProject.ext.rxandroidVersion}"
     implementation "com.alibaba:fastjson:${rootProject.ext.fastjsonVersion}"
