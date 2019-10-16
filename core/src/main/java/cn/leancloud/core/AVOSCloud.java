@@ -1,9 +1,11 @@
 package cn.leancloud.core;
 
 import cn.leancloud.*;
+import cn.leancloud.types.AVDate;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
+import io.reactivex.Observable;
 
 /**
  * we should set following variables:
@@ -64,10 +66,29 @@ public class AVOSCloud {
     initialize(appId, appKey);
   }
 
+  /**
+   * get current datetime from server.
+   *
+   * @return
+   */
+  public static Observable<AVDate> getServerDateInBackground() {
+    return PaasClient.getStorageClient().getServerTime();
+  }
+
+  /**
+   * set master key.
+   *
+   * @param masterKey
+   */
   public static void setMasterKey(String masterKey) {
     RequestSignImplementation.setMasterKey(masterKey);
   }
 
+  /**
+   * set server info.
+   * @param service
+   * @param host
+   */
   public static void setServer(AVOSService service, String host) {
     if (StringUtil.isEmpty(host)) {
       return;
