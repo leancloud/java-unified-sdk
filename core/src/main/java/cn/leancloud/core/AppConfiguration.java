@@ -38,7 +38,7 @@ public class AppConfiguration {
   private static boolean enableLocalCache = true;
 
   private static final String SDK_VERSION = "6.0.3";
-  private static final String DEFAULT_USER_AGENT = "LeanCloud SDK v" + SDK_VERSION;
+  private static final String DEFAULT_USER_AGENT = "LeanCloud-Java-SDK/" + SDK_VERSION;
 
   public static void setNetworkTimeout(int seconds) {
     networkTimeout = seconds;
