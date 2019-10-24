@@ -81,12 +81,12 @@ public class CloudCodeServlet extends HttpServlet {
             AVException ave = (AVException) e.getCause();
             result.put("code", ave.getCode());
             result.put("error", ave.getMessage());
-            resp.setStatus(400);
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
           } else {
             e.printStackTrace();
             result.put("code", 1);
             result.put("error", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
-            resp.setStatus(500);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
           }
           resp.getWriter().write(result.toJSONString());
         }

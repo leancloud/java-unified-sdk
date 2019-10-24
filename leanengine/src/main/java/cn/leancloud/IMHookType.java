@@ -2,6 +2,14 @@ package cn.leancloud;
 
 public enum IMHookType {
   /**
+   * 客户端成功登录
+   */
+  clientOnline(false),
+  /**
+   * 客户端下线
+   */
+  clientOffline(false),
+  /**
    * 消息达到服务器，群组成员已解析完成之后，发送给收件人之前
    */
   messageReceived(true),
@@ -63,6 +71,10 @@ public enum IMHookType {
         return conversationRemove;
       } else if ("conversationUpdate".equals(hookName)) {
         return conversationUpdate;
+      } else if ("clientOnline".equals(hookName)) {
+        return clientOnline;
+      } else if ("clientOffline".equals(hookName)) {
+        return clientOffline;
       }
     }
     return null;
