@@ -143,7 +143,13 @@ public class PushService extends Service {
       }
     });
 
-    registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    // add try-catch for crash as:
+    // https://stackoverflow.com/questions/41670527/java-lang-securityexceptionunable-to-find-app-for-caller-android-app-applicatio
+    try {
+      registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    } catch (SecurityException ex) {
+      LOGGER.w("failed to register CONNECTIVITY receiver. cause: " + ex.getMessage());
+    }
 
     shutdownReceiver = new AVShutdownReceiver(new AVShutdownListener() {
       @Override
@@ -151,7 +157,14 @@ public class PushService extends Service {
         connectionManager.cleanup();
       }
     });
-    registerReceiver(shutdownReceiver, new IntentFilter(Intent.ACTION_SHUTDOWN));
+
+    // add try-catch for crash as:
+    // https://stackoverflow.com/questions/41670527/java-lang-securityexceptionunable-to-find-app-for-caller-android-app-applicatio
+    try {
+      registerReceiver(shutdownReceiver, new IntentFilter(Intent.ACTION_SHUTDOWN));
+    } catch (SecurityException ex) {
+      LOGGER.w("failed to register SHUTDOWN receiver. cause: " + ex.getMessage());
+    }
 
     isStarted = true;
   }
@@ -207,8 +220,14 @@ public class PushService extends Service {
   public void onDestroy() {
     LOGGER.d("PushService#onDestroy");
     connectionManager.cleanup();
-    unregisterReceiver(this.connectivityReceiver);
-    unregisterReceiver(this.shutdownReceiver);
+
+    try {
+      unregisterReceiver(this.connectivityReceiver);
+      unregisterReceiver(this.shutdownReceiver);
+    } catch (Exception ex) {
+      LOGGER.w("failed to unregister CONNECTIVITY/SHUTDOWN receiver. cause: " + ex.getMessage());
+    }
+
     isStarted = false;
 
     if (isAutoWakeUp && Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
