@@ -102,6 +102,43 @@ public class AVUserTest extends TestCase {
     assertTrue(operationSucceed);
   }
 
+  public void testSignupWithAuthDataAndFailFlag() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    Map<String, Object> authData = new HashMap<String, Object>();
+    authData.put("expires_in", 7200);
+    authData.put("openid", "1234567890");
+    authData.put("access_token", "ACCESS_TOKEN1");
+    authData.put("refresh_token", "REFRESH_TOKEN2");
+    authData.put("scope", "SCOPE");
+    AVUser user = new AVUser();
+    user.loginWithAuthData(authData,"weixin",true).subscribe(new Observer<AVUser>() {
+      @Override
+      public void onSubscribe(Disposable d) {
+      }
+      @Override
+      public void onNext(AVUser avUser) {
+        System.out.println("存在匹配的用户，登录成功");
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable e) {
+        AVException avException = new AVException(e);
+        int code = avException.getCode();
+        if (code == 211){
+          // 跳转到输入用户名、密码、手机号等业务页面
+        } else {
+          System.out.println("发生错误:" + e.getMessage());
+        }
+        latch.countDown();
+      }
+      @Override
+      public void onComplete() {
+      }
+    });
+    latch.await();
+  }
+
   public void testAnonymousLogin() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
