@@ -6,7 +6,7 @@ public class NativeSignHelper {
 
   // Used to load the 'native-lib' library on application startup.
   static {
-    System.loadLibrary("native-sign");
+    System.loadLibrary("leancloud-core");
   }
 
   /**
