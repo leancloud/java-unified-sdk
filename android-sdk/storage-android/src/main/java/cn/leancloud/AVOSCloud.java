@@ -11,10 +11,13 @@ import cn.leancloud.cache.AndroidSystemSetting;
 
 import cn.leancloud.callback.AVCallback;
 import cn.leancloud.core.AppRouter;
+import cn.leancloud.core.RequestPaddingInterceptor;
 import cn.leancloud.internal.ThreadModel;
 import cn.leancloud.logging.DefaultLoggerAdapter;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.network.AndroidNetworkingDetector;
+import cn.leancloud.sign.NativeSignHelper;
+import cn.leancloud.sign.SecureRequestSignature;
 import cn.leancloud.util.AndroidMimeTypeDetector;
 import cn.leancloud.util.AndroidUtil;
 import cn.leancloud.utils.LogUtil;
@@ -118,6 +121,13 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
   public static void initialize(Context context, String appId, String appKey, String serverURL) {
     setServerURLs(serverURL);
     initialize(context, appId, appKey);
+  }
+
+  public static void initializeSecurely(Context context, String appId, String serverURL) {
+    setServerURLs(serverURL);
+    NativeSignHelper.initialize(context);
+    RequestPaddingInterceptor.changeRequestSignature(new SecureRequestSignature());
+    initialize(context, appId, null);
   }
 
   protected static boolean hasCustomizedServerURL(String applicationId) {

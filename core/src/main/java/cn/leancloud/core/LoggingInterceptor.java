@@ -37,7 +37,7 @@ public class LoggingInterceptor implements Interceptor {
         continue;
       }
       if (RequestPaddingInterceptor.HEADER_KEY_LC_SIGN.equals(name)) {
-        sb.append(String.format(CURL_HEADER_FORMAT, RequestPaddingInterceptor.HEADER_KEY_LC_APPKEY, "{your_app_key}"));
+        sb.append(String.format(CURL_HEADER_FORMAT, RequestPaddingInterceptor.HEADER_KEY_LC_SIGN, "{your_sign}"));
         continue;
       }
       sb.append(String.format(CURL_HEADER_FORMAT, name, headers.get(name)));

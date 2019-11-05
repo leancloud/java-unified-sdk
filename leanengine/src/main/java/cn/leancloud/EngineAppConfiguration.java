@@ -2,7 +2,12 @@ package cn.leancloud;
 
 import cn.leancloud.core.AppConfiguration;
 
+import java.util.Map;
+
 public class EngineAppConfiguration extends AppConfiguration {
+  public static final String SYSTEM_ATTR_APP_ENV = "LEANCLOUD_APP_ENV";
+  public static final String SYSTEM_ATTR_APP_PORT = "LEANCLOUD_APP_PORT";
+  public static final String SYSTEM_ATTR_ANDX_KEY = "LEANCLOUD_APP_ANDX_KEY";
 
   private static EngineAppConfiguration instance;
 
@@ -10,11 +15,12 @@ public class EngineAppConfiguration extends AppConfiguration {
   private int port;
   private String appId;
   private String appKey;
+  private Map<String, String> affiliatedKeys;
   private String masterKey;
   private static String userAgent = "";
 
   public static EngineAppConfiguration instance(String applicationId, String clientKey,
-      String masterKey) {
+      String masterKey, Map<String, String> affiliatedKeys) {
     synchronized (EngineAppConfiguration.class) {
       if (instance == null) {
         instance = new EngineAppConfiguration();
@@ -23,8 +29,9 @@ public class EngineAppConfiguration extends AppConfiguration {
     instance.setApplicationId(applicationId);
     instance.setClientKey(clientKey);
     instance.setMasterKey(masterKey);
-    instance.setAppEnv(getEnvOrProperty("LEANCLOUD_APP_ENV"));
-    instance.setPort(Integer.parseInt(getEnvOrProperty("LEANCLOUD_APP_PORT")));
+    instance.setAffiliatedKeys(affiliatedKeys);
+    instance.setAppEnv(getEnvOrProperty(SYSTEM_ATTR_APP_ENV));
+    instance.setPort(Integer.parseInt(getEnvOrProperty(SYSTEM_ATTR_APP_PORT)));
     return instance;
   }
 
@@ -53,6 +60,13 @@ public class EngineAppConfiguration extends AppConfiguration {
   }
   public String getClientKey() {
     return this.appKey;
+  }
+
+  public void setAffiliatedKeys(Map<String, String> keys) {
+    this.affiliatedKeys = keys;
+  }
+  public Map<String, String> getAffiliatedKeys() {
+    return this.affiliatedKeys;
   }
 
   public void setMasterKey(String masterKey) {
