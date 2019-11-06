@@ -42,7 +42,7 @@ public class LeanEngine {
     initialize(applicationId, clientKey, masterKey, androidKey);
   }
 
-  public static void initialize(String applicationId, String clientKey, String masterKey, String androidxKey) {
+  protected static void initialize(String applicationId, String clientKey, String masterKey, String androidxKey) {
     AVOSCloud.setLogLevel(AVLogger.Level.ALL);// let log4j make decision.
     AppConfiguration.setLogAdapter(new Log4jAdapter());
     AVOSCloud.initialize(applicationId, clientKey);
