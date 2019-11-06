@@ -48,7 +48,7 @@ public class LeanEngine {
     AVOSCloud.initialize(applicationId, clientKey);
 
     Map<String, String> affiliatedKeys = null;
-    if (null != androidxKey && !StringUtil.isEmpty(androidxKey)) {
+    if (!StringUtil.isEmpty(androidxKey)) {
       affiliatedKeys = new HashMap<>();
       affiliatedKeys.put(RequestAuth.ANDROID_AFFILIATED_SUFFIX, androidxKey);
     }
