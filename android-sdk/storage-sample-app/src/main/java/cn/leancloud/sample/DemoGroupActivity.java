@@ -35,8 +35,8 @@ public class DemoGroupActivity extends ListActivity {
 
   private void setupAVOSCloud(boolean config) {
     if (!config) {
-      AVOSCloud.initialize(this.getApplication(),
-          Config.APP_ID, Config.APP_KEY, Config.SERVER_HOST);
+      AVOSCloud.initializeSecurely(this.getApplication(),
+          Config.APP_ID, Config.SERVER_HOST);
       return;
     }
     final Dialog dialog = new Dialog(this);

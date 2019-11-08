@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cn.leancloud.core.RequestSignImplementation;
+import cn.leancloud.core.GeneralRequestSignature;
 import cn.leancloud.utils.StringUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Logger;
 class RequestAuth {
 
   private static final Logger logger = LogManager.getLogger(RequestAuth.class);
+  static final String ANDROID_AFFILIATED_SUFFIX = "ax-sig-1";
+  static final String SIGN_MASTERKEY_SUFFIX = "master";
 
   public static final String ATTRIBUTE_KEY = "requestAuth";
   public static final String USER_KEY = "authUser";
@@ -50,12 +52,23 @@ class RequestAuth {
       if (split.length > 2) {
         master = split[2];
       }
-      boolean useMasterKey = "master".equals(master);
-      String computedSign =
-          RequestSignImplementation.requestSign(Long.parseLong(ts), useMasterKey);
-      if (info.getSign().equals(computedSign)) {
-        req.setAttribute(ATTRIBUTE_KEY, info);
-        return;
+      if (ANDROID_AFFILIATED_SUFFIX.equals(master)) {
+        String androidKey = LeanEngine.getAndroidKey();
+        if (!StringUtil.isEmpty(androidKey)) {
+          String computedSign = GeneralRequestSignature.requestSign(androidKey, Long.parseLong(ts), ANDROID_AFFILIATED_SUFFIX);
+          if (info.getSign().equals(computedSign)) {
+            req.setAttribute(ATTRIBUTE_KEY, info);
+            return;
+          }
+        }
+      } else {
+        boolean useMasterKey = SIGN_MASTERKEY_SUFFIX.equals(master);
+        String computedSign =
+                GeneralRequestSignature.requestSign(Long.parseLong(ts), useMasterKey);
+        if (info.getSign().equals(computedSign)) {
+          req.setAttribute(ATTRIBUTE_KEY, info);
+          return;
+        }
       }
     }
     throw new UnauthException();

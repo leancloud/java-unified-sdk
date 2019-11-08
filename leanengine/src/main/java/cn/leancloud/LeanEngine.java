@@ -1,18 +1,16 @@
 package cn.leancloud;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import cn.leancloud.core.AVOSCloud;
-import cn.leancloud.core.AVOSService;
 import cn.leancloud.core.AppConfiguration;
-import cn.leancloud.core.RequestSignImplementation;
+import cn.leancloud.core.GeneralRequestSignature;
 import cn.leancloud.logging.Log4jAdapter;
+import cn.leancloud.utils.StringUtil;
 import org.apache.commons.codec.binary.Hex;
 
 import cn.leancloud.impl.EnvFirstAppRouter;
@@ -27,6 +25,7 @@ public class LeanEngine {
 
   static final String JSON_CONTENT_TYPE = "application/json; charset=UTF-8";
 
+
   /**
    * <p>
    * Authenticates this client as belonging to your application. This must be called before your
@@ -39,11 +38,21 @@ public class LeanEngine {
    * @param masterKey The master key provided in the AVOSCloud dashboard.
    */
   public static void initialize(String applicationId, String clientKey, String masterKey) {
+    String androidKey = EngineAppConfiguration.getEnvOrProperty(EngineAppConfiguration.SYSTEM_ATTR_ANDX_KEY);
+    initialize(applicationId, clientKey, masterKey, androidKey);
+  }
+
+  protected static void initialize(String applicationId, String clientKey, String masterKey, String androidxKey) {
     AVOSCloud.setLogLevel(AVLogger.Level.ALL);// let log4j make decision.
     AppConfiguration.setLogAdapter(new Log4jAdapter());
     AVOSCloud.initialize(applicationId, clientKey);
 
-    appConf = EngineAppConfiguration.instance(applicationId, clientKey, masterKey);
+    Map<String, String> affiliatedKeys = null;
+    if (!StringUtil.isEmpty(androidxKey)) {
+      affiliatedKeys = new HashMap<>();
+      affiliatedKeys.put(RequestAuth.ANDROID_AFFILIATED_SUFFIX, androidxKey);
+    }
+    appConf = EngineAppConfiguration.instance(applicationId, clientKey, masterKey, affiliatedKeys);
     appRouter = new EnvFirstAppRouter();
     appRouter.fetchServerHostsInBackground(applicationId).blockingSingle();
   }
@@ -145,9 +154,9 @@ public class LeanEngine {
    */
   public static void setUseMasterKey(boolean useMasterKey) {
     if (useMasterKey) {
-      RequestSignImplementation.setMasterKey(appConf.getMasterKey());
+      GeneralRequestSignature.setMasterKey(appConf.getMasterKey());
     } else {
-      RequestSignImplementation.setMasterKey(null);
+      GeneralRequestSignature.setMasterKey(null);
     }
   }
 
@@ -165,6 +174,18 @@ public class LeanEngine {
 
   public static String getMasterKey() {
     return appConf.getMasterKey();
+  }
+
+  public static String getAndroidKey() {
+    Map<String, String> affiliatedKeys = appConf.getAffiliatedKeys();
+    if (null == affiliatedKeys) {
+      return null;
+    }
+    if (affiliatedKeys.containsKey(RequestAuth.ANDROID_AFFILIATED_SUFFIX)) {
+      return affiliatedKeys.get(RequestAuth.ANDROID_AFFILIATED_SUFFIX);
+    } else {
+      return null;
+    }
   }
 
   public static String getAppEnv() {

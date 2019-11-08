@@ -81,7 +81,7 @@ public class AVOSCloud {
    * @param masterKey
    */
   public static void setMasterKey(String masterKey) {
-    RequestSignImplementation.setMasterKey(masterKey);
+    GeneralRequestSignature.setMasterKey(masterKey);
   }
 
   /**
