@@ -25,6 +25,7 @@ public class Configure {
     System.out.println("Test APP_key: " + TEST_APP_KEY);
     System.out.println("Test APP_region: " + reGion);
     System.out.println("Test API_HOST: " + API_HOST);
+    System.out.println("");
   }
 
   public static void initializeWithApp(String appId, String appKey, AVOSCloud.REGION region) {

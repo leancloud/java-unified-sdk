@@ -186,7 +186,7 @@ public interface APIService {
    * Status API
    */
   @POST("/1.1/statuses")
-  Observable<AVStatus> postStatus();
+  Observable<AVStatus> postStatus(@Body Map<String, Object> param);
 
   @GET("/1.1/statuses/{statusId}")
   Observable<AVStatus> fetchStatus(@Path("statusId") String statusId);

@@ -952,6 +952,13 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   public Map<String, String> assembleParameters() {
     return conditions.assembleParameters();
   }
+
+  public Map<String, Object> assembleJsonParam() {
+    Map<String, Object> result = conditions.assembleJsonParam();
+    result.put("className", getClassName());
+    return result;
+  }
+
   /**
    * Cloud Query
    */

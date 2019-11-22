@@ -486,6 +486,10 @@ public class StorageClient {
     return wrapObservable(apiService.getFollowersAndFollowees(userId));
   }
 
+  public Observable<AVStatus> postStatus(Map<String, Object> param) {
+    return wrapObservable(apiService.postStatus(param));
+  }
+
   public Observable<AVNull> deleteStatus(String statusId) {
     return wrapObservable(apiService.deleteStatus(statusId));
   }
