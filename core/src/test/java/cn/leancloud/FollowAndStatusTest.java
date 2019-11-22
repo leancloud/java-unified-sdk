@@ -2,6 +2,7 @@ package cn.leancloud;
 
 import cn.leancloud.types.AVNull;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
@@ -430,6 +431,72 @@ public class FollowAndStatusTest extends TestCase {
 
               }
             });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testInboxQueryCountWithoutLogin() throws Exception {
+    AVUser currentUser = AVUser.currentUser();
+    final String currentUserObjectId = currentUser.getObjectId();
+    currentUser.logOut();
+
+    AVUser owner = AVObject.createWithoutData(AVUser.class, currentUserObjectId);
+    AVStatus.inboxQuery(owner, AVStatus.INBOX_TYPE.PRIVATE.toString())
+            .unreadCountInBackground()
+            .subscribe(new Observer<JSONObject>() {
+              @Override
+              public void onSubscribe(Disposable disposable) {
+
+              }
+
+              @Override
+              public void onNext(JSONObject jsonObject) {
+                latch.countDown();
+              }
+
+              @Override
+              public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+                testSucceed = true;
+                latch.countDown();
+              }
+
+              @Override
+              public void onComplete() {
+
+              }
+            });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testInboxQueryCountWithResults() throws Exception {
+    AVStatus.inboxQuery(AVUser.currentUser(), AVStatus.INBOX_TYPE.TIMELINE.toString())
+            .unreadCountInBackground()
+            .subscribe(new Observer<JSONObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(JSONObject jsonObject) {
+        System.out.println(jsonObject);
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
     latch.await();
     assertTrue(testSucceed);
   }

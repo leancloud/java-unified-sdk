@@ -147,6 +147,9 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
   }
 
   public Observable<JSONObject> unreadCountInBackground() {
+    if (null == this.owner || !this.owner.isAuthenticated()) {
+      return Observable.error(new IllegalStateException("owner is null, or isn't authenticated."));
+    }
     Map<String, String> query = assembleParameters();
     query.put("count", "1");
     query.put("limit", "0");

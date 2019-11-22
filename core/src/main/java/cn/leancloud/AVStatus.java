@@ -220,7 +220,6 @@ public class AVStatus extends AVObject {
     if (!checkCurrentUserAuthenticated()) {
       return Observable.error(new IllegalStateException("Current User isn't authenticated, please login at first."));
     }
-    // TODO: need to confirm.
     AVQuery followerQuery = generateFollowerQuery(AVUser.currentUser().getObjectId());
     return sendInBackground(inboxType, followerQuery);
   }
