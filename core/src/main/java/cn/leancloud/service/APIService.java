@@ -189,19 +189,22 @@ public interface APIService {
   Observable<AVStatus> postStatus(@Body Map<String, Object> param);
 
   @GET("/1.1/statuses/{statusId}")
-  Observable<AVStatus> fetchStatus(@Path("statusId") String statusId);
+  Observable<AVStatus> fetchSingleStatus(@Path("statusId") String statusId);
+
+  @GET("/1.1/statuses")
+  Observable<AVQueryResult> fetchStatuses(@QueryMap Map<String, String> query);
 
   @DELETE("/1.1/statuses/{statusId}")
   Observable<AVNull> deleteStatus(@Path("statusId") String statusId);
 
   @DELETE("/1.1/subscribe/statuses/inbox")
-  Observable<AVNull> deleteInboxStatus(@QueryMap Map<String, String> query);
+  Observable<AVNull> deleteInboxStatus(@QueryMap Map<String, Object> query);
 
   @GET("/1.1/subscribe/statuses")
-  Observable<List<AVStatus>> queryStatuses();
+  Observable<AVQueryResult> queryInbox(@QueryMap Map<String, String> query);
 
   @GET("/1.1/subscribe/statuses/count")
-  Observable<Integer> getInboxUnreadCount();
+  Observable<JSONObject> getInboxCount(@QueryMap Map<String, String> query);
 
   @POST("/1.1/subscribe/statuses/resetUnreadCount")
   Observable<AVNull> resetInboxUnreadCount();

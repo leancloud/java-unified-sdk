@@ -275,6 +275,63 @@ public class FollowAndStatusTest extends TestCase {
     assertTrue(testSucceed);
   }
 
+  public void testStatusCountQuery() throws Exception {
+    AVUser currentUser = AVUser.currentUser();
+    AVStatus.statusQuery(currentUser).countInBackground().subscribe(new Observer<Integer>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(Integer integer) {
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testInboxCountQuery() throws Exception {
+    AVUser currentUser = AVUser.currentUser();
+    AVStatus.inboxQuery(currentUser, AVStatus.INBOX_TYPE.TIMELINE.toString()).countInBackground().subscribe(new Observer<Integer>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(Integer integer) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
   public void testInboxQueryWithoutLogin() throws Exception {
     AVUser currentUser = AVUser.currentUser();
     final String currentUserObjectId = currentUser.getObjectId();
@@ -352,6 +409,13 @@ public class FollowAndStatusTest extends TestCase {
               @Override
               public void onNext(List<AVStatus> avStatuses) {
                 testSucceed = true;
+                for (AVStatus status: avStatuses) {
+                  System.out.println(status);
+                  System.out.println(status.getInboxType());
+                  if (AVStatus.INBOX_TYPE.PRIVATE.toString().equals(status.getInboxType())) {
+                    testSucceed = false;
+                  }
+                }
                 latch.countDown();
               }
 

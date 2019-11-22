@@ -68,6 +68,10 @@ public class AVStatus extends AVObject {
     this.endpointClassName = "statuses";
   }
 
+  public AVStatus(AVObject o) {
+    super(o);
+  }
+
   public void setImageUrl(final String imageUrl) {
     put(ATTR_IMAGE, imageUrl);
   }
@@ -172,7 +176,7 @@ public class AVStatus extends AVObject {
       return Observable.error(new IllegalArgumentException("messageId can't be null/empty"));
     }
     String ownerString = JSON.toJSONString(Utils.mapFromPointerObject(owner));
-    Map<String, String> params = new HashMap<String, String>();
+    Map<String, Object> params = new HashMap<>();
     params.put(ATTR_MESSAGE_ID, String.valueOf(messageId));
     params.put(ATTR_INBOX_TYPE, inboxType);
     params.put(ATTR_OWNER, ownerString);
@@ -251,7 +255,8 @@ public class AVStatus extends AVObject {
    */
   public static AVStatusQuery statusQuery(AVUser source) throws AVException {
     AVStatusQuery query = new AVStatusQuery();
-    query.whereEqualTo(ATTR_SOURCE, source);
+    query.setSource(source);
+    query.setInboxType(INBOX_TYPE.TIMELINE.toString());
     return query;
   }
 
@@ -264,8 +269,8 @@ public class AVStatus extends AVObject {
    */
   public static AVStatusQuery inboxQuery(AVUser owner, String inboxType) {
     AVStatusQuery query = new AVStatusQuery();
-    query.setInboxType(inboxType);
     query.setOwner(owner);
+    query.setInboxType(inboxType);
     return query;
   }
 
