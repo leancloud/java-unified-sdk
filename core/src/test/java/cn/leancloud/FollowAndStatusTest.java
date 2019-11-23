@@ -1,7 +1,6 @@
 package cn.leancloud;
 
 import cn.leancloud.types.AVNull;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -9,6 +8,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -29,7 +29,7 @@ public class FollowAndStatusTest extends TestCase {
   protected void setUp() throws Exception {
     latch = new CountDownLatch(1);
     testSucceed = false;
-    userLogin();
+    userLogin("jfeng", AVUserFollowshipTest.DEFAULT_PASSWD);
   }
 
   @Override
@@ -42,13 +42,13 @@ public class FollowAndStatusTest extends TestCase {
     }
   }
 
-  private void userLogin() throws Exception {
+  private void userLogin(String username, String password) throws Exception {
 //    AVUser user = new AVUser();
 //    user.setEmail("jfeng@test.com");
 //    user.setUsername("jfeng");
 //    user.setPassword("FER$@$@#Ffwe");
     final CountDownLatch userLatch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    AVUser.logIn(username, password).subscribe(new Observer<AVUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
@@ -489,6 +489,149 @@ public class FollowAndStatusTest extends TestCase {
       @Override
       public void onError(Throwable throwable) {
         throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+
+  public void testDeleteStatusAsSource() throws Exception {
+    // delete source status
+    final AVStatus status = AVStatus.createStatus("", "just a test from testDeleteStatusAsSource");
+    AVQuery userQuery = AVUser.getQuery();
+    userQuery.whereEqualTo("objectId", "anotherNotExistedUser");
+    status.sendToUsersInBackground("test", userQuery).subscribe(new Observer<AVStatus>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVStatus avStatus) {
+        System.out.println(avStatus.getObjectId());
+        System.out.println(avStatus.getCreatedAtString());
+        status.setObjectId(avStatus.getObjectId());
+        status.deleteInBackground().subscribe(new Observer<AVNull>() {
+          @Override
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(AVNull avNull) {
+            testSucceed = true;
+            latch.countDown();
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            throwable.printStackTrace();
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testDeleteStatusAsOwner() throws Exception {
+    // delete status from inbox
+    AVStatus status = AVStatus.createStatus("", "just a test from testDeleteStatusAsOwner at " + new Date());
+    status.sendToFollowersInBackgroud().subscribe(new Observer<AVStatus>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(final AVStatus avStatus) {
+        System.out.println(avStatus);
+        System.out.println("change login user and try to query inbox status...");
+        try {
+          userLogin("jfeng001", AVUserFollowshipTest.DEFAULT_PASSWD);
+          AVStatus.inboxQuery(AVUser.currentUser(), AVStatus.INBOX_TYPE.TIMELINE.toString())
+                  .findInBackground()
+                  .subscribe(new Observer<List<AVStatus>>() {
+            @Override
+            public void onSubscribe(Disposable disposable) {
+
+            }
+
+            @Override
+            public void onNext(List<AVStatus> avStatuses) {
+              if (null == avStatuses || avStatuses.size() < 1) {
+                System.out.println("unfortunately, new user has no inbox status, test failed.");
+                latch.countDown();
+              }
+              avStatuses.get(0).deleteInBackground().subscribe(new Observer<AVNull>() {
+                @Override
+                public void onSubscribe(Disposable disposable) {
+
+                }
+
+                @Override
+                public void onNext(AVNull avNull) {
+                  testSucceed = true;
+                  latch.countDown();
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                  System.out.println("failed to delete inbox status, cause: " + throwable.getMessage());
+                  latch.countDown();
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+              });
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+              System.out.println("failed to query inbox status for new user. cause: " + throwable.getMessage());
+              latch.countDown();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+          });
+        } catch (Exception ex) {
+          System.out.println("failed to login with new user. cause: " + ex.getMessage());
+          latch.countDown();
+        }
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        System.out.println("failed to publish timeline status. cause: " + throwable.getMessage());
         latch.countDown();
       }
 

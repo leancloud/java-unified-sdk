@@ -242,6 +242,9 @@ public class AVException extends Exception {
    */
   public static final int FILE_UPLOAD_FAILURE = 9302;
 
+  public static final int INVALID_STATE = 9303;
+  public static final int INVALID_PARAMETER = 9304;
+
   public static final int CIRCLE_REFERENCE = 100001;
   /**
    * Construct a new AVException with a particular error code.

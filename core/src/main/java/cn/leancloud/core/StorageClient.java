@@ -490,6 +490,10 @@ public class StorageClient {
     return wrapObservable(apiService.postStatus(param));
   }
 
+  public Observable<AVStatus> fetchStatus(String objectId) {
+    return wrapObservable(apiService.fetchSingleStatus(objectId));
+  }
+
   public Observable<List<AVStatus>> queryStatus(Map<String, String> param) {
     return wrapObservable(apiService.fetchStatuses(param).map(new Function<AVQueryResult, List<AVStatus>>() {
       @Override

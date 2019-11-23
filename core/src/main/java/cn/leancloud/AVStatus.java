@@ -7,6 +7,7 @@ import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.ErrorUtils;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONType;
 import io.reactivex.Observable;
 
@@ -34,6 +35,8 @@ public class AVStatus extends AVObject {
   public static final String ATTR_OWNER = "owner";
   public static final String ATTR_IMAGE = "image";
   public static final String ATTR_MESSAGE = "message";
+
+  private static int INVALID_MESSAGE_ID = 0;
 
   public enum INBOX_TYPE {
     TIMELINE("default"), PRIVATE("private");
@@ -155,40 +158,43 @@ public class AVStatus extends AVObject {
 
   @Override
   public Observable<AVNull> deleteInBackground() {
-    return deleteStatusInBackground(getObjectId());
+    return deleteInBackground(this);
   }
 
-  public static Observable<AVNull> deleteStatusInBackground(String statusId) {
+  public static Observable<AVNull> deleteInBackground(AVStatus status) {
     if (!checkCurrentUserAuthenticated()) {
       return Observable.error(ErrorUtils.sessionMissingException());
     }
-    if (StringUtil.isEmpty(statusId)) {
-      return Observable.error(ErrorUtils.invalidObjectIdException());
-    }
-    return PaasClient.getStorageClient().deleteStatus(statusId);
-  }
 
-  public static Observable<AVNull> deleteInboxStatusInBackground(long messageId, String inboxType, AVUser owner) {
-    if (null == owner || StringUtil.isEmpty(owner.getObjectId())) {
-      return Observable.error(new AVException(AVException.USER_DOESNOT_EXIST, "Owner can't be null"));
-    }
-    if (StringUtil.isEmpty(inboxType)) {
-      return Observable.error(new IllegalArgumentException("messageId can't be null/empty"));
-    }
-    String ownerString = JSON.toJSONString(Utils.mapFromPointerObject(owner));
-    Map<String, Object> params = new HashMap<>();
-    params.put(ATTR_MESSAGE_ID, String.valueOf(messageId));
-    params.put(ATTR_INBOX_TYPE, inboxType);
-    params.put(ATTR_OWNER, ownerString);
-    return PaasClient.getStorageClient().deleteInboxStatus(params);
-  }
+    String currentUserObjectId = AVUser.currentUser().getObjectId();
 
-  public static Observable<Integer> getUnreadStatusesCountInBackground(String inboxType) {
-    return null;
+    JSONObject source = status.getJSONObject(ATTR_SOURCE);
+//    JSONObject owner = status.getJSONObject(ATTR_OWNER);
+    String statusObjectId = status.getObjectId();
+    long messageId = status.getMessageId();
+
+    if (null != source && currentUserObjectId.equals(source.getString("objectId"))) {
+      if (StringUtil.isEmpty(statusObjectId)) {
+        return Observable.error(ErrorUtils.invalidObjectIdException());
+      } else {
+        return PaasClient.getStorageClient().deleteStatus(statusObjectId);
+      }
+    } else {
+      if (INVALID_MESSAGE_ID == messageId) {
+        return Observable.error(ErrorUtils.invalidObjectIdException());
+      } else {
+        String ownerString = JSON.toJSONString(Utils.mapFromAVObject(AVUser.currentUser(), false));
+        Map<String, Object> params = new HashMap<>();
+        params.put(ATTR_MESSAGE_ID, String.valueOf(messageId));
+        params.put(ATTR_INBOX_TYPE, status.getInboxType());
+        params.put(ATTR_OWNER, ownerString);
+        return PaasClient.getStorageClient().deleteInboxStatus(params);
+      }
+    }
   }
 
   public static Observable<AVStatus> getStatusWithIdInBackground(String statusId) {
-    return null;
+    return PaasClient.getStorageClient().fetchStatus(statusId);
   }
 
   public Observable<AVStatus> sendToUsersInBackground(AVQuery query) {
@@ -218,7 +224,7 @@ public class AVStatus extends AVObject {
 
   public Observable<AVStatus> sendToFollowersInBackgroud(String inboxType) {
     if (!checkCurrentUserAuthenticated()) {
-      return Observable.error(new IllegalStateException("Current User isn't authenticated, please login at first."));
+      return Observable.error(ErrorUtils.sessionMissingException());
     }
     AVQuery followerQuery = generateFollowerQuery(AVUser.currentUser().getObjectId());
     return sendInBackground(inboxType, followerQuery);
@@ -232,7 +238,7 @@ public class AVStatus extends AVObject {
 
   private Observable<AVStatus> sendInBackground(String inboxType, AVQuery query) {
     if (!checkCurrentUserAuthenticated()) {
-      return Observable.error(new IllegalStateException("Current User isn't authenticated, please login at first."));
+      return Observable.error(ErrorUtils.sessionMissingException());
     }
     setSource(AVUser.currentUser());
 

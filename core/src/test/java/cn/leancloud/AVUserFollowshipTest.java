@@ -18,9 +18,14 @@ import java.util.concurrent.CountDownLatch;
 
 public class AVUserFollowshipTest extends TestCase {
   private boolean operationSucceed = false;
+  public static final String JFENG_EMAIL = "jfeng@test.com";
+  public static final String DENNIS_EMAIL = "dennis@test.com";
+  public static final String JFENG_001_EMAIL = "jfeng001@test.com";
+  public static String DEFAULT_PASSWD = "FER$@$@#Ffwe";
+
   private static String JFENG_OBJECT_ID = "5bff479067f3560066d00676";
   private static String DENNIS_OBJECT_ID = "5bff452afb4ffe0069a9893e";
-  private static String DEFAULT_PASSWD = "FER$@$@#Ffwe";
+
   public AVUserFollowshipTest(String name) {
     super(name);
     Configure.initializeRuntime();
@@ -32,6 +37,13 @@ public class AVUserFollowshipTest extends TestCase {
 
   @Override
   protected void setUp() throws Exception {
+    try {
+      prepareUser("jfeng", JFENG_EMAIL, true);
+      prepareUser("dennis", DENNIS_EMAIL, true);
+      prepareUser("jfeng001", JFENG_001_EMAIL, false);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
     operationSucceed = false;
   }
 
@@ -40,10 +52,10 @@ public class AVUserFollowshipTest extends TestCase {
     ;
   }
 
-  public void testSingupWithEmail() throws Exception {
+  public static void prepareUser(String username, final String email, final boolean loginOnFailed) throws Exception {
     AVUser user = new AVUser();
-    user.setEmail("jfeng@test.com");
-    user.setUsername("jfeng");
+    user.setEmail(email);
+    user.setUsername(username);
     user.setPassword(DEFAULT_PASSWD);
     final CountDownLatch latch = new CountDownLatch(1);
     user.signUpInBackground().subscribe(new Observer<AVUser>() {
@@ -52,15 +64,27 @@ public class AVUserFollowshipTest extends TestCase {
       }
 
       public void onNext(AVUser avUser) {
-        System.out.println(JSON.toJSONString(avUser));
-        operationSucceed = true;
+        if (loginOnFailed) {
+          if (email.startsWith("jfeng")) {
+            JFENG_OBJECT_ID = avUser.getObjectId();
+          } else if (email.startsWith("dennis")) {
+            DENNIS_OBJECT_ID = avUser.getObjectId();
+          }
+        }
         latch.countDown();
 
       }
 
       public void onError(Throwable throwable) {
-        operationSucceed = true;
-        throwable.printStackTrace();
+        if (loginOnFailed) {
+          AVUser tmp = AVUser.loginByEmail(email, DEFAULT_PASSWD).blockingFirst();
+          if (email.startsWith("jfeng")) {
+            JFENG_OBJECT_ID = tmp.getObjectId();
+          } else if (email.startsWith("dennis")) {
+            DENNIS_OBJECT_ID = tmp.getObjectId();
+          }
+        }
+
         latch.countDown();
       }
 
@@ -69,7 +93,6 @@ public class AVUserFollowshipTest extends TestCase {
       }
     });
     latch.await();
-    assertTrue(operationSucceed);
   }
 
   public void testFolloweeQuery() throws Exception {
@@ -90,8 +113,8 @@ public class AVUserFollowshipTest extends TestCase {
                 SerializerFeature.DisableCircularReferenceDetect));
         System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
-        AVQuery<AVUser> query = avUser.followeeQuery(AVUser.class);
-        List<AVUser> followees = query.find();
+        AVQuery<AVObject> query = avUser.followeeQuery();
+        List<AVObject> followees = query.find();
         if (null == followees || followees.size() < 1) {
           avUser.followInBackground(DENNIS_OBJECT_ID).subscribe(new Observer<JSONObject>() {
             @Override
@@ -155,8 +178,8 @@ public class AVUserFollowshipTest extends TestCase {
                 SerializerFeature.DisableCircularReferenceDetect));
         System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
-        AVQuery<AVUser> query = avUser.followerQuery(AVUser.class);
-        List<AVUser> followers = query.find();
+        AVQuery<AVObject> query = avUser.followerQuery();
+        List<AVObject> followers = query.find();
         operationSucceed = true;
         latch.countDown();
       }
@@ -175,37 +198,33 @@ public class AVUserFollowshipTest extends TestCase {
   }
 
   public void testFollow() throws Exception {
-    try {
-      AVUser user = new AVUser();
-      user.setEmail("jfeng001@test.com");
-      user.setUsername("jfeng001");
-      user.setPassword(DEFAULT_PASSWD);
-      user.signUp();
-    } catch (HttpException ex) {
-      ;
-    }
-
     AVUser logginUser = AVUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
     logginUser.followInBackground(JFENG_OBJECT_ID).blockingFirst();
 
     AVUser jfeng = AVUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
 
     final CountDownLatch latch = new CountDownLatch(1);
-    AVQuery query = jfeng.followerQuery(AVUser.class);
-    query.findInBackground().subscribe(new Observer<List<AVUser>>() {
+    AVQuery query = jfeng.followerQuery();
+    query.findInBackground().subscribe(new Observer<List<AVObject>>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(List<AVUser> o) {
-        operationSucceed = (null != o) && o.size() > 0;
+      public void onNext(List<AVObject> o) {
+        for (AVObject tmp: o) {
+          System.out.println("result User:" + tmp);
+          if ("jfeng001".equals(tmp.getAVObject("follower").getString("username"))) {
+            operationSucceed = true;
+          }
+        }
         latch.countDown();
       }
 
       @Override
       public void onError(Throwable throwable) {
+        throwable.printStackTrace();
         latch.countDown();
       }
 
@@ -219,31 +238,21 @@ public class AVUserFollowshipTest extends TestCase {
   }
 
   public void testUnfollow() throws Exception {
-    try {
-      AVUser user = new AVUser();
-      user.setEmail("jfeng001@test.com");
-      user.setUsername("jfeng001");
-      user.setPassword(DEFAULT_PASSWD);
-      user.signUp();
-    } catch (HttpException ex) {
-      ;
-    }
-
     AVUser logginUser = AVUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
     logginUser.unfollowInBackground(JFENG_OBJECT_ID).blockingFirst();
 
     AVUser jfeng = AVUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
 
     final CountDownLatch latch = new CountDownLatch(1);
-    AVQuery query = jfeng.followerQuery(AVUser.class);
-    query.findInBackground().subscribe(new Observer<List<AVUser>>() {
+    AVQuery query = jfeng.followerQuery();
+    query.findInBackground().subscribe(new Observer<List<AVObject>>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(List<AVUser> o) {
+      public void onNext(List<AVObject> o) {
         System.out.println("onNext");
         operationSucceed = (null == o) || o.size() < 1;
         latch.countDown();
@@ -347,4 +356,5 @@ public class AVUserFollowshipTest extends TestCase {
     latch.await();
     assertTrue(operationSucceed);
   }
+
 }
