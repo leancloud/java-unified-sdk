@@ -8,9 +8,11 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 
 public class FollowAndStatusTest extends TestCase {
   private CountDownLatch latch = null;
@@ -642,5 +644,128 @@ public class FollowAndStatusTest extends TestCase {
     });
     latch.await();
     assertTrue(testSucceed);
+  }
+
+  public void testStatusQueryPagination() throws Exception {
+    String jfengObjectId = AVUser.currentUser().getObjectId();
+    System.out.println("follower-jfeng001 login...");
+    userLogin("jfeng001", AVUserFollowshipTest.DEFAULT_PASSWD);
+    AVUser jfeng001 = AVUser.currentUser();
+    System.out.println("follower-jfeng001 follow jfeng...");
+    jfeng001.followInBackground(jfengObjectId).blockingFirst();
+
+    System.out.println("jfeng login...");
+    userLogin("jfeng", AVUserFollowshipTest.DEFAULT_PASSWD);
+    AVUser jfeng = AVUser.currentUser();
+
+    int pageSize = 5;
+    System.out.println("jfeng send status to followers...");
+    for(int i = 0; i < 19; i++) {
+      AVStatus status = AVStatus.createStatus("", "just a test, index=" + i);
+      final CountDownLatch tmpLatch = new CountDownLatch(1);
+      status.sendToFollowersInBackgroud().subscribe(new Observer<AVStatus>() {
+        @Override
+        public void onSubscribe(Disposable disposable) {
+
+        }
+
+        @Override
+        public void onNext(AVStatus avStatus) {
+          System.out.println("publish status: " + avStatus);
+          tmpLatch.countDown();
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+          System.out.println("failed to publish status, cause: " + throwable.getMessage());
+          tmpLatch.countDown();
+        }
+
+        @Override
+        public void onComplete() {
+        }
+      });
+      tmpLatch.await();
+    }
+
+    System.out.println("try to query status for user:jfeng....");
+    final List<AVStatus> ownedStatuses = new ArrayList<>();
+
+    AVStatusQuery statusQuery = AVStatus.statusQuery(jfeng);
+    statusQuery.setPageSize(pageSize);
+    List<AVStatus> tmpResult = statusQuery.find();
+    assertTrue(null != tmpResult && tmpResult.size() == pageSize);
+    ownedStatuses.addAll(tmpResult);
+
+    boolean queryEnd = false;
+    while (!queryEnd) {
+      System.out.println("try to query status for user:jfeng....");
+      tmpResult = statusQuery.nextInBackground().blockingLast();
+      if (null != tmpResult) {
+        ownedStatuses.addAll(tmpResult);
+      }
+      if (null == tmpResult || tmpResult.size() < pageSize) {
+        queryEnd = true;
+      }
+    }
+
+    System.out.println("follower-jfeng001 login...");
+    userLogin("jfeng001", AVUserFollowshipTest.DEFAULT_PASSWD);
+
+    List<AVStatus> inboxStatuses = new ArrayList<>();
+
+    System.out.println("try to query inbox for user:follower-jfeng001....");
+
+    statusQuery = AVStatus.inboxQuery(AVUser.currentUser(), AVStatus.INBOX_TYPE.TIMELINE.toString());
+    statusQuery.setPageSize(pageSize);
+    tmpResult = statusQuery.find();
+    inboxStatuses.addAll(tmpResult);
+    assertTrue(null != tmpResult && tmpResult.size() == pageSize);
+    for (AVStatus s: tmpResult) {
+      System.out.println("INBOX STATUS: " + s.toJSONString());
+    }
+
+    queryEnd = false;
+    while (!queryEnd) {
+      System.out.println("try to query inbox for user:follower-jfeng001....");
+      tmpResult = statusQuery.nextInBackground().blockingLast();
+      if (null != tmpResult) {
+        inboxStatuses.addAll(tmpResult);
+        for (AVStatus s: tmpResult) {
+          System.out.println("INBOX STATUS: " + s.toJSONString());
+        }
+      }
+      if (null == tmpResult || tmpResult.size() < pageSize) {
+        queryEnd = true;
+      }
+    }
+
+    System.out.println("follower-jfeng001 delete inbox status, count: " + inboxStatuses.size() + "...");
+    int inboxDeleteError = 0;
+    for (AVStatus sts : inboxStatuses) {
+      try {
+        sts.deleteInBackground().blockingFirst();
+      } catch(Exception ex) {
+        inboxDeleteError++;
+        System.out.println("failed to delete inbox status: " + sts + ", cause: " + ex.getMessage());
+      }
+    }
+
+    System.out.println("jfeng login...");
+    userLogin("jfeng", AVUserFollowshipTest.DEFAULT_PASSWD);
+    System.out.println("jfeng delete owned status, count:" + ownedStatuses.size() + "...");
+    int ownedDeleteError = 0;
+    for (AVStatus sts : ownedStatuses) {
+      try {
+        sts.deleteInBackground().blockingFirst();
+      } catch (Exception ex) {
+        ownedDeleteError++;
+        System.out.println("failed to delete status: " + sts + ", cause: " + ex.getMessage());
+      }
+    }
+
+    System.out.println("ownedStatusDeleteCount=" + ownedDeleteError + ", inboxStatusDeleteCount=" + inboxDeleteError);
+    assertTrue(0 == ownedDeleteError);
+    assertTrue(0 == inboxDeleteError);
   }
 }
