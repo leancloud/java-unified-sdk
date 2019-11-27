@@ -486,11 +486,55 @@ public class StorageClient {
     return wrapObservable(apiService.getFollowersAndFollowees(userId));
   }
 
+  public Observable<AVStatus> postStatus(Map<String, Object> param) {
+    return wrapObservable(apiService.postStatus(param));
+  }
+
+  public Observable<AVStatus> fetchStatus(String objectId) {
+    return wrapObservable(apiService.fetchSingleStatus(objectId));
+  }
+
+  public Observable<List<AVStatus>> queryStatus(Map<String, String> param) {
+    return wrapObservable(apiService.fetchStatuses(param).map(new Function<AVQueryResult, List<AVStatus>>() {
+      @Override
+      public List<AVStatus> apply(AVQueryResult o) throws Exception {
+        if (null == o) {
+          return null;
+        }
+        List<AVStatus> results = new ArrayList<>();
+        for (AVObject obj: o.getResults()) {
+          results.add(new AVStatus(obj));
+        }
+        return results;
+      }
+    }));
+  }
+
+  public Observable<List<AVStatus>> queryInbox(Map<String, String> param) {
+    return wrapObservable(apiService.queryInbox(param).map(new Function<AVQueryResult, List<AVStatus>>() {
+      @Override
+      public List<AVStatus> apply(AVQueryResult o) throws Exception {
+        if (null == o) {
+          return null;
+        }
+        List<AVStatus> results = new ArrayList<>();
+        for (AVObject obj: o.getResults()) {
+          results.add(new AVStatus(obj));
+        }
+        return results;
+      }
+    }));
+  }
+
+  public Observable<JSONObject> getInboxCount(Map<String, String> param) {
+    return wrapObservable(apiService.getInboxCount(param));
+  }
+
   public Observable<AVNull> deleteStatus(String statusId) {
     return wrapObservable(apiService.deleteStatus(statusId));
   }
 
-  public Observable<AVNull> deleteInboxStatus(Map<String, String> param) {
+  public Observable<AVNull> deleteInboxStatus(Map<String, Object> param) {
     return wrapObservable(apiService.deleteInboxStatus(param));
   }
 

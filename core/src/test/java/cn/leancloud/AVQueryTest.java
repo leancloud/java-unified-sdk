@@ -255,7 +255,7 @@ public class AVQueryTest extends TestCase {
   }
 
   public void testDeepIncludeQuery() throws Exception {
-    AVQuery<AVObject> queryLikeRed = new AVQuery<>("hb_Praise");
+    AVQuery<AVObject> queryLikeRed = new AVQuery<>("FileUnitTest");
     queryLikeRed.include("taskId");
     queryLikeRed.include("taskId.userId");
     queryLikeRed.selectKeys(Arrays.asList("taskId.userId.nickName", "taskId.userId.username", "createdAt"));

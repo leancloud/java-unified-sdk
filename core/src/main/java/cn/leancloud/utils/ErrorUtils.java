@@ -51,7 +51,19 @@ public class ErrorUtils {
             "No valid session token, make sure signUp or login has been called.");
   }
 
-  static public AVException invalidObjectIdException() {
+  public static AVException illegalArgument(String message) {
+    return ErrorUtils.propagateException(AVException.INVALID_PARAMETER, message);
+  }
+
+  public static AVException invalidObjectIdException() {
     return ErrorUtils.propagateException(AVException.MISSING_OBJECT_ID, "Invalid object id.");
+  }
+
+  public static AVException invalidStateException() {
+    return ErrorUtils.propagateException(AVException.INVALID_STATE, "Invalid State Exception.");
+  }
+
+  public static AVException invalidStateException(String message) {
+    return ErrorUtils.propagateException(AVException.INVALID_STATE, message);
   }
 }

@@ -195,8 +195,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * network. If there is no cached result for this query, then this is a no-op.
    */
   public void clearCachedResult() {
-    conditions.assembleParameters();
-    Map<String, String> query = conditions.getParameters();
+    Map<String, String> query = assembleParameters();
     String cacheKey = QueryResultCache.generateKeyForQueryCondition(getClassName(), query);
     QueryResultCache.getInstance().clearCachedFile(cacheKey);
   }
@@ -858,8 +857,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   }
 
   public boolean hasCachedResult() {
-    conditions.assembleParameters();
-    Map<String, String> query = conditions.getParameters();
+    Map<String, String> query = assembleParameters();
     return PaasClient.getStorageClient().hasCachedResult(getClassName(), query, this.getMaxCacheAge());
   }
 
@@ -871,9 +869,8 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     return findInBackground(0);
   }
 
-  private Observable<List<T>> findInBackground(int explicitLimit) {
-    conditions.assembleParameters();
-    Map<String, String> query = conditions.getParameters();
+  protected Observable<List<T>> findInBackground(int explicitLimit) {
+    Map<String, String> query = assembleParameters();
     if (this.includeACL && null != query) {
       query.put("returnACL", "true");
     }
@@ -930,8 +927,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   }
 
   public Observable<Integer> countInBackground() {
-    conditions.assembleParameters();
-    Map<String, String> query = conditions.getParameters();
+    Map<String, String> query = assembleParameters();
     query.put("count", "1");
     query.put("limit", "0");
     return PaasClient.getStorageClient().queryCount(getClassName(), query);
@@ -950,8 +946,16 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   }
 
   public Map<String, String> assembleParameters() {
-    return conditions.assembleParameters();
+    conditions.assembleParameters();
+    return conditions.getParameters();
   }
+
+  protected Map<String, Object> assembleJsonParam() {
+    Map<String, Object> result = conditions.assembleJsonParam();
+    result.put("className", getClassName());
+    return result;
+  }
+
   /**
    * Cloud Query
    */

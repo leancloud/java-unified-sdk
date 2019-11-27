@@ -792,29 +792,32 @@ public class AVUser extends AVObject {
     return PaasClient.getStorageClient().unfollowUser(getObjectId(), userObjectId);
   }
 
-  public <T extends AVUser> AVQuery<T> followerQuery(Class<T> clazz) {
-    return AVUser.followerQuery(getObjectId(), clazz);
+  public AVQuery<AVObject> followerQuery() {
+    return AVUser.followerQuery(getObjectId(), AVObject.class);
   }
-  public <T extends AVUser> AVQuery<T> followeeQuery(Class<T> clazz) {
-    return AVUser.followeeQuery(getObjectId(), clazz);
+
+  public AVQuery<AVObject> followeeQuery() {
+    return AVUser.followeeQuery(getObjectId(), AVObject.class);
   }
-  public static <T extends AVUser> AVQuery<T> followerQuery(final String userObjectId,
+
+  public static <T extends AVObject> AVQuery<T> followerQuery(final String userObjectId,
                                                             Class<T> clazz) {
     if (StringUtil.isEmpty(userObjectId)) {
       throw new IllegalArgumentException("Blank user objectId");
     }
-    AVFellowshipQuery query = new AVFellowshipQuery<T>("_Follower", clazz);
+    AVQuery<T> query = new AVQuery<>("_Follower", clazz);
     query.whereEqualTo("user", AVUser.createWithoutData(CLASS_NAME, userObjectId));
-    query.setFriendshipTag(FOLLOWER_TAG);
+    query.include("follower");
     return query;
   }
-  public static <T extends AVUser> AVQuery<T> followeeQuery(final String userObjectId, Class<T> clazz) {
+
+  public static <T extends AVObject> AVQuery<T> followeeQuery(final String userObjectId, Class<T> clazz) {
     if (StringUtil.isEmpty(userObjectId)) {
       throw new IllegalArgumentException("Blank user objectId");
     }
-    AVFellowshipQuery query = new AVFellowshipQuery<T>("_Followee", clazz);
+    AVQuery<T> query = new AVQuery<>("_Followee", clazz);
     query.whereEqualTo("user", AVUser.createWithoutData(CLASS_NAME, userObjectId));
-    query.setFriendshipTag(FOLLOWEE_TAG);
+    query.include("followee");
     return query;
   }
 

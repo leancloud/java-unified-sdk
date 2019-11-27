@@ -211,6 +211,32 @@ public class QueryConditions implements Cloneable {
     return result;
   }
 
+  public Map<String, Object> assembleJsonParam() {
+    Map<String, Object> result = new HashMap<>();
+    if (where.keySet().size() > 0) {
+      Map<String, Object> whereMaps = compileWhereOperationMap();
+      result.put("where", whereMaps);
+    }
+    if (limit > 0) {
+      result.put("limit", limit);
+    }
+    if (skip >= 0) {
+      result.put("skip",  skip);
+    }
+    if (!StringUtil.isEmpty(order)) {
+      result.put("order", order);
+    }
+    if (null !=include && include.size() > 0) {
+      String value = StringUtil.join(",", include);
+      result.put("include", value);
+    }
+    if (selectedKeys != null && selectedKeys.size() > 0) {
+      String keys = StringUtil.join(",", selectedKeys);
+      result.put("keys", keys);
+    }
+    return result;
+  }
+
   public Map<String, String> assembleParameters() {
     if (where.keySet().size() > 0) {
       Map<String, Object> whereMaps = compileWhereOperationMap();

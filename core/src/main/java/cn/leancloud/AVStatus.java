@@ -7,64 +7,43 @@ import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.ErrorUtils;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONType;
 import io.reactivex.Observable;
+import io.reactivex.functions.Function;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
+ * Status 预定义属性：
+ *  1. messageId, Integer, message sequence number, Receiver-side only
+ *  2. inboxType, String, identifier for multiple purpose, default is 'default' which stands for timeline.
+ *  3. source, Pointer, point to source user.
+ *  4. owner, Pointer, point to target user, Receiver-side only.
+ *
  * status sample：
  *
-{
- "ACL": {
- "*": {
- "read": true,
- "write": false
- }
- },
- "content": [
- {
- "__type": "Pointer",
- "className": "Feed",
- "objectId": "objectid"
- }
- ],
- "inboxType": "draft",
- "type": "postFeedDraft",
- "source": {
- "__type": "Pointer",
- "className": "_User",
- "objectId": "a particular user"
- },
- "contributor": {
- "__type": "Pointer",
- "className": "_User",
- "objectId": "another particular user"
- },
- "objectId": "status object id",
- "createdAt": "2018-04-19T08:43:16.277Z",
- "updatedAt": "2018-04-19T08:43:16.277Z"
-}
  *
  */
 @AVClassName("_Status")
-@JSONType(ignores = {"acl", "updatedAt", "uuid"})
+@JSONType(ignores = {"ACL", "updatedAt"})
 public class AVStatus extends AVObject {
   public final static String CLASS_NAME = "_Status";
-  public static final String IMAGE_TAG = "image";
-  public static final String MESSAGE_TAG = "message";
-  public static final String DATAMAP_TAG = "dataMap";
 
-  public AVStatus() {
-    super(CLASS_NAME);
-  }
+  public static final String ATTR_MESSAGE_ID = "messageId";
+  public static final String ATTR_INBOX_TYPE = "inboxType";
+  public static final String ATTR_SOURCE = "source";
+  public static final String ATTR_OWNER = "owner";
+  public static final String ATTR_IMAGE = "image";
+  public static final String ATTR_MESSAGE = "message";
+
+  public static int INVALID_MESSAGE_ID = 0;
 
   public enum INBOX_TYPE {
     TIMELINE("default"), PRIVATE("private");
     private String type;
 
-    private INBOX_TYPE(String type) {
+    INBOX_TYPE(String type) {
       this.type = type;
     }
 
@@ -74,66 +53,555 @@ public class AVStatus extends AVObject {
     }
   }
 
+  /**
+   * create a status instance.
+   * @param imageUrl
+   * @param message
+   * @return
+   */
+  public static AVStatus createStatus(String imageUrl, String message) {
+    AVStatus status = new AVStatus();
+    status.setImageUrl(imageUrl);
+    status.setMessage(message);
+    return status;
+  }
+
+  /**
+   * create a status instance.
+   *
+   * @param data
+   * @return
+   */
+  public static AVStatus createStatusWithData(Map<String, Object> data) {
+    AVStatus status = new AVStatus();
+    status.resetServerData(data);
+    return status;
+  }
+
+  /**
+   * default constructor.
+   *
+   */
+  public AVStatus() {
+    super(CLASS_NAME);
+    this.totallyOverwrite = true;
+    this.endpointClassName = "statuses";
+  }
+
+  public AVStatus(AVObject o) {
+    super(o);
+  }
+
+  /**
+   * set image url attribute.
+   * @param imageUrl
+   */
   public void setImageUrl(final String imageUrl) {
-    put(IMAGE_TAG, imageUrl);
+    put(ATTR_IMAGE, imageUrl);
   }
 
+  /**
+   * get image url attribute.
+   * @return
+   */
   public String getImageUrl() {
-    return getString(IMAGE_TAG);
+    return getString(ATTR_IMAGE);
   }
 
+  /**
+   * set message text
+   * @param msg
+   */
   public void setMessage(String msg) {
-    put(MESSAGE_TAG, msg);
+    put(ATTR_MESSAGE, msg);
   }
 
+  /**
+   * get message text
+   * @return
+   */
   public String getMessage() {
-    return getString(MESSAGE_TAG);
+    return getString(ATTR_MESSAGE);
   }
 
+  /**
+   * 此状态在用户 Inbox 中的 ID
+   *
+   * @warning 仅用于分片查询,不具有唯一性
+   */
+  public long getMessageId() {
+    return getLong(ATTR_MESSAGE_ID);
+  }
+
+  protected void setMessageId(long messageId) {
+    put(ATTR_MESSAGE_ID, messageId);
+  }
+
+  /**
+   * 到达收件箱类型, 默认是`default`,私信是`private`, 可以自定义任何类型
+   */
+  public String getInboxType() {
+    return getString(ATTR_INBOX_TYPE);
+  }
+
+  /**
+   * 获取 Status 的发送者
+   *
+   * @return
+   */
+  public AVUser getSource() {
+    return (AVUser) getAVObject(ATTR_SOURCE);
+  }
+
+  /**
+   * set source of status
+   * @param source
+   */
+  public void setSource(AVObject source) {
+    put(ATTR_SOURCE, Utils.mapFromAVObject(source, false));
+  }
+
+  /**
+   * set inbox type.
+   * @param type
+   */
+  public void setInboxType(final String type) {
+    if (!StringUtil.isEmpty(type)) {
+      put(ATTR_INBOX_TYPE, type);
+    }
+  }
+
+  /**
+   * 添加 AVStatus 中的一对自定义内容
+   *
+   * @param key
+   * @param value
+   */
+  @Override
+  public void put(String key, Object value) {
+    this.serverData.put(key, value);
+  }
+
+  /**
+   * get customized key value.
+   * @param key
+   * @return
+   */
+  @Override
+  public Object get(String key) {
+    return this.serverData.get(key);
+  }
+
+  /**
+   * 删除 AVStatus 中的一对自定义内容
+   *
+   * @param key
+   */
+  @Override
+  public void remove(String key) {
+    this.serverData.remove(key);
+  }
+
+  /**
+   * delete status
+   *
+   * @return
+   */
   @Override
   public Observable<AVNull> deleteInBackground() {
-    return deleteStatusInBackground(getObjectId());
+    return deleteInBackground(this);
   }
 
-  public static Observable<AVNull> deleteStatusInBackground(String statusId) {
-    if (!checkUserAuthenticated()) {
+  /**
+   * delete status(class method)
+   *
+   * @param status
+   * @return
+   */
+  public static Observable<AVNull> deleteInBackground(AVStatus status) {
+    if (!checkCurrentUserAuthenticated()) {
       return Observable.error(ErrorUtils.sessionMissingException());
     }
-    if (StringUtil.isEmpty(statusId)) {
-      return Observable.error(ErrorUtils.invalidObjectIdException());
+
+    String currentUserObjectId = AVUser.currentUser().getObjectId();
+
+    AVObject source = null;
+    Object sourceObject = status.get(ATTR_SOURCE);
+    if (sourceObject instanceof AVObject) {
+      source = (AVObject) sourceObject;
+    } else if (sourceObject instanceof JSONObject) {
+      JSONObject sourceJson = (JSONObject) sourceObject;
+      source = AVObject.createWithoutData(sourceJson.getString(AVObject.KEY_CLASSNAME),
+              sourceJson.getString(AVObject.KEY_OBJECT_ID));
+    } else if (sourceObject instanceof HashMap) {
+      HashMap<String, Object> sourceMap = (HashMap<String, Object>)sourceObject;
+      source = AVObject.createWithoutData((String) sourceMap.get(AVObject.KEY_CLASSNAME),
+              (String) sourceMap.get(AVObject.KEY_OBJECT_ID));
     }
-    return PaasClient.getStorageClient().deleteStatus(statusId);
+
+    String statusObjectId = status.getObjectId();
+    long messageId = status.getMessageId();
+
+    if (null != source && currentUserObjectId.equals(source.getString(AVObject.KEY_OBJECT_ID))) {
+      if (StringUtil.isEmpty(statusObjectId)) {
+        return Observable.error(ErrorUtils.invalidObjectIdException());
+      } else {
+        return PaasClient.getStorageClient().deleteStatus(statusObjectId);
+      }
+    } else {
+      if (INVALID_MESSAGE_ID == messageId) {
+        return Observable.error(ErrorUtils.invalidObjectIdException());
+      } else {
+        String ownerString = JSON.toJSONString(Utils.mapFromAVObject(AVUser.currentUser(), false));
+        Map<String, Object> params = new HashMap<>();
+        params.put(ATTR_MESSAGE_ID, String.valueOf(messageId));
+        params.put(ATTR_INBOX_TYPE, status.getInboxType());
+        params.put(ATTR_OWNER, ownerString);
+        return PaasClient.getStorageClient().deleteInboxStatus(params);
+      }
+    }
   }
 
-  public static Observable<AVNull> deleteInboxStatusInBackground(long messageId, String inboxType, AVUser owner) {
-    if (null == owner || StringUtil.isEmpty(owner.getObjectId())) {
-      return Observable.error(new AVException(AVException.USER_DOESNOT_EXIST, "Owner can't be null"));
-    }
-    if (StringUtil.isEmpty(inboxType)) {
-      return Observable.error(new IllegalArgumentException("messageId can't be null/empty"));
-    }
-    String ownerString = JSON.toJSONString(Utils.mapFromPointerObject(owner));
-    Map<String, String> params = new HashMap<String, String>();
-    params.put("messageId", String.valueOf(messageId));
-    params.put("inboxType", inboxType);
-    params.put("owner", ownerString);
-    return PaasClient.getStorageClient().deleteInboxStatus(params);
+  /**
+   * fetch status with specified objectId
+   *
+   * @param statusId
+   * @return
+   */
+  public static Observable<AVStatus> getStatusWithIdInBackground(String statusId) {
+    return PaasClient.getStorageClient().fetchStatus(statusId);
   }
 
-  public static AVStatusQuery statusQuery(AVUser owner) throws AVException {
-    AVStatusQuery query = new AVStatusQuery();
-//    query.setSelfQuery(true);
-    query.whereEqualTo("source", owner);
-//    query.setExternalQueryPath(AVStatus.STATUS_ENDPOINT);
+  /**
+   * send to user with query.
+   *
+   * @param query
+   * @return
+   */
+  public Observable<AVStatus> sendToUsersInBackground(AVQuery query) {
+    return sendToUsersInBackground(INBOX_TYPE.TIMELINE.toString(), query);
+  }
+
+  /**
+   * send to user with query and inboxType.
+   * @param inboxType
+   * @param query
+   * @return
+   */
+  public Observable<AVStatus> sendToUsersInBackground(String inboxType, AVQuery query) {
+    return sendInBackground(inboxType, query);
+  }
+
+  /**
+   * send status to followers.
+   * @return
+   */
+  public Observable<AVStatus> sendToFollowersInBackground() {
+    return sendToFollowersInBackground(INBOX_TYPE.TIMELINE.toString());
+  }
+
+  private AVQuery generateFollowerQuery(String userObjectId) {
+    AVUser user = new AVUser();
+    user.setObjectId(userObjectId);
+
+    List<String> keys = new ArrayList<>();
+    keys.add("follower");
+
+    AVQuery query = new AVQuery("_Follower");
+    query.whereEqualTo("user", Utils.mapFromAVObject(user, false));
+    query.selectKeys(keys);
     return query;
   }
 
-  private static boolean checkUserAuthenticated() {
+  /**
+   * send status with inboxType to followers.
+   * @param inboxType
+   * @return
+   */
+  public Observable<AVStatus> sendToFollowersInBackground(String inboxType) {
+    if (!checkCurrentUserAuthenticated()) {
+      return Observable.error(ErrorUtils.sessionMissingException());
+    }
+    AVQuery followerQuery = generateFollowerQuery(AVUser.currentUser().getObjectId());
+    return sendInBackground(inboxType, followerQuery);
+  }
+
+  /**
+   * send privately message.
+   *
+   * @param receiverObjectId
+   * @return
+   */
+  public Observable<AVStatus> sendPrivatelyInBackground(final String receiverObjectId) {
+    AVQuery userQuery = AVUser.getQuery();
+    userQuery.whereEqualTo(AVObject.KEY_OBJECT_ID, receiverObjectId);
+    return sendInBackground(INBOX_TYPE.PRIVATE.toString(), userQuery);
+  }
+
+  private Observable<AVStatus> sendInBackground(String inboxType, AVQuery query) {
+    if (!checkCurrentUserAuthenticated()) {
+      return Observable.error(ErrorUtils.sessionMissingException());
+    }
+    setSource(AVUser.currentUser());
+
+    Map<String, Object> param = new HashMap<>();
+    param.put("data", this.serverData);
+    param.put("inboxType", inboxType);
+
+    Map<String, Object> queryCondition = query.assembleJsonParam();
+    param.put("query", queryCondition);
+    return PaasClient.getStorageClient().postStatus(param).map(new Function<AVStatus, AVStatus>() {
+      @Override
+      public AVStatus apply(AVStatus avStatus) throws Exception {
+        AVStatus.this.mergeRawData(avStatus);
+        return avStatus;
+      }
+    });
+  }
+
+  /**
+   * query statuses sent by User owner.
+   * default query direction: from NEW to OLD.
+   *
+   * @param source
+   * @return
+   * @throws AVException
+   */
+  public static AVStatusQuery statusQuery(AVUser source) throws AVException {
+    AVStatusQuery query = new AVStatusQuery(AVStatusQuery.SourceType.OWNED);
+    query.setSource(source);
+    query.setDirection(AVStatusQuery.PaginationDirection.NEW_TO_OLD);
+    query.setInboxType(INBOX_TYPE.TIMELINE.toString());
+    return query;
+  }
+
+  /**
+   * query statuses send to User owner and with inboxType
+   * default query direction: from NEW to OLD.
+   *
+   * @param owner
+   * @param inboxType
+   * @return
+   */
+  public static AVStatusQuery inboxQuery(AVUser owner, String inboxType) {
+    AVStatusQuery query = new AVStatusQuery(AVStatusQuery.SourceType.INBOX);
+    query.setOwner(owner);
+    query.setDirection(AVStatusQuery.PaginationDirection.NEW_TO_OLD);
+    query.setInboxType(inboxType);
+    return query;
+  }
+
+  public AVObject toObject() {
+    return AVObject.createWithoutData(CLASS_NAME, this.objectId);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    if (StringUtil.isEmpty(this.objectId)) {
+      return false;
+    }
+    AVStatus other = (AVStatus) obj;
+    if (!objectId.equals(other.objectId)) {
+      return false;
+    }
+    return true;
+  }
+
+  private static boolean checkCurrentUserAuthenticated() {
     AVUser currentUser = AVUser.getCurrentUser();
     if (null != currentUser && currentUser.isAuthenticated()) {
       return true;
     } else {
       return false;
     }
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public void add(String key, Object value) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public AVACL getACL() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public void setACL(AVACL acl) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public void addAll(String key, Collection<?> values) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public void addAllUnique(String key, Collection<?> values) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public void addUnique(String key, Object value) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public AVObject fetch() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public AVObject fetch(String includedKeys) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public void refresh() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public void refresh(String includedKeys) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public AVObject fetchIfNeeded() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public Observable<AVObject> fetchIfNeededInBackground() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public Observable<AVObject> fetchInBackground() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public Observable<AVObject> refreshInBackground() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public Observable<AVObject> fetchInBackground(String includeKeys) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public void save() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public Observable<? extends AVObject> saveInBackground() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public void saveEventually() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public boolean isFetchWhenSave() {
+    return false;
+  }
+
+  /**
+   * 此方法并没有实现，调用会抛出 UnsupportedOperationException
+   */
+  @Deprecated
+  @Override
+  public void setFetchWhenSave(boolean fetchWhenSave) {
+    throw new UnsupportedOperationException();
   }
 }
