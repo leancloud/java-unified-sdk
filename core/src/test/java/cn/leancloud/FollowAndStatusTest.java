@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
 
 public class FollowAndStatusTest extends TestCase {
   private CountDownLatch latch = null;
@@ -78,7 +77,7 @@ public class FollowAndStatusTest extends TestCase {
     AVUser.currentUser().logOut();
 
     AVStatus status = AVStatus.createStatus("", "just a test");
-    status.sendToFollowersInBackgroud().subscribe(new Observer<AVStatus>() {
+    status.sendToFollowersInBackground().subscribe(new Observer<AVStatus>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
@@ -107,7 +106,7 @@ public class FollowAndStatusTest extends TestCase {
 
   public void testPostPrivateStatus() throws Exception {
     AVStatus status = AVStatus.createStatus("", "just a test");
-    status.sendPrivatelyInBackgroud("notExistedUSer").subscribe(new Observer<AVStatus>() {
+    status.sendPrivatelyInBackground("notExistedUSer").subscribe(new Observer<AVStatus>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
@@ -171,7 +170,7 @@ public class FollowAndStatusTest extends TestCase {
 
   public void testPostStatusWithLoginedUser() throws Exception {
     AVStatus status = AVStatus.createStatus("", "just a test");
-    status.sendToFollowersInBackgroud().subscribe(new Observer<AVStatus>() {
+    status.sendToFollowersInBackground().subscribe(new Observer<AVStatus>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
@@ -563,7 +562,7 @@ public class FollowAndStatusTest extends TestCase {
   public void testDeleteStatusAsOwner() throws Exception {
     // delete status from inbox
     AVStatus status = AVStatus.createStatus("", "just a test from testDeleteStatusAsOwner at " + new Date());
-    status.sendToFollowersInBackgroud().subscribe(new Observer<AVStatus>() {
+    status.sendToFollowersInBackground().subscribe(new Observer<AVStatus>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
@@ -663,7 +662,7 @@ public class FollowAndStatusTest extends TestCase {
     for(int i = 0; i < 19; i++) {
       AVStatus status = AVStatus.createStatus("", "just a test, index=" + i);
       final CountDownLatch tmpLatch = new CountDownLatch(1);
-      status.sendToFollowersInBackgroud().subscribe(new Observer<AVStatus>() {
+      status.sendToFollowersInBackground().subscribe(new Observer<AVStatus>() {
         @Override
         public void onSubscribe(Disposable disposable) {
 

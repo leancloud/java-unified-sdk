@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONType;
 import io.reactivex.Observable;
+import io.reactivex.functions.Function;
 
 import java.util.*;
 
@@ -295,8 +296,8 @@ public class AVStatus extends AVObject {
    * send status to followers.
    * @return
    */
-  public Observable<AVStatus> sendToFollowersInBackgroud() {
-    return sendToFollowersInBackgroud(INBOX_TYPE.TIMELINE.toString());
+  public Observable<AVStatus> sendToFollowersInBackground() {
+    return sendToFollowersInBackground(INBOX_TYPE.TIMELINE.toString());
   }
 
   private AVQuery generateFollowerQuery(String userObjectId) {
@@ -317,7 +318,7 @@ public class AVStatus extends AVObject {
    * @param inboxType
    * @return
    */
-  public Observable<AVStatus> sendToFollowersInBackgroud(String inboxType) {
+  public Observable<AVStatus> sendToFollowersInBackground(String inboxType) {
     if (!checkCurrentUserAuthenticated()) {
       return Observable.error(ErrorUtils.sessionMissingException());
     }
@@ -331,7 +332,7 @@ public class AVStatus extends AVObject {
    * @param receiverObjectId
    * @return
    */
-  public Observable<AVStatus> sendPrivatelyInBackgroud(final String receiverObjectId) {
+  public Observable<AVStatus> sendPrivatelyInBackground(final String receiverObjectId) {
     AVQuery userQuery = AVUser.getQuery();
     userQuery.whereEqualTo(AVObject.KEY_OBJECT_ID, receiverObjectId);
     return sendInBackground(INBOX_TYPE.PRIVATE.toString(), userQuery);
@@ -349,7 +350,13 @@ public class AVStatus extends AVObject {
 
     Map<String, Object> queryCondition = query.assembleJsonParam();
     param.put("query", queryCondition);
-    return PaasClient.getStorageClient().postStatus(param);
+    return PaasClient.getStorageClient().postStatus(param).map(new Function<AVStatus, AVStatus>() {
+      @Override
+      public AVStatus apply(AVStatus avStatus) throws Exception {
+        AVStatus.this.mergeRawData(avStatus);
+        return avStatus;
+      }
+    });
   }
 
   /**

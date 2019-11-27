@@ -3,7 +3,6 @@ package cn.leancloud;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.utils.ErrorUtils;
-import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
@@ -13,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 public class AVStatusQuery extends AVQuery<AVStatus> {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVStatusQuery.class);
-
   public enum SourceType {
     INBOX,
     OWNED
@@ -37,7 +34,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
   private String inboxType = null;
 
   private SourceType sourceType;
-  private StatusIterator iterator = null;
+  private StatusIterator iterator;
 
   protected AVStatusQuery(SourceType type) {
     super(AVStatus.CLASS_NAME, AVStatus.class);
@@ -123,17 +120,25 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
    */
   @Override
   public Map<String, String> assembleParameters() {
+    return assembleParameters(false);
+  }
+
+  private Map<String, String> assembleParameters(boolean withIterator) {
     if (SourceType.OWNED == this.sourceType) {
       // for status query, need to add inboxType filter into where clause.
       if (!StringUtil.isEmpty(inboxType)) {
         whereEqualTo(AVStatus.ATTR_INBOX_TYPE, inboxType);
       }
-      if (PaginationDirection.NEW_TO_OLD == iterator.getDirection()) {
-        addDescendingOrder(AVObject.KEY_CREATED_AT);
+      if (withIterator) {
+        iterator.fillConditions(this);
       } else {
-        addAscendingOrder(AVObject.KEY_CREATED_AT);
+        if (PaginationDirection.NEW_TO_OLD == iterator.getDirection()) {
+          addDescendingOrder(AVObject.KEY_CREATED_AT);
+        } else {
+          addAscendingOrder(AVObject.KEY_CREATED_AT);
+        }
       }
-    } else {
+    } else if (!withIterator) {
       if (PaginationDirection.NEW_TO_OLD == iterator.getDirection()) {
         addDescendingOrder(AVStatus.ATTR_MESSAGE_ID);
       } else {
@@ -143,46 +148,19 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
 
     Map<String, String> result = super.assembleParameters();
     if (null != this.owner) {
+      if (withIterator) {
+        iterator.fillConditions(result);
+      }
       if (!StringUtil.isEmpty(inboxType)) {
         // for inbox query, need to add inboxType filter on the top of parameter, it's different from status query.
         // maybe a bug?
-        result.put("inboxType", inboxType);
+        result.put(AVStatus.ATTR_INBOX_TYPE, inboxType);
       }
       String ownerString = new JSONObject(Utils.mapFromAVObject(this.owner, false)).toJSONString();
-      result.put("owner", ownerString);
+      result.put(AVStatus.ATTR_OWNER, ownerString);
     } else if (null != this.source) {
       String sourceString = new JSONObject(Utils.mapFromAVObject(this.source, false)).toJSONString();
-      result.put("source", sourceString);
-    }
-    if (getPageSize() > 0) {
-      result.put("limit", String.valueOf(getPageSize()));
-    }
-
-    return result;
-  }
-
-  private Map<String, String> assembleParametersWithIterator() {
-    if (null != this.source) {
-      // for status query, need to add inboxType filter into where clause.
-      if (!StringUtil.isEmpty(inboxType)) {
-        whereEqualTo(AVStatus.ATTR_INBOX_TYPE, inboxType);
-      }
-      iterator.fillConditions(this);
-    }
-
-    Map<String, String> result = super.assembleParameters();
-    if (null != this.owner) {
-      iterator.fillConditions(result);
-      if (!StringUtil.isEmpty(inboxType)) {
-        // for inbox query, need to add inboxType filter on the top of parameter, it's different from status query.
-        // maybe a bug?
-        result.put("inboxType", inboxType);
-      }
-      String ownerString = new JSONObject(Utils.mapFromAVObject(this.owner, false)).toJSONString();
-      result.put("owner", ownerString);
-    } else if (null != this.source) {
-      String sourceString = new JSONObject(Utils.mapFromAVObject(this.source, false)).toJSONString();
-      result.put("source", sourceString);
+      result.put(AVStatus.ATTR_SOURCE, sourceString);
     }
     if (getPageSize() > 0) {
       result.put("limit", String.valueOf(getPageSize()));
@@ -196,21 +174,21 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
     return internalFindInBackground(explicitLimit, false);
   }
 
-  private Observable<List<AVStatus>> internalFindInBackground(int limit, boolean enableIterator) {
+  private Observable<List<AVStatus>> internalFindInBackground(int explicitLimit, boolean enableIterator) {
     if (null == this.owner && null == this.source) {
-      return Observable.error(ErrorUtils.illegalArgument("User(source or owner) is null, please initialize correctly."));
+      return Observable.error(ErrorUtils.illegalArgument("source or owner is null, please initialize correctly."));
     }
     if (null != this.owner && !this.owner.isAuthenticated()) {
       return Observable.error(ErrorUtils.sessionMissingException());
     }
     Map<String, String> query;
     if (enableIterator) {
-      query = assembleParametersWithIterator();
+      query = assembleParameters(true);
     } else {
       query = assembleParameters();
     }
-    if (limit > 0) {
-      query.put("limit", "1");
+    if (explicitLimit > 0) {
+      query.put("limit", String.valueOf(explicitLimit));
     }
 
     if (null != this.owner) {
@@ -257,7 +235,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
   @Override
   public Observable<Integer> countInBackground() {
     if (null == this.owner && null == this.source) {
-      return Observable.error(ErrorUtils.invalidStateException("User(source or owner) is null, please initialize correctly."));
+      return Observable.error(ErrorUtils.illegalArgument("source or owner is null, please initialize correctly."));
     }
     if (null != this.owner) {
       return Observable.error(ErrorUtils.invalidStateException("countInBackground doesn't work for inbox query," +
