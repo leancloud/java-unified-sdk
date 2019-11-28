@@ -657,9 +657,9 @@ public class FollowAndStatusTest extends TestCase {
     userLogin("jfeng", AVUserFollowshipTest.DEFAULT_PASSWD);
     AVUser jfeng = AVUser.currentUser();
 
-    int pageSize = 5;
+    int pageSize = 50;
     System.out.println("jfeng send status to followers...");
-    for(int i = 0; i < 19; i++) {
+    for(int i = 0; i < 200; i++) {
       AVStatus status = AVStatus.createStatus("", "just a test, index=" + i);
       final CountDownLatch tmpLatch = new CountDownLatch(1);
       status.sendToFollowersInBackground().subscribe(new Observer<AVStatus>() {
@@ -693,14 +693,16 @@ public class FollowAndStatusTest extends TestCase {
     AVStatusQuery statusQuery = AVStatus.statusQuery(jfeng);
     statusQuery.setPageSize(pageSize);
     List<AVStatus> tmpResult = statusQuery.find();
-    assertTrue(null != tmpResult && tmpResult.size() == pageSize);
+    System.out.println("statusQuery first round result: " + tmpResult.size());
+    assertTrue(null != tmpResult && tmpResult.size() > 0);
     ownedStatuses.addAll(tmpResult);
 
-    boolean queryEnd = false;
+    boolean queryEnd = (null == tmpResult || tmpResult.size() < 1);
     while (!queryEnd) {
       System.out.println("try to query status for user:jfeng....");
       tmpResult = statusQuery.nextInBackground().blockingLast();
       if (null != tmpResult) {
+        System.out.println("statusQuery next round result: " + tmpResult.size());
         ownedStatuses.addAll(tmpResult);
       }
       if (null == tmpResult || tmpResult.size() < pageSize) {
@@ -713,22 +715,25 @@ public class FollowAndStatusTest extends TestCase {
 
     List<AVStatus> inboxStatuses = new ArrayList<>();
 
+    System.out.println("jfeng001 objectId: " + AVUser.currentUser().getObjectId());
     System.out.println("try to query inbox for user:follower-jfeng001....");
 
     statusQuery = AVStatus.inboxQuery(AVUser.currentUser(), AVStatus.INBOX_TYPE.TIMELINE.toString());
     statusQuery.setPageSize(pageSize);
     tmpResult = statusQuery.find();
     inboxStatuses.addAll(tmpResult);
-    assertTrue(null != tmpResult && tmpResult.size() == pageSize);
+    System.out.println("inboxQuery first round result: " + tmpResult.size());
+    assertTrue(null != tmpResult && tmpResult.size() > 0);
     for (AVStatus s: tmpResult) {
       System.out.println("INBOX STATUS: " + s.toJSONString());
     }
 
-    queryEnd = false;
+    queryEnd = (null == tmpResult || tmpResult.size() < 1);
     while (!queryEnd) {
       System.out.println("try to query inbox for user:follower-jfeng001....");
       tmpResult = statusQuery.nextInBackground().blockingLast();
       if (null != tmpResult) {
+        System.out.println("inboxQuery next round result: " + tmpResult.size());
         inboxStatuses.addAll(tmpResult);
         for (AVStatus s: tmpResult) {
           System.out.println("INBOX STATUS: " + s.toJSONString());

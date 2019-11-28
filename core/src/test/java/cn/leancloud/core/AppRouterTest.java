@@ -16,6 +16,14 @@ public class AppRouterTest extends TestCase {
     System.out.println("currentUser = " + currentUser);
   }
 
+  public void testRequestSign() {
+    System.out.println();
+    String sign = GeneralRequestSignature.requestSign("4aaaa58afe61ac6b1ee49378fe8589e8", 1574842473675l,
+            "ax-sig-1");
+    System.out.println(sign);
+    System.out.println("b892d60c5a3e68fb05c89d80b6c0a772,1574842473675,ax-sig-1");
+  }
+
   public void testFetchApiEndpoint() {
     AppRouter router = AppRouter.getInstance();
     String apiHost = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.API).blockingSingle();
