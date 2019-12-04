@@ -129,6 +129,9 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
       if (!StringUtil.isEmpty(inboxType)) {
         whereEqualTo(AVStatus.ATTR_INBOX_TYPE, inboxType);
       }
+      if (null != this.source) {
+        whereEqualTo(AVStatus.ATTR_SOURCE, this.source);
+      }
       if (withIterator) {
         iterator.fillConditions(this);
       } else {
@@ -158,7 +161,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
       }
       String ownerString = new JSONObject(Utils.mapFromAVObject(this.owner, false)).toJSONString();
       result.put(AVStatus.ATTR_OWNER, ownerString);
-    } else if (null != this.source) {
+    } else if (SourceType.OWNED != this.sourceType && null != this.source) {
       String sourceString = new JSONObject(Utils.mapFromAVObject(this.source, false)).toJSONString();
       result.put(AVStatus.ATTR_SOURCE, sourceString);
     }

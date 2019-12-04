@@ -1,6 +1,8 @@
 package cn.leancloud.core;
 
 import cn.leancloud.*;
+import cn.leancloud.ops.BaseOperation;
+import cn.leancloud.ops.BaseOperationAdapter;
 import cn.leancloud.types.AVDate;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.parser.ParserConfig;
@@ -50,6 +52,10 @@ public class AVOSCloud {
     SerializeConfig.getGlobalInstance().put(AVFile.class, adapter);
     SerializeConfig.getGlobalInstance().put(AVStatus.class, adapter);
     SerializeConfig.getGlobalInstance().put(AVInstallation.class, adapter);
+
+    BaseOperationAdapter opAdapter = new BaseOperationAdapter();
+    ParserConfig.getGlobalInstance().putDeserializer(BaseOperation.class, opAdapter);
+    SerializeConfig.getGlobalInstance().put(BaseOperation.class, opAdapter);
 
     AVObject.registerSubclass(AVStatus.class);
     AVObject.registerSubclass(AVUser.class);
