@@ -50,16 +50,31 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     if (null == markMap) {
       return false;
     }
-    if (!(this.value instanceof AVObject)) {
+    return checkValueCircleReference(markMap, this.value);
+  }
+
+  private static boolean checkValueCircleReference(Map<AVObject, Boolean> markMap, Object value) {
+    if (null == value || null == markMap) {
       return false;
     }
-    AVObject v = (AVObject)this.value;
-    if (markMap.containsKey(v) && markMap.get(v) == true) {
-      return true;
+    if (value instanceof AVObject) {
+      AVObject v = (AVObject)value;
+      if (markMap.containsKey(v) && markMap.get(v) == true) {
+        return true;
+      }
+      boolean rst = v.hasCircleReference(markMap);
+      markMap.put(v, rst);
+      return rst;
     }
-    boolean rst = v.hasCircleReference(markMap);
-    markMap.put(v, rst);
-    return rst;
+    if (value instanceof Collection) {
+      Collection<Object> collection = (Collection<Object>) value;
+      for (Object o : collection) {
+        if (checkValueCircleReference(markMap, o)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
