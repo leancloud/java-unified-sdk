@@ -18,10 +18,15 @@ public class AVPush {
 
   private static final String deviceTypeTag = "deviceType";
   private static final Set<String> DEVICE_TYPES = new HashSet<String>();
+
+  private static final String FlowControlTag = "flow_control";
+  private static final int FlowControlMinValue = 1000;
+
   static {
     DEVICE_TYPES.add("android");
     DEVICE_TYPES.add("ios");
   }
+
   private final Set<String> channelSet;
   private AVQuery<? extends AVInstallation> pushQuery;
   private String cql;
@@ -31,6 +36,7 @@ public class AVPush {
   private final Map<String, Object> pushData;
   private volatile AVObject notification;
   private Date pushDate = null;
+  private int flowControl = 0;// add since v6.1.2
 
   /**
    * Creates a new push notification. The default channel is the empty string, also known as the
@@ -45,12 +51,16 @@ public class AVPush {
     pushQuery = AVInstallation.getQuery();
   }
 
+  /**
+   * return channel set.
+   * @return
+   */
   public Set<String> getChannelSet() {
     return channelSet;
   }
 
   /**
-   * 返回推送后创建的_Notification对象。
+   * return the instance of _Notification。
    *
    * @return
    */
@@ -58,28 +68,75 @@ public class AVPush {
     return notification;
   }
 
+  /**
+   * return push query instance.
+   * @return push query instance.
+   */
   public AVQuery<? extends AVInstallation> getPushQuery() {
     return pushQuery;
   }
 
+  /**
+   * get push date.
+   * @return push date
+   */
   public Date getPushDate() {
     return pushDate;
   }
 
+  /**
+   * get expiration time.
+   * @return expiration time
+   */
   public long getExpirationTime() {
     return expirationTime;
   }
 
+  /**
+   * get expiration time interval.
+   * @return expiration time interval
+   */
   public long getExpirationTimeInterval() {
     return expirationTimeInterval;
   }
 
+  /**
+   * get push target.
+   * @return push target
+   */
   public Set<String> getPushTarget() {
     return pushTarget;
   }
 
+  /**
+   * get push data.
+   * @return push data
+   */
   public Map<String, Object> getPushData() {
     return pushData;
+  }
+
+  /**
+   * get push flow control value.
+   * @return flow control value.
+   */
+  public int getFlowControl() {
+    return flowControl;
+  }
+
+  /**
+   * set flow control for send speed.
+   * flow control value indicates how many devices will be pushed per second.
+   * the min value is 1000, if flowControl less than 1000, it will be replaced with 1000.
+   *
+   * @since 6.1.2
+   * @param flowControl flow control value which stands how many devices will be pushed per second.
+   */
+  public void setFlowControl(int flowControl) {
+    if (flowControl < FlowControlMinValue) {
+      flowControl = FlowControlMinValue;
+    }
+    this.flowControl = flowControl;
   }
 
   /**
@@ -175,6 +232,10 @@ public class AVPush {
     pushData.put("data", map);
   }
 
+  /**
+   * set push target only android device.
+   * @param pushToAndroid
+   */
   public void setPushToAndroid(boolean pushToAndroid) {
     if (pushToAndroid) {
       this.pushTarget.add("android");
@@ -183,6 +244,10 @@ public class AVPush {
     }
   }
 
+  /**
+   * set push target only ios device.
+   * @param pushToIOS
+   */
   public void setPushToIOS(boolean pushToIOS) {
     if (pushToIOS) {
       this.pushTarget.add("ios");
@@ -191,6 +256,10 @@ public class AVPush {
     }
   }
 
+  /**
+   * set push target only windows phone device.
+   * @param pushToWP
+   */
   public void setPushToWindowsPhone(boolean pushToWP) {
     if (pushToWP) {
       this.pushTarget.add("wp");
@@ -276,9 +345,11 @@ public class AVPush {
         map.put(entry.getKey(), JSON.parse(entry.getValue()));
       }
     }
+
     if (!StringUtil.isEmpty(cql)) {
       map.put("cql", cql);
     }
+
     if (channelSet.size() > 0) {
       map.putAll(pushChannelsData());
     }
@@ -286,12 +357,18 @@ public class AVPush {
     if (this.expirationTime > 0) {
       map.put("expiration_time", this.expirationDateTime());
     }
+
     if (this.expirationTimeInterval > 0) {
       map.put("push_time", StringUtil.stringFromDate(new Date()));
       map.put("expiration_interval", Long.valueOf(this.expirationTimeInterval));
     }
+
     if (this.pushDate != null) {
       map.put("push_time", StringUtil.stringFromDate(pushDate));
+    }
+
+    if (this.flowControl > 0) {
+      map.put(FlowControlTag, this.flowControl);
     }
 
     map.putAll(pushData);
