@@ -405,7 +405,7 @@ public class AVObject {
 
   /**
    * abort all modify operations.
-   * @Notice: this method doesn't work for AVInstallation.
+   * Notice: this method doesn't work for AVInstallation.
    */
   public void abortOperations() {
     if (totallyOverwrite) {

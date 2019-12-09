@@ -40,7 +40,6 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * the provided class.
    *
    * @param theClassName The name of the class to retrieve AVObjects for.
-   * @return the query object.
    */
   public AVQuery(String theClassName) {
     this(theClassName, null);

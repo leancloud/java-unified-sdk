@@ -64,7 +64,7 @@ public class AVIMMessageManager {
 
   /**
    * 注册一般情况下的消息handler，只有在没有类型的AVIMMessage或者没有其他handler时才会被调用
-   * <p/>
+   *
    * 请在Application初始化时设置
    *
    * @param handler
@@ -106,7 +106,7 @@ public class AVIMMessageManager {
 
   /**
    * 设置Conversataion相关事件的处理单元,
-   * <p/>
+   *
    * 推荐在Application初始化时设置
    *
    * @param handler
@@ -183,8 +183,8 @@ public class AVIMMessageManager {
   /**
    * 解析AVIMMessage对象的子类
    *
-   * @param message
-   * @return
+   * @param message message
+   * @return Return the instance of AVIMTypedMessage
    */
   protected static AVIMMessage parseTypedMessage(AVIMMessage message) {
     int messageType = getMessageType(message.getContent());

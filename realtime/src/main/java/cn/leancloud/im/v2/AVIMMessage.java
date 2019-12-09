@@ -53,7 +53,7 @@ public class AVIMMessage {
 
   /**
    * 获取当前聊天对话对应的id
-   * <p/>
+   *
    * 对应的是AVOSRealtimeConversations表中的objectId
    *
    * @return
@@ -137,8 +137,6 @@ public class AVIMMessage {
 
   /**
    * @deprecated Please use {@link #setDeliveredAt(long)}
-   *
-   * @return
    * @see AVIMConversation#RECEIPT_MESSAGE_FLAG
    */
   public void setReceiptTimestamp(long receiptTimestamp) {
@@ -224,7 +222,7 @@ public class AVIMMessage {
 
   /**
    * 获取消息的全局Id
-   * <p/>
+   *
    * 这个id只有在发送成功或者收到消息时才会有对应的值
    *
    * @return
@@ -285,7 +283,7 @@ public class AVIMMessage {
   }
 
   /**
-   * 设置 mention 用户列表字符串（逗号分隔），功能与 #setMentionList(List<String> peerIdList) 相同，两者调用一个即可。
+   * 设置 mention 用户列表字符串（逗号分隔），功能与 #setMentionList(List peerIdList) 相同，两者调用一个即可。
    * @param content
    */
   @JSONField(serialize = false, deserialize = false)

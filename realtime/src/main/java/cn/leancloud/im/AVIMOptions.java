@@ -86,7 +86,7 @@ public class AVIMOptions {
   }
   /**
    * 设置离线消息推送模式
-   * @param isOnlyCount
+   * @param isOnlyCount flag indicates only push count or not
    */
   public void setUnreadNotificationEnabled(boolean isOnlyCount) {
     onlyPushCount = isOnlyCount;
@@ -94,7 +94,7 @@ public class AVIMOptions {
 
   /**
    * 是否被设置为离线消息仅推送数量
-   * @return
+   * @return flag indicates only push count or not.
    */
   public boolean isOnlyPushCount() {
     return onlyPushCount;
@@ -102,9 +102,9 @@ public class AVIMOptions {
 
   /**
    * 是否被设置为即时重置网络连接
-   * @return
+   * @return flag indicates reset connection or not.
    *
-   * @Deprecated Since 5.0.18
+   * @deprecated Since 5.0.18
    */
   public boolean isResetConnectionWhileBroken() {
     return true;
@@ -114,7 +114,7 @@ public class AVIMOptions {
    * 设置为即时重置网络连接
    * @param resetConnectionWhileBroken
    *
-   * @Deprecated Since 5.0.18
+   * @deprecated Since 5.0.18
    */
   public void setResetConnectionWhileBroken(boolean resetConnectionWhileBroken) {
   }

@@ -137,6 +137,7 @@ public class AVACL {
   }
   /**
    * Set whether the public is allowed to read this object.
+   * @param allowed flag to allow.
    */
   public void setPublicReadAccess(boolean allowed) {
     setReadAccess(PUBLIC_KEY, allowed);
@@ -151,6 +152,7 @@ public class AVACL {
 
   /**
    * Set whether the public is allowed to write this object.
+   * @param allowed flag to allow
    */
   public void setPublicWriteAccess(boolean allowed) {
     setWriteAccess(PUBLIC_KEY, allowed);
@@ -165,6 +167,8 @@ public class AVACL {
 
   /**
    * Set whether the given user id is allowed to read this object.
+   * @param userId target user id.
+   * @param allowed flag to allow
    */
   public void setReadAccess(String userId, boolean allowed) {
     if (StringUtil.isEmpty(userId)) {

@@ -303,7 +303,7 @@ public class AVIMConversationsQuery {
 
   /**
    * 增加一个基于地理位置的近似查询，当conversation的属性中有对应的地址位置与指定的地理位置间距不超过指定距离时返回
-   * <p/>
+   *
    * 地球半径为6371.0 千米
    *
    * @param key

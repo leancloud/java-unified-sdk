@@ -29,13 +29,13 @@ public class AVIMConversation {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVIMConversation.class);
   /**
    * 暂存消息
-   * <p/>
+   *
    * 只有在消息发送时，对方也是在线的才能收到这条消息
    */
   public static final int TRANSIENT_MESSAGE_FLAG = 0x10;
   /**
    * 回执消息
-   * <p/>
+   *
    * 当消息送到到对方以后，发送方会收到消息回执说明消息已经成功达到接收方
    */
   public static final int RECEIPT_MESSAGE_FLAG = 0x100;

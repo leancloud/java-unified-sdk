@@ -55,9 +55,9 @@ public class AVStatus extends AVObject {
 
   /**
    * create a status instance.
-   * @param imageUrl
-   * @param message
-   * @return
+   * @param imageUrl image url
+   * @param message  message text
+   * @return Return an instance of AVStatus
    */
   public static AVStatus createStatus(String imageUrl, String message) {
     AVStatus status = new AVStatus();
@@ -69,8 +69,8 @@ public class AVStatus extends AVObject {
   /**
    * create a status instance.
    *
-   * @param data
-   * @return
+   * @param data map data
+   * @return Return an instance of AVStatus
    */
   public static AVStatus createStatusWithData(Map<String, Object> data) {
     AVStatus status = new AVStatus();
@@ -94,7 +94,7 @@ public class AVStatus extends AVObject {
 
   /**
    * set image url attribute.
-   * @param imageUrl
+   * @param imageUrl image url
    */
   public void setImageUrl(final String imageUrl) {
     put(ATTR_IMAGE, imageUrl);
@@ -102,7 +102,7 @@ public class AVStatus extends AVObject {
 
   /**
    * get image url attribute.
-   * @return
+   * @return Return the value of image url
    */
   public String getImageUrl() {
     return getString(ATTR_IMAGE);
@@ -110,7 +110,7 @@ public class AVStatus extends AVObject {
 
   /**
    * set message text
-   * @param msg
+   * @param msg the message text.
    */
   public void setMessage(String msg) {
     put(ATTR_MESSAGE, msg);
@@ -118,7 +118,7 @@ public class AVStatus extends AVObject {
 
   /**
    * get message text
-   * @return
+   * @return Return the message text.
    */
   public String getMessage() {
     return getString(ATTR_MESSAGE);
@@ -127,7 +127,8 @@ public class AVStatus extends AVObject {
   /**
    * 此状态在用户 Inbox 中的 ID
    *
-   * @warning 仅用于分片查询,不具有唯一性
+   * 注意: 仅用于分片查询,不具有唯一性
+   * @return Return the message id in inbox.
    */
   public long getMessageId() {
     return getLong(ATTR_MESSAGE_ID);
@@ -147,7 +148,7 @@ public class AVStatus extends AVObject {
   /**
    * 获取 Status 的发送者
    *
-   * @return
+   * @return source user of the status
    */
   public AVUser getSource() {
     return (AVUser) getAVObject(ATTR_SOURCE);
@@ -155,7 +156,7 @@ public class AVStatus extends AVObject {
 
   /**
    * set source of status
-   * @param source
+   * @param source source user of the status
    */
   public void setSource(AVObject source) {
     put(ATTR_SOURCE, Utils.mapFromAVObject(source, false));
@@ -163,7 +164,7 @@ public class AVStatus extends AVObject {
 
   /**
    * set inbox type.
-   * @param type
+   * @param type inbox type
    */
   public void setInboxType(final String type) {
     if (!StringUtil.isEmpty(type)) {
@@ -174,8 +175,8 @@ public class AVStatus extends AVObject {
   /**
    * 添加 AVStatus 中的一对自定义内容
    *
-   * @param key
-   * @param value
+   * @param key attribute key
+   * @param value attribute value
    */
   @Override
   public void put(String key, Object value) {
@@ -184,8 +185,8 @@ public class AVStatus extends AVObject {
 
   /**
    * get customized key value.
-   * @param key
-   * @return
+   * @param key attribute key
+   * @return attribute value
    */
   @Override
   public Object get(String key) {
@@ -195,7 +196,7 @@ public class AVStatus extends AVObject {
   /**
    * 删除 AVStatus 中的一对自定义内容
    *
-   * @param key
+   * @param key attribute key
    */
   @Override
   public void remove(String key) {
@@ -205,7 +206,7 @@ public class AVStatus extends AVObject {
   /**
    * delete status
    *
-   * @return
+   * @return Observable instance
    */
   @Override
   public Observable<AVNull> deleteInBackground() {
@@ -215,8 +216,8 @@ public class AVStatus extends AVObject {
   /**
    * delete status(class method)
    *
-   * @param status
-   * @return
+   * @param status instance of AVStatus
+   * @return Observable instance
    */
   public static Observable<AVNull> deleteInBackground(AVStatus status) {
     if (!checkCurrentUserAuthenticated()) {
@@ -265,8 +266,8 @@ public class AVStatus extends AVObject {
   /**
    * fetch status with specified objectId
    *
-   * @param statusId
-   * @return
+   * @param statusId status id.
+   * @return Observable instance
    */
   public static Observable<AVStatus> getStatusWithIdInBackground(String statusId) {
     return PaasClient.getStorageClient().fetchStatus(statusId);
@@ -275,8 +276,8 @@ public class AVStatus extends AVObject {
   /**
    * send to user with query.
    *
-   * @param query
-   * @return
+   * @param query instance of AVQuery
+   * @return Observable instance
    */
   public Observable<AVStatus> sendToUsersInBackground(AVQuery query) {
     return sendToUsersInBackground(INBOX_TYPE.TIMELINE.toString(), query);
@@ -284,9 +285,9 @@ public class AVStatus extends AVObject {
 
   /**
    * send to user with query and inboxType.
-   * @param inboxType
-   * @param query
-   * @return
+   * @param inboxType inbox type
+   * @param query instance of AVQuery
+   * @return Observable instance
    */
   public Observable<AVStatus> sendToUsersInBackground(String inboxType, AVQuery query) {
     return sendInBackground(inboxType, query);
@@ -294,7 +295,7 @@ public class AVStatus extends AVObject {
 
   /**
    * send status to followers.
-   * @return
+   * @return Observable instance
    */
   public Observable<AVStatus> sendToFollowersInBackground() {
     return sendToFollowersInBackground(INBOX_TYPE.TIMELINE.toString());
@@ -315,8 +316,8 @@ public class AVStatus extends AVObject {
 
   /**
    * send status with inboxType to followers.
-   * @param inboxType
-   * @return
+   * @param inboxType inbox type
+   * @return Observable instance
    */
   public Observable<AVStatus> sendToFollowersInBackground(String inboxType) {
     if (!checkCurrentUserAuthenticated()) {
@@ -329,8 +330,8 @@ public class AVStatus extends AVObject {
   /**
    * send privately message.
    *
-   * @param receiverObjectId
-   * @return
+   * @param receiverObjectId receiver objectId
+   * @return Observable instance
    */
   public Observable<AVStatus> sendPrivatelyInBackground(final String receiverObjectId) {
     AVQuery userQuery = AVUser.getQuery();
@@ -363,8 +364,8 @@ public class AVStatus extends AVObject {
    * query statuses sent by User owner.
    * default query direction: from NEW to OLD.
    *
-   * @param source
-   * @return
+   * @param source source User
+   * @return instance of AVStatusQuery
    * @throws AVException
    */
   public static AVStatusQuery statusQuery(AVUser source) throws AVException {
@@ -379,9 +380,9 @@ public class AVStatus extends AVObject {
    * query statuses send to User owner and with inboxType
    * default query direction: from NEW to OLD.
    *
-   * @param owner
-   * @param inboxType
-   * @return
+   * @param owner owner user
+   * @param inboxType inbox type
+   * @return instance of AVStatusQuery
    */
   public static AVStatusQuery inboxQuery(AVUser owner, String inboxType) {
     AVStatusQuery query = new AVStatusQuery(AVStatusQuery.SourceType.INBOX);

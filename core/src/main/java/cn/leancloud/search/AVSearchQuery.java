@@ -86,7 +86,7 @@ public class AVSearchQuery<T extends AVObject> {
    * 设置查询字段列表，以逗号隔开的字符串，例如"a,b,c"，表示按照a,b,c三个字段的顺序排序，如果字段前面有负号，表示倒序，例如"a,-b"
    *
    * @param order
-   * @return this query.
+   * @return
    */
   public AVSearchQuery order(String order) {
     this.order = order;
@@ -192,7 +192,6 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 设置返回集合的起始位置，一般用于分页
    *
-   * @return this query
    */
   public void setSkip(int skip) {
     this.skip = skip;

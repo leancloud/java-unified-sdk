@@ -45,7 +45,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
   /**
    * set since messageId.
    *
-   * @param sinceId
+   * @param sinceId starter message id
    */
   public void setSinceId(long sinceId) {
     this.iterator.setSinceId(sinceId);
@@ -53,7 +53,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
 
   /**
    * get current since messageId.
-   * @return
+   * @return since messageId
    */
   public long getSinceId() {
     return this.iterator.getSinceId();
@@ -61,7 +61,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
 
   /**
    * get current max messageId.
-   * @return
+   * @return max messageId
    */
   public long getMaxId() {
     return this.iterator.getMaxId();
@@ -69,7 +69,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
 
   /**
    * set max messageId.
-   * @param maxId
+   * @param maxId max messageId
    */
   public void setMaxId(long maxId) {
     this.iterator.setMaxId(maxId);
@@ -77,7 +77,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
 
   /**
    * get pagination size.
-   * @return
+   * @return pagination size.
    */
   public int getPageSize() {
     return iterator.getPageSize();
@@ -85,7 +85,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
 
   /**
    * set pagination size.
-   * @param pageSize
+   * @param pageSize pagination size
    */
   public void setPageSize(int pageSize) {
     iterator.setPageSize(pageSize);
@@ -252,7 +252,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
   }
 
   /**
-   * get <read, unread> count.
+   * get (read, unread) count.
    *
    * @return
    */
