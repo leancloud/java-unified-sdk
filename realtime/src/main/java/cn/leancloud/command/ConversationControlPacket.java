@@ -3,6 +3,7 @@ package cn.leancloud.command;
 import cn.leancloud.Messages;
 import cn.leancloud.im.Signature;
 import cn.leancloud.utils.StringUtil;
+import com.alibaba.fastjson.JSON;
 
 import java.util.List;
 import java.util.Map;
@@ -214,7 +215,7 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
 
     if (attributes != null && !attributes.isEmpty()) {
       Messages.JsonObjectMessage.Builder attrBuilder = Messages.JsonObjectMessage.newBuilder();
-      attrBuilder.setData(attributes.toString());
+      attrBuilder.setData(JSON.toJSONString(attributes));
       builder.setAttr(attrBuilder);
     }
 

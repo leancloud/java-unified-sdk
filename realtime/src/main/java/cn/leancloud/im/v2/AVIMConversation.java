@@ -1477,10 +1477,10 @@ public class AVIMConversation {
         attributesMap.putAll(pendingInstanceData);
       }
 
-      Map<String, Object> params = new HashMap<String, Object>();
-      if (!attributesMap.isEmpty()) {
-        params.put(Conversation.PARAM_CONVERSATION_ATTRIBUTE, attributesMap);
-      }
+//      Map<String, Object> params = new HashMap<String, Object>();
+//      if (!attributesMap.isEmpty()) {
+//        params.put(Conversation.PARAM_CONVERSATION_ATTRIBUTE, attributesMap);
+//      }
       final AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
         @Override
         public void done(Map<String, Object> result, AVIMException e) {
@@ -1497,7 +1497,7 @@ public class AVIMConversation {
         }
       };
       InternalConfiguration.getOperationTube().updateConversation(this.client.getClientId(), this.conversationId, this.getType(),
-              params, tmpCallback);
+              attributesMap, tmpCallback);
     } else {
       if (null != callback) {
         callback.internalDone(null);
