@@ -4,6 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -295,7 +298,30 @@ public class AndroidOperationTube implements OperationTube {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
-          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
+          if (AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY == op) {
+            int result = 0;
+            if (null != intentResult) {
+              Object memberCount = intentResult.get(Conversation.callbackMemberCount);
+              if (memberCount instanceof Integer) {
+                result = (Integer) memberCount;
+              }
+            }
+            callback.internalDone(result, AVIMException.wrapperAVException(error));
+          } else if (AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY == op
+              || AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY == op) {
+            List<String> result = new ArrayList<>();
+            if (null != intentResult) {
+              Object memberList = intentResult.get(Conversation.callbackData);
+              if (memberList instanceof Collection) {
+                result.addAll((Collection<? extends String>) memberList);
+              } else if (memberList instanceof String[]) {
+                result.addAll(Arrays.asList((String[])memberList));
+              }
+            }
+            callback.internalDone(result, AVIMException.wrapperAVException(error));
+          } else {
+            callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
+          }
         }
       };
     }

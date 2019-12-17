@@ -10,7 +10,6 @@ import cn.leancloud.im.v2.messages.AVIMTextMessage;
 import cn.leancloud.session.AVConnectionManager;
 import junit.framework.TestCase;
 
-import java.sql.Time;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -558,6 +557,45 @@ public class AVIMConversationTest extends TestCase {
           opersationSucceed = true;
         }
         countDownLatch.countDown();
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testConversationQueryMemberCount() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    String conversationId = "5dee02017c4cc935c85c93de";
+    final AVIMConversation conversation = client.getConversation(conversationId, false, false);
+    conversation.fetchInfoInBackground(new AVIMConversationCallback() {
+      @Override
+      public void done(AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to refresh convesation.");
+          e.printStackTrace();
+          countDownLatch.countDown();
+        } else {
+          conversation.getMemberCount(new AVIMConversationMemberCountCallback() {
+            @Override
+            public void done(Integer memberCount, AVIMException e) {
+              if (null != e) {
+                e.printStackTrace();
+              } else {
+                System.out.println("get member count: " + memberCount);
+              }
+              opersationSucceed = e == null;
+              countDownLatch.countDown();
+            }
+          });
+        }
       }
     });
     countDownLatch.await();

@@ -1,11 +1,8 @@
 package cn.leancloud.sample;
 
-import android.os.Parcelable;
-
 import java.util.List;
 
 import cn.leancloud.AVObject;
-import cn.leancloud.AVObjectCreator;
 import cn.leancloud.AVRelation;
 import cn.leancloud.annotation.AVClassName;
 
@@ -15,7 +12,6 @@ import cn.leancloud.annotation.AVClassName;
 
 @AVClassName("Post")
 public class Post extends AVObject {
-  public static final Parcelable.Creator CREATOR = AVObjectCreator.instance;
 
   public static final String CONTENT = "content";
   public static final String AUTHOR = "author";
@@ -25,11 +21,6 @@ public class Post extends AVObject {
   public Post() {
 
   }
-
-//  Student author;
-//  String content;
-//  List<Student> likes;
-//  AVRelation<Student> rewardStudents;
 
   public Student getAuthor() {
     return getAVObject(AUTHOR);

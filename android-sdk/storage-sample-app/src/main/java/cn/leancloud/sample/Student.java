@@ -1,12 +1,9 @@
 package cn.leancloud.sample;
 
-import android.os.Parcelable;
-
 import java.util.List;
 
 import cn.leancloud.AVFile;
 import cn.leancloud.AVObject;
-import cn.leancloud.AVObjectCreator;
 import cn.leancloud.annotation.AVClassName;
 
 /**
@@ -14,7 +11,6 @@ import cn.leancloud.annotation.AVClassName;
  */
 @AVClassName("Student")
 public class Student extends AVObject {
-  public static final Parcelable.Creator CREATOR = AVObjectCreator.instance;
 
   public static final String NAME = "name";
   public static final String AGE = "age";
@@ -25,12 +21,6 @@ public class Student extends AVObject {
   public Student() {
 
   }
-
-  //  private String name;
-//  private int age;
-//  private AVFile avatar;
-//  private Object any;
-//  List<String> hobbies;
 
   public String getName() {
     return getString(NAME);

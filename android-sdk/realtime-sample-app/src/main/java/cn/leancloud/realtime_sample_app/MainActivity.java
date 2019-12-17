@@ -1,15 +1,20 @@
 package cn.leancloud.realtime_sample_app;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVFile;
@@ -23,7 +28,13 @@ import cn.leancloud.im.v2.AVIMConversationsQuery;
 import cn.leancloud.im.v2.AVIMException;
 import cn.leancloud.im.v2.callback.AVIMConversationCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationCreatedCallback;
+import cn.leancloud.im.v2.callback.AVIMConversationMemberCountCallback;
+import cn.leancloud.im.v2.callback.AVIMConversationMemberQueryCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationQueryCallback;
+import cn.leancloud.im.v2.callback.AVIMConversationSimpleResultCallback;
+import cn.leancloud.im.v2.callback.AVIMOperationFailure;
+import cn.leancloud.im.v2.callback.AVIMOperationPartiallySucceededCallback;
+import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
 import cn.leancloud.im.v2.messages.AVIMAudioMessage;
 import cn.leancloud.livequery.AVLiveQuery;
 import cn.leancloud.livequery.AVLiveQueryConnectionHandler;
@@ -39,6 +50,78 @@ public class MainActivity extends AppCompatActivity {
   private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
       = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
+    private void testConvMemberOperations(final AVIMConversation conv) {
+      conv.getAllMemberInfo(0, 100, new AVIMConversationMemberQueryCallback() {
+        @Override
+        public void done(List<AVIMConversationMemberInfo> memberInfoList, AVIMException e) {
+          if (null != e) {
+            Log.e("member_query", "memberInfo query error ", e);
+          } else {
+            Log.d("member_query", "memberInfo query result " + memberInfoList);
+            conv.blockMembers(Arrays.asList("Yoda"), new AVIMOperationPartiallySucceededCallback() {
+              @Override
+              public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                if (null != e) {
+                  Log.e("member_block", "block member error ", e);
+                } else {
+                  Log.d("member_block", successfulClientIds.toString());
+                  conv.queryBlockedMembers(0, 100, new AVIMConversationSimpleResultCallback() {
+                    @Override
+                    public void done(List<String> memberIdList, AVIMException e) {
+                      if (null != e) {
+                        Log.e("blocked_query", "block member query error ", e);
+                      } else {
+                        Log.d("blocked_query", memberIdList.toString());
+                        conv.unblockMembers(Arrays.asList("Yoda"), new AVIMOperationPartiallySucceededCallback() {
+                          @Override
+                          public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                            if (null != e) {
+                              Log.e("member_unblock", "unblock member error ", e);
+                            } else {
+                              Log.d("member_unblock", successfulClientIds.toString());
+                              conv.muteMembers(Arrays.asList("Luke"), new AVIMOperationPartiallySucceededCallback() {
+                                @Override
+                                public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                                  if (null != e) {
+                                    Log.e("member_mute", "muted member error ", e);
+                                  } else {
+                                    Log.d("member_mute", successfulClientIds.toString());
+                                    conv.queryMutedMembers(0, 100, new AVIMConversationSimpleResultCallback() {
+                                      @Override
+                                      public void done(List<String> memberIdList, AVIMException e) {
+                                        if (null != e) {
+                                          Log.e("muted_query", "muted member query error ", e);
+                                        } else {
+                                          Log.d("muted_query", memberIdList.toString());
+                                          conv.unmuteMembers(Arrays.asList("Luke"), new AVIMOperationPartiallySucceededCallback() {
+                                            @Override
+                                            public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                                              if (null != e) {
+                                                Log.e("member_unmute", "unmute member error ", e);
+                                              } else {
+                                                Log.d("member_unmute", successfulClientIds.toString());
+                                              }
+                                            }
+                                          });
+                                        }
+                                      }
+                                    });
+                                  }
+                                }
+                              });
+                            }
+                          }
+                        });
+                      }
+                    }
+                  });
+                }
+              }
+            });
+          }
+        }
+      });
+    }
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
       AVIMClient currentClient = AVIMClient.getInstance(AVIMClient.getDefaultClient());
@@ -52,9 +135,47 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void done(List<AVIMConversation> conversations, AVIMException e) {
               if (e != null) {
-                Log.e("tag", "conversations error ", e);
+                Log.e("tag", "conversations query error ", e);
               } else {
-                Log.e("tag", "conversations done " + conversations);
+                Log.e("tag", "conversations query done " + conversations);
+                if (conversations.size() > 0) {
+                  final AVIMConversation conv = conversations.get(0);
+                  conv.getMemberCount(new AVIMConversationMemberCountCallback() {
+                    @Override
+                    public void done(Integer memberCount, AVIMException e) {
+                      if (null != e) {
+                        Log.e("tag", "conversations member count error ", e);
+                        e.printStackTrace();
+                      } else {
+                        Log.d("tag", "conversation member count:" + memberCount);
+                        testConvMemberOperations(conv);
+                      }
+                    }
+                  });
+                } else {
+                  currentClient.createConversation(Arrays.asList("Yoda", "Obiwan", "Luke"), "YodaUniqueTest2", null, false, true, new AVIMConversationCreatedCallback() {
+                    @Override
+                    public void done(AVIMConversation conversation, AVIMException e) {
+                      if (null != e) {
+                        Log.e("tag", "conversations create error ", e);
+                        e.printStackTrace();
+                      } else {
+                        conversation.getMemberCount(new AVIMConversationMemberCountCallback() {
+                          @Override
+                          public void done(Integer memberCount, AVIMException e) {
+                            if (null != e) {
+                              Log.e("tag", "conversations member count error ", e);
+                              e.printStackTrace();
+                            } else {
+                              Log.e("tag", "conversation member count:" + memberCount);
+                              testConvMemberOperations(conversation);
+                            }
+                          }
+                        });
+                      }
+                    }
+                  });
+                }
               }
             }
           });
@@ -86,10 +207,12 @@ public class MainActivity extends AppCompatActivity {
             public void done(AVLiveQuery.EventType eventType, AVObject avObject, List<String> updateKeyList) {
               super.done(eventType, avObject, updateKeyList);
             }
+
             @Override
             public void onObjectCreated(AVObject avObject) {
               System.out.println("object created: " + avObject);
             }
+
             @Override
             public void onObjectDeleted(String objectId) {
               System.out.println("object deleted: " + objectId);
