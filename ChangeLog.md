@@ -11,6 +11,18 @@ Following is change logs for recently release versions, you can refer to [releas
 - None
 
 #### Optimization and fixed bugs
+- fixed: can't get objectId of current AVInstallation after saveInBackground.
+
+
+## 6.1.4 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
 - fixed: #86 ClassCastException occurred within AVIMConveration#getMemberCount(), #queryBlockedMembers() and #getMutedMembers().
 
 

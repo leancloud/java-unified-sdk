@@ -596,7 +596,15 @@ public class AVObject {
       }
       if (totallyOverwrite) {
         return PaasClient.getStorageClient().saveWholeObject(this.getClass(), endpointClassName, currentObjectId,
-                paramData, needFetch, whereCondition);
+                paramData, needFetch, whereCondition)
+                .map(new Function<AVObject, AVObject>() {
+          @Override
+          public AVObject apply(AVObject avObject) throws Exception {
+            AVObject.this.mergeRawData(avObject);
+            AVObject.this.onSaveSuccess();
+            return AVObject.this;
+          }
+        });
       } else if (StringUtil.isEmpty(currentObjectId)) {
         return PaasClient.getStorageClient().createObject(this.className, paramData, needFetch, whereCondition)
                 .map(new Function<AVObject, AVObject>() {
