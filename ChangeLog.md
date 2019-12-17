@@ -2,6 +2,17 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.1.4 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- fixed: #86 ClassCastException occurred within AVIMConveration#getMemberCount(), #queryBlockedMembers() and #getMutedMembers().
+
 
 ## 6.1.3 release
 
