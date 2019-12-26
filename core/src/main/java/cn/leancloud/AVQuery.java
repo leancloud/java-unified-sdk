@@ -15,7 +15,6 @@ import java.util.*;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Function;
 
 public class AVQuery<T extends AVObject> implements Cloneable {
@@ -937,9 +936,10 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   }
 
   public Observable<AVNull> deleteAllInBackground() {
-    return findInBackground().map(new Function<List<T>, AVNull>() {
-      public AVNull apply(@NonNull List<T> list) throws Exception {
-        return AVObject.deleteAllInBackground(list).blockingFirst();
+    return findInBackground().flatMap(new Function<List<T>, ObservableSource<AVNull>>() {
+      @Override
+      public ObservableSource<AVNull> apply(List<T> list) {
+        return AVObject.deleteAllInBackground(list);
       }
     });
   }
