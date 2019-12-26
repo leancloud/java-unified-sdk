@@ -24,14 +24,10 @@ import java.util.regex.Pattern;
 import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observable;
-import io.reactivex.ObservableTransformer;
 import io.reactivex.Observer;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.HttpException;
 
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVObject {
