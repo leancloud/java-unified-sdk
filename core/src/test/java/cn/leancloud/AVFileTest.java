@@ -148,6 +148,102 @@ public class AVFileTest extends TestCase {
     assertTrue(file.getObjectId().length() > 0);
   }
 
+  public void testSaveDataWithKeepFileName() throws Exception {
+    String contents = StringUtil.getRandomString(640);
+    AVFile file = new AVFile("testfilename", contents.getBytes());
+//    Map<String, Object> metaData = new HashMap<>();
+//    metaData.put("format", "dat file");
+//    file.setMetaData(metaData);
+    file.setACL(new AVACL());
+    file.saveInBackground(true).subscribe(new Observer<AVFile>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVFile avFile) {
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(file.getObjectId().length() > 0);
+  }
+
+  public void testLocalFileWithKeepFileName() throws Exception {
+    File currentFile = new File("./20160704174809.jpeg");
+    AVFile file = new AVFile("20160704174809.jpeg", currentFile);
+    file.saveInBackground(true).subscribe(new Observer<AVFile>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVFile avFile) {
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testLocalFileWithoutKeepFileName() throws Exception {
+    File currentFile = new File("./20160704174809.jpeg");
+    AVFile file = new AVFile("20160704174809.jpeg", currentFile);
+    file.saveInBackground().subscribe(new Observer<AVFile>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVFile avFile) {
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
   public void testExternalFile2() throws Exception {
     String url = "http://i1.wp.com/blog.avoscloud.com/wp-content/uploads/2014/05/screen568x568-1.jpg?resize=202%2C360";
     AVFile file = new AVFile("screen.jpg", url);

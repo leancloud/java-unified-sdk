@@ -15,12 +15,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
 import cn.leancloud.upload.*;
-import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.FileUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -305,8 +303,14 @@ public final class AVFile extends AVObject {
     return result;
   }
 
-  public synchronized void saveInBackground(final ProgressCallback progressCallback) {
-    saveWithProgressCallback(progressCallback).subscribe(new Observer<AVFile>() {
+  /**
+   * save to cloud backend.
+   * @param keepFileName whether keep file name in url or not.
+   * @param progressCallback progress callback.
+   * @return Observable object.
+   */
+  public synchronized void saveInBackground(boolean keepFileName, final ProgressCallback progressCallback) {
+    saveWithProgressCallback(keepFileName, progressCallback).subscribe(new Observer<AVFile>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
@@ -333,6 +337,15 @@ public final class AVFile extends AVObject {
     });
   }
 
+  /**
+   * save to cloud backend.
+   * @param progressCallback progress callback.
+   * @return Observable object.
+   */
+  public void saveInBackground(final ProgressCallback progressCallback) {
+    saveInBackground(false, progressCallback);
+  }
+
   private Observable<AVFile> directlyCreate(JSONObject parameters) {
     return PaasClient.getStorageClient().createObject(this.className, parameters, false, null)
             .map(new Function<AVObject, AVFile>() {
@@ -343,9 +356,9 @@ public final class AVFile extends AVObject {
               }});
   }
 
-  private Observable<AVFile> saveWithProgressCallback(final ProgressCallback callback) {
+  private Observable<AVFile> saveWithProgressCallback(boolean keepFileName, final ProgressCallback callback) {
     JSONObject paramData = generateChangedParam();
-    final String fileKey = FileUtil.generateFileKey(this.getName());
+    final String fileKey = FileUtil.generateFileKey(this.getName(), keepFileName);
     paramData.put("key", fileKey);
     paramData.put("__type", "File");
     if (StringUtil.isEmpty(getObjectId())) {
@@ -392,11 +405,23 @@ public final class AVFile extends AVObject {
     }
   }
 
+  /**
+   * save to cloud backend.
+   * @return  Observable object.
+   */
   @Override
   public Observable<AVFile> saveInBackground() {
-    return saveWithProgressCallback(null);
+    return saveInBackground(false);
   }
 
+  /**
+   * save to cloud backend.
+   * @param keepFileName whether keep file name in url or not.
+   * @return Observable object.
+   */
+  public Observable<AVFile> saveInBackground(boolean keepFileName) {
+    return saveWithProgressCallback(keepFileName,null);
+  }
 
   @JSONField(serialize = false)
   public byte[] getData() {
