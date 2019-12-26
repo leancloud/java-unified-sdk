@@ -2,6 +2,26 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.1.6 release
+
+#### Break changes
+- None
+
+#### New features
+- add option to keep file name within download url for method AVFile#saveInBackground():
+```
+  /**
+   * save to cloud backend.
+   * @param keepFileName whether keep file name in url or not.
+   * @return Observable object.
+   */
+  public Observable<AVFile> saveInBackground(boolean keepFileName);
+```
+
+#### Optimization and fixed bugs
+- fixed: AVQuery#deleteInBackground() will block UI thread.
+
+
 ## 6.1.5 release
 
 #### Break changes
