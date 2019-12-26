@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">android-sdk-all</string>
+    <string name="app_name">leancloud-storage-sample</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>

@@ -137,7 +137,8 @@ public class QueryDemoActivity extends DemoBaseActivity {
 
   public void testDeleteAllInBackground() throws AVException {
     AVQuery<Student> query = AVQuery.getQuery(Student.class);
-    query.limit(40);
+    query.addDescendingOrder("updatedAt");
+    //query.limit(20);
     query.deleteAllInBackground().subscribe(new Observer<AVNull>() {
       @Override
       public void onSubscribe(Disposable d) {
@@ -146,12 +147,12 @@ public class QueryDemoActivity extends DemoBaseActivity {
 
       @Override
       public void onNext(AVNull avNull) {
-        log("testDeleteAll finishe.");
+        log("testDeleteAllInBackground finished.");
       }
 
       @Override
       public void onError(Throwable e) {
-        log("testDeleteAll failed.");
+        log("testDeleteAllInBackground failed.");
       }
 
       @Override
