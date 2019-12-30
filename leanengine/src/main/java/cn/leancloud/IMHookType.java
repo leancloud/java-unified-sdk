@@ -2,6 +2,10 @@ package cn.leancloud;
 
 public enum IMHookType {
   /**
+   * 客户端登录启用签名认证时，验证 AV.User 的 sessionToken 后，获取登录签名前调用
+   */
+  rtmClientSign(true),
+  /**
    * 客户端成功登录
    */
   clientOnline(false),
@@ -75,6 +79,8 @@ public enum IMHookType {
         return clientOnline;
       } else if ("clientOffline".equals(hookName)) {
         return clientOffline;
+      } else if ("rtmClientSign".equals(hookName)) {
+        return rtmClientSign;
       }
     }
     return null;
