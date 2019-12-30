@@ -67,7 +67,8 @@ public interface APIService {
                                        @Body JSONObject object, @Query("fetchWhenSave") boolean fetchFlag,
                                        @Query("where") JSONObject where);
   @GET("/1.1/{endpointClass}/{objectId}")
-  Observable<AVObject> getWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId);
+  Observable<AVObject> getWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
+                                      @Query("include") String includeKeys);
   @DELETE("/1.1/{endpointClass}/{objectId}")
   Observable<AVNull> deleteWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId);
 

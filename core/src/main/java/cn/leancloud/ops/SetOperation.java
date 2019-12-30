@@ -1,7 +1,5 @@
 package cn.leancloud.ops;
 
-import com.alibaba.fastjson.annotation.JSONType;
-
 import java.util.HashMap;
 import java.util.Map;
 

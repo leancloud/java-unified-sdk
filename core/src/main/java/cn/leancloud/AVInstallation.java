@@ -160,6 +160,28 @@ public final class AVInstallation extends AVObject {
     return query;
   }
 
+  @Override
+  protected void onSaveSuccess() {
+    super.onSaveSuccess();
+    updateCurrentInstallationCache();
+  }
+
+  @Override
+  protected void onDataSynchronized() {
+    super.onDataSynchronized();
+    updateCurrentInstallationCache();
+  }
+
+  void updateCurrentInstallationCache() {
+    if (currentInstallation == this) {
+      File installationFile = getCacheFile();
+      String jsonString = JSON.toJSONString(currentInstallation, ObjectValueFilter.instance,
+              SerializerFeature.WriteClassName,
+              SerializerFeature.DisableCircularReferenceDetect);
+      PersistenceUtil.sharedInstance().saveContentToFile(jsonString, installationFile);
+    }
+  }
+
   void setInstallationId(String installationId) {
     this.put(INSTALLATIONIDTAG, installationId);
   }

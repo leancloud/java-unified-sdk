@@ -269,8 +269,8 @@ public class StorageClient {
     });
   }
 
-  public Observable<AVObject> getWholeObject(final String endpointClass, String objectId) {
-    return wrapObservable(apiService.getWholeObject(endpointClass, objectId));
+  public Observable<AVObject> getWholeObject(final String endpointClass, String objectId, String includeKeys) {
+    return wrapObservable(apiService.getWholeObject(endpointClass, objectId, includeKeys));
   }
 
   public Observable<AVNull> deleteWholeObject(final String endpointClass, String objectId) {

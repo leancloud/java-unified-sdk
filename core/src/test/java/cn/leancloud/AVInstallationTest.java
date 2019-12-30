@@ -7,10 +7,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import junit.framework.TestCase;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
 public class AVInstallationTest extends TestCase {
@@ -18,6 +21,11 @@ public class AVInstallationTest extends TestCase {
   public AVInstallationTest(String testName) {
     super(testName);
     Configure.initializeRuntime();
+  }
+
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    Thread.sleep(500);
   }
 
   public void testCreateInstallation() {
@@ -69,6 +77,8 @@ public class AVInstallationTest extends TestCase {
 
       @Override
       public void onError(Throwable throwable) {
+        String errMessage = throwable.getMessage();
+        testSucceed = errMessage.indexOf("A unique field was given a value that is already taken") >= 0;
         latch.countDown();
       }
 
@@ -93,5 +103,80 @@ public class AVInstallationTest extends TestCase {
     currentInstall.removeAll("course", Arrays.asList("Artist", "Reading"));
     currentInstall.removeAll("course", Arrays.asList("Sport"));
     currentInstall.saveInBackground().blockingFirst();
+  }
+
+  public void testSaveWithPointerAndDate() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    testSucceed = false;
+    AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
+    currentInstall.put("date", new Date());
+
+    AVUser user = AVObject.createWithoutData(AVUser.class, "5dd73208844bb40074b18fd7");
+    currentInstall.put("user", user);
+
+    currentInstall.saveInBackground().subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testUpdateWithPointerAndArray() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    testSucceed = false;
+    AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
+    currentInstall.fetch("user");
+    AVUser user = currentInstall.getAVObject("user");
+    if (null != user) {
+      assertEquals(user.getUsername(), "jfeng");
+    } else {
+      user = AVObject.createWithoutData(AVUser.class, "5dd73208844bb40074b18fd7");
+      currentInstall.put("user", user);
+    }
+    currentInstall.put("channel", Arrays.asList("Public", "People", "Open"));
+    currentInstall.saveInBackground()
+            .subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
   }
 }

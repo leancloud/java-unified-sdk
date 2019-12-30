@@ -141,11 +141,11 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     LOGGER.w("illegal operations. current=" + current.getClass().getSimpleName() + ", prev=" + prev.getClass().getSimpleName());
   }
 
-  protected Object encodeObject(Object o) {
+  public static Object encodeObject(Object o) {
     return encodeObject(o, false);
   }
 
-  protected Object encodeObject(Object o, boolean isTop) {
+  protected static Object encodeObject(Object o, boolean isTop) {
     if (null == o) {
       return null;
     } else if (o instanceof Map) {
@@ -172,7 +172,7 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     return o;
   }
 
-  protected Object encodeMap(Map<String, Object> map, boolean isTop) {
+  protected static Object encodeMap(Map<String, Object> map, boolean isTop) {
     Map newMap = new HashMap<String, Object>(map.size());
 
     for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -184,7 +184,7 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     return newMap;
   }
 
-  protected Object encodeCollection(Collection collection, boolean isTop) {
+  protected static Object encodeCollection(Collection collection, boolean isTop) {
     List result = new ArrayList(collection.size());
     for (Object o: collection) {
       result.add(encodeObject(o, isTop));
@@ -192,7 +192,7 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     return result;
   }
 
-  protected Object encodeAVObject(AVObject o, boolean isTop) {
+  protected static Object encodeAVObject(AVObject o, boolean isTop) {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("className", o.getClassName());
     if (!StringUtil.isEmpty(o.getObjectId())) {
@@ -210,7 +210,7 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     return result;
   }
 
-  protected Object encodeGeoPointer(AVGeoPoint o) {
+  protected static Object encodeGeoPointer(AVGeoPoint o) {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("__type", "GeoPoint");
     result.put("latitude", o.getLatitude());
@@ -218,7 +218,7 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     return result;
   }
 
-  protected Object encodeAVFile(AVFile o) {
+  protected static Object encodeAVFile(AVFile o) {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("__type", "_File");
     result.put("metaData", o.getMetaData());
@@ -226,7 +226,7 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     return result;
   }
 
-  protected Object encodeByteArray(byte[] o) {
+  protected static Object encodeByteArray(byte[] o) {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("__type", "Bytes");
     result.put("base64", Base64.encodeToString(o, Base64.NO_WRAP));

@@ -450,7 +450,11 @@ public class AVObject {
   protected JSONObject generateChangedParam() {
     if (totallyOverwrite) {
       HashMap<String, Object> tmp = new HashMap<>();
-      tmp.putAll(this.serverData);
+      for (Map.Entry<String, Object> entry : this.serverData.entrySet()) {
+        String key = entry.getKey();
+        Object val = entry.getValue();
+        tmp.put(key, BaseOperation.encodeObject(val));
+      }
 
       // createdAt, updatedAt, objectId is immutable.
       tmp.remove(KEY_CREATED_AT);
@@ -626,7 +630,12 @@ public class AVObject {
   }
 
   public Observable<? extends AVObject> saveInBackground() {
-    return saveInBackground(null);
+    AVSaveOption option = null;
+    if (totallyOverwrite) {
+      option = new AVSaveOption();
+      option.setFetchWhenSave(true);
+    }
+    return saveInBackground(option);
   }
 
   public Observable<? extends AVObject> saveInBackground(final AVSaveOption option) {
@@ -854,7 +863,7 @@ public class AVObject {
 
   public Observable<AVObject> refreshInBackground(final String includeKeys) {
     if (totallyOverwrite) {
-      return PaasClient.getStorageClient().getWholeObject(this.endpointClassName, getObjectId())
+      return PaasClient.getStorageClient().getWholeObject(this.endpointClassName, getObjectId(), includeKeys)
               .map(new Function<AVObject, AVObject>() {
                 @Override
                 public AVObject apply(AVObject avObject) throws Exception {
