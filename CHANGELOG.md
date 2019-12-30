@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.1.7 release
+
+#### Break changes
+- None
+
+#### New features
+- support rtmClientSign hook for Realtime.
+- make Installation cache synchronized with Put/Get operation.
+
+#### Optimization and fixed bugs
+- fixed: cannot put Date or AVObject value into Installation while saving.
+
 ## 6.1.6 release
 
 #### Break changes
