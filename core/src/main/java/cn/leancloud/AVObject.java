@@ -182,12 +182,16 @@ public class AVObject {
     if (res instanceof Date) {
       return (Date)res;
     }
-    JSONObject rawData = (JSONObject) get(key);
-    if (null == rawData) {
-      return null;
+    if (res instanceof Long) {
+      return new Date((Long) res);
     }
-    AVDate date = new AVDate((JSONObject) get(key));
-    return date.getDate();
+    if (res instanceof String) {
+      return StringUtil.dateFromString((String) res);
+    }
+    if (res instanceof JSONObject) {
+      return new AVDate((JSONObject) res).getDate();
+    }
+    return null;
   }
 
   public String getString(String key) {
