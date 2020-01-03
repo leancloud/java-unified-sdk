@@ -5,7 +5,7 @@ import cn.leancloud.AVStatus;
 
 import java.util.List;
 
-public abstract class StatusListCallback extends AVCallback<java.util.List<AVStatus>> {
+public abstract class StatusListCallback extends AVCallback<List<AVStatus>> {
   /**
    * Override this function with the code you want to run after the fetch is complete.
    *
