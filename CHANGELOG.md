@@ -111,7 +111,7 @@ Following is change logs for recently release versions, you can refer to [releas
 ## 6.1.0 release
 
 #### Break changes
-- None
+- `AVUser#followeeQuery()` 和 `AVUser#followerQuery()` 的结果由 `List<AVUser>` 变为 `List<AVObject>`，开发者需要对结果再次调用 `getAVObject<AVUser>("follower")` or `getAVObject<AVUser>("followee")` 来得到 AVUser 对象。
 
 #### New features
 - support securely initialization for Android platform
