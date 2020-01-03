@@ -2,6 +2,19 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.1.8 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- make AVObject#getDate(key) compatible for Long/String value.
+- publish Fastjson 1.1.71.android-leancloud.jar to fix double value parsing bug(such as 5.43D).
+
+
 ## 6.1.7 release
 
 #### Break changes
