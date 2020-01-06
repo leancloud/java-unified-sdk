@@ -307,7 +307,6 @@ public final class AVFile extends AVObject {
    * save to cloud backend.
    * @param keepFileName whether keep file name in url or not.
    * @param progressCallback progress callback.
-   * @return Observable object.
    */
   public synchronized void saveInBackground(boolean keepFileName, final ProgressCallback progressCallback) {
     saveWithProgressCallback(keepFileName, progressCallback).subscribe(new Observer<AVFile>() {
@@ -340,7 +339,6 @@ public final class AVFile extends AVObject {
   /**
    * save to cloud backend.
    * @param progressCallback progress callback.
-   * @return Observable object.
    */
   public void saveInBackground(final ProgressCallback progressCallback) {
     saveInBackground(false, progressCallback);

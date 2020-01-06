@@ -1,6 +1,13 @@
 package cn.leancloud;
 
+import cn.leancloud.sms.AVSMS;
+import cn.leancloud.sms.AVSMSOption;
+import cn.leancloud.types.AVNull;
 import com.alibaba.fastjson.JSON;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -60,5 +67,47 @@ public class CommonTest extends TestCase {
             "\"name\":\"5def8d41fc36ed0068874955\",\"objectId\":\"5def8d41fc36ed0068874955\",\"originalName\":\"kuo_audio_1575980353771.mp3\"," +
             "\"ownerObjectId\":\"5c83c5b9303f390065666111\",\"size\":8986,\"url\":\"http://file2.i7play.com/vCiVRj7RBmHSSwyQji815TM8KxY4Umx2NMA6Cg6W.mp3\"},\"value\":0.5D}";
     JSON.parse(dataString);
+  }
+
+  public void testConvertRecurCallback() throws Exception {
+    final String mobilePhone = "";
+    final String smsCode = "";
+    AVUser.signUpOrLoginByMobilePhoneInBackground(mobilePhone, smsCode).flatMap(new Function<AVUser, Observable<? extends AVObject>>() {
+      @Override
+      public Observable<? extends AVObject> apply(AVUser avUser) throws Exception {
+        String username = "";
+        String nickname = "";
+        avUser.setUsername(username);
+        avUser.put("nickname", nickname);
+        return avUser.saveInBackground();
+      }
+    }).flatMap(new Function<AVObject, Observable<? extends AVObject>>() {
+      @Override
+      public Observable<? extends AVObject> apply(AVObject avUser) throws Exception {
+        AVInstallation currentInstallation = AVInstallation.getCurrentInstallation();
+        currentInstallation.put("user", avUser.getObjectId());
+        return currentInstallation.saveInBackground();
+      }
+    }).subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
   }
 }

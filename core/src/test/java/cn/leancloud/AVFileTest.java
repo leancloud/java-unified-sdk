@@ -305,6 +305,37 @@ public class AVFileTest extends TestCase {
     assertTrue(testSucceed);
   }
 
+  public void testWxThumbnailFile() throws Exception {
+    AVFile portrait = new AVFile("thumbnail", "http://thirdwx.qlogo.cn/mmopen/vi_32/zxVN0QqibgaibNf8ia7y4ugUJMbia0Zt6QPHh1ymUNBrIgsGfMd7WyvzMVPa9aeA6pbIB7ePEaQ7jO4BJr21howXDw/132");
+    portrait.saveInBackground().subscribe(new Observer<AVFile>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVFile avFile) {
+        avFile.delete();
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
   public void testDownloadExternalFile() throws Exception {
     AVFile portrait = new AVFile("thumbnail", "http://file.everydaydiary.luyunxinchen.cn/437K25F9DpoWnJcJgbQECCV994ntJKpCGGudo6af.png");
     byte[] contents = portrait.getData();

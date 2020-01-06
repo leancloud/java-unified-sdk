@@ -261,7 +261,7 @@ public class ObserverBuilder {
    * @param callback find callback
    * @param <T> template type
    * @return observer
-   * @deprecated please use buildCollectionObserver(FindCallback<T> callback).
+   * @deprecated please use buildCollectionObserver(FindCallback callback).
    */
   public static <T extends AVObject> CollectionObserver<T> buildSingleObserver(FindCallback<T> callback) {
     return new CollectionObserver<T>(callback);
