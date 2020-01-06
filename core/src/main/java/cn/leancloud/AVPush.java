@@ -52,24 +52,24 @@ public class AVPush {
   }
 
   /**
-   * return channel set.
-   * @return
+   * Return channel set.
+   * @return channel set.
    */
   public Set<String> getChannelSet() {
     return channelSet;
   }
 
   /**
-   * return the instance of _Notification。
+   * Return the instance of _Notification。
    *
-   * @return
+   * @return notification instance.
    */
   public AVObject getNotification() {
     return notification;
   }
 
   /**
-   * return push query instance.
+   * Return push query instance.
    * @return push query instance.
    */
   public AVQuery<? extends AVInstallation> getPushQuery() {
@@ -77,7 +77,7 @@ public class AVPush {
   }
 
   /**
-   * get push date.
+   * Get push date.
    * @return push date
    */
   public Date getPushDate() {
@@ -85,7 +85,7 @@ public class AVPush {
   }
 
   /**
-   * get expiration time.
+   * Get expiration time.
    * @return expiration time
    */
   public long getExpirationTime() {
@@ -93,7 +93,7 @@ public class AVPush {
   }
 
   /**
-   * get expiration time interval.
+   * Get expiration time interval.
    * @return expiration time interval
    */
   public long getExpirationTimeInterval() {
@@ -101,7 +101,7 @@ public class AVPush {
   }
 
   /**
-   * get push target.
+   * Get push target.
    * @return push target
    */
   public Set<String> getPushTarget() {
@@ -109,7 +109,7 @@ public class AVPush {
   }
 
   /**
-   * get push data.
+   * Get push data.
    * @return push data
    */
   public Map<String, Object> getPushData() {
@@ -117,7 +117,7 @@ public class AVPush {
   }
 
   /**
-   * get push flow control value.
+   * Get push flow control value.
    * @return flow control value.
    */
   public int getFlowControl() {
@@ -143,6 +143,7 @@ public class AVPush {
    * Sets the channel on which this push notification will be sent. The channel name must start with
    * a letter and contain only letters, numbers, dashes, and underscores. A push can either have
    * channels or a query. Setting this will unset the query.
+   * @param channel  channel string.
    */
   public void setChannel(String channel) {
     channelSet.clear();
@@ -153,6 +154,8 @@ public class AVPush {
    * Sets the collection of channels on which this push notification will be sent. Each channel name
    * must start with a letter and contain only letters, numbers, dashes, and underscores. A push can
    * either have channels or a query. Setting this will unset the query.
+   *
+   * @param channels channel collection.
    */
   public void setChannels(Collection<String> channels) {
     channelSet.clear();
@@ -163,6 +166,7 @@ public class AVPush {
    * Sets the entire data of the push message. See the push guide for more details on the data
    * format. This will overwrite any data specified in AVPush.setMessage(String).
    *
+   * @param data push data.
    * @since 1.4.4
    */
   public void setData(Map<String, Object> data) {
@@ -172,6 +176,7 @@ public class AVPush {
   /**
    * Sets the entire data of the push message. See the push guide for more details on the data
    * format. This will overwrite any data specified in AVPush.setMessage(String).
+   * @param data push data.
    */
   public void setData(JSONObject data) {
     try {
@@ -206,6 +211,7 @@ public class AVPush {
    * sent, or which come online before the expiration time is reached. Because device clocks are not
    * guaranteed to be accurate, most applications should instead use
    * AVPush.setExpirationTimeInterval(long).
+   * @param time timestamp.
    */
   public void setExpirationTime(long time) {
     this.expirationTime = time;
@@ -217,6 +223,7 @@ public class AVPush {
    * sent, or which come online within the given number of seconds of the notification being
    * received by AVOSCloud's server. An interval which is less than or equal to zero indicates that
    * the message should only be sent to devices which are currently online.
+   * @param timeInterval time interval.
    */
   public void setExpirationTimeInterval(long timeInterval) {
     this.expirationTimeInterval = timeInterval;
@@ -225,6 +232,7 @@ public class AVPush {
   /**
    * Sets the message that will be shown in the notification. This will overwrite any data specified
    * in AVPush.setData(JSONObject).
+   * @param message push message.
    */
   public void setMessage(String message) {
     pushData.clear();
@@ -234,7 +242,7 @@ public class AVPush {
 
   /**
    * set push target only android device.
-   * @param pushToAndroid
+   * @param pushToAndroid flag to push to android or not.
    */
   public void setPushToAndroid(boolean pushToAndroid) {
     if (pushToAndroid) {
@@ -246,7 +254,7 @@ public class AVPush {
 
   /**
    * set push target only ios device.
-   * @param pushToIOS
+   * @param pushToIOS flag to push to iOS or not.
    */
   public void setPushToIOS(boolean pushToIOS) {
     if (pushToIOS) {
@@ -258,7 +266,7 @@ public class AVPush {
 
   /**
    * set push target only windows phone device.
-   * @param pushToWP
+   * @param pushToWP flag to push to Windows Phone or not.
    */
   public void setPushToWindowsPhone(boolean pushToWP) {
     if (pushToWP) {
@@ -287,7 +295,7 @@ public class AVPush {
    *
    * 请在设置cql的同时，不要设置pushTarget(ios,android,wp)
    *
-   * @param cql
+   * @param cql query cql.
    * @since 2.6.7
    */
   public void setCloudQuery(String cql) {
@@ -314,6 +322,7 @@ public class AVPush {
   /**
    * Sends this push notification in a background thread. This is preferable to using send(), unless
    * your code is already running from a background thread.
+   * @return observable instance.
    */
   public Observable<JSONObject> sendInBackground() {
     try {
@@ -447,7 +456,7 @@ public class AVPush {
    * @param data The entire data of the push message. See the push guide for more details on the
    *          data format.
    * @param query A AVInstallation query which specifies the recipients of a push.
-   *
+   * @return observable instance.
    */
   public static Observable<JSONObject> sendDataInBackground(JSONObject data, AVQuery<? extends AVInstallation> query) {
     AVPush push = new AVPush();
@@ -468,6 +477,7 @@ public class AVPush {
    *
    * @param message The message that will be shown in the notification.
    * @param query A AVInstallation query which specifies the recipients of a push.
+   * @return observable instance.
    */
   public static Observable<JSONObject> sendMessageInBackground(String message, AVQuery<? extends AVInstallation> query) {
     AVPush push = new AVPush();
