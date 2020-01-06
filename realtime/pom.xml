@@ -97,7 +97,7 @@
           <additionalparam>-Xdoclint:none</additionalparam>
           <author>eng@leancloud.rocks</author>
           <bottom><![CDATA[Copyright © 2020, <a href="https://leancloud.cn">美味书签（北京）信息技术有限公司<a> All rights reserved.]]></bottom>
-          <subpackages>cn.leancloud.command:cn.leancloud.im:cn.leancloud.livequery:cn.leancloud.push:cn.leancloud.service:cn.leancloud.session:cn.leancloud.util:cn.leancloud.websocket</subpackages>
+          <subpackages>cn.leancloud.im:cn.leancloud.livequery:cn.leancloud.push</subpackages>
         </configuration>
         <executions>
           <execution>
