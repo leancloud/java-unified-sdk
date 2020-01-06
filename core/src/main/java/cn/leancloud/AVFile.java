@@ -61,6 +61,9 @@ public final class AVFile extends AVObject {
   @JSONField(serialize = false)
   private String cachePath = ""; // file cache path
 
+  /**
+   * default constructor.
+   */
   public AVFile() {
     super(CLASS_NAME);
     if (AppConfiguration.getDefaultACL() != null) {
@@ -68,6 +71,11 @@ public final class AVFile extends AVObject {
     }
   }
 
+  /**
+   * constructor with name and data.
+   * @param name file name.
+   * @param data binary data.
+   */
   public AVFile(String name, byte[] data) {
     this();
     if (null == data) {
@@ -84,6 +92,11 @@ public final class AVFile extends AVObject {
     logger.d("localpath=" + localPath);
   }
 
+  /**
+   * constructor with name and local file.
+   * @param name file name.
+   * @param localFile local file.
+   */
   public AVFile(String name, File localFile) {
     this();
     if (null == localFile || !localFile.exists() || !localFile.isFile()) {
@@ -99,10 +112,21 @@ public final class AVFile extends AVObject {
     internalPut(KEY_MIME_TYPE, FileUtil.getMimeTypeFromPath(localPath));
   }
 
+  /**
+   * constructor with name and external url.
+   * @param name file name.
+   * @param url external url.
+   */
   public AVFile(String name, String url) {
     this(name, url, null);
   }
 
+  /**
+   * constructor with name and external url.
+   * @param name file name
+   * @param url external url.
+   * @param metaData additional attributes.
+   */
   public AVFile(String name, String url, Map<String, Object> metaData) {
     this(name, url, metaData, true);
   }
@@ -153,18 +177,35 @@ public final class AVFile extends AVObject {
     this.serverData.put(key, value);
   }
 
+  /**
+   * Get AVFile instance from objectId.
+   * @param objectId file objectId.
+   * @return observable instance.
+   */
   public static Observable<AVFile> withObjectIdInBackground(final String objectId) {
     return PaasClient.getStorageClient().fetchFile(objectId);
   }
 
+  /**
+   * Get file name.
+   * @return file name.
+   */
   public String getName() {
     return (String) internalGet(KEY_FILE_NAME);
   }
 
+  /**
+   * Set file name.
+   * @param name file name.
+   */
   public void setName(String name) {
     internalPut(KEY_FILE_NAME, name);
   }
 
+  /**
+   * Get file meta data.
+   * @return meta data.
+   */
   public Map<String, Object> getMetaData() {
     Map<String, Object> result = (Map<String, Object>)internalGet(KEY_METADATA);
     if (null == result) {
@@ -174,27 +215,53 @@ public final class AVFile extends AVObject {
     return result;
   }
 
+  /**
+   * Set file meta data.
+   * @param metaData meta data.
+   */
   public void setMetaData(Map<String, Object> metaData) {
     internalPut(KEY_METADATA, metaData);
   }
 
+  /**
+   * Add new meta data.
+   * @param key meta key.
+   * @param val meta value.
+   */
   public void addMetaData(String key, Object val) {
     Map<String, Object> metaData = getMetaData();
     metaData.put(key, val);
   }
 
+  /**
+   * Get file meta data.
+   * @param key meta key.
+   * @return meta value.
+   */
   public Object getMetaData(String key) {
     return getMetaData().get(key);
   }
 
+  /**
+   * Remove file meta data.
+   * @param key meta key.
+   * @return old value.
+   */
   public Object removeMetaData(String key) {
     return getMetaData().remove(key);
   }
 
+  /**
+   * Cleanup meta data.
+   */
   public void clearMetaData() {
     getMetaData().clear();
   }
 
+  /**
+   * Get file size.
+   * @return file size.
+   */
   public int getSize() {
     Number size = (Number) getMetaData(FILE_LENGTH_KEY);
     if (size != null)
@@ -203,50 +270,102 @@ public final class AVFile extends AVObject {
       return -1;
   }
 
+  /**
+   * Get file mime type.
+   * @return mime type.
+   */
   public String getMimeType() {
     return (String) internalGet(KEY_MIME_TYPE);
   }
 
+  /**
+   * Set file mime type.
+   * @param mimeType mime type.
+   */
   public void setMimeType(String mimeType) {
     internalPut(KEY_MIME_TYPE, mimeType);
   }
 
+  /**
+   * Get file key.
+   * @return file key.
+   */
   public String getKey() {
     return (String) internalGet(KEY_FILE_KEY);
   }
 
+  /**
+   * Get file bucket.
+   * @return file bucket.
+   */
   public String getBucket() {
     return (String) internalGet(KEY_BUCKET);
   }
 
+  /**
+   * Get file url.
+   * @return file url.
+   */
   public String getUrl() {
     return (String) internalGet(KEY_URL);
   }
 
+  /**
+   * Get file provider.
+   * @return file provider.
+   */
   public String getProvider() {
     return (String) internalGet(KEY_PROVIDER);
   }
 
+  /**
+   * Set file attribute.
+   * @param key attribute key.
+   * @param value attribute value.
+   * notice: UnsupportedOperationException
+   */
   @Override
   public void put(String key, Object value) {
     throw new UnsupportedOperationException("cannot invoke put method in AVFile");
   }
 
+  /**
+   * Get file attribute.
+   * @param key attribute key.
+   * @return attribute value.
+   * notice: UnsupportedOperationException
+   */
   @Override
   public Object get(String key) {
     throw new UnsupportedOperationException("cannot invoke get method in AVFile");
   }
 
+  /**
+   * Remove file attribute.
+   * @param key attribute key.
+   * notice: UnsupportedOperationException
+   */
   @Override
   public void remove(String key) {
     throw new UnsupportedOperationException("cannot invoke remove method in AVFile");
   }
 
+  /**
+   * Increment file attribute.
+   * @param key attribute key.
+   * notice: UnsupportedOperationException
+   */
   @Override
   public void increment(String key) {
     throw new UnsupportedOperationException("cannot invoke increment method in AVFile");
   }
 
+  /**
+   * Increment file attribute.
+   * @param key attribute key.
+   * @param value step value.
+   * notice: UnsupportedOperationException
+   */
   @Override
   public void increment(String key, Number value) {
     throw new UnsupportedOperationException("cannot invoke increment(Number) method in AVFile");
@@ -255,16 +374,25 @@ public final class AVFile extends AVObject {
   /**
    * Returns a thumbnail image url using QiNiu endpoints.
    *
-   * @param scaleToFit
-   * @param width
-   * @param height
-   * @return
+   * @param scaleToFit scale param.
+   * @param width width.
+   * @param height height.
+   * @return new url for thumbnail.
    * @see #getThumbnailUrl(boolean, int, int, int, String)
    */
   public String getThumbnailUrl(boolean scaleToFit, int width, int height) {
     return getThumbnailUrl(scaleToFit, width, height, 100, "png");
   }
 
+  /**
+   * Returns a thumbnail image url using QiNiu endpoints.
+   * @param scaleToFit scale param.
+   * @param width width
+   * @param height height
+   * @param quality quality.
+   * @param fmt format string.
+   * @return new url for thumbnail.
+   */
   public String getThumbnailUrl(boolean scaleToFit, int width, int height, int quality, String fmt) {
     if (AVOSCloud.getRegion() == AVOSCloud.REGION.NorthAmerica) {
       logger.w("We only support this method for qiniu storage.");
@@ -285,6 +413,10 @@ public final class AVFile extends AVObject {
     return this.getUrl() + String.format(THUMBNAIL_FMT, mode, width, height, quality, fmt);
   }
 
+  /**
+   * Get map data of current file.
+   * @return map data.
+   */
   public Map<String, Object> toMap() {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("__type", CLASS_NAME);
@@ -445,6 +577,10 @@ public final class AVFile extends AVObject {
     return new byte[0];
   }
 
+  /**
+   * Get data stream.
+   * @return data stream.
+   */
   @JSONField(serialize = false)
   public InputStream getDataStream() {
     // FIXME: need to push background.
@@ -471,11 +607,25 @@ public final class AVFile extends AVObject {
     return null;
   }
 
+  /**
+   * Generate File instance with local path.
+   * @param name file name
+   * @param absoluteLocalFilePath local path.
+   * @return file instance.
+   * @throws FileNotFoundException file not found.
+   */
   public static AVFile withAbsoluteLocalPath(String name, String absoluteLocalFilePath)
           throws FileNotFoundException {
     return withFile(name, new File(absoluteLocalFilePath));
   }
 
+  /**
+   * Generate File instance with local file.
+   * @param name file name.
+   * @param file local file.
+   * @return file instance.
+   * @throws FileNotFoundException file not found.
+   */
   public static AVFile withFile(String name, File file) throws FileNotFoundException {
     if (file == null) {
       throw new IllegalArgumentException("null file object.");

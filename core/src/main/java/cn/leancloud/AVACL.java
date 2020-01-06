@@ -85,6 +85,10 @@ public class AVACL {
     }
   }
 
+  /**
+   * constructor
+   * @param data hash map for acl.
+   */
   public AVACL(HashMap data) {
     if (null != data) {
       Set<Map.Entry<String, Object>> entries = data.entrySet();
@@ -97,14 +101,27 @@ public class AVACL {
     }
   }
 
+  /**
+   * copy constructor
+   * @param other other instance
+   */
   public AVACL(AVACL other) {
     permissionsById.putAll(other.permissionsById);
   }
+
+  /**
+   * constructor
+   * @param owner owner with read/write permission.
+   */
   public AVACL(AVUser owner) {
     setReadAccess(owner, true);
     setWriteAccess(owner, true);
   }
 
+  /**
+   * get permissions by id.
+   * @return hash map for id and permission.
+   */
   public Map<String, Permissions> getPermissionsById() {
     return permissionsById;
   }
@@ -122,6 +139,10 @@ public class AVACL {
     return Objects.hash(getPermissionsById());
   }
 
+  /**
+   * get json object.
+   * @return json object.
+   */
   public JSONObject toJSONObject() {
     String jsonStr = JSON.toJSONString(this.permissionsById, SerializerFeature.WriteMapNullValue,
             SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero);
@@ -135,6 +156,7 @@ public class AVACL {
       permissionsById.put(userId, new Permissions(readPermission, writePermission));
     }
   }
+
   /**
    * Set whether the public is allowed to read this object.
    * @param allowed flag to allow.
@@ -145,6 +167,7 @@ public class AVACL {
 
   /**
    * Get whether the public is allowed to read this object.
+   * @return public read permission.
    */
   public boolean getPublicReadAccess() {
     return getReadAccess(PUBLIC_KEY);
@@ -160,6 +183,7 @@ public class AVACL {
 
   /**
    * Set whether the public is allowed to write this object.
+   * @return public write permission.
    */
   public boolean getPublicWriteAccess() {
     return getWriteAccess(PUBLIC_KEY);
@@ -182,6 +206,8 @@ public class AVACL {
    * Get whether the given user id is *explicitly* allowed to read this object. Even if this returns
    * {@code false}, the user may still be able to access it if getPublicReadAccess returns
    * {@code true} or a role  that the user belongs to has read access.
+   * @param userId target user id.
+   * @return result whether has read permission for specified userId.
    */
   public boolean getReadAccess(String userId) {
     if (StringUtil.isEmpty(userId)) {
@@ -193,6 +219,8 @@ public class AVACL {
 
   /**
    * Set whether the given user id is allowed to write this object.
+   * @param userId target user id.
+   * @param allowed  flag to allow.
    */
   public void setWriteAccess(String userId, boolean allowed) {
     if (StringUtil.isEmpty(userId)) {
@@ -206,6 +234,8 @@ public class AVACL {
    * Get whether the given user id is *explicitly* allowed to write this object. Even if this
    * returns {@code false}, the user may still be able to write it if getPublicWriteAccess returns
    * {@code true} or a role that the user belongs to has write access.
+   * @param userId target user id.
+   * @return result whether has write permission for specified userId.
    */
   public boolean getWriteAccess(String userId) {
     if (StringUtil.isEmpty(userId)) {
@@ -215,6 +245,11 @@ public class AVACL {
     return permissions != null && permissions.getWritePermission();
   }
 
+  /**
+   * Set whether the given user is allowed to read this object.
+   * @param user target user.
+   * @param allowed flag to allow
+   */
   public void setReadAccess(AVUser user, boolean allowed) {
     if (null == user || StringUtil.isEmpty(user.getObjectId())) {
       throw new IllegalArgumentException("cannot setRead/WriteAccess for a user with null id");
@@ -222,6 +257,14 @@ public class AVACL {
     setReadAccess(user.getObjectId(), allowed);
   }
 
+  /**
+   * Get whether the given user is *explicitly* allowed to read this object. Even if this returns
+   * {@code false}, the user may still be able to access it if getPublicReadAccess returns
+   * {@code true} or a role  that the user belongs to has read access.
+   *
+   * @param user target user.
+   * @return result whether has read permission for specified user.
+   */
   public boolean getReadAccess(AVUser user) {
     if (null == user || StringUtil.isEmpty(user.getObjectId())) {
       return false;
@@ -229,6 +272,11 @@ public class AVACL {
     return this.getReadAccess(user.getObjectId());
   }
 
+  /**
+   * Set whether the given user is allowed to write this object.
+   * @param user target user.
+   * @param allowed flag to allow
+   */
   public void setWriteAccess(AVUser user, boolean allowed) {
     if (null == user || StringUtil.isEmpty(user.getObjectId())) {
       throw new IllegalArgumentException("cannot setRead/WriteAccess for a user with null id");
@@ -236,6 +284,14 @@ public class AVACL {
     setWriteAccess(user.getObjectId(), allowed);
   }
 
+  /**
+   * Get whether the given user is *explicitly* allowed to write this object. Even if this returns
+   * {@code false}, the user may still be able to access it if getPublicWriteAccess returns
+   * {@code true} or a role  that the user belongs to has write access.
+   *
+   * @param user target user.
+   * @return result whether has write permission for specified user.
+   */
   public boolean getWriteAccess(AVUser user) {
     if (null == user || StringUtil.isEmpty(user.getObjectId())) {
       return false;
@@ -243,6 +299,11 @@ public class AVACL {
     return this.getWriteAccess(user.getObjectId());
   }
 
+  /**
+   * Set whether the given role is allowed to read this object.
+   * @param role target role.
+   * @param allowed flat to allow.
+   */
   public void setRoleReadAccess(String role, boolean allowed) {
     if (StringUtil.isEmpty(role)) {
       throw new IllegalArgumentException("cannot setRead/WriteAccess to a empty role");
@@ -250,6 +311,13 @@ public class AVACL {
     this.setReadAccess(ROLE_PREFIX + role, allowed);
   }
 
+  /**
+   * Get whether the given role is *explicitly* allowed to read this object. Even if this returns
+   * {@code false}, the role may still be able to access it if getPublicReadAccess returns
+   *
+   * @param role target role.
+   * @return result whether has read permission for specified role.
+   */
   public boolean getRoleReadAccess(String role) {
     if (StringUtil.isEmpty(role)) {
       return false;
@@ -257,6 +325,11 @@ public class AVACL {
     return getReadAccess(ROLE_PREFIX + role);
   }
 
+  /**
+   * Set whether the given role is allowed to write this object.
+   * @param role target role.
+   * @param allowed flat to allow.
+   */
   public void setRoleWriteAccess(String role, boolean allowed) {
     if (StringUtil.isEmpty(role)) {
       throw new IllegalArgumentException("cannot setRead/WriteAccess to a empty role");
@@ -264,6 +337,13 @@ public class AVACL {
     this.setWriteAccess(ROLE_PREFIX + role, allowed);
   }
 
+  /**
+   * Get whether the given role is *explicitly* allowed to write this object. Even if this returns
+   * {@code false}, the role may still be able to access it if getPublicWriteAccess returns
+   *
+   * @param role target role.
+   * @return result whether has write permission for specified role.
+   */
   public boolean getRoleWriteAccess(String role) {
     if (StringUtil.isEmpty(role)) {
       return false;
