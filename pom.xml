@@ -74,6 +74,24 @@
           <additionalparam>-Xdoclint:none</additionalparam>
           <author>eng@leancloud.rocks</author>
           <bottom><![CDATA[Copyright © 2020, <a href="https://leancloud.cn">美味书签（北京）信息技术有限公司<a> All rights reserved.]]></bottom>
+          <sourceFileExcludes>
+            <exclude>cn/leancloud/ops/*.java</exclude>
+            <exclude>cn/leancloud/service/*.java</exclude>
+            <exclude>cn/leancloud/codec/*.java</exclude>
+            <exclude>cn/leancloud/upload/*.java</exclude>
+            <exclude>cn/leancloud/utils/*.java</exclude>
+            <exclude>cn/leancloud/annotation/*.java</exclude>
+            <exclude>cn/leancloud/cache/*.java</exclude>
+            <exclude>cn/leancloud/internal/*.java</exclude>
+            <exclude>cn/leancloud/logging/*.java</exclude>
+            <exclude>cn/leancloud/network/*.java</exclude>
+            <exclude>cn/leancloud/impl/*.java</exclude>
+            <exclude>cn/leancloud/Messages.java</exclude>
+            <exclude>cn/leancloud/command/*.java</exclude>
+            <exclude>cn/leancloud/util/*.java</exclude>
+            <exclude>cn/leancloud/session/*.java</exclude>
+            <exclude>cn/leancloud/websocket/*.java</exclude>
+          </sourceFileExcludes>
         </configuration>
         <executions>
           <execution>
