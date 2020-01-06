@@ -58,15 +58,26 @@ public class AVObject {
   private volatile boolean fetchWhenSave = false;
   protected volatile boolean totallyOverwrite = false;
 
+  /**
+   * Default constructor.
+   */
   public AVObject() {
     this.className = Transformer.getSubClassName(this.getClass());
   }
 
+  /**
+   * Constructor with class name.
+   * @param className class name.
+   */
   public AVObject(String className) {
     Transformer.checkClassName(className);
     this.className = className;
   }
 
+  /**
+   * Copy constructor.
+   * @param other other instance.
+   */
   public AVObject(AVObject other) {
     this.className = other.className;
     this.objectId = other.objectId;
@@ -76,35 +87,69 @@ public class AVObject {
     this.endpointClassName = other.endpointClassName;
   }
 
+  /**
+   * Get class name.
+   * @return class name.
+   */
   public String getClassName() {
     return this.className;
   }
+
+  /**
+   * Get internal class name.
+   * @return internal class name.
+   */
   public String internalClassName() {
     return this.getClassName();
   }
+
+  /**
+   * Set class name.
+   * @param name class name.
+   */
   public void setClassName(String name) {
     Transformer.checkClassName(name);
     this.className = name;
   }
 
+  /**
+   * Get createdAt date.
+   * @return createdAt date.
+   */
   public Date getCreatedAt() {
     String value = getCreatedAtString();
     return StringUtil.dateFromString(value);
   }
 
+  /**
+   * Get createdAt string.
+   * @return createdAt string.
+   */
   public String getCreatedAtString() {
     return (String) this.serverData.get(KEY_CREATED_AT);
   }
 
+  /**
+   * Get updatedAt date.
+   * @return updatedAt date.
+   */
   public Date getUpdatedAt() {
     String value = getUpdatedAtString();
     return StringUtil.dateFromString(value);
   }
 
+  /**
+   * Get updatedAt string.
+   * @return updatedAt string.
+   */
   public String getUpdatedAtString() {
     return (String) this.serverData.get(KEY_UPDATED_AT);
   }
 
+  /**
+   * Get objectId.
+   * @return objectId.
+   */
   public String getObjectId() {
     if (this.serverData.containsKey(KEY_OBJECT_ID)) {
       return (String) this.serverData.get(KEY_OBJECT_ID);
@@ -113,6 +158,10 @@ public class AVObject {
     }
   }
 
+  /**
+   * Set objectId.
+   * @param objectId object id.
+   */
   public void setObjectId(String objectId) {
     this.objectId = objectId;
     if (null != this.serverData && !StringUtil.isEmpty(objectId)) {
@@ -120,15 +169,27 @@ public class AVObject {
     }
   }
 
+  /**
+   * Flag to fetchWhenSave.
+   * @return flag for fetchWhenSave.
+   */
   public boolean isFetchWhenSave() {
     return fetchWhenSave;
   }
 
+  /**
+   * Set fetchWhenSave flag.
+   * @param fetchWhenSave flag.
+   */
   public void setFetchWhenSave(boolean fetchWhenSave) {
     this.fetchWhenSave = fetchWhenSave;
   }
 
-  // Caution: public this method just for compatibility.
+  /**
+   * Get UUID.
+   * @return UUID.
+   * Caution: public this method just for compatibility.
+   */
   public String getUuid() {
     if (StringUtil.isEmpty(this.uuid)) {
       this.uuid = UUID.randomUUID().toString().toLowerCase();
@@ -149,16 +210,28 @@ public class AVObject {
   }
 
   /**
-   * getter
+   * Contain specified key.
+   * @param key key
+   * @return flag to indicate current object contains the specified key or not.
    */
   public boolean containsKey(String key) {
     return serverData.containsKey(key);
   }
 
+  /**
+   * Contain specified key.
+   * @param key key
+   * @return flag to indicate current object contains the specified key or not.
+   */
   public boolean has(String key) {
     return (this.get(key) != null);
   }
 
+  /**
+   * Get value of specified key.
+   * @param key specified key.
+   * @return the value associated with specified key.
+   */
   public Object get(String key) {
     Object value = serverData.get(key);
     ObjectFieldOperation op = operations.get(key);
@@ -168,15 +241,30 @@ public class AVObject {
     return value;
   }
 
+  /**
+   * Get boolean value of specified key.
+   * @param key specified key.
+   * @return the boolean value associated with specified key.
+   */
   public boolean getBoolean(String key) {
     Boolean b = (Boolean) get(key);
     return b == null ? false : b;
   }
 
+  /**
+   * Get bytes value of specified key.
+   * @param key specified key.
+   * @return the bytes value associated with specified key.
+   */
   public byte[] getBytes(String key) {
     return (byte[]) (get(key));
   }
 
+  /**
+   * Get Date value of specified key.
+   * @param key specified key.
+   * @return the Date value associated with specified key.
+   */
   public Date getDate(String key) {
     Object res = get(key);
     if (res instanceof Date) {
@@ -194,6 +282,11 @@ public class AVObject {
     return null;
   }
 
+  /**
+   * Get string value of specified key.
+   * @param key specified key.
+   * @return the string value associated with specified key.
+   */
   public String getString(String key) {
     Object obj = get(key);
     if (obj instanceof String)
@@ -202,28 +295,62 @@ public class AVObject {
       return null;
   }
 
+  /**
+   * Get int value of specified key.
+   * @param key specified key.
+   * @return the int value associated with specified key.
+   */
   public int getInt(String key) {
     Number v = (Number) get(key);
     if (v != null) return v.intValue();
     return 0;
   }
 
+  /**
+   * Get long value of specified key.
+   * @param key specified key.
+   * @return the long value associated with specified key.
+   */
   public long getLong(String key) {
     Number v = (Number) get(key);
     if (v != null) return v.longValue();
     return 0l;
   }
 
+  /**
+   * Get double value of specified key.
+   * @param key specified key.
+   * @return the double value associated with specified key.
+   */
   public double getDouble(String key) {
     Number number = (Number) get(key);
     if (number != null) return number.doubleValue();
     return 0f;
   }
 
+  /**
+   * Get numeric value of specified key.
+   * @param key specified key.
+   * @return the numeric value associated with specified key.
+   */
   public Number getNumber(String key) {
     return (Number) get(key);
   }
 
+  /**
+   * Get list value of specified key.
+   * @param key specified key.
+   * @return the list value associated with specified key.
+   */
+  public List getList(String key) {
+    return (List) get(key);
+  }
+
+  /**
+   * Get jsonarray value of specified key.
+   * @param key specified key.
+   * @return the jsonarray value associated with specified key.
+   */
   public JSONArray getJSONArray(String key) {
     Object list = get(key);
     if (list == null) {
@@ -245,6 +372,11 @@ public class AVObject {
     return null;
   }
 
+  /**
+   * Get jsonobject value of specified key.
+   * @param key specified key.
+   * @return the jsonobject value associated with specified key.
+   */
   public JSONObject getJSONObject(String key) {
     Object object = get(key);
     if (object instanceof JSONObject) {
@@ -260,14 +392,30 @@ public class AVObject {
     return jsonObject;
   }
 
+  /**
+   * Get AVGeoPoint value of specified key.
+   * @param key specified key.
+   * @return the AVGeoPoint value associated with specified key.
+   */
   public AVGeoPoint getAVGeoPoint(String key) {
     return (AVGeoPoint) get(key);
   }
 
+  /**
+   * Get AVFile value of specified key.
+   * @param key specified key.
+   * @return the AVFile value associated with specified key.
+   */
   public AVFile getAVFile(String key) {
     return (AVFile) get(key);
   }
 
+  /**
+   * Get AVObject value of specified key.
+   * @param key specified key.
+   * @param <T> template type
+   * @return the AVObject value associated with specified key.
+   */
   public <T extends AVObject> T getAVObject(String key) {
     try {
       return (T) get(key);
@@ -277,6 +425,12 @@ public class AVObject {
     }
   }
 
+  /**
+   * Get AVRelation value of specified key.
+   * @param key specified key.
+   * @param <T> template type
+   * @return the AVRelation value associated with specified key.
+   */
   public <T extends AVObject> AVRelation<T> getRelation(String key) {
     validFieldName(key);
     Object object = get(key);
@@ -289,22 +443,32 @@ public class AVObject {
     }
   }
 
+  /**
+   * Add Relation.
+   * @param object target object.
+   * @param key specified key.
+   */
   void addRelation(final AVObject object, final String key) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.AddRelation, key, object);
     addNewOperation(op);
   }
 
+  /**
+   * Remove Relation.
+   * @param object target object.
+   * @param key specified key.
+   */
   void removeRelation(final AVObject object, final String key) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.RemoveRelation, key, object);
     addNewOperation(op);
   }
 
-  public List getList(String key) {
-    return (List) get(key);
-  }
-
+  /**
+   * Get server data.
+   * @return map of server data.
+   */
   public ConcurrentMap<String, Object> getServerData() {
     return this.serverData;
   }
@@ -321,6 +485,10 @@ public class AVObject {
     }
   }
 
+  /**
+   * Flag to indicate data is available or not.
+   * @return available flag.
+   */
   @JSONField(serialize = false)
   public boolean isDataAvailable() {
     return !StringUtil.isEmpty(this.objectId) && !this.serverData.isEmpty();
@@ -329,74 +497,147 @@ public class AVObject {
   /**
    * changable operations.
    */
+  /**
+   * Add attribute.
+   * @param key target key.
+   * @param value value object.
+   */
   public void add(String key, Object value) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Add, key, value);
     addNewOperation(op);
   }
+
+  /**
+   * Add collection attribute.
+   * @param key target key.
+   * @param values values collection.
+   */
   public void addAll(String key, Collection<?> values) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Add, key, values);
     addNewOperation(op);
   }
 
+  /**
+   * Add unique attribute.
+   * @param key target key.
+   * @param value value object.
+   */
   public void addUnique(String key, Object value) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.AddUnique, key, value);
     addNewOperation(op);
   }
+
+  /**
+   * Add unique collection attribute.
+   * @param key target key.
+   * @param values value collection.
+   */
   public void addAllUnique(String key, Collection<?> values) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.AddUnique, key, values);
     addNewOperation(op);
   }
 
+  /**
+   * Set attribute.
+   * @param key target key.
+   * @param value value object.
+   */
   public void put(String key, Object value) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Set, key, value);
     addNewOperation(op);
   }
 
+  /**
+   * Remove attribute.
+   * @param key target key.
+   */
   public void remove(String key) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Delete, key, null);
     addNewOperation(op);
   }
 
+  /**
+   * Remove all collection.
+   * @param key target keys.
+   * @param values value collection.
+   */
   public void removeAll(String key, Collection<?> values) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Remove, key, values);
     addNewOperation(op);
   }
 
+  /**
+   * Increment one attribute.
+   * @param key target key.
+   */
   public void increment(String key) {
     this.increment(key, 1);
   }
+
+  /**
+   * Increment one attribute.
+   * @param key target key.
+   * @param value value object.
+   */
   public void increment(String key, Number value) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Increment, key, value);
     addNewOperation(op);
   }
 
+  /**
+   * Decrement one attribute.
+   * @param key target key.
+   */
   public void decrement(String key) {
     decrement(key, 1);
   }
+
+  /**
+   * Decrement one attribute.
+   * @param key target key.
+   * @param value value object.
+   */
   public void decrement(String key, Number value) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Decrement, key, value);
     addNewOperation(op);
   }
 
+  /**
+   * Modify integer attribute.
+   * @param key target key.
+   * @param value value object.
+   */
   public void bitAnd(String key, long value) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.BitAnd, key, value);
     addNewOperation(op);
   }
+
+  /**
+   * Modify integer attribute.
+   * @param key target key.
+   * @param value value object.
+   */
   public void bitOr(String key, long value) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.BitOr, key, value);
     addNewOperation(op);
   }
+
+  /**
+   * Modify integer attribute.
+   * @param key target key.
+   * @param value value object.
+   */
   public void bitXor(String key, long value) {
     validFieldName(key);
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.BitXor, key, value);
@@ -450,6 +691,7 @@ public class AVObject {
 
   /**
    * save/update with server.
+   * @return json object.
    */
   protected JSONObject generateChangedParam() {
     if (totallyOverwrite) {
@@ -633,6 +875,10 @@ public class AVObject {
     }
   }
 
+  /**
+   * Save object in background.
+   * @return observable instance.
+   */
   public Observable<? extends AVObject> saveInBackground() {
     AVSaveOption option = null;
     if (totallyOverwrite) {
@@ -642,6 +888,11 @@ public class AVObject {
     return saveInBackground(option);
   }
 
+  /**
+   * Save object in background.
+   * @param option save option.
+   * @return observable instance.
+   */
   public Observable<? extends AVObject> saveInBackground(final AVSaveOption option) {
     Map<AVObject, Boolean> markMap = new HashMap<>();
     if (hasCircleReference(markMap)) {
@@ -667,8 +918,8 @@ public class AVObject {
    *
    * notice: internal used, pls not invoke it.
    *
-   * @param markMap
-   * @return
+   * @param markMap markup map.
+   * @return flag to indicate there is circle reference or not.
    */
   public boolean hasCircleReference(Map<AVObject, Boolean> markMap) {
     if (null == markMap) {
@@ -682,14 +933,27 @@ public class AVObject {
     return rst;
   }
 
+  /**
+   * Save in blocking mode.
+   */
   public void save() {
     saveInBackground().blockingSubscribe();
   }
 
+  /**
+   * Save All objects in blocking mode.
+   * @param objects object collection.
+   * @throws AVException error happened.
+   */
   public static void saveAll(Collection<? extends AVObject> objects) throws AVException {
     saveAllInBackground(objects).blockingSubscribe();
   }
 
+  /**
+   * Save all objects in async mode.
+   * @param objects object collection.
+   * @return observable instance.
+   */
   public static Observable<JSONArray> saveAllInBackground(final Collection<? extends AVObject> objects) {
     if (null == objects || objects.isEmpty()) {
       JSONArray emptyResult = new JSONArray();
@@ -734,6 +998,10 @@ public class AVObject {
     });
   }
 
+  /**
+   * Save eventually.
+   * @throws AVException error happened.
+   */
   public void saveEventually() throws AVException {
     if (operations.isEmpty()) {
       return;
@@ -773,6 +1041,7 @@ public class AVObject {
       add2ArchivedRequest(false);
     }
   }
+
   private void add2ArchivedRequest(boolean isDelete) {
     ArchivedRequests requests = ArchivedRequests.getInstance();
     if (isDelete) {
@@ -782,6 +1051,9 @@ public class AVObject {
     }
   }
 
+  /**
+   * Delete current object eventually.
+   */
   public void deleteEventually() {
     String objectId  = getObjectId();
     if (StringUtil.isEmpty(objectId)) {
@@ -815,6 +1087,11 @@ public class AVObject {
       add2ArchivedRequest(true);
     }
   }
+
+  /**
+   * Delete current object in async mode.
+   * @return observable instance.
+   */
   public Observable<AVNull> deleteInBackground() {
     if (totallyOverwrite) {
       return PaasClient.getStorageClient().deleteWholeObject(this.endpointClassName, getObjectId());
@@ -822,14 +1099,27 @@ public class AVObject {
     return PaasClient.getStorageClient().deleteObject(this.className, getObjectId());
   }
 
+  /**
+   * Delete current object in blocking mode.
+   */
   public void delete() {
     deleteInBackground().blockingSubscribe();
   }
 
+  /**
+   * Delete all objects in blocking mode.
+   * @param objects object collection.
+   * @throws AVException error happened.
+   */
   public static void deleteAll(Collection<? extends AVObject> objects) throws AVException {
     deleteAllInBackground(objects).blockingSubscribe();
   }
 
+  /**
+   * Delete all objects in async mode.
+   * @param objects object collection.
+   * @return observable instance.
+   */
   public static Observable<AVNull> deleteAllInBackground(Collection<? extends AVObject> objects) {
     if (null == objects || objects.isEmpty()) {
       return Observable.just(AVNull.getINSTANCE());
@@ -852,19 +1142,34 @@ public class AVObject {
     return PaasClient.getStorageClient().deleteObject(className, sb.toString());
   }
 
+  /**
+   * Refresh current object in blocking mode.
+   */
   public void refresh() {
     refresh(null);
   }
 
+  /**
+   * Refresh current object in blocking mode.
+   * @param includeKeys include keys, which object will be return together.
+   */
   public void refresh(String includeKeys) {
     refreshInBackground(includeKeys).blockingSubscribe();
   }
 
+  /**
+   * Refresh current object in async mode.
+   * @return observable instance.
+   */
   public Observable<AVObject> refreshInBackground() {
     return refreshInBackground(null);
-
   }
 
+  /**
+   * Refresh current object in async mode.
+   * @param includeKeys include keys, which object will be return together.
+   * @return observable instance.
+   */
   public Observable<AVObject> refreshInBackground(final String includeKeys) {
     if (totallyOverwrite) {
       return PaasClient.getStorageClient().getWholeObject(this.endpointClassName, getObjectId(), includeKeys)
@@ -899,20 +1204,45 @@ public class AVObject {
             });
   }
 
+  /**
+   * Fetch current object in blocking mode.
+   * @return current object.
+   */
   public AVObject fetch() {
     return fetch(null);
   }
+
+  /**
+   * Fetch current object in blocking mode.
+   * @param includeKeys include keys, which object will be return together.
+   * @return current object.
+   */
   public AVObject fetch(String includeKeys) {
     refresh(includeKeys);
     return this;
   }
+
+  /**
+   * Fetch current object in async mode.
+   * @return observable instance.
+   */
   public Observable<AVObject> fetchInBackground() {
     return refreshInBackground();
   }
-  public Observable<AVObject> fetchInBackground(String includeKyes) {
-    return refreshInBackground(includeKyes);
+
+  /**
+   * Fetch current object in async mode.
+   * @param includeKeys include keys, which object will be return together.
+   * @return observable instance.
+   */
+  public Observable<AVObject> fetchInBackground(String includeKeys) {
+    return refreshInBackground(includeKeys);
   }
 
+  /**
+   * Fetch current object if needed in async mode.
+   * @return observable instance.
+   */
   public Observable<AVObject> fetchIfNeededInBackground() {
     if (!StringUtil.isEmpty(getObjectId()) && this.serverData.size() > 1) {
       return Observable.just(this);
@@ -921,6 +1251,10 @@ public class AVObject {
     }
   }
 
+  /**
+   * Fetch current object in blocking mode.
+   * @return current object.
+   */
   public AVObject fetchIfNeeded() {
     fetchIfNeededInBackground().blockingSubscribe();
     return this;
@@ -948,12 +1282,20 @@ public class AVObject {
     this.operations.clear();
   }
 
+  /**
+   * Reset server data with new data.
+   * @param data new data.
+   */
   public void resetServerData(Map<String, Object> data) {
     this.serverData.clear();
     AVUtils.mergeConcurrentMap(this.serverData, data);
     this.operations.clear();
   }
 
+  /**
+   * Get request endpoint.
+   * @return endpoint.
+   */
   @JSONField(serialize = false)
   public String getRequestRawEndpoint() {
     if (StringUtil.isEmpty(getObjectId())) {
@@ -963,6 +1305,10 @@ public class AVObject {
     }
   }
 
+  /**
+   * Get request method.
+   * @return http method.
+   */
   @JSONField(serialize = false)
   public String getRequestMethod() {
     if (StringUtil.isEmpty(getObjectId())) {
@@ -976,6 +1322,7 @@ public class AVObject {
    * Register subclass to AVOSCloud SDK.It must be invocated before AVOSCloud.initialize.
    *
    * @param clazz The subclass.
+   * @param <T> template type.
    * @since 1.3.6
    */
   public static <T extends AVObject> void registerSubclass(Class<T> clazz) {
@@ -983,7 +1330,8 @@ public class AVObject {
   }
 
   /**
-   * ACL
+   * get ACL
+   * @return acl object.
    */
   public synchronized AVACL getACL() {
     if (null == this.acl) {
@@ -992,6 +1340,10 @@ public class AVObject {
     return this.acl;
   }
 
+  /**
+   * Set ACL
+   * @param acl acl object.
+   */
   public synchronized void setACL(AVACL acl) {
     this.acl = acl;
   }
@@ -1009,6 +1361,12 @@ public class AVObject {
     }
   }
 
+  /**
+   * Get query for class.
+   * @param clazz target class.
+   * @param <T> result type.
+   * @return query instance.
+   */
   public static <T extends AVObject> AVQuery<T> getQuery(Class<T> clazz) {
     return new AVQuery<T>(Transformer.getSubClassName(clazz), clazz);
   }
@@ -1017,16 +1375,16 @@ public class AVObject {
    * common methods.
    */
   /**
-   * generate a new json object with server data.
-   * @return
+   * Generate a new json object with server data.
+   * @return json object.
    */
   public JSONObject toJSONObject() {
     return new JSONObject(this.serverData);
   }
 
   /**
-   * generate a json string.
-   * @return
+   * Generate a json string.
+   * @return json string.
    */
   public String toJSONString() {
     return JSON.toJSONString(this, ObjectValueFilter.instance,
@@ -1035,10 +1393,10 @@ public class AVObject {
   }
 
   /**
-   * create AVObject instance from json string which generated by AVObject.toString or AVObject.toJSONString.
+   * Create AVObject instance from json string which generated by AVObject.toString or AVObject.toJSONString.
    *
-   * @param objectString
-   * @return null if objectString is null
+   * @param objectString json string.
+   * @return AVObject instance, null if objectString is null
    */
   public static AVObject parseAVObject(String objectString) {
     if (StringUtil.isEmpty(objectString)) {
@@ -1062,10 +1420,10 @@ public class AVObject {
   }
 
   /**
-   * create a new instance with particular classname and objectId.
+   * Create a new instance with particular classname and objectId.
    * @param className class name
    * @param objectId  object id
-   * @return
+   * @return AVObject instance
    */
   public static AVObject createWithoutData(String className, String objectId) {
     AVObject object = new AVObject(className);
@@ -1074,12 +1432,12 @@ public class AVObject {
   }
 
   /**
-   * create a new instance with particular class and objectId.
+   * Create a new instance with particular class and objectId.
    * @param clazz     class info
    * @param objectId  object id
-   * @param <T>
-   * @return
-   * @throws AVException
+   * @param <T> template type.
+   * @return AVObject instance
+   * @throws AVException error happened.
    */
   public static <T extends AVObject> T createWithoutData(Class<T> clazz, String objectId) throws AVException{
     try {
