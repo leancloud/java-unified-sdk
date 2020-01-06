@@ -45,7 +45,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   }
 
   /**
-   * clone a new query object, which fully same to this.
+   * Clone a new query object, which fully same to this.
    *
    * @return a new AVQuery object.
    */
@@ -71,6 +71,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * the provided class.
    *
    * @param theClassName The name of the class to retrieve AVObjects for.
+   * @param <T> template type.
    * @return the query object.
    */
   public static <T extends AVObject> AVQuery<T> getQuery(String theClassName) {
@@ -81,6 +82,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * Create a AVQuery with special sub-class.
    *
    * @param clazz The AVObject subclass
+   * @param <T> template type.
    * @return The AVQuery
    */
   public static <T extends AVObject> AVQuery<T> getQuery(Class<T> clazz) {
@@ -123,10 +125,19 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     return conditions.getWhere();
   }
 
+  /**
+   * Get class name
+   * @return class name.
+   */
   public String getClassName() {
     return className;
   }
 
+  /**
+   * Set class name
+   * @param className class name.
+   * @return current instance.
+   */
   public AVQuery<T> setClassName(String className) {
     this.className = className;
     return this;
@@ -134,6 +145,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
 
   /**
    * Accessor for the caching policy.
+   * @return cache policy
    */
   public CachePolicy getCachePolicy() {
     return cachePolicy;
@@ -142,6 +154,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   /**
    * Change the caching policy of this query.
    *
+   * @param cachePolicy  cache policy.
    * @return this query.
    */
   public AVQuery<T> setCachePolicy(CachePolicy cachePolicy) {
@@ -149,6 +162,10 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     return this;
   }
 
+  /**
+   * Get cache policy.
+   * @return cache policy.
+   */
   public CachePolicy getPolicy() {
     return cachePolicy;
   }
@@ -156,6 +173,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   /**
    * Change the caching policy of this query.
    *
+   * @param policy cache policy.
    * @return this query.
    */
   public AVQuery<T> setPolicy(CachePolicy policy) {
@@ -166,6 +184,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   /**
    * Gets the maximum age of cached data that will be considered in this query. The returned value
    * is in milliseconds
+   * @return max cache age(milliseconds).
    */
   public long getMaxCacheAge() {
     return maxCacheAge;
@@ -174,6 +193,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   /**
    * Sets the maximum age of cached data that will be considered in this query.
    *
+   * @param maxCacheAge  mac cached age.
    * @return this query.
    */
   public AVQuery<T> setMaxCacheAge(long maxCacheAge) {
@@ -200,6 +220,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
 
   /**
    * Accessor for the limit.
+   * @return query limit.
    */
   public int getLimit() {
     return conditions.getLimit();
@@ -210,6 +231,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * retrieval without a limit. The default limit is 100, with a maximum of 1000 results being
    * returned at a time.
    *
+   * @param limit query limit.
    * @return this query.
    */
   public AVQuery<T> setLimit(int limit) {
@@ -219,7 +241,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
 
   /**
    * @see #setLimit(int)
-   * @param limit
+   * @param limit query limit
    * @return this query.
    */
   public AVQuery<T> limit(int limit) {
@@ -229,7 +251,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
 
   /**
    * @see #setSkip(int)
-   * @param skip
+   * @param skip qury skip
    * @return this query.
    */
   public AVQuery<T> skip(int skip) {
@@ -239,6 +261,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
 
   /**
    * Accessor for the skip value.
+   * @return current skip value.
    */
   public int getSkip() {
     return conditions.getSkip();
@@ -248,6 +271,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * Controls the number of results to skip before returning any results. This is useful for
    * pagination. Default is to skip zero results.
    *
+   * @param skip query skip.
    * @return this query
    */
   public AVQuery<T> setSkip(int skip) {
@@ -255,6 +279,10 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     return this;
   }
 
+  /**
+   * Get order string.
+   * @return order string.
+   */
   public String getOrder() {
     return conditions.getOrder();
   }
@@ -262,7 +290,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   /**
    * Set query order fields.
    *
-   * @param order
+   * @param order order string.
    * @return this query.
    */
   public AVQuery<T> setOrder(String order) {
@@ -272,8 +300,8 @@ public class AVQuery<T extends AVObject> implements Cloneable {
 
   /**
    * @see #setOrder(String)
-   * @param order
-   * @return
+   * @param order order string.
+   * @return this query.
    */
   public AVQuery<T> order(String order) {
     setOrder(order);
@@ -304,14 +332,18 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     return this;
   }
 
+  /**
+   * Flag to indicate need ACL returned in result.
+   * @return include flag.
+   */
   public boolean isIncludeACL() {
     return includeACL;
   }
 
   /**
    * set include ACL or not.
-   * @param includeACL
-   * @return
+   * @param includeACL Flag to indicate need ACL returned in result.
+   * @return this query.
    */
   public AVQuery<T> includeACL(boolean includeACL) {
     this.includeACL = includeACL;
@@ -324,6 +356,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * in the included object that are also fetched.
    *
    * @param key The key that should be included.
+   * @return this query.
    */
   public AVQuery<T> include(String key) {
     conditions.include(key);
@@ -335,6 +368,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * multiple times, then all of the keys specified in each of the calls will be included.
    *
    * @param keys The set of keys to include in the result.
+   * @return this query.
    */
   public AVQuery<T> selectKeys(Collection<String> keys) {
     conditions.selectKeys(keys);
@@ -395,7 +429,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @since 2.0.2
    * @param key 查询的key
    * @param size 数组的长度
-   * @return
+   * @return this query.
    */
   public AVQuery<T> whereSizeEqual(String key, int size) {
     conditions.whereSizeEqual(key, size);
@@ -421,6 +455,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * Add a constraint for finding objects that do not contain a given key.
    *
    * @param key The key that should not exist
+   * @return this query.
    */
   public AVQuery<T> whereDoesNotExist(String key) {
     conditions.whereDoesNotExist(key);
@@ -455,11 +490,6 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     return this;
   }
 
-//  private AVQuery<T> addWhereItem(QueryOperation op) {
-//    conditions.addWhereItem(op);
-//    return this;
-//  }
-
   private AVQuery<T> addOrItems(QueryOperation op) {
     conditions.addOrItems(op);
     return this;
@@ -479,6 +509,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * Add a constraint for finding objects that contain the given key.
    *
    * @param key The key that should exist.
+   * @return this query.
    */
   public AVQuery<T> whereExists(String key) {
     conditions.whereExists(key);
@@ -558,7 +589,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @param regex The regular expression pattern to match.
    * @param modifiers Any of the following supported PCRE modifiers: i - Case insensitive search m -
    *          Search across multiple lines of input
-   * @return
+   * @return this query.
    */
   public AVQuery<T> whereMatches(String key, String regex, String modifiers) {
     conditions.whereMatches(key, regex, modifiers);
@@ -638,7 +669,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @param key The key that the AVGeoPoint is stored in.
    * @param point The reference AVGeoPoint that is used.
    * @param maxDistance Maximum distance (in kilometers) of results to return.
-   * @return
+   * @return Returns the query, so you can chain this call.
    */
   public AVQuery<T> whereWithinKilometers(String key, AVGeoPoint point, double maxDistance) {
     conditions.whereWithinKilometers(key, point, maxDistance);
@@ -655,7 +686,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @param point The reference AVGeoPoint that is used.
    * @param maxDistance outer radius of the given ring in kilometers
    * @param minDistance inner radius of the given ring in kilometers
-   * @return
+   * @return Returns the query, so you can chain this call.
    */
   public AVQuery<T> whereWithinKilometers(String key, AVGeoPoint point, double maxDistance,
                                           double minDistance) {
@@ -666,6 +697,10 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   /**
    * Add a proximity based constraint for finding objects with key point values near the point given
    * and within the maximum distance given. Radius of earth used is 3958.8 miles.
+   * @param key The key that the AVGeoPoint is stored in.
+   * @param maxDistance outer radius of the given ring in miles.
+   * @param point The reference AVGeoPoint that is used.
+   * @return  Returns the query, so you can chain this call.
    */
   public AVQuery<T> whereWithinMiles(String key, AVGeoPoint point, double maxDistance) {
     conditions.whereWithinMiles(key, point, maxDistance);
@@ -678,11 +713,11 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    *
    * Radius of earth used is 3958.8 miles.
    *
-   * @param key
-   * @param point
-   * @param maxDistance
-   * @param minDistance
-   * @return
+   * @param key The key that the AVGeoPoint is stored in.
+   * @param point The reference AVGeoPoint that is used.
+   * @param maxDistance outer radius of the given ring in miles.
+   * @param minDistance inner radius of the given ring in miles.
+   * @return  Returns the query, so you can chain this call.
    */
   public AVQuery<T> whereWithinMiles(String key, AVGeoPoint point, double maxDistance,
                                      double minDistance) {
@@ -709,11 +744,11 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * Add a proximity based constraint for finding objects with key point values near the point given
    * and within the maximum distance given.
    *
-   * @param key
-   * @param point
-   * @param maxDistance
-   * @param minDistance
-   * @return
+   * @param key The key that the AVGeoPoint is stored in.
+   * @param point The reference AVGeoPoint that is used.
+   * @param maxDistance outer radius of the given radians.
+   * @param minDistance inner radius of the given radians.
+   * @return  Returns the query, so you can chain this call.
    */
 
   public AVQuery<T> whereWithinRadians(String key, AVGeoPoint point, double maxDistance,
@@ -809,6 +844,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * Constructs a query that is the or of the given queries.
    *
    * @param queries The list of AVQueries to 'or' together
+   * @param <T> template type.
    * @return A AVQuery that is the 'or' of the passed in queries
    */
   public static <T extends AVObject> AVQuery<T> or(List<AVQuery<T>> queries) {
@@ -833,6 +869,13 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     return result;
   }
 
+  /**
+   * Constructs a query that is the and of the given queries.
+   *
+   * @param queries The list of AVQueries to 'and' together
+   * @param <T> template type.
+   * @return A AVQuery that is the 'and' of the passed in queries
+   */
   public static <T extends AVObject> AVQuery<T> and(List<AVQuery<T>> queries) {
     if (null == queries || queries.isEmpty()) {
       throw new IllegalArgumentException("queries must be non-empty.");
@@ -854,15 +897,27 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     return result;
   }
 
+  /**
+   * Has cached result or not.
+   * @return cache result existed or not.
+   */
   public boolean hasCachedResult() {
     Map<String, String> query = assembleParameters();
     return PaasClient.getStorageClient().hasCachedResult(getClassName(), query, this.getMaxCacheAge());
   }
 
+  /**
+   * Execute query in blocking mode.
+   * @return result of list.
+   */
   public List<T> find() {
     return findInBackground().blockingLast();
   }
 
+  /**
+   * Execute query in async mode.
+   * @return observable instance.
+   */
   public Observable<List<T>> findInBackground() {
     return findInBackground(0);
   }
@@ -890,10 +945,20 @@ public class AVQuery<T extends AVObject> implements Cloneable {
             });
   }
 
+  /**
+   * Get Object with specified objectId in blocking mode.
+   * @param objectId object id.
+   * @return object instance.
+   */
   public T get(String objectId) {
     return getInBackground(objectId).blockingFirst();
   }
 
+  /**
+   * Get Object with specified objectId in async mode.
+   * @param objectId object id.
+   * @return observable instance.
+   */
   public Observable<T> getInBackground(String objectId) {
     return PaasClient.getStorageClient().fetchObject(getClassName(), objectId, null).map(new Function<AVObject, T>() {
       public T apply(AVObject avObject) throws Exception {
@@ -902,6 +967,10 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     });
   }
 
+  /**
+   * Get first result in blocking mode.
+   * @return first result.
+   */
   public T getFirst() {
     try {
       return getFirstInBackground().blockingFirst();
@@ -910,6 +979,10 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     }
   }
 
+  /**
+   * Get first result in async mode.
+   * @return observable instance.
+   */
   public Observable<T> getFirstInBackground() {
     return findInBackground(1).flatMap(new Function<List<T>, ObservableSource<T>>() {
       @Override
@@ -920,10 +993,18 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     });
   }
 
+  /**
+   * Get result count in blocking mode.
+   * @return result count.
+   */
   public int count() {
     return countInBackground().blockingFirst();
   }
 
+  /**
+   * Get result count in async mode.
+   * @return observable instance.
+   */
   public Observable<Integer> countInBackground() {
     Map<String, String> query = assembleParameters();
     query.put("count", "1");
@@ -931,10 +1012,17 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     return PaasClient.getStorageClient().queryCount(getClassName(), query);
   }
 
+  /**
+   * Delete all query result in blocking mode.
+   */
   public void deleteAll() {
     this.deleteAllInBackground().blockingSubscribe();
   }
 
+  /**
+   * Delete all query result in async mode.
+   * @return observable instance.
+   */
   public Observable<AVNull> deleteAllInBackground() {
     return findInBackground().flatMap(new Function<List<T>, ObservableSource<AVNull>>() {
       @Override
@@ -944,6 +1032,10 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     });
   }
 
+  /**
+   * Assemble query parameters.
+   * @return map of query parameters.
+   */
   public Map<String, String> assembleParameters() {
     conditions.assembleParameters();
     return conditions.getParameters();
@@ -958,15 +1050,42 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   /**
    * Cloud Query
    */
+  /**
+   * Do cloud query in async mode.
+   * @param cql cql string
+   * @return observable instance.
+   */
   public static Observable<AVCloudQueryResult> doCloudQueryInBackground(String cql) {
     return AVCloudQuery.executeInBackground(cql);
   }
+
+  /**
+   * Do cloud query in async mode.
+   * @param cql cql string
+   * @param params query parameters.
+   * @return observable instance.
+   */
   public static Observable<AVCloudQueryResult> doCloudQueryInBackground(String cql, Object... params) {
     return AVCloudQuery.executeInBackground(cql, params);
   }
+
+  /**
+   * Do cloud query in async mode.
+   * @param cql cql string
+   * @param clazz result class.
+   * @return observable instance.
+   */
   public static Observable<AVCloudQueryResult> doCloudQueryInBackground(String cql, Class<? extends AVObject> clazz) {
     return AVCloudQuery.executeInBackground(cql, clazz);
   }
+
+  /**
+   * Do cloud query in async mode.
+   * @param cql  cql string
+   * @param clazz result class.
+   * @param params query parameters.
+   * @return observable instance.
+   */
   public static Observable<AVCloudQueryResult> doCloudQueryInBackground(String cql, final Class<? extends AVObject> clazz,
                                                                         Object... params) {
     return AVCloudQuery.executeInBackground(cql, clazz, params);

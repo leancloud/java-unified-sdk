@@ -9,7 +9,7 @@ public class AVSaveOption {
    * refresh object value with latest data from remote server after AVObject saved
    *
    * @param fetchWhenSave set true to enable this functionality
-   * @return
+   * @return this object.
    */
   public AVSaveOption setFetchWhenSave(boolean fetchWhenSave) {
     this.fetchWhenSave = fetchWhenSave;
@@ -19,8 +19,8 @@ public class AVSaveOption {
   /**
    * Only save object when query matches AVObject instance data
    *
-   * @param query
-   * @return
+   * @param query query instance.
+   * @return this object.
    */
   public AVSaveOption query(AVQuery query) {
     this.matchQuery = query;

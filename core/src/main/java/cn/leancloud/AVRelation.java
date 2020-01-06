@@ -138,6 +138,7 @@ public class AVRelation<T extends AVObject> {
    * @param parentClassName The parent class name
    * @param relationKey The relation field key in parent
    * @param child The child object.
+   * @param <M> template type.
    * @return A AVQuery that restricts the results to parent objects in this relations.
    */
   public static <M extends AVObject> AVQuery<M> reverseQuery(String parentClassName,
@@ -153,6 +154,7 @@ public class AVRelation<T extends AVObject> {
    * @param theParentClazz The parent subclass.
    * @param relationKey The relation field key in parent
    * @param child The child object.
+   * @param <M> template type.
    * @return A AVQuery that restricts the results to parent objects in this relations.
    */
   public static <M extends AVObject> AVQuery<M> reverseQuery(Class<M> theParentClazz,
