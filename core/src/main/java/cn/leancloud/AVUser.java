@@ -72,7 +72,7 @@ public class AVUser extends AVObject {
   /**
    * 获取当前登录用户
    *
-   * @return
+   * @return current user.
    */
   public static AVUser currentUser() {
     return getCurrentUser();
@@ -80,7 +80,7 @@ public class AVUser extends AVObject {
 
   /**
    * get user email.
-   * @return
+   * @return user email.
    */
   @JSONField(serialize = false)
   public String getEmail() {
@@ -90,7 +90,7 @@ public class AVUser extends AVObject {
   /**
    * set user email
    *
-   * @param email
+   * @param email user email.
    */
   public void setEmail(String email) {
     put(ATTR_EMAIL, email);
@@ -99,7 +99,7 @@ public class AVUser extends AVObject {
   /**
    * get user name.
    *
-   * @return
+   * @return user name
    */
   @JSONField(serialize = false)
   public String getUsername() {
@@ -109,7 +109,7 @@ public class AVUser extends AVObject {
   /**
    * set user name.
    *
-   * @param name
+   * @param name username
    */
   public void setUsername(String name) {
     put(ATTR_USERNAME, name);
@@ -117,7 +117,7 @@ public class AVUser extends AVObject {
 
   /**
    * get user password.
-   * @return
+   * @return user password.
    */
   @JSONField(serialize = false)
   public String getPassword() {
@@ -127,7 +127,7 @@ public class AVUser extends AVObject {
   /**
    * set user password.
    *
-   * @param password
+   * @param password user password.
    */
   public void setPassword(String password) {
     put(ATTR_PASSWORD, password);
@@ -136,7 +136,7 @@ public class AVUser extends AVObject {
   /**
    * get user mobilephone.
    *
-   * @return
+   * @return user mobilephone number.
    */
   @JSONField(serialize = false)
   public String getMobilePhoneNumber() {
@@ -146,7 +146,7 @@ public class AVUser extends AVObject {
   /**
    * set user mobilephone.
    *
-   * @param mobile
+   * @param mobile user mobilephone number.
    */
   public void setMobilePhoneNumber(String mobile) {
     put(ATTR_MOBILEPHONE, mobile);
@@ -155,7 +155,7 @@ public class AVUser extends AVObject {
   /**
    * whether user's mobilephone is verified or not.
    *
-   * @return
+   * @return flag to indicate user's mobilephone is verified or not
    */
   @JSONField(serialize = false)
   public boolean isMobilePhoneVerified() {
@@ -166,7 +166,7 @@ public class AVUser extends AVObject {
    * get user session token.
    * if user not login, session token is null.
    *
-   * @return
+   * @return user session token, null if not login.
    */
   @JSONField(serialize = false)
   public String getSessionToken() {
@@ -175,6 +175,7 @@ public class AVUser extends AVObject {
 
   /**
    * not use it!
+   * @param token user token.
    */
   public void internalChangeSessionToken(String token) {
     getServerData().put(ATTR_SESSION_TOKEN, token);
@@ -182,7 +183,7 @@ public class AVUser extends AVObject {
 
   /**
    * whether user is authenticated or not.
-   * @return
+   * @return flag to indicate user is authenticated or not.
    */
   @JSONField(serialize = false)
   public boolean isAuthenticated() {
@@ -217,6 +218,10 @@ public class AVUser extends AVObject {
     updateCurrentUserCache();
   }
 
+  /**
+   * Whether is anonymous or not.
+   * @return flag to indicate current user is anonymous or not.
+   */
   public boolean isAnonymous() {
     JSONObject existedAuthData = this.getJSONObject(AUTHDATA_TAG);
     if (existedAuthData != null) {
@@ -236,7 +241,7 @@ public class AVUser extends AVObject {
 
   /**
    * sign up in background.
-   * @return
+   * @return observable instance.
    */
   public Observable<AVUser> signUpInBackground() {
     JSONObject paramData = generateChangedParam();
@@ -253,9 +258,9 @@ public class AVUser extends AVObject {
   /**
    * signUpOrLoginByMobilePhone
    *
-   * @param mobilePhoneNumber
-   * @param smsCode
-   * @return
+   * @param mobilePhoneNumber mobile phone
+   * @param smsCode sms code
+   * @return user instance.
    */
   public static AVUser signUpOrLoginByMobilePhone(String mobilePhoneNumber, String smsCode) {
     return signUpOrLoginByMobilePhone(mobilePhoneNumber, smsCode, internalUserClazz());
@@ -263,11 +268,11 @@ public class AVUser extends AVObject {
 
   /**
    * signUpOrLoginByMobilePhone
-   * @param mobilePhoneNumber
-   * @param smsCode
-   * @param clazz
-   * @param <T>
-   * @return
+   * @param mobilePhoneNumber mobile phone number
+   * @param smsCode sms code
+   * @param clazz class name
+   * @param <T> template type.
+   * @return user instance.
    */
   public static <T extends AVUser> T signUpOrLoginByMobilePhone(String mobilePhoneNumber, String smsCode, Class<T> clazz) {
     return signUpOrLoginByMobilePhoneInBackground(mobilePhoneNumber, smsCode, clazz).blockingSingle();
@@ -275,9 +280,9 @@ public class AVUser extends AVObject {
 
   /**
    * signUpOrLoginByMobilePhoneInBackground
-   * @param mobilePhoneNumber
-   * @param smsCode
-   * @return
+   * @param mobilePhoneNumber mobile phone number.
+   * @param smsCode sms code
+   * @return observable instance.
    */
   public static Observable<? extends AVUser> signUpOrLoginByMobilePhoneInBackground(String mobilePhoneNumber, String smsCode) {
     return signUpOrLoginByMobilePhoneInBackground(mobilePhoneNumber, smsCode, internalUserClazz());
@@ -286,11 +291,11 @@ public class AVUser extends AVObject {
   /**
    * signUpOrLoginByMobilePhoneInBackground
    *
-   * @param mobilePhoneNumber
-   * @param smsCode
-   * @param clazz
-   * @param <T>
-   * @return
+   * @param mobilePhoneNumber mobile phone number
+   * @param smsCode sms code
+   * @param clazz class name
+   * @param <T> template type.
+   * @return observable instance.
    */
   public static <T extends AVUser> Observable<T> signUpOrLoginByMobilePhoneInBackground(String mobilePhoneNumber, String smsCode, Class<T> clazz) {
     if (StringUtil.isEmpty(mobilePhoneNumber)) {
@@ -310,9 +315,9 @@ public class AVUser extends AVObject {
   /**
    * logIn in background
    *
-   * @param username
-   * @param password
-   * @return
+   * @param username username
+   * @param password user password
+   * @return observable instance.
    */
   public static Observable<? extends AVUser> logIn(String username, String password) {
     return logIn(username, password, internalUserClazz());
@@ -328,11 +333,11 @@ public class AVUser extends AVObject {
   /**
    * logIn in background
    *
-   * @param username
-   * @param password
-   * @param clazz
-   * @param <T>
-   * @return
+   * @param username username
+   * @param password user password
+   * @param clazz user class name
+   * @param <T> template type.
+   * @return observable instance.
    */
   public static <T extends AVUser> Observable<T> logIn(String username, String password, final Class<T> clazz) {
     Map<String, Object> params = createUserMap(username, password, null, null, null);
@@ -340,25 +345,59 @@ public class AVUser extends AVObject {
     return PaasClient.getStorageClient().logIn(data, clazz);
   }
 
+  /**
+   * logIn with mobile phone and password.
+   * @param mobile mobile phone
+   * @param password password
+   * @return observable instance.
+   */
   public static Observable<? extends AVUser> loginByMobilePhoneNumber(String mobile, String password) {
     return loginByMobilePhoneNumber(mobile, password, internalUserClazz());
   }
 
+  /**
+   * logIn with email and password
+   * @param email email.
+   * @param password password.
+   * @return observable instance.
+   */
   public static Observable<? extends AVUser> loginByEmail(String email, String password) {
     HashMap<String, Object> params = createUserMapAFAP(null, password, email, null, null);
     return PaasClient.getStorageClient().logIn(new JSONObject(params), internalUserClazz());
   }
 
+  /**
+   * logIn with mobile phone and password.
+   * @param mobile mobile phone.
+   * @param password user password.
+   * @param clazz user class.
+   * @param <T> template type.
+   * @return observable instance.
+   */
   public static <T extends AVUser> Observable<T> loginByMobilePhoneNumber(String mobile, String password, final Class<T> clazz) {
     Map<String, Object> params = createUserMap(null, password, null, mobile, null);
     JSONObject data = new JSONObject(params);
     return PaasClient.getStorageClient().logIn(data, clazz);
   }
 
+  /**
+   * logIn with mobile phone and sms code.
+   * @param mobile mobile phone.
+   * @param smsCode sms code.
+   * @return observable instance.
+   */
   public static Observable<? extends AVUser> loginBySMSCode(String mobile, String smsCode) {
     return loginBySMSCode(mobile, smsCode, internalUserClazz());
   }
 
+  /**
+   * logIn with mobile phone and sms code.
+   * @param mobile mobile phone.
+   * @param smsCode sms code.
+   * @param clazz user class.
+   * @param <T> template type.
+   * @return observable instance.
+   */
   public static <T extends AVUser> Observable<T> loginBySMSCode(String mobile, String smsCode, Class<T> clazz) {
     Map<String, Object> params = createUserMap(null, null, null, mobile, smsCode);
     JSONObject data = new JSONObject(params);
@@ -412,15 +451,42 @@ public class AVUser extends AVObject {
     return map;
   }
 
+  /**
+   * third-party login methods.
+   */
+
+  /**
+   * login with auth data.
+   * @param authData auth data.
+   * @param platform platform string.
+   * @return observable instance.
+   */
   public static Observable<? extends AVUser> loginWithAuthData(final Map<String, Object> authData, final String platform) {
     return loginWithAuthData(internalUserClazz(), authData, platform);
   }
 
+  /**
+   * login with auth data.
+   * @param authData auth data.
+   * @param platform platform string.
+   * @param unionId unionid.
+   * @param unionIdPlatform unionid platform string.
+   * @param asMainAccount flag to treat as main account.
+   * @return observable instance.
+   */
   public static Observable<? extends AVUser> loginWithAuthData(final Map<String, Object> authData, final String platform,
                                                                    final String unionId, final String unionIdPlatform, final boolean asMainAccount) {
     return loginWithAuthData(internalUserClazz(), authData, platform, unionId, unionIdPlatform, asMainAccount);
   }
 
+  /**
+   * login with auth data.
+   * @param authData auth data.
+   * @param platform platform string.
+   * @param clazz user class name.
+   * @param <T> template type.
+   * @return observable instance.
+   */
   public static <T extends AVUser> Observable<T> loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData, final String platform) {
     if (null == clazz) {
       return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "clazz")));
@@ -446,6 +512,17 @@ public class AVUser extends AVObject {
     });
   }
 
+  /**
+   * login with auth data.
+   * @param authData auth data.
+   * @param platform platform string.
+   * @param unionId unionid.
+   * @param unionIdPlatform unionid platform string.
+   * @param asMainAccount flag to treat as main account.
+   * @param clazz user class name.
+   * @param <T> template type.
+   * @return observable instance.
+   */
   public static <T extends AVUser> Observable<T> loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData, final String platform,
                                                                    final String unionId, final String unionIdPlatform, final boolean asMainAccount) {
     if (StringUtil.isEmpty(unionId)) {
@@ -465,6 +542,13 @@ public class AVUser extends AVObject {
     return loginWithAuthData(clazz, authData, platform);
   }
 
+  /**
+   * login with auth data.
+   * @param authData auth data.
+   * @param platform platform string.
+   * @param failOnNotExist flag to indicate to exit if failed or not.
+   * @return observable instance.
+   */
   public Observable<AVUser> loginWithAuthData(final Map<String, Object> authData, final String platform,
                                               final boolean failOnNotExist) {
     if (null == authData || authData.isEmpty()) {
@@ -569,6 +653,7 @@ public class AVUser extends AVObject {
 
   /**
    * Session token operations
+   * @return observable instance.
    */
 
   public Observable<Boolean> checkAuthenticatedInBackground() {
@@ -607,16 +692,27 @@ public class AVUser extends AVObject {
   }
 
   /**
-   * User Query
+   * Get User Query
+   * @param clazz class name.
+   * @param <T> template type.
+   * @return query instance.
    */
   public static <T extends AVUser> AVQuery<T> getUserQuery(Class<T> clazz) {
     return new AVQuery<T>(CLASS_NAME, clazz);
   }
 
+  /**
+   * Get User Query
+   * @return query instance.
+   */
   public static AVQuery<AVUser> getQuery() {
     return getQuery(AVUser.class);
   }
 
+  /**
+   * Get roles in background.
+   * @return observable instance.
+   */
   public Observable<List<AVRole>> getRolesInBackground() {
     AVQuery<AVRole> roleQuery = new AVQuery<AVRole>(AVRole.CLASS_NAME);
     roleQuery.whereEqualTo("users", this);
@@ -717,6 +813,8 @@ public class AVUser extends AVObject {
 
   /**
    * Password-relative operations
+   * @param email user email.
+   * @return observable instance.
    */
   public static Observable<AVNull> requestPasswordResetInBackground(String email) {
     return PaasClient.getStorageClient().requestResetPassword(email);
@@ -771,6 +869,8 @@ public class AVUser extends AVObject {
 
   /**
    * follow-relative opersations
+   * @param userObjectId  user objectId.
+   * @return observable instance.
    */
   public Observable<JSONObject> followInBackground(String userObjectId) {
     return this.followInBackground(userObjectId, new JSONObject());
@@ -882,8 +982,8 @@ public class AVUser extends AVObject {
   }
 
   /**
-   *
-   * 通过设置此方法，所有关联对象中的AVUser对象都会被强转成注册的AVUser子类对象
+   * 通过设置此方法，所有关联对象中的 AVUser 对象都会被强转成注册的 AVUser 子类对象
+   * @param clazz class name
    */
   public static void alwaysUseSubUserClass(Class<? extends AVUser> clazz) {
     AVUser.registerSubclass(clazz);
@@ -894,7 +994,12 @@ public class AVUser extends AVObject {
   }
 
   /**
-   * 通过这个方法可以将AVUser对象强转为其子类对象
+   * 通过这个方法可以将 AVUser 对象强转为其子类对象
+   *
+   * @param user  user object.
+   * @param clazz user class name.
+   * @param <T> template type.
+   * @return user subclass instance.
    */
   public static <T extends AVUser> T cast(AVUser user, Class<T> clazz) {
     try {
@@ -905,9 +1010,4 @@ public class AVUser extends AVObject {
     }
     return null;
   }
-
-  /**
-   * third-party login methods.
-   */
-
 }
