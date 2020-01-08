@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.ops.Utils;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -96,6 +97,7 @@ public class AVCloudTest extends TestCase {
     Map<String, Object> param = new HashMap<>();
     param.put("pageSize", 20);
     param.put("currentPageIndex", 1);
+    param.put("end", new Date());
     Observable<AVObject> res = AVCloud.callRPCInBackground(name, param);
     res.subscribe(new Observer<AVObject>() {
       @Override
