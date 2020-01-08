@@ -962,6 +962,9 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   public Observable<T> getInBackground(String objectId) {
     return PaasClient.getStorageClient().fetchObject(getClassName(), objectId, null).map(new Function<AVObject, T>() {
       public T apply(AVObject avObject) throws Exception {
+        if (null == avObject || StringUtil.isEmpty(avObject.getObjectId())) {
+          throw new AVException(AVException.OBJECT_NOT_FOUND, "Object is not found.");
+        }
         return Transformer.transform(avObject, getClassName());
       }
     });

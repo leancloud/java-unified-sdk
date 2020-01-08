@@ -19,15 +19,20 @@ public class ObserverBuilder {
 
   static class SingleObjectObserver<T> implements Observer<T> {
     private AVCallback callback;
+    private boolean nextCalled = false;
     SingleObjectObserver(AVCallback<T> callback) {
       this.callback = callback;
     }
 
     public void onNext(T object) {
+      nextCalled = true;
       this.callback.internalDone(object, null);
     }
 
     public void onComplete() {
+      if (!nextCalled) {
+        this.callback.internalDone(null, null);
+      }
     }
 
     public void onError(Throwable error) {

@@ -1,5 +1,8 @@
 package cn.leancloud;
 
+import cn.leancloud.callback.FindCallback;
+import cn.leancloud.callback.GetCallback;
+import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.core.AVOSCloud;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -189,6 +192,137 @@ public class AVQueryTest extends TestCase {
         latch.countDown();
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testFirstQueryWithEmptyResult() throws Exception {
+    AVQuery query = new AVQuery("Student");
+    query.whereGreaterThan("age", 119);
+    query.orderByDescending(AVObject.KEY_CREATED_AT);
+    query.getFirstInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVObject o) {
+        System.out.println("onNext "  + o.toString());
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      public void onComplete() {
+        System.out.println("completed.");
+        testSucceed = true;
+        latch.countDown();
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testFirstQueryUnderCallbackWithEmptyResult() throws Exception {
+    AVQuery query = new AVQuery("Student");
+    query.whereGreaterThan("age", 119);
+    query.orderByDescending(AVObject.KEY_CREATED_AT);
+    query.getFirstInBackground().subscribe(ObserverBuilder.buildSingleObserver(new GetCallback() {
+      @Override
+      public void done(AVObject object, AVException e) {
+        testSucceed = (object == null) && (e == null);
+        latch.countDown();
+      }
+    }));
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testGetQueryWithEmptyResult() throws Exception {
+    AVQuery query = new AVQuery("Student");
+    query.getInBackground("thisisnotexistedObject").subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVObject o) {
+        System.out.println("onNext "  + o.toString());
+        latch.countDown();
+      }
+
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      public void onComplete() {
+        System.out.println("completed.");
+        latch.countDown();
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testGetQueryUnderCallbackWithEmptyResult() throws Exception {
+    AVQuery query = new AVQuery("Student");
+    query.getInBackground("thisisnotexistedObject").subscribe(ObserverBuilder.buildSingleObserver(new GetCallback() {
+      @Override
+      public void done(AVObject object, AVException e) {
+        if (null != e) {
+          e.printStackTrace();
+        }
+        testSucceed = null != e;
+        latch.countDown();
+      }
+    }));
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testQueryWithEmptyResult() throws Exception {
+    AVQuery query = new AVQuery("Student");
+    query.whereGreaterThan("age", 119);
+    query.orderByDescending(AVObject.KEY_CREATED_AT);
+    query.findInBackground().subscribe(new Observer<List<AVObject>>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(List<AVObject> list) {
+        System.out.println("onNext result size: " + list.size());
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      public void onComplete() {
+        System.out.println("completed.");
+        latch.countDown();
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testQueryUnderCallbackWithEmptyResult() throws Exception {
+    AVQuery query = new AVQuery("Student");
+    query.whereGreaterThan("age", 119);
+    query.orderByDescending(AVObject.KEY_CREATED_AT);
+    query.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(new FindCallback<AVObject>() {
+      @Override
+      public void done(List<AVObject> avObjects, AVException avException) {
+        System.out.println("onNext result size: " + avObjects.size());
+        testSucceed = avException == null;
+        latch.countDown();
+      }
+    }));
     latch.await();
     assertTrue(testSucceed);
   }

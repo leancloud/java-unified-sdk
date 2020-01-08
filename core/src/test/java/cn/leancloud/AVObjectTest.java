@@ -30,6 +30,42 @@ public class AVObjectTest extends TestCase {
     testSucceed = false;
   }
 
+  public void testDateAttribute() throws Exception {
+    final Date now = new Date();
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 18);
+    object.put("grade", null);
+    object.put("lastOcc", now);
+    object.setFetchWhenSave(true);
+    object.saveInBackground().subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        System.out.println("saveObject field finished.");
+        Date savedDate = avObject.getDate("lastOcc");
+        testSucceed = now.equals(savedDate);
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
   public void testPutNull() throws Exception {
     AVObject object = new AVObject("Student");
     object.put("name", "Automatic Tester");

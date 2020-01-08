@@ -9,8 +9,11 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 
 public class AVCloudTest extends TestCase {
+  private boolean testSucceed = false;
+
   public AVCloudTest(String name) {
     super(name);
     Configure.initializeRuntime();
@@ -84,6 +87,42 @@ public class AVCloudTest extends TestCase {
 
                     }
                   });
+  }
+
+  public void testRPCFunction1() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    testSucceed = false;
+    String name = "HomeData.getHomeData_V87";
+    Map<String, Object> param = new HashMap<>();
+    param.put("pageSize", 20);
+    param.put("currentPageIndex", 1);
+    Observable<AVObject> res = AVCloud.callRPCInBackground(name, param);
+    res.subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        System.out.println("got result:" + avObject);
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
   public void testCloudRPC() {
