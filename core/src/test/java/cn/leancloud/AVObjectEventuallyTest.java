@@ -77,7 +77,7 @@ public class AVObjectEventuallyTest extends TestCase {
     try {
       object.saveEventually();
       this.networkingDetectorMock.setConnected(true);
-      Thread.sleep(20000);
+      Thread.sleep(2000);
       int cntAfter = query.count();
       System.out.println("cntBefore: " + cntBefore + ", cntAfter: " + cntAfter);
       assertEquals(cntAfter, cntBefore + 1);
@@ -93,7 +93,7 @@ public class AVObjectEventuallyTest extends TestCase {
   public void testSaveArchived() {
     try {
       ArchivedRequests requests = ArchivedRequests.getInstance();
-      Thread.sleep(20000);
+      Thread.sleep(2000);
     } catch (Exception ex) {
       fail();
     }
@@ -116,7 +116,7 @@ public class AVObjectEventuallyTest extends TestCase {
     obj.deleteEventually();
     this.networkingDetectorMock.setConnected(true);
     try {
-      Thread.sleep(20000);
+      Thread.sleep(2000);
     } catch (Exception ex) {
       ex.printStackTrace();
     }

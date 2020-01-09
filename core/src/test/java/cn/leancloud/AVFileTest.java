@@ -37,7 +37,11 @@ public class AVFileTest extends TestCase {
   }
 
   public void testCreateWithObjectId() throws Exception {
-    String fileObjectId = "5d37b425c05a800073b79b3a";
+    String url = "http://i1.wp.com/blog.avoscloud.com/wp-content/uploads/2014/05/screen568x568-1.jpg?resize=202%2C360";
+    AVFile file = new AVFile("screen.jpg", url);
+    file.save();
+
+    final String fileObjectId = file.getObjectId();
     AVFile.withObjectIdInBackground(fileObjectId).subscribe(new Observer<AVFile>() {
       public void onSubscribe(Disposable disposable) {
 
@@ -55,7 +59,7 @@ public class AVFileTest extends TestCase {
         System.out.println("url=" + url + ", name=" + name + ", key=" + key + ", size=" + size);
         System.out.println("objId=" + objectId + ", thumbnail=" + thumbnailUrl + ", mime=" + mimeType);
         testSucceed = url.length() > 0 && thumbnailUrl.length() > 0 && name.length() > 0 && key.length() > 0;
-        testSucceed = testSucceed && (size > 0 && objectId.equals("5d37b425c05a800073b79b3a"));
+        testSucceed = testSucceed && objectId.equals(fileObjectId);
         testSucceed = testSucceed && (mimeType.length() > 0);
         latch.countDown();
       }
@@ -69,6 +73,7 @@ public class AVFileTest extends TestCase {
     });
     latch.await();
     assertTrue(testSucceed);
+    file.delete();
   }
 
   public void testCreateWithExtension() throws Exception {

@@ -46,6 +46,7 @@ public class AVSMSTest extends TestCase {
 
       @Override
       public void onError(Throwable throwable) {
+        testSuccess = true;
         latch.countDown();
       }
 

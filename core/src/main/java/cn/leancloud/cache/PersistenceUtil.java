@@ -69,6 +69,7 @@ public class PersistenceUtil {
       try {
         out = new FileOutputStream(fileForSave, false);
         out.write(content);
+        out.flush();
       } catch (Exception e) {
         succeed = false;
       } finally {

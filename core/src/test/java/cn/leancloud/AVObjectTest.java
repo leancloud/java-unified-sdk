@@ -474,8 +474,13 @@ public class AVObjectTest extends TestCase {
   }
 
   public void testIncrementOperation() throws Exception {
+    final AVObject prepare = new AVObject("Student");
+    prepare.put("name", "Automatic Tester");
+    prepare.put("age", 17);
+    prepare.save();
+
     AVObject object = new AVObject("Student");
-    object.setObjectId("5c2d9e7e808ca4565c481fae");
+    object.setObjectId(prepare.getObjectId());
     object.increment("age", 5);
     object.setFetchWhenSave(true);
     object.saveInBackground().subscribe(new Observer<AVObject>() {
@@ -519,6 +524,8 @@ public class AVObjectTest extends TestCase {
     });
     latch.await();
     assertTrue(testSucceed);
+
+    prepare.delete();
   }
 
   public void testCreateObjectThenBitOperation() throws Exception {
@@ -1007,7 +1014,7 @@ public class AVObjectTest extends TestCase {
     object.add("course", "Art");
     try {
       object.saveEventually();
-      Thread.sleep(10000);
+      Thread.sleep(2000);
     } catch (Exception ex) {
       fail();
     }
@@ -1064,7 +1071,7 @@ public class AVObjectTest extends TestCase {
     object.save();
     try {
       object.deleteEventually();
-      Thread.sleep(10000);
+      Thread.sleep(2000);
     } catch (Exception ex) {
       fail();
     }

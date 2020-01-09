@@ -54,7 +54,7 @@ public class AVInstallationTest extends TestCase {
     String json = "{ \"@type\":\"com.avos.avoscloud.AVInstallation\",\"objectId\":\"wYtTtsc5jnd0tXX8hQQa8oBekQXHBUIG\",\"updatedAt\":null,\"createdAt\":\"2018-12-28T06:37:33.258Z\",\"className\":\"_Installation\",\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"deviceType\":\"android\",\"timeZone\":\"Asia/Shanghai\",\"installationId\":\"007394934f6a1336718c90e196ef8a64\"}}";
     File installationFile = new File(AppConfiguration.getImportantFileDir(), AVOSCloud.getSimplifiedAppId() + AVInstallation.INSTALLATION);
     PersistenceUtil.sharedInstance().saveContentToFile(json, installationFile);
-    AVInstallation installation = AVInstallation.getCurrentInstallation();
+    AVInstallation installation = (AVInstallation) AVObject.parseAVObject(json);
     System.out.println(installation.toString());
     assertTrue(null != installation);
     assertTrue(installation.getInstallationId().equals("007394934f6a1336718c90e196ef8a64"));
@@ -90,10 +90,12 @@ public class AVInstallationTest extends TestCase {
     latch.await();
     assertTrue(testSucceed);
   }
-  public void testSaveInstallation() {
+  public void testSaveInstallation() throws Exception {
     AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
     currentInstall.saveInBackground().blockingFirst();
+    Thread.sleep(100);
   }
+
   public void testSaveInstallationWithCustomProp() {
     AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
     currentInstall.put("chan", "Chan");

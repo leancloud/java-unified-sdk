@@ -546,7 +546,7 @@ public class AVObjectACLTest extends TestCase {
   }
 
   public void testStrictAllReadWithUnAuth() throws Exception {
-    AVObject object = new AVObject("StrictAllReadWrite");
+    final AVObject object = new AVObject("StrictAllReadWrite");
     object.put("age", 20);
     object.put("content", "Automatic Tester");
     object.setFetchWhenSave(true);
@@ -558,9 +558,9 @@ public class AVObjectACLTest extends TestCase {
       @Override
       public void onNext(AVObject avObject) {
         System.out.println("first create: " + avObject.toJSONString());
-        avObject.put("age", 18);
-        avObject.setFetchWhenSave(true);
-        final AVObject tmp = avObject;
+        object.put("age", 18);
+        object.setFetchWhenSave(true);
+        final AVObject tmp = object;
         tmp.saveInBackground().subscribe(new Observer<AVObject>() {
           @Override
           public void onSubscribe(Disposable disposable) {
@@ -571,13 +571,11 @@ public class AVObjectACLTest extends TestCase {
           public void onNext(AVObject object1) {
             System.out.println("second update: " + object1.toJSONString());
             latch.countDown();
-
           }
 
           @Override
           public void onError(Throwable throwable) {
             System.out.println("error on update. cause:" + throwable.getMessage());
-
             tmp.deleteInBackground().subscribe(new Observer<AVNull>() {
               @Override
               public void onSubscribe(Disposable disposable) {
@@ -586,6 +584,7 @@ public class AVObjectACLTest extends TestCase {
 
               @Override
               public void onNext(AVNull avNull) {
+
                 latch.countDown();
               }
 
@@ -615,6 +614,7 @@ public class AVObjectACLTest extends TestCase {
       public void onError(Throwable throwable) {
         System.out.println("error on create. cause:" + throwable.getMessage());
         latch.countDown();
+
       }
 
       @Override

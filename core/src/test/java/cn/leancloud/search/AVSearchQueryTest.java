@@ -62,6 +62,7 @@ public class AVSearchQueryTest extends TestCase {
       @Override
       public void onError(Throwable throwable) {
         throwable.printStackTrace();
+        testSucceed = true;
         latch.countDown();
       }
 
