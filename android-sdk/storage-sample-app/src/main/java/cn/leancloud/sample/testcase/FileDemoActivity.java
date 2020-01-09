@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 
@@ -215,6 +216,63 @@ public class FileDemoActivity extends DemoBaseActivity {
     log("最大宽度为200 、最大高度为200的缩略图 url:" + url);
     // http://docs.qiniu.com/api/v6/image-process.html
     log("其它图片处理见七牛文档");
+  }
+
+  public void testGetDataInBackground() throws Exception {
+    AVFile portrait = new AVFile("thumbnail", "http://file.everydaydiary.luyunxinchen.cn/437K25F9DpoWnJcJgbQECCV994ntJKpCGGudo6af.png");
+    portrait.getDataInBackground().subscribe(new Observer<byte[]>() {
+      @Override
+      public void onSubscribe(Disposable d) {
+
+      }
+
+      @Override
+      public void onNext(byte[] bytes) {
+        log("file data length: " + bytes.length);
+      }
+
+      @Override
+      public void onError(Throwable e) {
+        log("failed to get data. cause: " + e.getMessage());
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+  }
+
+  public void testGetDataStreamInBackground() throws Exception {
+    AVFile portrait = new AVFile("thumbnail", "http://file.everydaydiary.luyunxinchen.cn/437K25F9DpoWnJcJgbQECCV994ntJKpCGGudo6af.png");
+    portrait.getDataStreamInBackground().subscribe(new Observer<InputStream>() {
+      @Override
+      public void onSubscribe(Disposable d) {
+
+      }
+
+      @Override
+      public void onNext(InputStream inputStream) {
+        try {
+          byte[] buffer = new byte[102400];
+          int read = inputStream.read(buffer);
+          log("file data length: " + read);
+          inputStream.close();
+        } catch (Exception ex) {
+          ;
+        }
+      }
+
+      @Override
+      public void onError(Throwable e) {
+        log("failed to get data. cause: " + e.getMessage());
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
   }
 
   public void testSample1() throws AVException {

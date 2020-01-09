@@ -86,15 +86,11 @@ public class LocalStorage {
     return new File(this.baseDir + key);
   }
 
-  public InputStream getInputStreamFromFile(File file) {
+  public InputStream getInputStreamFromFile(File file) throws FileNotFoundException {
     if (disableLocalCache) {
       return null;
     }
-    try {
-      return new FileInputStream(file);
-    } catch (FileNotFoundException ex) {
-      return null;
-    }
+    return new FileInputStream(file);
   }
 
   public void clearCachedFile(String key) {

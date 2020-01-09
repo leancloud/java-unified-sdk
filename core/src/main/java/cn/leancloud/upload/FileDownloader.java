@@ -11,10 +11,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
@@ -28,7 +25,7 @@ public class FileDownloader {
       return new AVException(new IllegalArgumentException("url is null"));
     }
     if (localFile.exists()) {
-      return null;
+      return new AVException(new FileNotFoundException("local file is not existed."));
     }
     return downloadFileFromNetwork(url, localFile);
   }

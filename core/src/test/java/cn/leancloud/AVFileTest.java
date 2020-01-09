@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
 public class AVFileTest extends TestCase {
@@ -341,6 +342,141 @@ public class AVFileTest extends TestCase {
     byte[] contents = portrait.getData();
     System.out.println("data length:" + contents.length);
     assertTrue(contents.length == 80830);
+  }
+
+  public void testDownloadExternalFileUnderAsyncMode() throws Exception {
+    AVFile portrait = new AVFile("thumbnail", "http://file.everydaydiary.luyunxinchen.cn/437K25F9DpoWnJcJgbQECCV994ntJKpCGGudo6af.png");
+    portrait.getDataInBackground().subscribe(new Observer<byte[]>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(byte[] bytes) {
+        System.out.println("data length:" + bytes.length);
+        testSucceed = (bytes.length == 80830);
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testGetDataStream() throws Exception {
+    AVFile portrait = new AVFile("thumbnail", "http://file.everydaydiary.luyunxinchen.cn/437K25F9DpoWnJcJgbQECCV994ntJKpCGGudo6af.png");
+    InputStream is = portrait.getDataStream();
+    byte[] buffer = new byte[102400];
+    int length = is.read(buffer);
+    System.out.println("data length:" + length);
+    is.close();
+    assertTrue(80830 == length);
+  }
+
+  public void testGetDataStreamUnderAsyncMode() throws Exception {
+    AVFile portrait = new AVFile("thumbnail", "http://file.everydaydiary.luyunxinchen.cn/437K25F9DpoWnJcJgbQECCV994ntJKpCGGudo6af.png");
+    portrait.getDataStreamInBackground().subscribe(new Observer<InputStream>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(InputStream inputStream) {
+        byte[] buffer = new byte[102400];
+        try {
+          int length = inputStream.read(buffer);
+          System.out.println("data length:" + length);
+          testSucceed = length == 80830;
+          inputStream.close();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testGetDataStreamWithNotexistFile() throws Exception {
+    try {
+      File currentFile = new File("./notexistedfile.jpeg");
+      AVFile file = new AVFile("20160704174809.jpeg", currentFile);
+      InputStream is = file.getDataStream();
+      assertTrue(is == null);
+    } catch (Exception ex) {
+      ;
+    }
+  }
+
+  public void testGetDataStreamWithLocalFile() throws Exception {
+    File currentFile = new File("./20160704174809.jpeg");
+    AVFile file = new AVFile("20160704174809.jpeg", currentFile);
+    InputStream is = file.getDataStream();
+    byte[] buffer = new byte[102400];
+    int length = is.read(buffer);
+    System.out.println("data length:" + length);
+    is.close();
+    assertTrue(length > 0);
+  }
+
+  public void testGetDataStreamWithLocalFileUnderAsyncMode() throws Exception {
+    File currentFile = new File("./20160704174809.jpeg");
+    AVFile file = new AVFile("20160704174809.jpeg", currentFile);
+    file.getDataStreamInBackground().subscribe(new Observer<InputStream>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(InputStream is) {
+        byte[] buffer = new byte[102400];
+        try {
+          int length = is.read(buffer);
+          System.out.println("data length:" + length);
+          is.close();
+          testSucceed = length > 0;
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+
+    latch.await();
+    assertTrue(testSucceed);
   }
 
   public void testBlockSave() throws Exception {

@@ -9,6 +9,11 @@ Following is change logs for recently release versions, you can refer to [releas
 
 #### New features
 - add AVObject#fetchIfNeededInBackground(String includeKeys) method.
+- add new async methods to AVFile:
+```java
+Observable<byte[]> getDataInBackground();
+Observable<InputStream> getDataStreamInBackground();
+```
 
 #### Optimization and fixed bugs
 - throw Exception while query#getInBackground result is null.

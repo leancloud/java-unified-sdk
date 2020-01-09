@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import cn.leancloud.upload.*;
 import cn.leancloud.utils.FileUtil;
@@ -26,9 +27,12 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.Scheduler;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
+import sun.util.resources.sr.CalendarData_sr_Latn_BA;
 
 @AVClassName("_File")
 @JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
@@ -553,9 +557,12 @@ public final class AVFile extends AVObject {
     return saveWithProgressCallback(keepFileName,null);
   }
 
+  /**
+   * Get data in blocking mode.
+   * @return data bytes.
+   */
   @JSONField(serialize = false)
   public byte[] getData() {
-    // FIXME: need to push background.
     String filePath = "";
     if(!StringUtil.isEmpty(localPath)) {
       filePath = localPath;
@@ -578,12 +585,32 @@ public final class AVFile extends AVObject {
   }
 
   /**
-   * Get data stream.
+   * Get data in async mode.
+   * @return observable instance.
+   */
+  public Observable<byte[]> getDataInBackground() {
+    Observable observable = Observable.fromCallable(new Callable<byte[]>() {
+      @Override
+      public byte[] call() throws Exception {
+        return getData();
+      }
+    });
+    if (AppConfiguration.isAsynchronized()) {
+      observable = observable.subscribeOn(Schedulers.io());
+    }
+    AppConfiguration.SchedulerCreator defaultScheduler = AppConfiguration.getDefaultScheduler();
+    if (null != defaultScheduler) {
+      observable = observable.observeOn(defaultScheduler.create());
+    }
+    return observable;
+  }
+
+  /**
+   * Get data stream in blocking mode.
    * @return data stream.
    */
   @JSONField(serialize = false)
-  public InputStream getDataStream() {
-    // FIXME: need to push background.
+  public InputStream getDataStream() throws Exception {
     String filePath = "";
     if(!StringUtil.isEmpty(localPath)) {
       filePath = localPath;
@@ -605,6 +632,27 @@ public final class AVFile extends AVObject {
     }
     logger.w("failed to get dataStream.");
     return null;
+  }
+
+  /**
+   * Get data stream in async mode.
+   * @return observable instance.
+   */
+  public Observable<InputStream> getDataStreamInBackground() {
+    Observable<InputStream> observable = Observable.fromCallable(new Callable<InputStream>() {
+      @Override
+      public InputStream call() throws Exception {
+        return getDataStream();
+      }
+    });
+    if (AppConfiguration.isAsynchronized()) {
+      observable = observable.subscribeOn(Schedulers.io());
+    }
+    AppConfiguration.SchedulerCreator defaultScheduler = AppConfiguration.getDefaultScheduler();
+    if (null != defaultScheduler) {
+      observable = observable.observeOn(defaultScheduler.create());
+    }
+    return observable;
   }
 
   /**
