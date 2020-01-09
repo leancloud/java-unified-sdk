@@ -188,7 +188,7 @@ public class UserUnitTest extends TestCase {
       assertEquals(cloudUser.getSessionToken(), subUser.getSessionToken());
       assertEquals(username, cloudUser.getUsername());
       assertEquals(nickName, cloudUser.getNickName());
-      assertNull(cloudUser.getArmor());
+      assertNotNull(cloudUser.getArmor());
     } catch (Exception e) {
       e.printStackTrace();
     }

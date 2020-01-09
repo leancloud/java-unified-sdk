@@ -188,6 +188,9 @@ public class AVUserTest extends TestCase {
 
               @Override
               public void onError(Throwable throwable) {
+                if (throwable.getMessage().indexOf("A unique field was given a value that is already taken") >= 0) {
+                  operationSucceed = true;
+                }
                 latch.countDown();
               }
 
@@ -201,6 +204,9 @@ public class AVUserTest extends TestCase {
 
           @Override
           public void onError(Throwable throwable) {
+            if (throwable.getMessage().indexOf("A unique field was given a value that is already taken") >= 0) {
+              operationSucceed = true;
+            }
             latch.countDown();
           }
 
@@ -450,6 +456,7 @@ public class AVUserTest extends TestCase {
   }
 
   public void testGetCurrentUserAfterSave() throws Exception {
+    testSaveCurrentUserData();
     operationSucceed = false;
     String nkName = AVUser.currentUser().getString("nickname");
     operationSucceed = nkName.equals("Developer Fong");

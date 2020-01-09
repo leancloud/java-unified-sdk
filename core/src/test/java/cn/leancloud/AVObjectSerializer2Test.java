@@ -8,7 +8,7 @@ import junit.framework.TestSuite;
 public class AVObjectSerializer2Test extends TestCase {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVObjectSerializer2Test.class);
   private static final String CLASSNAME_STUDENT = "Student";
-  private static final String FILE_OBJECT_ID = "5d37b425c05a800073b79b3a";
+  private static final String FILE_OBJECT_ID = "5e12b15dd4b56c007747193d";
   private String studentId = null;
   public AVObjectSerializer2Test(String name) {
     super(name);
