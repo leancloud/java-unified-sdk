@@ -386,6 +386,7 @@ public class StorageClient {
     return apiService.checkAuthenticated(param).map(new Function<AVUser, T>() {
       public T apply(AVUser avUser) throws Exception {
         if (null == avUser) {
+          LOGGER.e("The mapper function returned a null value.");
           return null;
         }
         return Transformer.transform(avUser, clazz);
@@ -499,6 +500,7 @@ public class StorageClient {
       @Override
       public List<AVStatus> apply(AVQueryResult o) throws Exception {
         if (null == o) {
+          LOGGER.e("The mapper function returned a null value.");
           return null;
         }
         List<AVStatus> results = new ArrayList<>();
@@ -515,6 +517,7 @@ public class StorageClient {
       @Override
       public List<AVStatus> apply(AVQueryResult o) throws Exception {
         if (null == o) {
+          LOGGER.e("The mapper function returned a null value.");
           return null;
         }
         List<AVStatus> results = new ArrayList<>();
@@ -555,6 +558,7 @@ public class StorageClient {
                     return (T) resultValue;
                   }
                 } catch (Exception ex) {
+                  LOGGER.d("RPCFunction error: " + ex.getMessage());
                   return null;
                 }
               }
@@ -578,6 +582,7 @@ public class StorageClient {
                     return (T) resultValue;
                   }
                 } catch (Exception ex) {
+                  LOGGER.d("CloudFunction error: " + ex.getMessage());
                   return null;
                 }
               }

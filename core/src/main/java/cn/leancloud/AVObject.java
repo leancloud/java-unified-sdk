@@ -1252,6 +1252,19 @@ public class AVObject {
   }
 
   /**
+   * Fetch current object if needed in async mode.
+   * @param includeKeys include keys, which object will be return together.
+   * @return observable instance.
+   */
+  public Observable<AVObject> fetchIfNeededInBackground(String includeKeys) {
+    if (!StringUtil.isEmpty(getObjectId()) && this.serverData.size() > 1) {
+      return Observable.just(this);
+    } else {
+      return refreshInBackground(includeKeys);
+    }
+  }
+
+  /**
    * Fetch current object in blocking mode.
    * @return current object.
    */

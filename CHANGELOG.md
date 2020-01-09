@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.1.9 release
+
+#### Break changes
+- None
+
+#### New features
+- add AVObject#fetchIfNeededInBackground(String includeKeys) method.
+
+#### Optimization and fixed bugs
+- throw Exception while query#getInBackground result is null.
+- fixed: AVCloud#call functions don't transfer parameters.
+
 ## 6.1.8 release
 
 #### Break changes

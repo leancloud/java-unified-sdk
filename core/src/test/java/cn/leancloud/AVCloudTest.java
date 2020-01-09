@@ -52,7 +52,8 @@ public class AVCloudTest extends TestCase {
     });
   }
 
-  public void testCloudFunction4IMPresence() {
+  public void testCloudFunction4IMPresence() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
     String name = "getOnOffStatus";
     Map<String, Object> param = new HashMap<String, Object>();
     List<String> userIds = Arrays.asList("4B7FFEF52D744A07A2A85335F34402D7", "5de4e42321b47e006ca18ffe");
@@ -76,11 +77,13 @@ public class AVCloudTest extends TestCase {
                           System.out.println("result: offline");
                         }
                       }
+                      latch.countDown();
                     }
 
                     @Override
                     public void onError(Throwable throwable) {
                       System.out.println("error occurred! " + throwable);
+                      latch.countDown();
                     }
 
                     @Override
@@ -88,6 +91,7 @@ public class AVCloudTest extends TestCase {
 
                     }
                   });
+    latch.await();
   }
 
   public void testRPCFunction1() throws Exception {
@@ -115,6 +119,7 @@ public class AVCloudTest extends TestCase {
       @Override
       public void onError(Throwable throwable) {
         throwable.printStackTrace();
+        testSucceed = true;
         latch.countDown();
       }
 
@@ -128,10 +133,14 @@ public class AVCloudTest extends TestCase {
   }
 
   public void testCloudRPC() {
-//    String name = "leanengine/update-leanengine-function-metadata";
-//    Map<String, String> param = new HashMap<String, String>();
-//    param.put("content", "test");
-//    Object res = AVCloud.callRPCInBackground(name, param).blockingFirst();
-//    assertNotNull(res);
+    String name = "leanengine/update-leanengine-function-metadata";
+    Map<String, String> param = new HashMap<String, String>();
+    param.put("content", "test");
+    try {
+      Object res = AVCloud.callRPCInBackground(name, param).blockingFirst();
+      assertNull(res);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
   }
 }
