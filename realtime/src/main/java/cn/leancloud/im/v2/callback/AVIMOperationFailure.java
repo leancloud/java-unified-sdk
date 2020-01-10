@@ -16,7 +16,7 @@ public class AVIMOperationFailure {
 
   /**
    * 返回错误原因描述
-   * @return
+   * @return error message.
    */
   public String getReason() {
     return reason;
@@ -24,7 +24,7 @@ public class AVIMOperationFailure {
 
   /**
    * 设置错误原因描述
-   * @param reason
+   * @param reason error message.
    */
   public void setReason(String reason) {
     this.reason = reason;
@@ -32,7 +32,7 @@ public class AVIMOperationFailure {
 
   /**
    * 返回错误码
-   * @return
+   * @return error code.
    */
   public int getCode() {
     return code;
@@ -40,7 +40,7 @@ public class AVIMOperationFailure {
 
   /**
    * 设置错误码
-   * @param code
+   * @param code error code.
    */
   public void setCode(int code) {
     this.code = code;
@@ -48,7 +48,7 @@ public class AVIMOperationFailure {
 
   /**
    * 获取出错的 member id 列表
-   * @return
+   * @return member id list.
    */
   public List<String> getMemberIds() {
     return memberIds;
@@ -56,7 +56,7 @@ public class AVIMOperationFailure {
 
   /**
    * 设置出错的 member id 列表
-   * @param memberIds
+   * @param memberIds member id list.
    */
   public void setMemberIds(List<String> memberIds) {
     this.memberIds = memberIds;
@@ -64,7 +64,7 @@ public class AVIMOperationFailure {
 
   /**
    * 返回出错的 member id 列表长度
-   * @return
+   * @return length of member id list
    */
   public int getMemberIdCount() {
     return (null == this.memberIds)? 0 : this.memberIds.size();

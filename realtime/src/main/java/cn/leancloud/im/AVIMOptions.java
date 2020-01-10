@@ -15,7 +15,7 @@ public class AVIMOptions {
 
   /**
    * get global options instance.
-   * @return
+   * @return Returns current object, so you can chain this call.
    */
   public static AVIMOptions getGlobalOptions() {
     return globalOptions;
@@ -23,7 +23,7 @@ public class AVIMOptions {
 
   /**
    * set rtm connection server.
-   * @param server
+   * @param server rtm connection server.
    */
   public void setRtmServer(String server) {
     this.rtmConnectionServer = server;
@@ -31,7 +31,7 @@ public class AVIMOptions {
 
   /**
    * get rtm connection server.
-   * @return
+   * @return rtm connection server.
    */
   public String getRtmServer() {
     return this.rtmConnectionServer;
@@ -39,7 +39,7 @@ public class AVIMOptions {
 
   /**
    * get signature factory
-   * @return
+   * @return signature factory.
    */
   public SignatureFactory getSignatureFactory() {
     return this.signatureFactory;
@@ -47,7 +47,7 @@ public class AVIMOptions {
 
   /**
    * set signature factory.
-   * @param factory
+   * @param factory signature factory.
    */
   public void setSignatureFactory(SignatureFactory factory) {
     this.signatureFactory = factory;
@@ -55,7 +55,7 @@ public class AVIMOptions {
 
   /**
    * get timeout option.
-   * @return
+   * @return timeout value(seconds)
    */
   public int getTimeoutInSecs() {
     return timeoutInSecs;
@@ -63,7 +63,7 @@ public class AVIMOptions {
 
   /**
    * set timeout option.
-   * @param timeoutInSecs
+   * @param timeoutInSecs timeout value
    */
   public void setTimeoutInSecs(int timeoutInSecs) {
     this.timeoutInSecs = timeoutInSecs;
@@ -112,7 +112,7 @@ public class AVIMOptions {
 
   /**
    * 设置为即时重置网络连接
-   * @param resetConnectionWhileBroken
+   * @param resetConnectionWhileBroken flag indicating reset connection while broken or not.
    *
    * @deprecated Since 5.0.18
    */

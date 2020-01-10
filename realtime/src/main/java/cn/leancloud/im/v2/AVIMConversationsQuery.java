@@ -42,8 +42,8 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，指定聊天室的组员条件满足条件的才返回
    *
-   * @param peerIds
-   * @return
+   * @param peerIds peer id list.
+   * @return current instance.
    */
   public AVIMConversationsQuery withMembers(List<String> peerIds) {
     return withMembers(peerIds, false);
@@ -52,9 +52,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，指定聊天室的组员条件满足条件的才返回
    *
-   * @param peerIds
+   * @param peerIds peer client id list.
    * @param includeSelf  是否包含自己
-   * @return
+   * @return current instance.
    */
   public AVIMConversationsQuery withMembers(List<String> peerIds, boolean includeSelf) {
     Set<String> targetPeerIds = new HashSet<String>(peerIds);
@@ -69,8 +69,8 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，指定聊天室的组员包含某些成员即可返回
    *
-   * @param peerIds
-   * @return
+   * @param peerIds peer client id list.
+   * @return current instance.
    */
 
   public AVIMConversationsQuery containsMembers(List<String> peerIds) {
@@ -81,9 +81,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段满足等于条件时即可返回
    *
-   * @param key
-   * @param value
-   * @return
+   * @param key     attribute key.
+   * @param value   attribute value
+   * @return current instance.
    */
   public AVIMConversationsQuery whereEqualTo(String key, Object value) {
     conditions.whereEqualTo(key, value);
@@ -93,9 +93,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段满足小于条件时即可返回
    *
-   * @param key
-   * @param value
-   * @return
+   * @param key     attribute key.
+   * @param value   attribute value
+   * @return current instance.
    */
   public AVIMConversationsQuery whereLessThan(String key, Object value) {
     conditions.whereLessThan(key, value);
@@ -106,9 +106,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段满足小于等于条件时即可返回
    *
-   * @param key
-   * @param value
-   * @return
+   * @param key     attribute key.
+   * @param value   attribute value.
+   * @return current instance.
    */
   public AVIMConversationsQuery whereLessThanOrEqualsTo(String key, Object value) {
     conditions.whereLessThanOrEqualTo(key, value);
@@ -118,9 +118,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段满足大于条件时即可返回
    *
-   * @param key
-   * @param value
-   * @return
+   * @param key     attribute key.
+   * @param value   attribute value.
+   * @return current instance.
    */
 
   public AVIMConversationsQuery whereGreaterThan(String key, Object value) {
@@ -131,9 +131,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段满足大于等于条件时即可返回
    *
-   * @param key
-   * @param value
-   * @return
+   * @param key    attribute key.
+   * @param value  attribute value.
+   * @return current instance.
    */
 
   public AVIMConversationsQuery whereGreaterThanOrEqualsTo(String key, Object value) {
@@ -144,9 +144,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段满足不等于条件时即可返回
    *
-   * @param key
-   * @param value
-   * @return
+   * @param key   attribute key.
+   * @param value attribute value.
+   * @return current instance.
    */
   public AVIMConversationsQuery whereNotEqualsTo(String key, Object value) {
     conditions.whereNotEqualTo(key, value);
@@ -156,9 +156,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段对应的值包含在指定值中时即可返回
    *
-   * @param key
-   * @param value
-   * @return
+   * @param key     attribute key.
+   * @param value   value collection.
+   * @return current instance.
    */
 
   public AVIMConversationsQuery whereContainsIn(String key, Collection<?> value) {
@@ -170,6 +170,7 @@ public class AVIMConversationsQuery {
    * 增加查询条件，当 conversation 的属性中对应的字段有值时即可返回
    *
    * @param key The key that should exist.
+   * @return current instance.
    */
   public AVIMConversationsQuery whereExists(String key) {
     conditions.whereExists(key);
@@ -178,8 +179,8 @@ public class AVIMConversationsQuery {
 
   /**
    * 增加查询条件，当 conversation 的属性中对应的字段没有值时即可返回
-   * @param key
-   * @return
+   * @param key attribute key.
+   * @return current instance.
    */
   public AVIMConversationsQuery whereDoesNotExist(String key) {
     conditions.whereDoesNotExist(key);
@@ -189,9 +190,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段对应的值不包含在指定值中时即可返回
    *
-   * @param key
-   * @param value
-   * @return
+   * @param key      attribute key.
+   * @param value    attribute values
+   * @return current instance.
    */
 
   public AVIMConversationsQuery whereNotContainsIn(String key, Collection<?> value) {
@@ -202,9 +203,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段中的元素包含所有的值才可返回
    *
-   * @param key
-   * @param values
-   * @return
+   * @param key      attribute key.
+   * @param values   attribute values.
+   * @return current instance.
    */
 
   public AVIMConversationsQuery whereContainsAll(String key, Collection<?> values) {
@@ -215,9 +216,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段对应的值包含此字符串即可返回
    *
-   * @param key
-   * @param subString
-   * @return
+   * @param key          attribute key.
+   * @param subString    sub string.
+   * @return current instance.
    */
   public AVIMConversationsQuery whereContains(String key, String subString) {
     conditions.whereContains(key, subString);
@@ -227,9 +228,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段对应的值以此字符串起始即可返回
    *
-   * @param key
-   * @param prefix
-   * @return
+   * @param key     attribute key.
+   * @param prefix  prefix string
+   * @return current instance.
    */
 
   public AVIMConversationsQuery whereStartsWith(String key, String prefix) {
@@ -240,9 +241,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段对应的值以此字符串结束即可返回
    *
-   * @param key
-   * @param suffix
-   * @return
+   * @param key     attribute key.
+   * @param suffix  suffix string
+   * @return current instance.
    */
   public AVIMConversationsQuery whereEndsWith(String key, String suffix) {
     conditions.whereEndsWith(key, suffix);
@@ -252,9 +253,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段对应的值满足提供的正则表达式即可返回
    *
-   * @param key
-   * @param regex
-   * @return
+   * @param key       attribute key.
+   * @param regex     regex pattern
+   * @return current instance.
    */
   public AVIMConversationsQuery whereMatches(String key, String regex) {
     conditions.whereMatches(key, regex);
@@ -264,10 +265,10 @@ public class AVIMConversationsQuery {
   /**
    * 增加查询条件，当conversation的属性中对应的字段对应的值满足提供的正则表达式即可返回
    *
-   * @param key
-   * @param regex
+   * @param key       attribute key.
+   * @param regex     regex pattern
    * @param modifiers 正则表达式的匹配模式，比如"-i"表示忽视大小写区分等
-   * @return
+   * @return current instance.
    */
   public AVIMConversationsQuery whereMatches(String key, String regex, String modifiers) {
     conditions.whereMatches(key, regex, modifiers);
@@ -277,9 +278,9 @@ public class AVIMConversationsQuery {
   /**
    * 增加一个基于地理位置的近似查询，当conversation的属性中对应字段对应的地理位置在pointer附近时即可返回
    *
-   * @param key
-   * @param point
-   * @return
+   * @param key     attribute key.
+   * @param point   GeoPoint
+   * @return current instance.
    */
 
   public AVIMConversationsQuery whereNear(String key, AVGeoPoint point) {
@@ -293,7 +294,7 @@ public class AVIMConversationsQuery {
    * @param key       查询字段
    * @param southwest 矩形区域的左下角坐标
    * @param northeast 去兴趣鱼的右上角坐标
-   * @return
+   * @return current instance.
    */
   public AVIMConversationsQuery whereWithinGeoBox(String key, AVGeoPoint southwest,
                                                   AVGeoPoint northeast) {
@@ -306,10 +307,10 @@ public class AVIMConversationsQuery {
    *
    * 地球半径为6371.0 千米
    *
-   * @param key
+   * @param key         attribute key.
    * @param point       指定的地理位置
    * @param maxDistance 距离，以千米计算
-   * @return
+   * @return current instance.
    */
   public AVIMConversationsQuery whereWithinKilometers(String key, AVGeoPoint point,
                                                       double maxDistance) {
@@ -320,10 +321,10 @@ public class AVIMConversationsQuery {
   /**
    * 增加一个基于地理位置的近似查询，当conversation的属性中有对应的地址位置与指定的地理位置间距不超过指定距离时返回
    *
-   * @param key
+   * @param key         attribute key.
    * @param point       指定的地理位置
    * @param maxDistance 距离，以英里计算
-   * @return
+   * @return current instance.
    */
 
   public AVIMConversationsQuery whereWithinMiles(String key, AVGeoPoint point, double maxDistance) {
@@ -334,10 +335,10 @@ public class AVIMConversationsQuery {
   /**
    * 增加一个基于地理位置的近似查询，当conversation的属性中有对应的地址位置与指定的地理位置间距不超过指定距离时返回
    *
-   * @param key
+   * @param key         attribute key.
    * @param point       指定的地理位置
    * @param maxDistance 距离，以角度计算
-   * @return
+   * @return current instance.
    */
 
   public AVIMConversationsQuery whereWithinRadians(String key, AVGeoPoint point, double maxDistance) {
@@ -349,7 +350,7 @@ public class AVIMConversationsQuery {
    * 设置返回集合的大小上限
    *
    * @param limit 上限
-   * @return
+   * @return current instance.
    */
   public AVIMConversationsQuery setLimit(int limit) {
     conditions.setLimit(limit);
@@ -360,7 +361,7 @@ public class AVIMConversationsQuery {
    * 设置返回集合的大小上限
    *
    * @param limit 上限
-   * @return
+   * @return current instance.
    */
   public AVIMConversationsQuery limit(int limit) {
     return this.setLimit(limit);
@@ -370,7 +371,7 @@ public class AVIMConversationsQuery {
    * 设置返回集合的起始位置，一般用于分页
    *
    * @param skip 起始位置跳过几个对象
-   * @return
+   * @return current instance.
    */
   public AVIMConversationsQuery setSkip(int skip) {
     conditions.setSkip(skip);
@@ -381,7 +382,7 @@ public class AVIMConversationsQuery {
    * 设置返回集合的起始位置，一般用于分页
    *
    * @param skip 起始位置跳过几个对象
-   * @return
+   * @return current instance.
    */
   public AVIMConversationsQuery skip(int skip) {
     return this.setSkip(skip);
@@ -390,8 +391,8 @@ public class AVIMConversationsQuery {
   /**
    * 设置返回集合按照指定key进行增序排列
    *
-   * @param key
-   * @return
+   * @param key attribute key.
+   * @return current instance.
    */
   public AVIMConversationsQuery orderByAscending(String key) {
     conditions.orderByAscending(key);
@@ -401,8 +402,8 @@ public class AVIMConversationsQuery {
   /**
    * 设置返回集合按照指定key进行降序排列
    *
-   * @param key
-   * @return
+   * @param key attribute key.
+   * @return current instance.
    */
 
   public AVIMConversationsQuery orderByDescending(String key) {
@@ -413,8 +414,8 @@ public class AVIMConversationsQuery {
   /**
    * 设置返回集合按照指定key进行升序排列，此 key 的优先级小于先前设置的 key
    *
-   * @param key
-   * @return
+   * @param key attribute key.
+   * @return current instance.
    */
   public AVIMConversationsQuery addAscendingOrder(String key) {
     conditions.addAscendingOrder(key);
@@ -424,8 +425,8 @@ public class AVIMConversationsQuery {
   /**
    * 设置返回集合按照指定key进行降序排列，此 key 的优先级小于先前设置的 key
    *
-   * @param key
-   * @return
+   * @param key attribute key.
+   * @return current instance.
    */
   public AVIMConversationsQuery addDescendingOrder(String key) {
     conditions.addDescendingOrder(key);
@@ -435,9 +436,9 @@ public class AVIMConversationsQuery {
   /**
    * 添加查询约束条件，查找key类型是数组，该数组的长度匹配提供的数值
    *
-   * @param key
-   * @param size
-   * @return
+   * @param key attribute key.
+   * @param size size value.
+   * @return current instance.
    */
   public AVIMConversationsQuery whereSizeEqual(String key, int size) {
     conditions.whereSizeEqual(key, size);
@@ -448,7 +449,7 @@ public class AVIMConversationsQuery {
   /**
    * 是否携带最后一条消息
    *
-   * @return
+   * @return flag indicating attaches with latest message.
    */
   public boolean isWithLastMessagesRefreshed() {
     return conditions.isWithLastMessagesRefreshed();
@@ -457,7 +458,8 @@ public class AVIMConversationsQuery {
   /**
    * 设置是否携带最后一条消息
    *
-   * @param isWithLastMessageRefreshed
+   * @param isWithLastMessageRefreshed flag indicating attaches with latest message.
+   * @return current instance.
    */
   public AVIMConversationsQuery setWithLastMessagesRefreshed(boolean isWithLastMessageRefreshed) {
     conditions.setWithLastMessagesRefreshed(isWithLastMessageRefreshed);
@@ -467,7 +469,7 @@ public class AVIMConversationsQuery {
   /**
    * 设置 AVIMConversationsQuery 的查询策略
    *
-   * @param policy
+   * @param policy query policy
    */
   public void setQueryPolicy(AVQuery.CachePolicy policy) {
     this.policy = policy;
@@ -476,8 +478,8 @@ public class AVIMConversationsQuery {
   /**
    * Constructs a AVIMConversationsQuery that is the or of the given queries.
    *
-   * @param queries
-   * @return
+   * @param queries query list.
+   * @return new conversation query instance.
    */
 
   public static AVIMConversationsQuery or(List<AVIMConversationsQuery> queries) {
@@ -498,7 +500,7 @@ public class AVIMConversationsQuery {
 
   /**
    * 设置查询缓存的有效时间
-   * @param maxAgeInSecond
+   * @param maxAgeInSecond max age of cache in seconds.
    */
   public void setCacheMaxAge(long maxAgeInSecond){
     this.maxAge = maxAgeInSecond * 1000;
@@ -649,42 +651,4 @@ public class AVIMConversationsQuery {
     }
     return conversations;
   }
-//
-//  static class CacheConversationQueryCallback extends GenericObjectCallback {
-//    AVIMConversationQueryCallback callback;
-//    AVIMClient client;
-//
-//    public CacheConversationQueryCallback(AVIMClient client, AVIMConversationsQuery query,
-//                                          AVIMConversationQueryCallback callback) {
-//      this.callback = callback;
-//      this.client = client;
-//    }
-//
-//    @Override
-//    public void onSuccess(String content, AVException e) {
-//      if (!StringUtil.isEmpty(content)) {
-//        try {
-//          List<String> conversationList = JSON.parseObject(content, List.class);
-//          List<AVIMConversation> conversations =
-//                  client.getStorage().getCachedConversations(conversationList);
-//          if (conversations == null || conversations.size() < conversationList.size()) {
-//            this.onFailure(new AVException(AVException.CACHE_MISS,
-//                    AVException.CACHE_MISSING_ERROR), null);
-//            return;
-//          } else {
-//            callback.internalDone(conversations, null);
-//          }
-//        } catch (Exception e1) {
-//          callback.internalDone(null, new AVException(e1));
-//        }
-//      } else {
-//        callback.internalDone(new LinkedList<AVIMConversation>(), null);
-//      }
-//    }
-//
-//    @Override
-//    public void onFailure(Throwable error, String content) {
-//      callback.internalDone(null, new AVException(error));
-//    }
-//  }
 }

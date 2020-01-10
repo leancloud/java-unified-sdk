@@ -43,7 +43,7 @@ public class AVIMMessageManager {
   /**
    * 注册自定义的消息类型
    *
-   * @param messageType
+   * @param messageType message type.
    */
   public static void registerAVIMMessageType(Class<? extends AVIMTypedMessage> messageType) {
     AVIMMessageType type = messageType.getAnnotation(AVIMMessageType.class);
@@ -67,7 +67,7 @@ public class AVIMMessageManager {
    *
    * 请在Application初始化时设置
    *
-   * @param handler
+   * @param handler message handler.
    */
   public static void registerDefaultMessageHandler(AVIMMessageHandler handler) {
     defaultMessageHandler = handler;
@@ -77,7 +77,7 @@ public class AVIMMessageManager {
    * 注册特定消息格式的处理单元
    *
    * @param clazz 特定的消息类
-   * @param handler
+   * @param handler message handler.
    */
   public static void registerMessageHandler(Class<? extends AVIMMessage> clazz,
                                             MessageHandler<?> handler) {
@@ -93,8 +93,8 @@ public class AVIMMessageManager {
   /**
    * 取消特定消息格式的处理单元
    *
-   * @param clazz
-   * @param handler
+   * @param clazz message class.
+   * @param handler message handler.
    */
   public static void unregisterMessageHandler(Class<? extends AVIMMessage> clazz,
                                               MessageHandler<?> handler) {
@@ -109,7 +109,7 @@ public class AVIMMessageManager {
    *
    * 推荐在Application初始化时设置
    *
-   * @param handler
+   * @param handler message handler.
    */
   public static void setConversationEventHandler(AVIMConversationEventHandler handler) {
     conversationEventHandler = handler;

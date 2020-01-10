@@ -38,7 +38,7 @@ public class AVIMImageMessage extends AVIMFileMessage {
   /**
    * 获取文件的metaData
    *
-   * @return
+   * @return meta data map.
    */
   @Override
   public Map<String, Object> getFileMetaData() {
@@ -64,7 +64,7 @@ public class AVIMImageMessage extends AVIMFileMessage {
   /**
    * 获取图片的高
    *
-   * @return
+   * @return height.
    */
   public int getHeight() {
     Map<String, Object> metaData = getFileMetaData();
@@ -77,7 +77,7 @@ public class AVIMImageMessage extends AVIMFileMessage {
   /**
    * 获取图片的宽度
    *
-   * @return
+   * @return width.
    */
   public int getWidth() {
     Map<String, Object> metaData = getFileMetaData();

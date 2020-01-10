@@ -43,7 +43,7 @@ public class AVIMException extends AVException {
   /**
    * 获取由用户在云代码中自定义的response code
    *
-   * @return
+   * @return response code.
    */
   public int getAppCode() {
     return appCode;

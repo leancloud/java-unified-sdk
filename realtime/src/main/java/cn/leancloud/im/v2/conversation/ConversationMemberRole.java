@@ -10,7 +10,7 @@ public enum ConversationMemberRole {
 
   /**
    * 获取角色名字
-   * @return
+   * @return name of role
    */
   public String getName() {
     return this.role;
@@ -19,7 +19,7 @@ public enum ConversationMemberRole {
   /**
    * 从角色名字生成实例
    * @param role 角色名字
-   * @return
+   * @return new ConversationMemberRole instance
    */
   public static ConversationMemberRole fromString(String role) {
     for(ConversationMemberRole mr: ConversationMemberRole.values()) {

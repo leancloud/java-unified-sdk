@@ -43,7 +43,7 @@ public class AVIMAudioMessage extends AVIMFileMessage {
   /**
    * 获取文件的metaData
    *
-   * @return
+   * @return meta data map.
    */
   @Override
   public Map<String, Object> getFileMetaData() {
@@ -69,7 +69,7 @@ public class AVIMAudioMessage extends AVIMFileMessage {
   /**
    * 获取音频的时长
    *
-   * @return
+   * @return duration interval.
    */
   public double getDuration() {
     Map<String, Object> meta = getFileMetaData();

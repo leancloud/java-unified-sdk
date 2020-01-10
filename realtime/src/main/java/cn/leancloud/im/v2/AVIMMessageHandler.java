@@ -7,9 +7,9 @@ public class AVIMMessageHandler extends MessageHandler<AVIMMessage> {
   /**
    * 重载此方法来处理接收消息
    *
-   * @param message
-   * @param conversation
-   * @param client
+   * @param message message instance.
+   * @param conversation conversation instance.
+   * @param client client instance.
    */
   @Override
   public void onMessage(AVIMMessage message, AVIMConversation conversation, AVIMClient client) {
@@ -19,9 +19,9 @@ public class AVIMMessageHandler extends MessageHandler<AVIMMessage> {
   /**
    * 重载此方法来处理消息回执
    *
-   * @param message
-   * @param conversation
-   * @param client
+   * @param message message instance.
+   * @param conversation conversation instance.
+   * @param client client instance.
    */
   @Override
   public void onMessageReceipt(AVIMMessage message, AVIMConversation conversation, AVIMClient client) {

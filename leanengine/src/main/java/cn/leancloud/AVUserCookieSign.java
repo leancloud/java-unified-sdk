@@ -8,31 +8,31 @@ public interface AVUserCookieSign {
   /**
    * decode user from http request.
    *
-   * @param request
-   * @return
+   * @param request http request
+   * @return user instance.
    */
   AVUser decodeUser(HttpServletRequest request);
 
   /**
    * encode user into cookie.
    *
-   * @param user
-   * @return
+   * @param user user instance
+   * @return cookie
    */
   Cookie encodeUser(AVUser user);
 
   /**
    * get cookie signature.
    *
-   * @param user
-   * @return
+   * @param user user instance
+   * @return cookie
    */
   Cookie getCookieSign(AVUser user);
 
   /**
    * validate cookie signature.
-   * @param request
-   * @return
+   * @param request http request
+   * @return flag indicating cookie sign is valid or not.
    */
   boolean validateCookieSign(HttpServletRequest request);
 }

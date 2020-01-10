@@ -97,7 +97,7 @@ public class AVIMClient {
    *
    * 包括Client断开链接和重连成功事件
    *
-   * @param handler
+   * @param handler event handler.
    */
   public static void setClientEventHandler(AVIMClientEventHandler handler) {
     AVIMClient.clientEventHandler = handler;
@@ -109,8 +109,8 @@ public class AVIMClient {
 
   /**
    * get AVIMClient instance by clientId.
-   * @param clientId
-   * @return
+   * @param clientId client id.
+   * @return imclient instance.
    */
   public static AVIMClient getInstance(String clientId) {
     if (StringUtil.isEmpty(clientId)) {
@@ -129,7 +129,7 @@ public class AVIMClient {
 
   /**
    * count used clients.
-   * @return
+   * @return current client count.
    */
   public static int getClientsCount() {
     return clients.size();
@@ -137,7 +137,7 @@ public class AVIMClient {
 
   /**
    * get default clientId.
-   * @return
+   * @return the default client id.
    */
   public static String getDefaultClient() {
     if (getClientsCount() == 1) {
@@ -148,9 +148,9 @@ public class AVIMClient {
 
   /**
    * get AVIMClient instance by clientId and tag.
-   * @param clientId
-   * @param tag
-   * @return
+   * @param clientId client id.
+   * @param tag optional tag.
+   * @return  imclient instance.
    */
   public static AVIMClient getInstance(String clientId, String tag) {
     AVIMClient client = getInstance(clientId);
@@ -160,8 +160,8 @@ public class AVIMClient {
 
   /**
    * get AVIMClient instance by AVUser
-   * @param user
-   * @return
+   * @param user user instance.
+   * @return imclient instance.
    */
   public static AVIMClient getInstance(AVUser user) {
     if (null == user) {
@@ -197,7 +197,7 @@ public class AVIMClient {
 
   /**
    * Open client.
-   * @param callback
+   * @param callback callback function.
    */
   public void open(final AVIMClientCallback callback) {
     this.open(null, callback);
@@ -206,8 +206,8 @@ public class AVIMClient {
   /**
    * Open Client with options.
    *
-   * @param option
-   * @param callback
+   * @param option open option.
+   * @param callback callback function.
    */
   public void open(AVIMClientOpenOption option, final AVIMClientCallback callback) {
     boolean reConnect = null == option? false : option.isReconnect();
@@ -218,8 +218,8 @@ public class AVIMClient {
   /**
    * Query online clients.
    *
-   * @param clients
-   * @param callback
+   * @param clients client list.
+   * @param callback callback function.
    */
   public void getOnlineClients(List<String> clients, final AVIMOnlineClientsCallback callback) {
     InternalConfiguration.getOperationTube().queryOnlineClients(this.clientId, clients, callback);
@@ -228,9 +228,9 @@ public class AVIMClient {
   /**
    * Create a new Conversation
    *
-   * @param conversationMembers
-   * @param attributes
-   * @param callback
+   * @param conversationMembers member list.
+   * @param attributes attribute map.
+   * @param callback callback function.
    */
   public void createConversation(final List<String> conversationMembers,
                                  final Map<String, Object> attributes, final AVIMConversationCreatedCallback callback) {
@@ -240,10 +240,10 @@ public class AVIMClient {
   /**
    * Create a new Conversation
    *
-   * @param conversationMembers
-   * @param name
-   * @param attributes
-   * @param callback
+   * @param conversationMembers member list.
+   * @param name conversation name.
+   * @param attributes attribute map.
+   * @param callback callback function.
    */
   public void createConversation(final List<String> conversationMembers, String name,
                                  final Map<String, Object> attributes, final AVIMConversationCreatedCallback callback) {
@@ -253,11 +253,11 @@ public class AVIMClient {
   /**
    * Create a new Conversation
    *
-   * @param members
-   * @param name
-   * @param attributes
-   * @param isTransient
-   * @param callback
+   * @param members member list.
+   * @param name conversation name.
+   * @param attributes attribute map.
+   * @param isTransient flag of transient.
+   * @param callback callback function.
    */
   public void createConversation(final List<String> members, final String name, final Map<String, Object> attributes,
                                  final boolean isTransient, final AVIMConversationCreatedCallback callback) {
@@ -267,12 +267,12 @@ public class AVIMClient {
   /**
    * Create a new Conversation
    *
-   * @param members
-   * @param name
-   * @param attributes
-   * @param isTransient
-   * @param isUnique
-   * @param callback
+   * @param members member list.
+   * @param name conversation name.
+   * @param attributes attribute map.
+   * @param isTransient flag of transient.
+   * @param isUnique flag of unique.
+   * @param callback callback function.
    */
   public void createConversation(final List<String> members, final String name, final Map<String, Object> attributes,
                                  final boolean isTransient, final boolean isUnique, final AVIMConversationCreatedCallback callback) {
@@ -282,8 +282,8 @@ public class AVIMClient {
   /**
    * Create a new temporary Conversation
    *
-   * @param conversationMembers
-   * @param callback
+   * @param conversationMembers member list.
+   * @param callback callback function.
    */
   public void createTemporaryConversation(final List<String> conversationMembers, final AVIMConversationCreatedCallback callback) {
     this.createTemporaryConversation(conversationMembers, 86400*3, callback);
@@ -292,9 +292,9 @@ public class AVIMClient {
   /**
    * Create a new temporary Conversation
    *
-   * @param conversationMembers
-   * @param ttl
-   * @param callback
+   * @param conversationMembers member list.
+   * @param ttl ttl value.
+   * @param callback callback function.
    */
   public void createTemporaryConversation(final List<String> conversationMembers, int ttl, final AVIMConversationCreatedCallback callback) {
     this.createConversation(conversationMembers, null, null, false, true, true, ttl, callback);
@@ -303,11 +303,11 @@ public class AVIMClient {
   /**
    * Create a new Chatroom
    *
-   * @param conversationMembers
-   * @param name
-   * @param attributes
+   * @param conversationMembers member list.
+   * @param name conversation name
+   * @param attributes conversation attribute map.
    * @param isUnique deprecated chatroom is always not unique.
-   * @param callback
+   * @param callback callback function.
    */
   public void createChatRoom(final List<String> conversationMembers, String name, final Map<String, Object> attributes,
                              final boolean isUnique, final AVIMConversationCreatedCallback callback) {
@@ -316,9 +316,9 @@ public class AVIMClient {
 
   /**
    * Create a new Chatroom
-   * @param name
-   * @param attributes
-   * @param callback
+   * @param name conversation name
+   * @param attributes conversation attribute map.
+   * @param callback callback function.
    */
   public void createChatRoom(String name, final Map<String, Object> attributes, final AVIMConversationCreatedCallback callback) {
     this.createConversation(null, name, attributes, true, false, callback);
@@ -388,8 +388,8 @@ public class AVIMClient {
   /**
    * get conversation by id
    *
-   * @param conversationId
-   * @return
+   * @param conversationId  conversation id.
+   * @return conversation instance.
    */
   public AVIMConversation getConversation(String conversationId) {
     if (StringUtil.isEmpty(conversationId)) {
@@ -401,9 +401,9 @@ public class AVIMClient {
   /**
    * get conversation by id and type
    *
-   * @param conversationId
-   * @param convType
-   * @return
+   * @param conversationId  conversation id.
+   * @param convType conversation type.
+   * @return conversation instance.
    */
   public AVIMConversation getConversation(String conversationId, int convType) {
     AVIMConversation result = null;
@@ -427,10 +427,10 @@ public class AVIMClient {
   /**
    * get an existed conversation
    *
-   * @param conversationId
-   * @param isTransient
-   * @param isTemporary
-   * @return
+   * @param conversationId conversation id.
+   * @param isTransient flag of transient.
+   * @param isTemporary flag of temporary.
+   * @return conversation instance.
    */
   public AVIMConversation getConversation(String conversationId, boolean isTransient, boolean isTemporary) {
     return this.getConversation(conversationId, isTransient, isTemporary,false);
@@ -438,8 +438,8 @@ public class AVIMClient {
 
   /**
    * get an existed Chatroom by id
-   * @param conversationId
-   * @return
+   * @param conversationId conversation id.
+   * @return chatroom conversation instance.
    */
   public AVIMConversation getChatRoom(String conversationId) {
     return this.getConversation(conversationId, true, false);
@@ -448,8 +448,8 @@ public class AVIMClient {
   /**
    * get an existed Service Conversation
    *
-   * @param conversationId
-   * @return
+   * @param conversationId conversation id.
+   * @return service conversation instance.
    */
   public AVIMConversation getServiceConversation(String conversationId) {
     return this.getConversation(conversationId, false, false, true);
@@ -458,8 +458,8 @@ public class AVIMClient {
   /**
    * get an existed temporary conversation
    *
-   * @param conversationId
-   * @return
+   * @param conversationId conversation id.
+   * @return temporary conversation instance.
    */
   public AVIMConversation getTemporaryConversation(String conversationId) {
     return this.getConversation(conversationId, false, true);
@@ -489,7 +489,7 @@ public class AVIMClient {
 
   /**
    * 获取 AVIMConversationsQuery 对象，以此来查询 conversation
-   * @return
+   * @return ConversationsQuery instance
    */
   public AVIMConversationsQuery getConversationsQuery() {
     return new AVIMConversationsQuery(this);
@@ -498,7 +498,7 @@ public class AVIMClient {
   /**
    * 获取服务号的查询对象
    * 开发者拿到这个对象之后，就可以像 AVIMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
-   * @return
+   * @return ConversationsQuery instance
    */
   public AVIMConversationsQuery getServiceConversationQuery() {
     AVIMConversationsQuery query = new AVIMConversationsQuery(this);
@@ -509,7 +509,7 @@ public class AVIMClient {
   /**
    * 获取临时对话的查询对象
    * 开发者拿到这个对象之后，就可以像 AVIMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
-   * @return
+   * @return ConversationsQuery instance
    */
   private AVIMConversationsQuery getTemporaryConversationQuery() {
     throw new UnsupportedOperationException("only conversationId query is allowed, please invoke #getTemporaryConversaton with conversationId.");
@@ -518,7 +518,7 @@ public class AVIMClient {
   /**
    * 获取开放聊天室的查询对象
    * 开发者拿到这个对象之后，就可以像 AVIMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
-   * @return
+   * @return ConversationsQuery instance
    */
   public AVIMConversationsQuery getChatRoomQuery() {
     AVIMConversationsQuery query = new AVIMConversationsQuery(this);
@@ -528,7 +528,8 @@ public class AVIMClient {
 
   /**
    * close client.
-   * @param callback
+   *
+   * @param callback callback function.
    */
   public void close(final AVIMClientCallback callback) {
     final AVIMClientCallback internalCallback = new AVIMClientCallback() {
@@ -549,8 +550,8 @@ public class AVIMClient {
    * [internal use only]
    * update realtime session token
    *
-   * @param token
-   * @param expiredInSec
+   * @param token session token
+   * @param expiredInSec expired interval.
    */
   public void updateRealtimeSessionToken(String token, long expiredInSec) {
     this.realtimeSessionToken = token;

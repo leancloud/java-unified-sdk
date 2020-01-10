@@ -89,6 +89,7 @@ public class AVIMConversation {
 
   /**
    * 是否是服务号
+   * @return flag of service conversation.
    */
   public boolean isSystem() {
     return isSystem;
@@ -101,6 +102,7 @@ public class AVIMConversation {
 
   /**
    * 是否是临时对话
+   * @return flag of temporary conversation.
    */
   public boolean isTemporary() {
     return isTemporary;
@@ -117,6 +119,7 @@ public class AVIMConversation {
 
   /**
    * 获取临时对话过期时间（以秒为单位）
+   * @return expired interval.
    */
   public long getTemporaryExpiredat() {
     return temporaryExpiredat;
@@ -125,6 +128,7 @@ public class AVIMConversation {
   /**
    * 设置临时对话过期时间（以秒为单位）
    * 仅对 临时对话 有效
+   * @param temporaryExpiredat expiration value.
    */
   public void setTemporaryExpiredat(long temporaryExpiredat) {
     if (this.isTemporary()) {
@@ -142,7 +146,7 @@ public class AVIMConversation {
   /**
    * 获取Conversation的创建时间
    *
-   * @return
+   * @return conversation created date.
    */
   public Date getCreatedAt() {
     return StringUtil.dateFromString(createdAt);
@@ -155,7 +159,7 @@ public class AVIMConversation {
   /**
    * 获取Conversation的更新时间
    *
-   * @return
+   * @return conversation updated date.
    */
   public Date getUpdatedAt() {
     return StringUtil.dateFromString(updatedAt);
@@ -181,6 +185,7 @@ public class AVIMConversation {
    * 如果 fetchInfoInBackground 出错（比如因为 acl 问题造成 Forbidden to find by class permissions ），
    * 客户端就会在收到消息后一直做 fetch 操作，所以这里加了一个判断，如果在 FETCH_TIME_INTERVEL 内有业务类型的
    * error code 返回，则不在请求
+   * @return flag indicating should need fetch or not.
    */
   public boolean isShouldFetch() {
     return null == getCreatedAt() || (System.currentTimeMillis() - latestConversationFetch > FETCH_TIME_INTERVEL);
@@ -227,7 +232,7 @@ public class AVIMConversation {
   /**
    * get conversation id
    *
-   * @return
+   * @return conversation id.
    */
   public String getConversationId() {
     return this.conversationId;
@@ -244,7 +249,7 @@ public class AVIMConversation {
   /**
    * 获取聊天对话的创建者
    *
-   * @return
+   * @return owner client id.
    * @since 3.0
    */
   public String getCreator() {
@@ -254,7 +259,7 @@ public class AVIMConversation {
   /**
    * 获取conversation当前的参与者
    *
-   * @return
+   * @return member list.
    * @since 3.0
    */
   public List<String> getMembers() {
@@ -273,7 +278,7 @@ public class AVIMConversation {
 
   /**
    * get the latest readAt timestamp
-   * @return
+   * @return latest readat timestamp
    */
   public long getLastReadAt() {
     return lastReadAt;
@@ -281,7 +286,7 @@ public class AVIMConversation {
 
   /**
    * get the latest deliveredAt timestamp
-   * @return
+   * @return latest deliveredAt timestamp
    */
   public long getLastDeliveredAt() {
     if (lastReadAt > lastDeliveredAt) {
@@ -323,8 +328,8 @@ public class AVIMConversation {
 
   /**
    * Access a value
-   * @param key
-   * @return
+   * @param key attribute key
+   * @return attribute value.
    */
   public Object get(String key) {
     if (!StringUtil.isEmpty(key)) {
@@ -341,7 +346,8 @@ public class AVIMConversation {
   /**
    * 获取当前聊天对话的属性
    *
-   * @return
+   * @param key attribute key
+   * @return attribute value.
    * @since 3.0
    */
   public Object getAttribute(String key) {
@@ -368,7 +374,7 @@ public class AVIMConversation {
   /**
    * 设置当前聊天对话的属性
    *
-   * @param attr
+   * @param attr attribute map
    * @since 3.0
    */
   public void setAttributes(Map<String, Object> attr) {
@@ -379,7 +385,7 @@ public class AVIMConversation {
   /**
    * 设置当前聊天对话的属性，仅用于初始化时
    * 因为 attr 涉及到本地缓存，所以初始化时与主动调用 setAttributes 行为不同
-   * @param attr
+   * @param attr attribute map
    */
   void setAttributesForInit(Map<String, Object> attr) {
     this.attributes.clear();
@@ -391,7 +397,7 @@ public class AVIMConversation {
   /**
    * 获取conversation的名字
    *
-   * @return
+   * @return conversation name.
    */
   public String getName() {
     return (String) getAttribute(Conversation.NAME);
@@ -404,7 +410,7 @@ public class AVIMConversation {
   /**
    * 获取最新一条消息的时间
    *
-   * @return
+   * @return lastest message receipted timestamp
    */
   public Date getLastMessageAt() {
     AVIMMessage lastMessage = getLastMessage();
@@ -423,7 +429,7 @@ public class AVIMConversation {
   /**
    * 获取最新一条消息的时间
    *
-   * @return
+   * @return latest message.
    */
   public AVIMMessage getLastMessage() {
     if (AVIMOptions.getGlobalOptions().isMessageQueryCacheEnabled() && !isSyncLastMessage) {
@@ -446,7 +452,7 @@ public class AVIMConversation {
    * 1. sqlite conversation 表中的 lastMessage，conversation query 后存储下来的
    * 2. sqlite message 表中存储的最新的消息
    * 3. 实时通讯推送过来的消息也要及时更新 lastMessage
-   * @param lastMessage
+   * @param lastMessage lastest message.
    */
   void setLastMessage(AVIMMessage lastMessage) {
     if (null != lastMessage) {
@@ -482,7 +488,7 @@ public class AVIMConversation {
 
   /**
    * 获取当前未读消息数量
-   * @return
+   * @return unread message count.
    */
   public int getUnreadMessagesCount() {
     return unreadMessagesCount;
@@ -490,7 +496,7 @@ public class AVIMConversation {
 
   /**
    * 判断当前未读消息中是否有提及当前用户的消息存在。
-   * @return
+   * @return flag indicating unread messages mention current user or not.
    */
   public boolean unreadMessagesMentioned() {
     return unreadMessagesMentioned;
@@ -499,8 +505,8 @@ public class AVIMConversation {
   /**
    * 发送一条非暂存消息
    *
-   * @param message
-   * @param callback
+   * @param message message instance.
+   * @param callback callback function.
    * @since 3.0
    */
   public void sendMessage(AVIMMessage message, final AVIMConversationCallback callback) {
@@ -510,9 +516,9 @@ public class AVIMConversation {
   /**
    * 发送一条消息。
    *
-   * @param message
+   * @param message message instance.
    * @param messageOption 消息发送选项。
-   * @param callback
+   * @param callback callback function.
    *
    */
   public void sendMessage(final AVIMMessage message, final AVIMMessageOption messageOption, final AVIMConversationCallback callback) {
@@ -592,7 +598,7 @@ public class AVIMConversation {
    * update message content
    * @param oldMessage the message need to be modified
    * @param newMessage the content of the old message will be covered by the new message's
-   * @param callback
+   * @param callback callback function.
    */
   public void updateMessage(final AVIMMessage oldMessage, final AVIMMessage newMessage, final AVIMMessageUpdatedCallback callback) {
     if (null == oldMessage || null == newMessage) {
@@ -628,7 +634,7 @@ public class AVIMConversation {
   /**
    * racall message
    * @param message the message need to be recalled
-   * @param callback
+   * @param callback callback function.
    */
   public void recallMessage(final AVIMMessage message, final AVIMMessageRecalledCallback callback) {
     if (null == message) {
@@ -678,7 +684,7 @@ public class AVIMConversation {
    * remove local message from cache.
    * Notice: this operation perhaps to block the main thread because that database operation is executing.
    *
-   * @param message
+   * @param message message instance.
    */
   public void removeFromLocalCache(AVIMMessage message) {
     this.storage.removeLocalMessage(message);
@@ -687,7 +693,7 @@ public class AVIMConversation {
   /**
    * fetchReceiptTimestamps
    *
-   * @param callback
+   * @param callback callback function.
    */
   public void fetchReceiptTimestamps(final AVIMConversationCallback callback) {
     final AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
@@ -726,7 +732,7 @@ public class AVIMConversation {
   /**
    * 查询最近的20条消息记录
    *
-   * @param callback
+   * @param callback callback function.
    */
   public void queryMessages(final AVIMMessagesQueryCallback callback) {
     this.queryMessages(20, callback);
@@ -734,8 +740,8 @@ public class AVIMConversation {
 
   /**
    * 从服务器端拉取最新消息
-   * @param limit
-   * @param callback
+   * @param limit result size.
+   * @param callback callback function.
    */
   public void queryMessagesFromServer(int limit, final AVIMMessagesQueryCallback callback) {
     queryMessagesFromServer(null, 0, limit, null, 0, new AVIMMessagesQueryCallback() {
@@ -755,8 +761,8 @@ public class AVIMConversation {
 
   /**
    * 从本地缓存中拉取消息
-   * @param limit
-   * @param callback
+   * @param limit result size.
+   * @param callback callback function.
    */
   public void queryMessagesFromCache(int limit, final AVIMMessagesQueryCallback callback) {
     queryMessagesFromCache(null, 0, limit, callback);
@@ -865,8 +871,8 @@ public class AVIMConversation {
   /**
    * 获取最新的消息记录
    *
-   * @param limit
-   * @param callback
+   * @param limit result size.
+   * @param callback callback function.
    */
   public void queryMessages(final int limit, final AVIMMessagesQueryCallback callback) {
     if (limit <= 0 || limit > 1000) {
@@ -952,7 +958,7 @@ public class AVIMConversation {
    * @param timestamp 查询起始的时间戳，返回小于这个时间的记录。
    *          客户端时间不可靠，请用 0 代替 System.currentTimeMillis()
    * @param limit 返回条数限制
-   * @param callback
+   * @param callback callback function.
    */
   public void queryMessages(final String msgId, final long timestamp, final int limit,
                             final AVIMMessagesQueryCallback callback) {
@@ -1156,8 +1162,8 @@ public class AVIMConversation {
   /**
    * 在聊天对话中间增加新的参与者
    *
-   * @param memberIds
-   * @param callback
+   * @param memberIds member id list.
+   * @param callback callback function.
    * @since 3.0
    */
   public void addMembers(final List<String> memberIds, final AVIMConversationCallback callback) {
@@ -1180,8 +1186,8 @@ public class AVIMConversation {
   /**
    * 在聊天对话中间增加新的参与者
    *
-   * @param memberIds
-   * @param callback
+   * @param memberIds member id list.
+   * @param callback callback function.
    * @since 3.0
    */
   public void kickMembers(final List<String> memberIds, final AVIMConversationCallback callback) {
@@ -1354,7 +1360,7 @@ public class AVIMConversation {
 
   /**
    * 查询成员数量
-   * @param callback
+   * @param callback callback function.
    */
   public void getMemberCount(AVIMConversationMemberCountCallback callback) {
     if (StringUtil.isEmpty(getConversationId())) {
@@ -1372,7 +1378,7 @@ public class AVIMConversation {
   /**
    * 静音，客户端拒绝收到服务器端的离线推送通知
    *
-   * @param callback
+   * @param callback callback function.
    */
   public void mute(final AVIMConversationCallback callback) {
     if (StringUtil.isEmpty(getConversationId())) {
@@ -1390,7 +1396,7 @@ public class AVIMConversation {
   /**
    * 取消静音，客户端取消静音设置
    *
-   * @param callback
+   * @param callback callback function.
    */
   public void unmute(final AVIMConversationCallback callback) {
     if (StringUtil.isEmpty(getConversationId())) {
@@ -1408,7 +1414,7 @@ public class AVIMConversation {
   /**
    * 退出当前的聊天对话
    *
-   * @param callback
+   * @param callback callback function.
    * @since 3.0
    */
   public void quit(final AVIMConversationCallback callback) {
@@ -1427,7 +1433,7 @@ public class AVIMConversation {
   /**
    * 加入当前聊天对话
    *
-   * @param callback
+   * @param callback callback function.
    */
   public void join(AVIMConversationCallback callback) {
     if (StringUtil.isEmpty(getConversationId())) {
@@ -1460,7 +1466,7 @@ public class AVIMConversation {
   /**
    * 更新当前对话的属性至服务器端
    *
-   * @param callback
+   * @param callback callback function.
    * @since 3.0
    */
   public void updateInfoInBackground(final AVIMConversationCallback callback) {
@@ -1505,6 +1511,10 @@ public class AVIMConversation {
     }
   }
 
+  /**
+   * Fetch info in async mode.
+   * @param callback callback function.
+   */
   public void fetchInfoInBackground(final AVIMConversationCallback callback) {
     if (StringUtil.isEmpty(getConversationId())) {
       if (null != callback) {
@@ -1575,9 +1585,9 @@ public class AVIMConversation {
    * 处理 AVIMConversation attr 列
    * 因为 sdk 支持增量更新与覆盖更新，而增量更新与覆盖更新需要的结构不一样，所以这里处理一下
    * 具体格式可参照下边的注释，注意，两种格式不能同时存在，否则 server 会报错
-   * @param attributes
-   * @param isCovered
-   * @return
+   * @param attributes attribute map
+   * @param isCovered flag indicating to overwrite or not.
+   * @return new attribute map.
    */
   static Map<String, Object> processAttributes(Map<String, Object> attributes, boolean isCovered) {
     if (isCovered) {
@@ -1590,8 +1600,8 @@ public class AVIMConversation {
   /**
    * 增量更新 attributes
    * 这里处理完的格式应该类似为 {"attr.key1":"value2", "attr.key2":"value2"}
-   * @param attributes
-   * @return
+   * @param attributes attribute map
+   * @return new attribute map.
    */
   static Map<String, Object> processAttributesForIncremental(Map<String, Object> attributes) {
     Map<String, Object> attributeMap = new HashMap<>();
@@ -1613,8 +1623,8 @@ public class AVIMConversation {
   /**
    * 覆盖更新 attributes
    * 这里处理完的格式应该类似为 {"attr":{"key1":"value1","key2":"value2"}}
-   * @param attributes
-   * @return
+   * @param attributes attribute map
+   * @return json object.
    */
   static JSONObject processAttributesForCovering(Map<String, Object> attributes) {
     HashMap<String, Object> attributeMap = new HashMap<String, Object>();
@@ -1640,9 +1650,9 @@ public class AVIMConversation {
 
   /**
    * parse AVIMConversation from jsonObject
-   * @param client
-   * @param jsonObj
-   * @return
+   * @param client client instance
+   * @param jsonObj json object
+   * @return conversation instance.
    */
   public static AVIMConversation parseFromJson(AVIMClient client, JSONObject jsonObj) {
     if (null == jsonObj || null == client) {

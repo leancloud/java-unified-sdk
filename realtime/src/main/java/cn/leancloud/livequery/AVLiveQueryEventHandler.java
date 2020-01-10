@@ -108,37 +108,40 @@ public abstract class AVLiveQueryEventHandler {
 
   /**
    * This method will be called when an associated AVObject created
-   * @param avObject
+   * @param avObject object instance.
    */
   public void onObjectCreated(AVObject avObject) {}
 
   /**
    * This method will be called when an associated AVObject updated
-   * @param avObject
+   * @param avObject object instance.
+   * @param updateKeyList updated key list.
    */
   public void onObjectUpdated(AVObject avObject, List<String> updateKeyList) {}
 
   /**
    * This method will be called when an AVObject matched the associated AVQuery after update
-   * @param avObject
+   * @param avObject object instance.
+   * @param updateKeyList updated key list.
    */
   public void onObjectEnter(AVObject avObject, List<String> updateKeyList) {}
 
   /**
    * This method will be called when an AVObject is modified and does not conform to the relevant query
-   * @param avObject
+   * @param avObject object instance.
+   * @param updateKeyList  updated key list.
    */
   public void onObjectLeave(AVObject avObject, List<String> updateKeyList) {}
 
   /**
    * This method will be called when a related AVObject is deleted
-   * @param objectId
+   * @param objectId object id.
    */
   public void onObjectDeleted(String objectId) {}
 
   /**
    * This method will be called when a related user login
-   * @param user
+   * @param user user instance.
    */
   public void onUserLogin(AVUser user) {}
 }

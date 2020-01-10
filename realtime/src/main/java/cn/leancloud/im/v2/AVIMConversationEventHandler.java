@@ -17,8 +17,8 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
   /**
    * 实现本方法以处理聊天对话中的参与者离开事件
    *
-   * @param client
-   * @param conversation
+   * @param client client instance
+   * @param conversation conversation instance.
    * @param members 离开的参与者
    * @param kickedBy 离开事件的发动者，有可能是离开的参与者本身
    * @since 3.0
@@ -30,8 +30,8 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
   /**
    * 实现本方法以处理聊天对话中的参与者加入事件
    *
-   * @param client
-   * @param conversation
+   * @param client client instance
+   * @param conversation conversation instance.
    * @param members 加入的参与者
    * @param invitedBy 加入事件的邀请人，有可能是加入的参与者本身
    * @since 3.0
@@ -43,8 +43,8 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
   /**
    * 实现本方法来处理当前用户被踢出某个聊天对话事件
    *
-   * @param client
-   * @param conversation
+   * @param client client instance
+   * @param conversation conversation instance.
    * @param kickedBy 踢出你的人
    * @since 3.0
    */
@@ -55,7 +55,7 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
   /**
    * 实现本方法来处理当前用户被邀请到某个聊天对话事件
    *
-   * @param client
+   * @param client client instance
    * @param conversation 被邀请的聊天对话
    * @param operator 邀请你的人
    * @since 3.0
@@ -149,34 +149,38 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
 
   /**
    * 实现本地方法来处理未读消息数量的通知
-   * @param client
-   * @param conversation
+   * @param client client instance
+   * @param conversation current conversation.
    */
   public void onUnreadMessagesCountUpdated(AVIMClient client, AVIMConversation conversation) {}
 
   /**
    * 实现本地方法来处理对方已经接收消息的通知
+   * @param client client instance
+   * @param conversation current conversation.
    */
   public void onLastDeliveredAtUpdated(AVIMClient client, AVIMConversation conversation) {}
 
   /**
    * 实现本地方法来处理对方已经阅读消息的通知
+   * @param client client instance
+   * @param conversation current conversation.
    */
   public void onLastReadAtUpdated(AVIMClient client, AVIMConversation conversation) {}
 
   /**
    * 实现本地方法来处理消息的更新事件
-   * @param client
-   * @param conversation
-   * @param message
+   * @param client client instance
+   * @param conversation current conversation.
+   * @param message messgae instance.
    */
   public void onMessageUpdated(AVIMClient client, AVIMConversation conversation, AVIMMessage message) {}
 
   /**
    * 实现本地方法来处理消息的撤回事件
-   * @param client
-   * @param conversation
-   * @param message
+   * @param client client instance
+   * @param conversation current conversation.
+   * @param message message instance.
    */
   public void onMessageRecalled(AVIMClient client, AVIMConversation conversation, AVIMMessage message) {}
 
@@ -197,10 +201,10 @@ public abstract class AVIMConversationEventHandler extends AVIMEventHandler {
   /**
    * 对话自身属性变更通知
    *
-   * @param client
-   * @param conversation
-   * @param attr
-   * @param operator
+   * @param client client instance
+   * @param conversation current conversation.
+   * @param attr optional attributes.
+   * @param operator operator client id.
    */
   public void onInfoChanged(AVIMClient client, AVIMConversation conversation, JSONObject attr,
                             String operator) {

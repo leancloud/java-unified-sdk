@@ -16,7 +16,7 @@ public abstract class AVIMClientEventHandler extends AVIMEventHandler {
   /**
    * 实现本方法以处理网络断开事件
    *
-   * @param client
+   * @param client client instance
    * @since 3.0
    */
   public abstract void onConnectionPaused(AVIMClient client);
@@ -25,7 +25,7 @@ public abstract class AVIMClientEventHandler extends AVIMEventHandler {
    * 实现本方法以处理网络恢复事件
    *
    * @since 3.0
-   * @param client
+   * @param client client instance
    */
 
   public abstract void onConnectionResume(AVIMClient client);
@@ -34,7 +34,7 @@ public abstract class AVIMClientEventHandler extends AVIMEventHandler {
    * 实现本方法以处理当前登录被踢下线的情况
    *
    *
-   * @param client
+   * @param client client instance
    * @param code 状态码说明被踢下线的具体原因
    */
 

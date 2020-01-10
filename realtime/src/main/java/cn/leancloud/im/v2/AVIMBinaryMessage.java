@@ -46,8 +46,8 @@ public class AVIMBinaryMessage extends AVIMMessage {
 
   /**
    * create binary instance by copying AVIMMessage instance(except content field).
-   * @param other
-   * @return
+   * @param other other instance
+   * @return new binary message instance.
    */
   public static AVIMBinaryMessage createInstanceFromMessage(AVIMMessage other) {
     if (null == other) {
@@ -73,7 +73,7 @@ public class AVIMBinaryMessage extends AVIMMessage {
 
   /**
    * set binary content.
-   * @param val
+   * @param val data bytes.
    */
   public void setBytes(byte[] val) {
     bytes = val;
@@ -81,7 +81,7 @@ public class AVIMBinaryMessage extends AVIMMessage {
 
   /**
    * get binary content.
-   * @return
+   * @return data bytes.
    */
   public byte[] getBytes() {
     return bytes;

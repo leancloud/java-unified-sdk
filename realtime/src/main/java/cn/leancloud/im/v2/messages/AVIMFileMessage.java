@@ -71,7 +71,7 @@ public class AVIMFileMessage extends AVIMTypedMessage {
   /**
    * 获取本地文件地址，如果用户并未指定任何本地文件，则返回 null
    *
-   * @return
+   * @return local file path.
    */
   public String getLocalFilePath() {
     return (null != localFile && localFile.exists() ? localFile.getPath() : null);
@@ -80,7 +80,7 @@ public class AVIMFileMessage extends AVIMTypedMessage {
   /**
    * 获取文件消息中得AVFile对象
    *
-   * @return
+   * @return AVFile instance.
    */
   public AVFile getAVFile() {
     if (actualFile != null) {
@@ -116,7 +116,7 @@ public class AVIMFileMessage extends AVIMTypedMessage {
   /**
    * 获取文件地址
    *
-   * @return
+   * @return file url.
    */
   public String getFileUrl() {
     if (file != null) {
@@ -129,7 +129,7 @@ public class AVIMFileMessage extends AVIMTypedMessage {
   /**
    * 获取文件的metaData
    *
-   * @return
+   * @return meta data map.
    */
   public Map<String, Object> getFileMetaData() {
     if (file == null) {
@@ -148,7 +148,7 @@ public class AVIMFileMessage extends AVIMTypedMessage {
   /**
    * 获取文件大小
    *
-   * @return
+   * @return file size.
    */
   public long getSize() {
     Map<String, Object> meta = getFileMetaData();
@@ -178,7 +178,7 @@ public class AVIMFileMessage extends AVIMTypedMessage {
   /**
    * 设置文件上传进度回调
    *
-   * @param callback
+   * @param callback callback function.
    */
   public void setProgressCallback(ProgressCallback callback) {
     this.progressCallback = callback;
@@ -230,8 +230,8 @@ public class AVIMFileMessage extends AVIMTypedMessage {
   /**
    * 判断是不是通过外部设置 url 来的 AVFile
    *
-   * @param avFile
-   * @return
+   * @param avFile AVFile instance.
+   * @return flag indicating the parameter file is external or not.
    */
   static boolean isExternalAVFile(AVFile avFile) {
     return null != avFile

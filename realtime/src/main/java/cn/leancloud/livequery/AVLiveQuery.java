@@ -119,8 +119,8 @@ public class AVLiveQuery {
   }
   /**
    * initialize AVLiveQuery with AVQuery
-   * @param query
-   * @return
+   * @param query query instance.
+   * @return live query instance.
    */
   public static AVLiveQuery initWithQuery(AVQuery query) {
     if (null == query) {
@@ -131,7 +131,7 @@ public class AVLiveQuery {
 
   /**
    * subscribe the query
-   * @param callback
+   * @param callback callback function.
    */
   public void subscribeInBackground(final AVLiveQuerySubscribeCallback callback) {
     Map<String, String> params = query.assembleParameters();
@@ -202,7 +202,7 @@ public class AVLiveQuery {
 
   /**
    * set connection handler globally.
-   * @param connectionHandler
+   * @param connectionHandler connection handler.
    */
   public static void setConnectionHandler(AVLiveQueryConnectionHandler connectionHandler) {
     AVLiveQuery.liveQueryConnectionListener.setConnectionHandler(connectionHandler);
@@ -224,7 +224,7 @@ public class AVLiveQuery {
 
   /**
    * unsubscribe the query
-   * @param callback
+   * @param callback callback function.
    */
   public void unsubscribeInBackground(final AVLiveQuerySubscribeCallback callback) {
     Map<String, Object> map = new HashMap<>();

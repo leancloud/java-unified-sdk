@@ -52,7 +52,7 @@ public class AVIMConversationMemberInfo {
 
   /**
    * 获取对话 id
-   * @return
+   * @return conversation id
    */
   public String getConversationId() {
     return conversationId;
@@ -60,7 +60,7 @@ public class AVIMConversationMemberInfo {
 
   /**
    * 获取成员的 client id
-   * @return
+   * @return member id
    */
   public String getMemberId() {
     return this.memberId;
@@ -68,7 +68,7 @@ public class AVIMConversationMemberInfo {
 
   /**
    * 获取角色信息
-   * @return
+   * @return ConversationMemberRole instance.
    */
   public ConversationMemberRole getRole() {
     return this.role;
@@ -76,7 +76,7 @@ public class AVIMConversationMemberInfo {
 
   /**
    * 设置角色
-   * @param role
+   * @param role ConversationMemberRole instance.
    */
   public void setRole(ConversationMemberRole role) {
     this.role = role;
@@ -85,7 +85,7 @@ public class AVIMConversationMemberInfo {
   /**
    * 获取成员加入时间（也就是该记录创建时间）
    * 注意：目前尚未实现
-   * @return
+   * @return createdAt timestamp string.
    */
   public String getCreatedAt() {
     return createdAt;
@@ -94,7 +94,7 @@ public class AVIMConversationMemberInfo {
   /**
    * 设置记录创建时间
    * 注意：目前尚未实现
-   * @param createdAt
+   * @param createdAt createdAt timestamp string.
    */
   public void setCreatedAt(String createdAt) {
     this.createdAt = createdAt;
@@ -102,7 +102,7 @@ public class AVIMConversationMemberInfo {
 
   /**
    * 获取该条记录的 objectId
-   * @return
+   * @return objectId.
    */
   public String getObjectId() {
     return objectId;
@@ -111,7 +111,7 @@ public class AVIMConversationMemberInfo {
   /**
    * 获取邀请者名字
    * 注意：目前尚未实现
-   * @return
+   * @return inviter id.
    */
   public String getInviter() {
     return inviter;
@@ -120,7 +120,7 @@ public class AVIMConversationMemberInfo {
   /**
    * 设置邀请者名字
    * 注意：目前尚未实现
-   * @param inviter
+   * @param inviter inviter id.
    */
   public void setInviter(String inviter) {
     this.inviter = inviter;
@@ -129,7 +129,7 @@ public class AVIMConversationMemberInfo {
   /**
    * 获取成员的昵称
    * 注意：目前尚未实现
-   * @return
+   * @return nickname.
    */
   public String getNickname() {
     return nickname;
@@ -138,7 +138,7 @@ public class AVIMConversationMemberInfo {
   /**
    * 设置成员的昵称
    * 注意：目前尚未实现
-   * @param nickname
+   * @param nickname nickname.
    */
   public void setNickname(String nickname) {
     this.nickname = nickname;
@@ -150,7 +150,7 @@ public class AVIMConversationMemberInfo {
 
   /**
    * 返回属性更新的 Map（内部使用）
-   * @return
+   * @return updated attribute map.
    */
   public Map<String,String> getUpdateAttrs() {
     HashMap<String, String> attrs = new HashMap<>();
@@ -162,8 +162,8 @@ public class AVIMConversationMemberInfo {
 
   /**
    * 根据服务端返回信息创建实例（内部使用）
-   * @param data
-   * @return
+   * @param data attribute map.
+   * @return new ConversationMemberInfo instance.
    */
   public static AVIMConversationMemberInfo createInstance(Map<String, Object> data) {
     if (null == data) {

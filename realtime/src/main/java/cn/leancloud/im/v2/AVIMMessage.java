@@ -56,7 +56,7 @@ public class AVIMMessage {
    *
    * 对应的是AVOSRealtimeConversations表中的objectId
    *
-   * @return
+   * @return conversation id.
    * @since 3.0
    */
   public String getConversationId() {
@@ -66,7 +66,7 @@ public class AVIMMessage {
   /**
    * 设置消息所在的conversationId，本方法一般用于从反序列化时
    *
-   * @param conversationId
+   * @param conversationId conversation id.
    */
   public void setConversationId(String conversationId) {
     this.conversationId = conversationId;
@@ -75,7 +75,7 @@ public class AVIMMessage {
   /**
    * 获取消息体的内容
    *
-   * @return
+   * @return message content.
    * @since 3.0
    */
   public String getContent() {
@@ -85,7 +85,7 @@ public class AVIMMessage {
   /**
    * 设置消息体的内容
    *
-   * @param content
+   * @param content message content.
    * @since 3.0
    */
   public void setContent(String content) {
@@ -95,7 +95,7 @@ public class AVIMMessage {
   /**
    * 获取消息的发送者
    *
-   * @return
+   * @return message sender
    */
   public String getFrom() {
     return from;
@@ -104,7 +104,7 @@ public class AVIMMessage {
   /**
    * 设置消息的发送者
    *
-   * @param from
+   * @param from message sender
    * @since 3.7.3
    */
   public void setFrom(String from) {
@@ -114,7 +114,7 @@ public class AVIMMessage {
   /**
    * 获取消息发送的时间
    *
-   * @return
+   * @return message send timestamp
    */
   public long getTimestamp() {
     return timestamp;
@@ -128,7 +128,7 @@ public class AVIMMessage {
    * @deprecated Please use {@link #getDeliveredAt()}
    * 获取消息成功到达接收方的时间
    *
-   * @return
+   * @return message receipt timestamp
    * @see AVIMConversation#RECEIPT_MESSAGE_FLAG
    */
   public long getReceiptTimestamp() {
@@ -136,6 +136,7 @@ public class AVIMMessage {
   }
 
   /**
+   * @param receiptTimestamp message receipt timestamp
    * @deprecated Please use {@link #setDeliveredAt(long)}
    * @see AVIMConversation#RECEIPT_MESSAGE_FLAG
    */
@@ -145,7 +146,7 @@ public class AVIMMessage {
 
   /**
    * 设置消息成功到达接收方的时间
-   * @return
+   * @@param deliveredAt message delivered timestamp
    */
   void setDeliveredAt(long deliveredAt) {
     this.deliveredAt = deliveredAt;
@@ -153,7 +154,7 @@ public class AVIMMessage {
 
   /**
    * 获取消息成功到达接收方的时间
-   * @return
+   * @return message delivered timestamp
    */
   public long getDeliveredAt() {
     return deliveredAt;
@@ -169,7 +170,7 @@ public class AVIMMessage {
 
   /**
    * set the update time of the message
-   * @param updateAt
+   * @param updateAt message updated timestamp
    */
   public void setUpdateAt(long updateAt) {
     this.updateAt = updateAt;
@@ -177,7 +178,7 @@ public class AVIMMessage {
 
   /**
    * get the update time of the message
-   * @return
+   * @return message updated timestamp
    */
   public long getUpdateAt() {
     return updateAt;
@@ -186,7 +187,7 @@ public class AVIMMessage {
   /**
    * 设置消息当前的状态，本方法一般用于从反序列化时
    *
-   * @param status
+   * @param status message status
    */
   public void setMessageStatus(AVIMMessageStatus status) {
     this.status = status;
@@ -195,7 +196,7 @@ public class AVIMMessage {
   /**
    * 获取消息当前的状态
    *
-   * @return
+   * @return message status
    */
 
   public AVIMMessageStatus getMessageStatus() {
@@ -205,7 +206,7 @@ public class AVIMMessage {
   /**
    * 获取消息IO类型
    *
-   * @return
+   * @return message io type
    */
   public AVIMMessageIOType getMessageIOType() {
     return ioType;
@@ -214,7 +215,7 @@ public class AVIMMessage {
   /**
    * 设置消息的IO类型，本方法一般用于反序列化
    *
-   * @param ioType
+   * @param ioType message io type
    */
   public void setMessageIOType(AVIMMessageIOType ioType) {
     this.ioType = ioType;
@@ -225,7 +226,7 @@ public class AVIMMessage {
    *
    * 这个id只有在发送成功或者收到消息时才会有对应的值
    *
-   * @return
+   * @return message id
    */
   public String getMessageId() {
     return messageId;
@@ -234,14 +235,14 @@ public class AVIMMessage {
   /**
    * 仅仅是用于反序列化消息时使用，请不要在其他时候使用
    *
-   * @param messageId
+   * @param messageId message id
    */
   public void setMessageId(String messageId) {
     this.messageId = messageId;
   }
   /**
    * 判断消息里面是否 mention 了当前用户
-   * @return
+   * @return flag indicating message mentions current user or not.
    */
   public boolean mentioned() {
     return isMentionAll() || (null != mentionList && mentionList.contains(currentClient));
@@ -257,7 +258,7 @@ public class AVIMMessage {
 
   /**
    * 获取 mention 用户列表
-   * @return
+   * @return mention peer id list
    */
   public List<String> getMentionList() {
     return this.mentionList;
@@ -265,7 +266,7 @@ public class AVIMMessage {
 
   /**
    * 获取 mention 用户列表的字符串（逗号分隔）
-   * @return
+   * @return mention peer id list string
    */
   @JSONField(serialize = false, deserialize = false)
   public String getMentionListString() {
@@ -284,7 +285,7 @@ public class AVIMMessage {
 
   /**
    * 设置 mention 用户列表字符串（逗号分隔），功能与 #setMentionList(List peerIdList) 相同，两者调用一个即可。
-   * @param content
+   * @param content mention peer id list string
    */
   @JSONField(serialize = false, deserialize = false)
   public void setMentionListString(String content) {
@@ -303,7 +304,7 @@ public class AVIMMessage {
 
   /**
    * 判断是否 mention 了所有人
-   * @return
+   * @return flag indicating mentioned all or not
    */
   public boolean isMentionAll() {
     return mentionAll;
@@ -311,7 +312,7 @@ public class AVIMMessage {
 
   /**
    * 设置是否 mention 所有人
-   * @param mentionAll
+   * @param mentionAll flag indicating mentioned all or not
    */
   public void setMentionAll(boolean mentionAll) {
     this.mentionAll = mentionAll;

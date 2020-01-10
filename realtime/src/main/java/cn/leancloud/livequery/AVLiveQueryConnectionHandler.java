@@ -16,8 +16,8 @@ public interface AVLiveQueryConnectionHandler {
 
   /**
    * Connection failed.
-   * @param code
-   * @param reason
+   * @param code error code.
+   * @param reason error message.
    */
   void onConnectionError(int code, String reason);
 }

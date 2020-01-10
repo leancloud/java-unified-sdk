@@ -9,7 +9,7 @@ public class AVIMClientOpenOption {
 
   /**
    * 判断是否恢复重连
-   * @return
+   * @return flag of reconnection.
    */
   public boolean isReconnect() {
     return this.isReconnect;
@@ -18,7 +18,7 @@ public class AVIMClientOpenOption {
   /**
    * 设置恢复重连标记
    *
-   * @param reconnect
+   * @param reconnect flag of reconnection.
    */
   public void setReconnect(boolean reconnect) {
     this.isReconnect = reconnect;
