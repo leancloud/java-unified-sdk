@@ -83,7 +83,7 @@ public class AppConfiguration {
 
   /**
    * set flag to enable local cache or not.
-   * @param enableLocalCache
+   * @param enableLocalCache flag to enable local cache or not
    */
   public static void setEnableLocalCache(boolean enableLocalCache) {
     AppConfiguration.enableLocalCache = enableLocalCache;
@@ -115,13 +115,13 @@ public class AppConfiguration {
 
   /**
    * config local cache setting.
-   * @param imFileDir
-   * @param docDir
-   * @param fileDir
-   * @param queryResultDir
-   * @param commandDir
-   * @param analyticsDir
-   * @param setting
+   * @param imFileDir im file cache directory.
+   * @param docDir   document cache directory.
+   * @param fileDir file cache directory.
+   * @param queryResultDir query result cache directory.
+   * @param commandDir command cache directory.
+   * @param analyticsDir analytics cache directory.
+   * @param setting other settings.
    */
   public static void configCacheSettings(String imFileDir, String docDir, String fileDir, String queryResultDir,
          String commandDir, String analyticsDir, SystemSetting setting) {

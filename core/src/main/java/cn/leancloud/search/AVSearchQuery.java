@@ -38,7 +38,7 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 获取当前的AVSearchSortBuilder对象
    *
-   * @return
+   * @return sort builder.
    */
   public AVSearchSortBuilder getSortBuilder() {
     return sortBuilder;
@@ -47,7 +47,7 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 设置查询的AVSearchSortBuilder，使用更丰富的排序选项。
    *
-   * @param sortBuilder
+   * @param sortBuilder sort builder.
    */
   public void setSortBuilder(AVSearchSortBuilder sortBuilder) {
     this.sortBuilder = sortBuilder;
@@ -75,7 +75,7 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 获取查询的className，默认为null，即包括所有启用了应用内搜索的class
    *
-   * @return
+   * @return class name.
    */
   public String getClassName() {
     return className;
@@ -85,8 +85,8 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 设置查询字段列表，以逗号隔开的字符串，例如"a,b,c"，表示按照a,b,c三个字段的顺序排序，如果字段前面有负号，表示倒序，例如"a,-b"
    *
-   * @param order
-   * @return
+   * @param order order string.
+   * @return Returns the query, so you can chain this call.
    */
   public AVSearchQuery order(String order) {
     this.order = order;
@@ -97,6 +97,7 @@ public class AVSearchQuery<T extends AVObject> {
    * 根据提供的key进行升序排序
    *
    * @param key 需要排序的key
+   * @return  Returns the query, so you can chain this call.
    */
   public AVSearchQuery orderByAscending(String key) {
     if (StringUtil.isEmpty(order)) {
@@ -158,7 +159,7 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 设置查询的className，否则将包括所有启用了应用内搜索的class
    *
-   * @param className
+   * @param className class name
    */
   public void setClassName(String className) {
     this.className = className;
@@ -167,7 +168,7 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 设置搜索的结果单页大小限制,默认值为100，最大为1000
    *
-   * @param limit
+   * @param limit pagination limit.
    */
   public void setLimit(int limit) {
     this.limit = limit;
@@ -176,7 +177,7 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 获得搜索结果的单页大小限制
    *
-   * @return
+   * @return pagination limit.
    */
   public int getLimit() {
     return this.limit;
@@ -184,6 +185,8 @@ public class AVSearchQuery<T extends AVObject> {
 
   /**
    * 返回当前返回集合的其实位置
+   *
+   * @return current skip.
    */
   public int getSkip() {
     return skip;
@@ -192,6 +195,7 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 设置返回集合的起始位置，一般用于分页
    *
+   * @param skip skip value.
    */
   public void setSkip(int skip) {
     this.skip = skip;
@@ -202,7 +206,7 @@ public class AVSearchQuery<T extends AVObject> {
    * 语法规则可以参考　　http://www.elasticsearch.org/guide/en/elasticsearch/reference/current
    * /search-request-highlighting.html#highlighting-settings
    *
-   * @param hightlights
+   * @param hightlights highlight setting.
    */
   public void setHightLights(String hightlights) {
     this.hightlights = hightlights;
@@ -211,7 +215,7 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 获取当前设定的语法高亮
    *
-   * @return
+   * @return highlight setting.
    */
 
   public String getHightLights() {
@@ -229,7 +233,7 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * lastId是作为分页的依据，根据设置lastId需要查询的页数 设置为null回到第一页
    *
-   * @param lastId
+   * @param lastId last session id.
    * @deprecated 使用setSid(String)替代
    */
   @Deprecated
@@ -241,7 +245,7 @@ public class AVSearchQuery<T extends AVObject> {
    * 设置查询id，通常您都不需要调用这个方法来设置，只要不停调用find就可以实现分页。
    * 不过如果需要将查询分页传递到其他Activity，则可能需要通过传递sid来实现。
    *
-   * @param sid
+   * @param sid search session id.
    */
   public void setSid(String sid) {
     this.sid = sid;
@@ -250,7 +254,7 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 获取本次查询的id，注意，它不是返回结果中对象的objectId，而是表示本次AVSearchQuery查询的id
    *
-   * @return
+   * @return last session id.
    * @deprecated 请使用getSid()替代。
    */
   @Deprecated
@@ -261,7 +265,7 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 获取本次查询的id，注意，它不是返回结果中对象的objectId，而是表示本次AVSearchQuery查询的id
    *
-   * @return
+   * @return search session id.
    */
   public String getSid() {
     return this.sid;
@@ -270,7 +274,7 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 此选项为AVOSCloud SearchActivity使用 指定Title所对应的Field
    *
-   * @param titleAttribute
+   * @param titleAttribute title setting.
    */
   public void setTitleAttribute(String titleAttribute) {
     this.titleAttribute = titleAttribute;
@@ -279,7 +283,7 @@ public class AVSearchQuery<T extends AVObject> {
   /**
    * 获取当前指定的title 对应的Field
    *
-   * @return
+   * @return title setting.
    */
   public String getTitleAttribute() {
     return titleAttribute;
@@ -290,7 +294,7 @@ public class AVSearchQuery<T extends AVObject> {
    * 详细语法可以参考http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl
    * -query-string-query.html#query-string-syntax
    *
-   * @param query
+   * @param query query string.
    */
   public void setQueryString(String query) {
     if (!((this.queryString == null && query == null) || (this.queryString != null && this.queryString

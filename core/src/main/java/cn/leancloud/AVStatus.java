@@ -140,6 +140,7 @@ public class AVStatus extends AVObject {
 
   /**
    * 到达收件箱类型, 默认是`default`,私信是`private`, 可以自定义任何类型
+   * @return inbox type.
    */
   public String getInboxType() {
     return getString(ATTR_INBOX_TYPE);
@@ -366,9 +367,8 @@ public class AVStatus extends AVObject {
    *
    * @param source source User
    * @return instance of AVStatusQuery
-   * @throws AVException
    */
-  public static AVStatusQuery statusQuery(AVUser source) throws AVException {
+  public static AVStatusQuery statusQuery(AVUser source) {
     AVStatusQuery query = new AVStatusQuery(AVStatusQuery.SourceType.OWNED);
     query.setSource(source);
     query.setDirection(AVStatusQuery.PaginationDirection.NEW_TO_OLD);

@@ -9,6 +9,8 @@ public abstract class MobilePhoneVerifyCallback extends AVCallback<AVNull> {
    * <p>
    * AVMobilePhoneVerifyCallback 用来验证用户的手机号码
    * </p>
+   * @param t null object.
+   * @param avException  exception.
    * <p>
    * 　调用的范例如下
    * </p>

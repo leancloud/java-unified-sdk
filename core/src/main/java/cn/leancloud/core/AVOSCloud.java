@@ -75,7 +75,7 @@ public class AVOSCloud {
   /**
    * get current datetime from server.
    *
-   * @return
+   * @return observable instance.
    */
   public static Observable<AVDate> getServerDateInBackground() {
     return PaasClient.getStorageClient().getServerTime();
@@ -84,7 +84,7 @@ public class AVOSCloud {
   /**
    * set master key.
    *
-   * @param masterKey
+   * @param masterKey master key.
    */
   public static void setMasterKey(String masterKey) {
     GeneralRequestSignature.setMasterKey(masterKey);
@@ -92,8 +92,8 @@ public class AVOSCloud {
 
   /**
    * set server info.
-   * @param service
-   * @param host
+   * @param service service type.
+   * @param host host string.
    */
   public static void setServer(AVOSService service, String host) {
     if (StringUtil.isEmpty(host)) {

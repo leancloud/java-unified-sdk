@@ -93,7 +93,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
 
   /**
    * set query direction.
-   * @param direct
+   * @param direct pagination direction.
    */
   public void setDirection(PaginationDirection direct) {
     this.iterator.setDirection(direct);
@@ -116,7 +116,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
 
   /**
    * assemble query parameters.
-   * @return
+   * @return parameter map.
    */
   @Override
   public Map<String, String> assembleParameters() {
@@ -225,7 +225,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
 
   /**
    * get next pagination result.
-   * @return
+   * @return observable instance.
    */
   public Observable<List<AVStatus>> nextInBackground() {
     return internalFindInBackground(0, true);
@@ -233,7 +233,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
 
   /**
    * get status count.
-   * @return
+   * @return observable instance.
    */
   @Override
   public Observable<Integer> countInBackground() {
@@ -254,7 +254,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
   /**
    * get (read, unread) count.
    *
-   * @return
+   * @return observable instance.
    */
   public Observable<JSONObject> unreadCountInBackground() {
     if (null == this.owner || !this.owner.isAuthenticated()) {

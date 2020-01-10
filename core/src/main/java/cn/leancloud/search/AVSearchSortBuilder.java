@@ -21,16 +21,16 @@ public class AVSearchSortBuilder {
    * @param mode    数组或者多值字段的排序模式，min表示取最小值，max取最大值，sum取综合，avg取平均值，默认值是avg。
    * @param missing 当搜索匹配的文档没有排序的key的时候，设置本选项决定文档放在开头还是末尾，取值是"last"或者"first"，
    *                默认是"last"表示在末尾。
-   * @return
+   * @return Returns current object, so you can chain this call.
    */
   public AVSearchSortBuilder orderByAscending(String key, String mode, String missing) {
     return addField(key, "asc", mode, missing);
   }
 
   /**
-   * @param key
-   * @param mode
-   * @return
+   * @param key sort key
+   * @param mode sort mode
+   * @return Returns current object, so you can chain this call.
    * @see #orderByAscending(String, String, String)
    */
   public AVSearchSortBuilder orderByAscending(String key, String mode) {
@@ -38,8 +38,8 @@ public class AVSearchSortBuilder {
   }
 
   /**
-   * @param key
-   * @return
+   * @param key sort key
+   * @return Returns current object, so you can chain this call.
    * @see #orderByAscending(String, String, String)
    */
   public AVSearchSortBuilder orderByAscending(String key) {
@@ -53,16 +53,16 @@ public class AVSearchSortBuilder {
    * @param mode    数组或者多值字段的排序模式，min表示取最小值，max取最大值，sum取综合，avg取平均值，默认值是avg。
    * @param missing 当搜索匹配的文档没有排序的key的时候，设置本选项决定文档放在开头还是末尾，取值是"last"或者"first"，
    *                默认是"last"表示在末尾。
-   * @return
+   * @return Returns current object, so you can chain this call.
    */
   public AVSearchSortBuilder orderByDescending(String key, String mode, String missing) {
     return addField(key, "desc", mode, missing);
   }
 
   /**
-   * @param key
-   * @param mode
-   * @return
+   * @param key sort key
+   * @param mode sort mode
+   * @return Returns current object, so you can chain this call.
    * @see #orderByDescending(String, String, String)
    */
   public AVSearchSortBuilder orderByDescending(String key, String mode) {
@@ -70,8 +70,8 @@ public class AVSearchSortBuilder {
   }
 
   /**
-   * @param key
-   * @return
+   * @param key sort key
+   * @return Returns current object, so you can chain this call.
    * @see #orderByDescending(String, String, String)
    */
   public AVSearchSortBuilder orderByDescending(String key) {
@@ -105,7 +105,7 @@ public class AVSearchSortBuilder {
    * @param order 排序顺序，升序"asc"，降序"desc"，默认升序，也就是从近到远。
    * @param mode  数组或者多值字段的排序模式，min表示取最小值，max取最大值，avg取平均值，默认值是avg。
    * @param unit  距离单位，"m"表示米，"cm"表示厘米，"mm"表示毫米，"km"表示公里，"mi"表示英里，"in"表示英寸，"yd"表示英亩，默认"km"。
-   * @return
+   * @return Returns current object, so you can chain this call.
    */
   public AVSearchSortBuilder whereNear(String key, AVGeoPoint point, String order, String mode,
                                        String unit) {

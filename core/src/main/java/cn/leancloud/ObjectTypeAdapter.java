@@ -57,11 +57,11 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
   }
 
   /**
-   *
-   * @param parser
-   * @param type
-   * @param fieldName
-   * @return
+   * deserializer
+   * @param parser json parser
+   * @param type type
+   * @param fieldName field name
+   * @return object.
    *
    * @since 1.8+
    */

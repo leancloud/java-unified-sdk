@@ -46,6 +46,7 @@ public class AVGeoPoint {
    * Get distance between this point and another geopoint in kilometers.
    *
    * @param point GeoPoint describing the other point being measured against.
+   * @return distance
    */
   public double distanceInMilesTo(AVGeoPoint point) {
     return this.distanceInKilometersTo(point) / ONE_KM_TO_MILES;
@@ -56,6 +57,7 @@ public class AVGeoPoint {
    * distance between the two points.
    *
    * @param point GeoPoint describing the other point being measured against.
+   * @return distance
    */
   public double distanceInRadiansTo(AVGeoPoint point) {
     return this.distanceInKilometersTo(point) / AVUtils.earthMeanRadiusInKM;

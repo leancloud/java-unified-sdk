@@ -608,6 +608,7 @@ public final class AVFile extends AVObject {
   /**
    * Get data stream in blocking mode.
    * @return data stream.
+   * @throws Exception for file not found or io problem.
    */
   @JSONField(serialize = false)
   public InputStream getDataStream() throws Exception {

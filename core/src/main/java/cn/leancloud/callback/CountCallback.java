@@ -13,9 +13,9 @@ public abstract class CountCallback extends AVCallback<Integer> {
   public abstract void done(int count, AVException e);
 
   /**
-   *
-   * @param returnValue
-   * @param e
+   * internal done function.
+   * @param returnValue return value.
+   * @param e exception.
    */
   protected final void internalDone0(Integer returnValue, AVException e) {
     done(returnValue == null ? -1 : returnValue, e);
