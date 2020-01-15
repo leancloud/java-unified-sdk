@@ -960,7 +960,12 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return observable instance.
    */
   public Observable<T> getInBackground(String objectId) {
-    return PaasClient.getStorageClient().fetchObject(getClassName(), objectId, null).map(new Function<AVObject, T>() {
+    List<String> include = getInclude();
+    String includeKeys = null;
+    if (null != include && include.size() > 0) {
+      includeKeys = StringUtil.join(",", include);
+    }
+    return PaasClient.getStorageClient().fetchObject(getClassName(), objectId, includeKeys).map(new Function<AVObject, T>() {
       public T apply(AVObject avObject) throws Exception {
         if (null == avObject || StringUtil.isEmpty(avObject.getObjectId())) {
           throw new AVException(AVException.OBJECT_NOT_FOUND, "Object is not found.");

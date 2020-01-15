@@ -196,6 +196,79 @@ public class AVQueryTest extends TestCase {
     assertTrue(testSucceed);
   }
 
+  public void testGetInBackgroundWithIncludePointer() throws Exception {
+    AVObject current = AVObject.createWithoutData("Student", currentObjectId);
+    final AVObject target = new AVObject("Student");
+    target.put("friend", current);
+    target.save();
+    AVQuery query = new AVQuery("Student");
+    query.include("friend");
+    query.getInBackground(target.getObjectId()).subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject o) {
+        AVObject friend = o.getAVObject("friend");
+        testSucceed = "Automatic Tester".equals(friend.get("name"));
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    target.delete();
+    assertTrue(testSucceed);
+  }
+
+  public void testFirstQueryWithIncludePointer() throws Exception {
+    AVObject current = AVObject.createWithoutData("Student", currentObjectId);
+    final AVObject target = new AVObject("Student");
+    target.put("friend", current);
+    target.save();
+    AVQuery query = new AVQuery("Student");
+    query.include("friend");
+    query.whereExists("friend");
+    query.getFirstInBackground().subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject o) {
+        AVObject friend = o.getAVObject("friend");
+        testSucceed = "Automatic Tester".equals(friend.get("name"));
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    target.delete();
+    assertTrue(testSucceed);
+  }
+
   public void testFirstQueryWithEmptyResult() throws Exception {
     AVQuery query = new AVQuery("Student");
     query.whereGreaterThan("age", 119);
