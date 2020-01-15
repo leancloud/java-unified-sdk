@@ -360,6 +360,16 @@ public class AVIMConversation {
     return value;
   }
 
+  /**
+   * Return all attributes.
+   * Notice: you should only read it, it doesnt work for any modify operation.
+   *
+   * @return attributes map.
+   */
+  public Map<String, Object> getAttributes() {
+    return this.attributes;
+  }
+
   public void setAttribute(String key, Object value) {
     if (!StringUtil.isEmpty(key)) {
       // 以往的 sdk 支持 setAttribute("attr.key", "attrValue") 这种格式，这里兼容一下
