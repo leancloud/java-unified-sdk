@@ -1,7 +1,9 @@
 package cn.leancloud;
 
+import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.types.AVNull;
+import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -18,6 +20,7 @@ public class AVObjectTest extends TestCase {
 
   public AVObjectTest(String testName) {
     super(testName);
+    AVOSCloud.setLogLevel(AVLogger.Level.DEBUG);
     Configure.initializeRuntime();
   }
   public static Test suite() {
@@ -1027,6 +1030,24 @@ public class AVObjectTest extends TestCase {
       object.put("name", "Automatic Tester");
       object.put("age", System.currentTimeMillis() / 1000);
       object.add("course", "Art");
+      objects.add(object);
+    }
+    AVObject.saveAll(objects);
+    for (int i = 0; i < 4; i++) {
+      System.out.println(objects.get(i).getObjectId());
+    }
+    AVObject.deleteAll(objects);
+  }
+
+  public void testSaveAllWithAheadFiles() throws Exception {
+    List<AVObject> objects = new ArrayList<>(4);
+    for (int i = 0; i < 4; i++) {
+      AVObject object = new AVObject("Student");
+      object.put("name", "Automatic Tester");
+      object.put("age", System.currentTimeMillis() / 1000);
+      object.add("course", "Art");
+      AVFile test = new AVFile("current Student", StringUtil.getRandomString(64).getBytes());
+      object.add("exercise", test);
       objects.add(object);
     }
     AVObject.saveAll(objects);

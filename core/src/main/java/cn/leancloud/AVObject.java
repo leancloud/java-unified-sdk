@@ -24,7 +24,9 @@ import java.util.regex.Pattern;
 import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -776,6 +778,32 @@ public class AVObject {
     return Observable.just(result).subscribeOn(Schedulers.io());
   }
 
+  protected List<AVFile> extractUnsavedFiles(Object o) {
+    List<AVFile> result = new ArrayList<>();
+    if (o instanceof AVFile && StringUtil.isEmpty(((AVFile) o).getObjectId())) {
+      result.add((AVFile) o);
+    } else if (o instanceof Collection) {
+      for (Object secondTmp: ((Collection)o).toArray()) {
+        List<AVFile> tmp = extractUnsavedFiles(secondTmp);
+        if (null != tmp && !tmp.isEmpty()) {
+          result.addAll(tmp);
+        }
+      }
+    }
+    return result;
+  }
+
+  protected List<AVFile> getUnsavedFiles() {
+    List<AVFile> result = new ArrayList<>();
+    for (ObjectFieldOperation ofo: operations.values()) {
+      List<AVFile> unsavedFiles = extractUnsavedFiles(ofo.getValue());
+      if (null != unsavedFiles && !unsavedFiles.isEmpty()) {
+        result.addAll(unsavedFiles);
+      }
+    }
+    return result;
+  }
+
   protected void onSaveSuccess() {
     this.operations.clear();
   }
@@ -949,6 +977,17 @@ public class AVObject {
     saveAllInBackground(objects).blockingSubscribe();
   }
 
+  private static Observable<List<AVFile>> extractSaveAheadFiles(Collection<? extends AVObject> objects) {
+    List<AVFile> needSaveAheadFiles = new ArrayList<>();
+    for (AVObject o: objects) {
+      List<AVFile> cascadingSaveFiles = o.getUnsavedFiles();
+      if (null != cascadingSaveFiles && !cascadingSaveFiles.isEmpty()) {
+        needSaveAheadFiles.addAll(cascadingSaveFiles);
+      }
+    }
+    return Observable.just(needSaveAheadFiles).subscribeOn(Schedulers.io());
+  }
+
   /**
    * Save all objects in async mode.
    * @param objects object collection.
@@ -959,41 +998,55 @@ public class AVObject {
       JSONArray emptyResult = new JSONArray();
       return Observable.just(emptyResult);
     }
-    JSONArray requests = new JSONArray();
-    for (AVObject o : objects) {
+    for (AVObject o: objects) {
       Map<AVObject, Boolean> markMap = new HashMap<>();
       if (o.hasCircleReference(markMap)) {
         return Observable.error(new AVException(AVException.CIRCLE_REFERENCE, "Found a circular dependency when saving."));
       }
-      JSONObject requestBody = o.generateChangedParam();
-      JSONObject objectRequest = new JSONObject();
-      objectRequest.put("method", o.getRequestMethod());
-      objectRequest.put("path", o.getRequestRawEndpoint());
-      objectRequest.put("body", requestBody);
-      requests.add(objectRequest);
     }
-
-    JSONObject requestTotal = new JSONObject();
-    requestTotal.put("requests", requests);
-    return PaasClient.getStorageClient().batchSave(requestTotal).map(new Function<JSONArray, JSONArray>() {
-      public JSONArray apply(JSONArray batchResults) throws Exception {
-
-        if (null != batchResults && (objects.size() == batchResults.size())) {
-          logger.d("batchSave result: " + batchResults.toJSONString());
-          Iterator it = objects.iterator();
-
-          for (int i = 0; i < batchResults.size() && it.hasNext(); i++) {
-            JSONObject oneResult = batchResults.getJSONObject(i);
-            AVObject originObject = (AVObject) it.next();
-            if (oneResult.containsKey("success")) {
-              AVUtils.mergeConcurrentMap(originObject.serverData, oneResult.getJSONObject("success"));
-              originObject.onSaveSuccess();
-            } else if (oneResult.containsKey("error")) {
-              originObject.onSaveFailure();
-            }
+    Observable<List<AVFile>> aHeadStage = extractSaveAheadFiles(objects);
+    return aHeadStage.flatMap(new Function<List<AVFile>, ObservableSource<JSONArray>>() {
+      @Override
+      public ObservableSource<JSONArray> apply(List<AVFile> avFiles) throws Exception {
+        logger.d("begin to save objects with batch mode...");
+        if (null != avFiles && !avFiles.isEmpty()) {
+          for (AVFile file : avFiles) {
+            file.save();
           }
         }
-        return batchResults;
+        JSONArray requests = new JSONArray();
+        for (AVObject o : objects) {
+          JSONObject requestBody = o.generateChangedParam();
+          JSONObject objectRequest = new JSONObject();
+          objectRequest.put("method", o.getRequestMethod());
+          objectRequest.put("path", o.getRequestRawEndpoint());
+          objectRequest.put("body", requestBody);
+          requests.add(objectRequest);
+        }
+
+        JSONObject requestTotal = new JSONObject();
+        requestTotal.put("requests", requests);
+        return PaasClient.getStorageClient().batchSave(requestTotal).map(new Function<JSONArray, JSONArray>() {
+          public JSONArray apply(JSONArray batchResults) throws Exception {
+
+            if (null != batchResults && (objects.size() == batchResults.size())) {
+              logger.d("batchSave result: " + batchResults.toJSONString());
+              Iterator it = objects.iterator();
+
+              for (int i = 0; i < batchResults.size() && it.hasNext(); i++) {
+                JSONObject oneResult = batchResults.getJSONObject(i);
+                AVObject originObject = (AVObject) it.next();
+                if (oneResult.containsKey("success")) {
+                  AVUtils.mergeConcurrentMap(originObject.serverData, oneResult.getJSONObject("success"));
+                  originObject.onSaveSuccess();
+                } else if (oneResult.containsKey("error")) {
+                  originObject.onSaveFailure();
+                }
+              }
+            }
+            return batchResults;
+          }
+        });
       }
     });
   }
