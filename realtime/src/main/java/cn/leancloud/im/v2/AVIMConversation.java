@@ -1219,7 +1219,7 @@ public class AVIMConversation {
   }
 
   /**
-   * 在聊天对话中间增加新的参与者
+   * 在聊天对话中间踢掉部分参与者
    *
    * @param memberIds member id list.
    * @param callback callback function.

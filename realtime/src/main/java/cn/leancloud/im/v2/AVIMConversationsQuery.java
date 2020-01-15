@@ -512,7 +512,14 @@ public class AVIMConversationsQuery {
 
   public void findInBackground(final AVIMConversationQueryCallback callback) {
     final Map<String, String> queryParams = conditions.assembleParameters();
+    findWithCondition(queryParams, callback);
+  }
 
+  public void findTempConversationsInBackground(List<String> conversationIds, final AVIMConversationQueryCallback callback) {
+    ;
+  }
+
+  private void findWithCondition(final Map<String, String> queryParams, final AVIMConversationQueryCallback callback) {
     switch (policy) {
       case CACHE_THEN_NETWORK:
       case CACHE_ELSE_NETWORK:
@@ -543,6 +550,23 @@ public class AVIMConversationsQuery {
         queryFromNetwork(callback, queryParams);
         break;
     }
+  }
+
+  public void directFindInBackground(String where, String sort, int skip, int limit, int flag,
+                                     final AVIMConversationQueryCallback callback) {
+    Map<String, String> queryParams = new HashMap<>();
+    queryParams.put("where", where);
+    if (!StringUtil.isEmpty(sort)) {
+      queryParams.put("order", sort);
+    }
+    if (skip > 0) {
+      queryParams.put("skip", Integer.toString(skip));
+    }
+    if (limit > 0) {
+      queryParams.put("limit", Integer.toString(limit));
+    }
+    queryParams = AVIMConversationQueryConditions.modifyParameters(queryParams, flag);
+    findWithCondition(queryParams, callback);
   }
 
   private void queryFromCache(final AVIMConversationQueryCallback callback,

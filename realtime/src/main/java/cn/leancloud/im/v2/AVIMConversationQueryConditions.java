@@ -46,4 +46,26 @@ final class AVIMConversationQueryConditions extends QueryConditions {
     return parameters;
   }
 
+  public static Map<String, String> modifyParameters(Map<String, String> param, int flag) {
+    if (0 == flag) {
+      return param;
+    }
+    if (null == param) {
+      return null;
+    }
+    if ((flag & 0x01) == 0x01) {
+      // 不返回成员列表
+      param.put(Conversation.QUERY_PARAM_COMPACT, Boolean.toString(true));
+    } else {
+      param.remove(Conversation.QUERY_PARAM_COMPACT);
+    }
+    if ((flag & 0x02) == 0x02) {
+      // 返回对话最近一条消息
+      param.put(Conversation.QUERY_PARAM_LAST_MESSAGE, Boolean.toString(true));
+    } else {
+      param.remove(Conversation.QUERY_PARAM_LAST_MESSAGE);
+    }
+    return param;
+  }
+
 }
