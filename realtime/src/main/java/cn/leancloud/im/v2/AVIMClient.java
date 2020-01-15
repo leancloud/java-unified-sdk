@@ -357,12 +357,16 @@ public class AVIMClient {
         if (null != result) {
           String conversationId =
                   (String) result.get(Conversation.callbackConversationKey);
+          conversation = getConversation(conversationId, isTransient, isTemp);
+
           String createdAt = (String) result.get(Conversation.callbackCreatedAt);
           int tempTTLFromServer = 0;
           if (result.containsKey(Conversation.callbackTemporaryTTL)) {
             tempTTLFromServer = (int) result.get(Conversation.callbackTemporaryTTL);
-          };
-          conversation = getConversation(conversationId, isTransient, isTemp);
+          }
+          if (result.containsKey(Conversation.callbackUniqueId)) {
+            conversation.setUniqueId((String) result.get(Conversation.callbackUniqueId));
+          }
           conversation.setMembers(conversationMembers);
           conversation.setAttributesForInit(conversationAttributes);
           conversation.setTransientForInit(isTransient);

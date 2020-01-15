@@ -195,7 +195,7 @@ public class AVIMConversation {
     latestConversationFetch = 0;
   }
 
-  protected int getType() {
+  public int getType() {
     if (isSystem()) {
       return Conversation.CONV_TYPE_SYSTEM;
     } else if (isTransient()) {
@@ -204,6 +204,29 @@ public class AVIMConversation {
       return Conversation.CONV_TYPE_TEMPORARY;
     } else {
       return Conversation.CONV_TYPE_NORMAL;
+    }
+  }
+
+  public boolean isUnique() {
+    if (Conversation.CONV_TYPE_NORMAL != getType()) {
+      return false;
+    }
+    String uniqueId = getUniqueId();
+    return !StringUtil.isEmpty(uniqueId);
+  }
+
+  public String getUniqueId() {
+    if (this.instanceData.containsKey("uniqueId")) {
+      return (String) this.instanceData.get("uniqueId");
+    }
+    return null;
+  }
+
+  void setUniqueId(String uniqueId) {
+    if (null != uniqueId) {
+      this.instanceData.put("uniqueId", uniqueId);
+    } else {
+      this.instanceData.remove("uniqueId");
     }
   }
 
@@ -367,7 +390,9 @@ public class AVIMConversation {
    * @return attributes map.
    */
   public Map<String, Object> getAttributes() {
-    return this.attributes;
+    Map<String, Object> attr = new HashMap<>(this.attributes);
+    attr.remove(Conversation.NAME);
+    return attr;
   }
 
   public void setAttribute(String key, Object value) {

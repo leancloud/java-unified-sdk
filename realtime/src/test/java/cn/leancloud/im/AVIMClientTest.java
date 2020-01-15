@@ -12,6 +12,7 @@ import cn.leancloud.im.v2.AVIMException;
 import cn.leancloud.im.v2.callback.*;
 import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
 import cn.leancloud.session.AVConnectionManager;
+import cn.leancloud.utils.StringUtil;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
@@ -250,7 +251,9 @@ public class AVIMClientTest extends TestCase {
                 ex.printStackTrace();
                 countDownLatch.countDown();
               } else {
-                System.out.println("succeed to create Conv");
+                String uniqueId = conversation.getUniqueId();
+                List<String> members = conversation.getMembers();
+                System.out.println("succeed to create Conv. uniqueId=" + uniqueId + ", members=" + StringUtil.join(",", members));
                 conversation.getAllMemberInfo(0, 10, new AVIMConversationMemberQueryCallback() {
                   @Override
                   public void done(List<AVIMConversationMemberInfo> memberInfoList, AVIMException e3) {

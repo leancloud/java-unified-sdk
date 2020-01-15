@@ -436,7 +436,40 @@ public class AVIMConversationTest extends TestCase {
         } else {
           String name = conversation.getName();
           int type = (int)conversation.getAttribute("type");
-          System.out.println("created. name=" + name + ", type=" + type);
+          System.out.println("created. name=" + name + ", type=" + type + ", uniqueId=" + conversation.getUniqueId());
+          opersationSucceed = convName.equals(name) && 3 == type;
+          countDownLatch.countDown();
+        }
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testCreateUniqueConversationWithAttributes() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    final String convName = "TestConv-" + System.currentTimeMillis();
+    final Map<String, Object> attributes = new HashMap<>();
+    attributes.put("type", 3);
+    attributes.put("ts", System.currentTimeMillis());
+    client.createConversation(Arrays.asList("testUser007"), convName, attributes, false, true, new AVIMConversationCreatedCallback() {
+      @Override
+      public void done(AVIMConversation conversation, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to create conversation. cause:" + e.getMessage());
+          countDownLatch.countDown();
+        } else {
+          String name = conversation.getName();
+          int type = (int)conversation.getAttribute("type");
+          System.out.println("created. name=" + name + ", type=" + type + ", uniqueId=" + conversation.getUniqueId());
           opersationSucceed = convName.equals(name) && 3 == type;
           countDownLatch.countDown();
         }

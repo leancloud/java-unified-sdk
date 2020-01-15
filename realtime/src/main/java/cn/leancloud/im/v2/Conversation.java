@@ -205,6 +205,7 @@ public interface Conversation {
   String callbackClientStatus = "callbackClientStatus";
   String callbackDeliveredAt = "callbackDeliveredAt";
   String callbackReadAt = "callbackReadAt";
+  String callbackUniqueId = "callbackUniqueId";
 
   //  String callbackTemporary = "callbackTemporary";
   String callbackTemporaryTTL = "callbackTemporaryTTL";

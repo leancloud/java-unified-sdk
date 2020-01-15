@@ -747,12 +747,16 @@ public class AVConversationHolder {
     String createdAt = convCommand.getCdate();
     String cid = convCommand.getCid();
     int tempTTL = convCommand.hasTempConvTTL()? convCommand.getTempConvTTL(): 0;
+    String uniqueId = convCommand.hasUniqueId() ? convCommand.getUniqueId() : null;
 
     // they are not necessary for create-callback(isTemp, isTransient), except for tempTTL.
     HashMap<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackCreatedAt, createdAt);
     bundle.put(Conversation.callbackConversationKey, cid);
     bundle.put(Conversation.callbackTemporaryTTL, tempTTL);
+    if (!StringUtil.isEmpty(uniqueId)) {
+      bundle.put(Conversation.callbackUniqueId, uniqueId);
+    }
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_CREATION, bundle);
   }
