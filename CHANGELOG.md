@@ -2,6 +2,25 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.1.10 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+- add AVObject#fetchIfNeededInBackground(String includeKeys) method.
+- add new async methods to AVFile:
+```java
+Observable<byte[]> getDataInBackground();
+Observable<InputStream> getDataStreamInBackground();
+```
+
+#### Optimization and fixed bugs
+- fixed #98: AVObject.saveAll/InBackground(objects) cannot save cascaded files.
+- fixed #97: AVQuery.getInBackground(objectId) ignore include keys setting.
+
+
 ## 6.1.9 release
 
 #### Break changes
