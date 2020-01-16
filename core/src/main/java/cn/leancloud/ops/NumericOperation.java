@@ -14,26 +14,28 @@ public abstract class NumericOperation extends BaseOperation {
   }
 
   public Object apply(Object obj) {
+    Number init;
     if (null == obj) {
-      return getValue();
+      init = 0;
     } else if (obj instanceof Number) {
-      Number result = 0;
-      if (this instanceof DecrementOperation) {
-        result = subNumbers((Number) obj, (Number) this.value);
-      } else if (this instanceof IncrementOperation) {
-        result = addNumbers((Number) obj, (Number) this.value);
-      } else if (this instanceof BitXorOperation) {
-        result = calculateLongs((Number)obj, (Number)this.value, 'X');
-      } else if (this instanceof BitAndOperation) {
-        result = calculateLongs((Number)obj, (Number)this.value, 'A');
-      } else if (this instanceof BitOrOperation) {
-        result = calculateLongs((Number)obj, (Number)this.value, 'O');
-      }
-      return result;
+      init = (Number) obj;
     } else {
       LOGGER.w("cannot apply AddOperation on non number attribute. targetValueType=" + obj.getClass().getSimpleName());
+      return obj;
     }
-    return obj;
+    Number result = 0;
+    if (this instanceof DecrementOperation) {
+      result = subNumbers(init, (Number) this.value);
+    } else if (this instanceof IncrementOperation) {
+      result = addNumbers(init, (Number) this.value);
+    } else if (this instanceof BitXorOperation) {
+      result = calculateLongs(init, (Number)this.value, 'X');
+    } else if (this instanceof BitAndOperation) {
+      result = calculateLongs(init, (Number)this.value, 'A');
+    } else if (this instanceof BitOrOperation) {
+      result = calculateLongs(init, (Number)this.value, 'O');
+    }
+    return result;
   }
 
   public Map<String, Object> encode() {

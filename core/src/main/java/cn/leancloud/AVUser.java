@@ -249,7 +249,8 @@ public class AVUser extends AVObject {
     return PaasClient.getStorageClient().signUp(paramData).map(new Function<AVUser, AVUser>() {
       @Override
       public AVUser apply(AVUser avUser) throws Exception {
-        AVUser.this.mergeRawData(avUser);
+        AVUser.this.mergeRawData(avUser, true);
+        AVUser.this.onSaveSuccess();
         return AVUser.this;
       }
     });

@@ -25,7 +25,7 @@ public class AppConfiguration {
   private static boolean asynchronized = false;
   private static SchedulerCreator defaultScheduler = null;
   private static NetworkingDetector globalNetworkingDetector = new SimpleNetworkingDetector();
-  private static String applicationPackagename = "";
+  private static String applicationPackageName = "";
 
   private static String importantFileDir = "./persistFiles/";
   private static String documentDir = "./data/";
@@ -87,6 +87,21 @@ public class AppConfiguration {
    */
   public static void setEnableLocalCache(boolean enableLocalCache) {
     AppConfiguration.enableLocalCache = enableLocalCache;
+  }
+
+  private static boolean autoMergeOperationDataWhenSave = false;
+
+  public static boolean isAutoMergeOperationDataWhenSave() {
+    return autoMergeOperationDataWhenSave;
+  }
+
+  /**
+   * Set default behavior for object save operation.
+   *
+   * @param flag flag to indicate whether enable auto merge operation data or not, default is false
+   */
+  public static void setAutoMergeOperationDataWhenSave(boolean flag) {
+    AppConfiguration.autoMergeOperationDataWhenSave = flag;
   }
 
   public static boolean isAsynchronized() {
@@ -207,12 +222,12 @@ public class AppConfiguration {
     return queryResultCacheDir;
   }
 
-  public static String getApplicationPackagename() {
-    return applicationPackagename;
+  public static String getApplicationPackageName() {
+    return applicationPackageName;
   }
 
-  public static void setApplicationPackagename(String applicationPackagename) {
-    AppConfiguration.applicationPackagename = applicationPackagename;
+  public static void setApplicationPackageName(String applicationPackageName) {
+    AppConfiguration.applicationPackageName = applicationPackageName;
   }
 
   public static SystemSetting getDefaultSetting() {

@@ -281,6 +281,10 @@ public class AVObject {
     if (res instanceof JSONObject) {
       return new AVDate((JSONObject) res).getDate();
     }
+    if (res instanceof Map) {
+      JSONObject json = new JSONObject((Map) res);
+      return new AVDate(json).getDate();
+    }
     return null;
   }
 
@@ -874,7 +878,7 @@ public class AVObject {
                 .map(new Function<AVObject, AVObject>() {
           @Override
           public AVObject apply(AVObject avObject) throws Exception {
-            AVObject.this.mergeRawData(avObject);
+            AVObject.this.mergeRawData(avObject, needFetch);
             AVObject.this.onSaveSuccess();
             return AVObject.this;
           }
@@ -884,7 +888,7 @@ public class AVObject {
                 .map(new Function<AVObject, AVObject>() {
                   @Override
                   public AVObject apply(AVObject avObject) throws Exception {
-                    AVObject.this.mergeRawData(avObject);
+                    AVObject.this.mergeRawData(avObject, needFetch);
                     AVObject.this.onSaveSuccess();
                     return AVObject.this;
                   }
@@ -894,7 +898,7 @@ public class AVObject {
                 .map(new Function<AVObject, AVObject>() {
                   @Override
                   public AVObject apply(AVObject avObject) throws Exception {
-                    AVObject.this.mergeRawData(avObject);
+                    AVObject.this.mergeRawData(avObject, needFetch);
                     AVObject.this.onSaveSuccess();
                     return AVObject.this;
                   }
@@ -1341,11 +1345,21 @@ public class AVObject {
     }
   }
 
-  void mergeRawData(AVObject avObject) {
+  void mergeRawData(AVObject avObject, boolean fetchServerData) {
     if (null != avObject) {
       this.serverData.putAll(avObject.serverData);
     }
-    this.operations.clear();
+    if (!fetchServerData && AppConfiguration.isAutoMergeOperationDataWhenSave()) {
+      for (Map.Entry<String, ObjectFieldOperation> entry: operations.entrySet()) {
+        String attribute = entry.getKey();
+        Object value = this.get(attribute);
+        if (null == value) {
+          this.serverData.remove(attribute);
+        } else {
+          this.serverData.put(attribute, value);
+        }
+      }
+    }
   }
 
   /**

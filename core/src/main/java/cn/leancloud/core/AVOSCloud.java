@@ -129,9 +129,27 @@ public class AVOSCloud {
   public static void setNetworkTimeout(int seconds) {
     AppConfiguration.setNetworkTimeout(seconds);
   }
+
   @Deprecated
   public static int getNetworkTimeout() {
     return AppConfiguration.getNetworkTimeout();
+  }
+
+  /**
+   * Set default behavior for object save operation.
+   *
+   * @param flag flag to indicate whether enable auto merge operation data or not, default is false
+   */
+  public static void setAutoMergeOperationDataWhenSave(boolean flag) {
+    AppConfiguration.setAutoMergeOperationDataWhenSave(flag);
+  }
+
+  /**
+   * Set global AVObject save option: always use fetchWhenSave or not.
+   * @param flag flag of global fetchWhenSave, default is false
+   */
+  static void setAlwaysFetchWhenSave(boolean flag) {
+    ;
   }
 
   public static String getApplicationId() {

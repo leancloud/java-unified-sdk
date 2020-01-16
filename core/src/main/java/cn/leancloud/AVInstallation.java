@@ -146,7 +146,7 @@ public final class AVInstallation extends AVObject {
 
   private static String genInstallationId() {
     // app的包名
-    String packageName = AppConfiguration.getApplicationPackagename();
+    String packageName = AppConfiguration.getApplicationPackageName();
     String additionalStr = UUID.randomUUID().toString();
     return MD5.computeMD5(packageName + additionalStr);
   }

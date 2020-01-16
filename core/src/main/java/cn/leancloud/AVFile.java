@@ -480,12 +480,14 @@ public final class AVFile extends AVObject {
     saveInBackground(false, progressCallback);
   }
 
-  private Observable<AVFile> directlyCreate(JSONObject parameters) {
+  private Observable<AVFile> directlyCreate(final JSONObject parameters) {
     return PaasClient.getStorageClient().createObject(this.className, parameters, false, null)
             .map(new Function<AVObject, AVFile>() {
               @Override
               public AVFile apply(AVObject avObject) throws Exception {
-                AVFile.this.mergeRawData(avObject);
+                AVFile.this.serverData.putAll(parameters);
+                AVFile.this.mergeRawData(avObject, true);
+                AVFile.this.onSaveSuccess();
                 return AVFile.this;
               }});
   }

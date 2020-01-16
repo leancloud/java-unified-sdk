@@ -355,7 +355,7 @@ public class AVStatus extends AVObject {
     return PaasClient.getStorageClient().postStatus(param).map(new Function<AVStatus, AVStatus>() {
       @Override
       public AVStatus apply(AVStatus avStatus) throws Exception {
-        AVStatus.this.mergeRawData(avStatus);
+        AVStatus.this.mergeRawData(avStatus, true);
         return avStatus;
       }
     });
