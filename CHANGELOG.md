@@ -2,19 +2,49 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
-## 6.1.10 release
+## 6.2.0 release
 
 #### Break changes
-- None
+- AVObject#saveInBackground() will hold new key-value at local in default, it is also possible that the local key-value isn't correct
+ if comparing with cloud data. If you need the exactly result after save or update, please use fetchWhenSave option.
+ Or you can disable this feature by call:
+```$java
+AVOSCloud.setAutoMergeOperationDataWhenSave(false)
+```
 
 #### New features
-- None
-- add AVObject#fetchIfNeededInBackground(String includeKeys) method.
-- add new async methods to AVFile:
-```java
-Observable<byte[]> getDataInBackground();
-Observable<InputStream> getDataStreamInBackground();
+- AVIMConversationsQuery add three methods to support more query demand:
+```$java
+  /**
+   * 是否返回成员列表
+   * @param isCompact 为 true 的话则不返回，为 false 的话则返回成员列表，默认为 false
+   * @return current instance.
+   */
+  public AVIMConversationsQuery setCompact(boolean isCompact)
+  
+  /**
+   * find temporary conversations in background.
+   * @param conversationIds conversation id list.
+   * @param callback callback handler.
+   */
+  public void findTempConversationsInBackground(List<String> conversationIds, final AVIMConversationQueryCallback callback)
+
+  /**
+   * direct find with conditions in background.
+   * @param where query condition
+   * @param sort sort attributes
+   * @param skip skip number
+   * @param limit result maximum size
+   * @param flag query flag:
+   *            0 - Normal,
+   *            1 - don't need member list within a conversation item,
+   *            2 - attach last message data within a conversation item.
+   * @param callback callback function.
+   */
+  public void directFindInBackground(String where, String sort, int skip, int limit, int flag,
+                                     final AVIMConversationQueryCallback callback)
 ```
+conversations and directlyfindTempConversationsInBackground
 
 #### Optimization and fixed bugs
 - fixed #98: AVObject.saveAll/InBackground(objects) cannot save cascaded files.

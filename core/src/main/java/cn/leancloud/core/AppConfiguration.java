@@ -89,7 +89,7 @@ public class AppConfiguration {
     AppConfiguration.enableLocalCache = enableLocalCache;
   }
 
-  private static boolean autoMergeOperationDataWhenSave = false;
+  private static boolean autoMergeOperationDataWhenSave = true;
 
   public static boolean isAutoMergeOperationDataWhenSave() {
     return autoMergeOperationDataWhenSave;

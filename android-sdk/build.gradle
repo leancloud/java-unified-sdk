@@ -42,7 +42,7 @@ allprojects {
 }
 
 ext {
-    sdkVersion = "6.1.10"
+    sdkVersion = "6.2.0"
     supportLibVersion = "26.1.0"
     fastjsonVersion = "1.1.71.android"
     converterVersion = "2.1.0"

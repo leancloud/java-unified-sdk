@@ -516,11 +516,20 @@ public class AVIMConversationsQuery {
     return maxAge/1000;
   }
 
+  /**
+   * find in background.
+   * @param callback callback handler.
+   */
   public void findInBackground(final AVIMConversationQueryCallback callback) {
     final Map<String, String> queryParams = conditions.assembleParameters();
     findWithCondition(queryParams, callback);
   }
 
+  /**
+   * find temporary conversations in background.
+   * @param conversationIds conversation id list.
+   * @param callback callback handler.
+   */
   public void findTempConversationsInBackground(List<String> conversationIds, final AVIMConversationQueryCallback callback) {
     this.conditions.setTempConversationIds(conversationIds);
     findInBackground(callback);
@@ -559,6 +568,18 @@ public class AVIMConversationsQuery {
     }
   }
 
+  /**
+   * direct find with conditions in background.
+   * @param where query condition
+   * @param sort sort attributes
+   * @param skip skip number
+   * @param limit result maximum size
+   * @param flag query flag:
+   *            0 - Normal,
+   *            1 - don't need member list within a conversation item,
+   *            2 - attach last message data within a conversation item.
+   * @param callback callback function.
+   */
   public void directFindInBackground(String where, String sort, int skip, int limit, int flag,
                                      final AVIMConversationQueryCallback callback) {
     Map<String, String> queryParams = new HashMap<>();
