@@ -5,6 +5,7 @@ import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.im.v2.Conversation;
 import cn.leancloud.utils.StringUtil;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class ConversationQueryPacket extends PeerBasedCommandPacket {
@@ -28,7 +29,7 @@ public class ConversationQueryPacket extends PeerBasedCommandPacket {
       // add for support temporary conversation query.
       Object tempConvId = queryParams.get(Conversation.QUERY_PARAM_TEMPCONV);
       if (null != tempConvId && !StringUtil.isEmpty(tempConvId.toString())) {
-        builder.addTempConvIds(tempConvId.toString());
+        builder.addAllTempConvIds(Arrays.asList(tempConvId.toString().split(",")));
       }
 
       Object sortParam = queryParams.get("order");

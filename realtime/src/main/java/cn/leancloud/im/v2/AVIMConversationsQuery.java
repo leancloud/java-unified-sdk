@@ -2,7 +2,6 @@ package cn.leancloud.im.v2;
 
 import cn.leancloud.*;
 import cn.leancloud.cache.QueryResultCache;
-import cn.leancloud.callback.GenericObjectCallback;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.im.v2.callback.AVIMCommonJsonCallback;
@@ -17,11 +16,8 @@ import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
-import javax.management.Query;
-import java.io.Serializable;
 import java.util.*;
 
 public class AVIMConversationsQuery {
@@ -467,6 +463,16 @@ public class AVIMConversationsQuery {
   }
 
   /**
+   * 是否返回成员列表
+   * @param isCompact 为 true 的话则不返回，为 false 的话则返回成员列表，默认为 false
+   * @return current instance.
+   */
+  public AVIMConversationsQuery setCompact(boolean isCompact) {
+    conditions.setCompact(isCompact);
+    return this;
+  }
+
+  /**
    * 设置 AVIMConversationsQuery 的查询策略
    *
    * @param policy query policy
@@ -516,7 +522,8 @@ public class AVIMConversationsQuery {
   }
 
   public void findTempConversationsInBackground(List<String> conversationIds, final AVIMConversationQueryCallback callback) {
-    ;
+    this.conditions.setTempConversationIds(conversationIds);
+    findInBackground(callback);
   }
 
   private void findWithCondition(final Map<String, String> queryParams, final AVIMConversationQueryCallback callback) {
@@ -565,7 +572,7 @@ public class AVIMConversationsQuery {
     if (limit > 0) {
       queryParams.put("limit", Integer.toString(limit));
     }
-    queryParams = AVIMConversationQueryConditions.modifyParameters(queryParams, flag);
+    queryParams = AVIMConversationQueryConditions.assembleParameters(queryParams, flag);
     findWithCondition(queryParams, callback);
   }
 

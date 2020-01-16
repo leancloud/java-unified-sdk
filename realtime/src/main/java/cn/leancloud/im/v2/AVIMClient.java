@@ -293,7 +293,7 @@ public class AVIMClient {
    * Create a new temporary Conversation
    *
    * @param conversationMembers member list.
-   * @param ttl ttl value.
+   * @param ttl ttl value in seconds.
    * @param callback callback function.
    */
   public void createTemporaryConversation(final List<String> conversationMembers, int ttl, final AVIMConversationCreatedCallback callback) {
