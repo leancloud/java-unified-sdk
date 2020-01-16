@@ -88,7 +88,7 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
 
     AppConfiguration.configCacheSettings(importantFileDir, documentDir, fileCacheDir, queryResultCacheDir,
         commandCacheDir, analyticsDir, defaultSetting);
-    AppConfiguration.setApplicationPackagename(context.getPackageName());
+    AppConfiguration.setApplicationPackageName(context.getPackageName());
 
     logger.d("docDir=" + documentDir + ", fileDir=" + fileCacheDir + ", cmdDir="
         + commandCacheDir + ", statDir=" + analyticsDir);
