@@ -1820,6 +1820,25 @@ public class AVIMConversation {
     }
   };
 
+  public String toJSONString() {
+    Map<String, Object> dataMap = new HashMap<>();
+    dataMap.putAll(this.instanceData);
+    dataMap.put(Conversation.ATTRIBUTE, this.attributes);
+    dataMap.put(Conversation.NAME, this.getName());
+    dataMap.put(Conversation.CREATOR, getCreator());
+    dataMap.put(Conversation.MEMBERS, getMembers());
+    dataMap.put(AVObject.KEY_CREATED_AT, StringUtil.stringFromDate(getCreatedAt()));
+    dataMap.put(AVObject.KEY_UPDATED_AT, StringUtil.stringFromDate(getUpdatedAt()));
+    dataMap.put(AVObject.KEY_OBJECT_ID, getConversationId());
+    dataMap.put(Conversation.LAST_MESSAGE_AT, StringUtil.stringFromDate(getLastMessageAt()));
+    dataMap.put(Conversation.TRANSIENT, isTransient);
+    dataMap.put(Conversation.SYSTEM, isSystem);
+    dataMap.put(Conversation.TEMPORARY, isTemporary);
+    dataMap.put(Conversation.TEMPORARYTTL, getTemporaryExpiredat());
+    dataMap.put(Conversation.TYPE, getType());
+    return JSON.toJSONString(dataMap);
+  }
+
   interface OperationCompleteCallback {
     void onComplete();
 

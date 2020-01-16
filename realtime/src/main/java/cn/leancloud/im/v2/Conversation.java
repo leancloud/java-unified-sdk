@@ -233,6 +233,7 @@ public interface Conversation {
   String CREATOR = "c";
   String TEMPORARY = "temp";
   String TEMPORARYTTL = "ttl";
+  String TYPE = "conv_type";
 
   String TEMPCONV_ID_PREFIX = "_tmp:";
 

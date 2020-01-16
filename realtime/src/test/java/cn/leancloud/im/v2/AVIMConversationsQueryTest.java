@@ -1,5 +1,6 @@
 package cn.leancloud.im.v2;
 
+import cn.leancloud.AVQuery;
 import cn.leancloud.Configure;
 import cn.leancloud.im.v2.callback.AVIMClientCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationCreatedCallback;
@@ -60,7 +61,10 @@ public class AVIMConversationsQueryTest extends TestCase {
           System.out.println("failed to query convs");
           ex.printStackTrace();
         } else {
-          System.out.println("succeed to query convs. results=" + conversations.toString());
+          System.out.println("succeed to query convs. results=" + conversations.size());
+          for (AVIMConversation conv : conversations) {
+            System.out.println(conv.toJSONString());
+          }
           opersationSucceed = true;
         }
         countDownLatch.countDown();
@@ -72,10 +76,9 @@ public class AVIMConversationsQueryTest extends TestCase {
 
   public void testDirectQuery() throws Exception {
     AVIMConversationsQuery query = client.getConversationsQuery();
-    query.setCompact(true);
-    query.setWithLastMessagesRefreshed(false);
     String where = "{\"m\":{\"$regex\":\".*Tom.*\"}}";
-    query.directFindInBackground(where, "createdAt", 0, 10, 1, new AVIMConversationQueryCallback() {
+    query.setQueryPolicy(AVQuery.CachePolicy.NETWORK_ONLY);
+    query.directFindInBackground(where, "createdAt", 0, 10, 2, new AVIMConversationQueryCallback() {
       @Override
       public void done(List<AVIMConversation> conversations, AVIMException e) {
         if (null != e) {
@@ -83,7 +86,7 @@ public class AVIMConversationsQueryTest extends TestCase {
           e.printStackTrace();
         } else {
           for(AVIMConversation conv : conversations) {
-            System.out.println(conv.toString());
+            System.out.println(conv.toJSONString());
           }
           opersationSucceed = true;
         }
@@ -106,7 +109,7 @@ public class AVIMConversationsQueryTest extends TestCase {
           e.printStackTrace();
         } else {
           for(AVIMConversation conv : conversations) {
-            System.out.println(conv.toString());
+            System.out.println(conv.toJSONString());
           }
           opersationSucceed = true;
         }
@@ -128,9 +131,7 @@ public class AVIMConversationsQueryTest extends TestCase {
         public void done(AVIMConversation conversation, AVIMException e) {
           if (null != conversation) {
             tempConvIds.add(conversation.getConversationId());
-            System.out.println("succeed to create temporary conversation, id=" + conversation.getConversationId()
-                    + ", isTemp=" + conversation.isTemporary() + ", ttl=" + conversation.getTemporaryExpiredat()
-                    + ", cdate=" + conversation.getCreatedAt() + ", m=" + StringUtil.join(",", conversation.getMembers()));
+            System.out.println("succeed to create temporary conversation. " + conversation.toJSONString());
           } else {
             System.out.println("failed to create temporary conversation.");
             e.printStackTrace();
@@ -151,7 +152,7 @@ public class AVIMConversationsQueryTest extends TestCase {
           e.printStackTrace();
         } else {
           for(AVIMConversation conv : conversations) {
-            System.out.println(conv.toString());
+            System.out.println(conv.toJSONString());
           }
           opersationSucceed = true;
         }

@@ -262,7 +262,7 @@ public class AVLiveQuery {
     if (StringUtil.isEmpty(subscribeId)) {
       subscribeId = AppConfiguration.getDefaultSetting().getString(SP_LIVEQUERY_KEY,SP_SUBSCRIBE_ID, "");
       if (StringUtil.isEmpty(subscribeId)) {
-        String packageName = AppConfiguration.getApplicationPackagename();
+        String packageName = AppConfiguration.getApplicationPackageName();
         String additionalStr = UUID.randomUUID().toString();
         subscribeId = MD5.computeMD5(packageName + additionalStr);
         AppConfiguration.getDefaultSetting().saveString(SP_LIVEQUERY_KEY, SP_SUBSCRIBE_ID, subscribeId);
