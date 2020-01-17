@@ -2,6 +2,19 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.2.1 release
+
+re-release for something wrong on sonatype.org.
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- None
+
 ## 6.2.0 release
 
 #### Break changes
