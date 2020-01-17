@@ -1820,7 +1820,7 @@ public class AVIMConversation {
     }
   };
 
-  public String toJSONString() {
+  public Map<String, Object> dumpRawData() {
     Map<String, Object> dataMap = new HashMap<>();
     dataMap.putAll(this.instanceData);
     dataMap.put(Conversation.ATTRIBUTE, this.attributes);
@@ -1836,6 +1836,11 @@ public class AVIMConversation {
     dataMap.put(Conversation.TEMPORARY, isTemporary);
     dataMap.put(Conversation.TEMPORARYTTL, getTemporaryExpiredat());
     dataMap.put(Conversation.TYPE, getType());
+    return dataMap;
+  }
+
+  public String toJSONString() {
+    Map<String, Object> dataMap = dumpRawData();
     return JSON.toJSONString(dataMap);
   }
 
