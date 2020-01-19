@@ -589,6 +589,7 @@ public class AVConversationHolder {
       } else if (AVIMOperation.CONVERSATION_UNMUTE.getCode() == imop.getCode()) {
         onUnmuted(requestId);
       } else if (AVIMOperation.CONVERSATION_UPDATE.getCode() == imop.getCode()) {
+        mergeServerData(convCommand);
         onInfoUpdated(requestId, convCommand.getUdate());
       }
     } else if (ConversationControlOp.MEMBER_COUNT_QUERY_RESULT.equals(operation)) {
@@ -877,13 +878,28 @@ public class AVConversationHolder {
       });
     }
   }
+
+  private void mergeServerData(Messages.ConvCommand convCommand) {
+    AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+    final AVIMConversation conversation = client.getConversation(this.conversationId);
+    Messages.JsonObjectMessage attrMsg = convCommand.getAttrModified();
+    if (null != attrMsg && null != attrMsg.getData() && attrMsg.getData().trim().length() > 0) {
+      JSONObject operand = JSON.parseObject(attrMsg.getData());
+      ConversationSynchronizer.mergeConversationFromJsonObject(conversation, operand);
+    }
+    ConversationSynchronizer.changeUpdatedTime(conversation, convCommand.getUdate());
+  }
+
   void onInfoChangedNotify(Messages.ConvCommand convCommand) {
     final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (null != handler) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
       final AVIMConversation conversation = parseConversation(client, convCommand);
       final String operator = convCommand.getInitBy();
-      Messages.JsonObjectMessage attrMsg = convCommand.getAttr();
+      // change from attr to attrModified.
+      Messages.JsonObjectMessage attrMsg = convCommand.getAttrModified();
+      String updatedAt = convCommand.getUdate();
+      ConversationSynchronizer.changeUpdatedTime(conversation, updatedAt);
       JSONObject operand = null;
       if (null == attrMsg || null == attrMsg.getData() || attrMsg.getData().trim().length() < 1) {
         // attached data is empty
@@ -891,7 +907,7 @@ public class AVConversationHolder {
       } else {
         // diff data is pushed, but deleted attr is ignored.
         operand = JSON.parseObject(attrMsg.getData());
-        AVIMConversation.mergeConversationFromJsonObject(conversation, operand);
+        ConversationSynchronizer.mergeConversationFromJsonObject(conversation, operand);
       }
       // Notice: SDK doesn't refresh conversation data automatically.
       handler.processEvent(Conversation.STATUS_ON_INFO_CHANGED, operator, operand, conversation);

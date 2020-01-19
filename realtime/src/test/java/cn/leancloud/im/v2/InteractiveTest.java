@@ -224,6 +224,7 @@ public class InteractiveTest extends TestCase {
       @Override
       public void run() {
         System.out.println("First Thread: " + Thread.currentThread().getId());
+        final CountDownLatch exitLatch = new CountDownLatch(1);
         final String clientId = "TestUserA";
         AVIMClient currentClient = AVIMClient.getInstance(clientId);
 
@@ -233,6 +234,7 @@ public class InteractiveTest extends TestCase {
             if (null != e) {
               System.out.println("failed to open client:" + clientId);
               e.printStackTrace();
+              exitLatch.countDown();
               return;
             }
             System.out.println("☑️ " + clientId + " try to create conversation...");
@@ -246,6 +248,7 @@ public class InteractiveTest extends TestCase {
                 if (null != e) {
                   System.out.println(clientId + " failed to create conversation: testCorrectMemberList");
                   e.printStackTrace();
+                  exitLatch.countDown();
                   return;
                 }
                 targetConversationId = conversation.getConversationId();
@@ -282,6 +285,7 @@ public class InteractiveTest extends TestCase {
               if (null != e) {
                 System.out.println("failed to update conversationinfo.");
                 e.printStackTrace();
+                exitLatch.countDown();
                 return;
               }
               System.out.println("☑️☑️☑️ " + clientId + " already modified conversation...");
@@ -302,8 +306,10 @@ public class InteractiveTest extends TestCase {
               } catch (Exception ex) {
                 ex.printStackTrace();
               }
+              exitLatch.countDown();
             }
           });
+          exitLatch.await();
         } catch (Exception ex) {
           ex.printStackTrace();
         }
@@ -441,6 +447,8 @@ public class InteractiveTest extends TestCase {
       @Override
       public void run() {
         System.out.println("First Thread: " + Thread.currentThread().getId());
+        final CountDownLatch exitLatch = new CountDownLatch(1);
+
         final String clientId = "TestUserA";
         AVIMClient currentClient = AVIMClient.getInstance(clientId);
 
@@ -450,6 +458,7 @@ public class InteractiveTest extends TestCase {
             if (null != e) {
               System.out.println("failed to open client:" + clientId);
               e.printStackTrace();
+              exitLatch.countDown();
               return;
             }
             System.out.println("☑️ " + clientId + " try to create conversation...");
@@ -463,6 +472,7 @@ public class InteractiveTest extends TestCase {
                 if (null != e) {
                   System.out.println(clientId + " failed to create conversation: testCorrectMemberList");
                   e.printStackTrace();
+                  exitLatch.countDown();
                   return;
                 }
                 targetConversationId = conversation.getConversationId();
@@ -499,6 +509,7 @@ public class InteractiveTest extends TestCase {
               if (null != e) {
                 System.out.println("failed to update conversationinfo.");
                 e.printStackTrace();
+                exitLatch.countDown();
                 return;
               }
               System.out.println("☑️☑️☑️ " + clientId + " already modified conversation...");
@@ -519,8 +530,10 @@ public class InteractiveTest extends TestCase {
               } catch (Exception ex) {
                 ex.printStackTrace();
               }
+              exitLatch.countDown();
             }
           });
+          exitLatch.await();
         } catch (Exception ex) {
           ex.printStackTrace();
         }
