@@ -6,6 +6,8 @@ import cn.leancloud.command.CommandPacket;
 import cn.leancloud.command.LiveQueryLoginPacket;
 import cn.leancloud.command.PushAckPacket;
 import cn.leancloud.command.SessionControlPacket;
+import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.utils.LogUtil;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -46,6 +48,9 @@ public class WindTalker {
             SessionControlPacket.SessionControlOp.OPEN, signature,
             lastNotifyTime, lastPatchTime, requestId);
     scp.setTag(tag);
+    if (AVIMClient.getClientsCount() > 1) {
+      scp.setAppId(AVOSCloud.getApplicationId());
+    }
     scp.setReconnectionRequest(reConnect);
     return scp;
   }
