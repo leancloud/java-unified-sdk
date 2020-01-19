@@ -25,7 +25,7 @@ public class InteractiveTest extends TestCase {
     AVOSCloud.setLogLevel(AVLogger.Level.DEBUG);
     Configure.initialize();
     AVIMOptions.getGlobalOptions().setTimeoutInSecs(30);
-    AVIMOptions.getGlobalOptions().setRtmServer("wss://rtm51.leancloud.cn");
+//    AVIMOptions.getGlobalOptions().setRtmServer("wss://rtm51.leancloud.cn");
   }
 
   @Override
@@ -185,6 +185,12 @@ public class InteractiveTest extends TestCase {
                       latch.countDown();
                       return;
                     }
+                    if (null != successfulClientIds && successfulClientIds.size() == 1 && thirdMember.equals(successfulClientIds.get(0))) {
+                      System.out.println("☑️ successful client list is right.");
+                    } else {
+                      System.out.println("❌　succssful client list is wrong.");
+                    }
+                    System.out.println("failure list is: " + failures);
                     Map<String, Object> checkpoint = new HashMap<>();
                     checkpoint.put("name", "MemberListIsVerified");
                     checkpoint.put("memberSize", 1);
@@ -215,7 +221,6 @@ public class InteractiveTest extends TestCase {
 
     System.out.println("Main Thread: " + Thread.currentThread().getId());
     Thread firstThread = new Thread(new Runnable() {
-      private volatile boolean needExit = false;
       @Override
       public void run() {
         System.out.println("First Thread: " + Thread.currentThread().getId());
@@ -228,12 +233,11 @@ public class InteractiveTest extends TestCase {
             if (null != e) {
               System.out.println("failed to open client:" + clientId);
               e.printStackTrace();
-              needExit = true;
               return;
             }
             System.out.println("☑️ " + clientId + " try to create conversation...");
             Map<String, Object> attr = new HashMap<>();
-            attr.put("attr", customAttr);
+            attr.put("attr1", customAttr);
             List<String> members = new ArrayList<>();
             members.add(thirdMember);
             client.createConversation(members, "testCorrectMemberList", attr, new AVIMConversationCreatedCallback() {
@@ -242,7 +246,6 @@ public class InteractiveTest extends TestCase {
                 if (null != e) {
                   System.out.println(clientId + " failed to create conversation: testCorrectMemberList");
                   e.printStackTrace();
-                  needExit = true;
                   return;
                 }
                 targetConversationId = conversation.getConversationId();
@@ -251,7 +254,7 @@ public class InteractiveTest extends TestCase {
                 Map<String, Object> checkpoint = new HashMap<>();
                 checkpoint.put("name", "testCorrectMemberList");
                 checkpoint.put("memberSize", 2);
-                checkpoint.put("attr.attr", customAttr);
+                checkpoint.put("attr.attr1", customAttr);
                 boolean assertResult = verifyConversationWithExpect(conversation, checkpoint);
                 if (!assertResult) {
                   System.out.println("❌　Site:" + clientId + " conversation doesn't match expected. conv=" + conversation.toJSONString());
@@ -272,21 +275,20 @@ public class InteractiveTest extends TestCase {
           System.out.println("☑️☑️ " + clientId + " continue to modify conversation...");
           final AVIMConversation conversation = currentClient.getConversation(targetConversationId);
           conversation.setName("MemberListIsVerified");
-          conversation.setAttribute("attr", "Over");
+          conversation.setAttribute("attr1", "Over");
           conversation.updateInfoInBackground(new AVIMConversationCallback() {
             @Override
             public void done(AVIMException e) {
               if (null != e) {
                 System.out.println("failed to update conversationinfo.");
                 e.printStackTrace();
-                needExit = true;
                 return;
               }
               System.out.println("☑️☑️☑️ " + clientId + " already modified conversation...");
               Map<String, Object> checkpoint = new HashMap<>();
               checkpoint.put("name", "MemberListIsVerified");
-              checkpoint.put("memberSize", 2);
-              checkpoint.put("attr.attr", "Over");
+              checkpoint.put("memberSize", 3);
+              checkpoint.put("attr.attr1", "Over");
               boolean assertResult = verifyConversationWithExpect(conversation, checkpoint);
               if (!assertResult) {
                 System.out.println("❌　Site:" + clientId + " conversation doesn't match expected. conv=" + conversation.toJSONString());
@@ -295,32 +297,21 @@ public class InteractiveTest extends TestCase {
               }
               try {
                 System.out.println("☑️☑️☑️☑️ " + clientId + " prepare to exit thread.");
+                Thread.sleep(1000);
                 endStage.countDown();
               } catch (Exception ex) {
                 ex.printStackTrace();
-              } finally {
-                needExit = true;
               }
             }
           });
         } catch (Exception ex) {
           ex.printStackTrace();
-          needExit = true;
-        }
-        while(!needExit) {
-          try {
-            Thread.sleep(1);
-          } catch (Exception ex) {
-            ex.printStackTrace();
-            break;
-          }
         }
         System.out.println("First Thread exit");
       }
     });
 
     Thread secondThread = new Thread(new Runnable() {
-      private volatile boolean needExit = false;
       @Override
       public void run() {
         System.out.println("Second Thread: " + Thread.currentThread().getId());
@@ -340,7 +331,6 @@ public class InteractiveTest extends TestCase {
             if (null != e) {
               System.out.println("failed to open client:" + clientId);
               e.printStackTrace();
-              needExit = true;
               return;
             }
             System.out.println("☑️️ " + clientId + " try to fetch target conversation:" + targetConversationId);
@@ -352,7 +342,6 @@ public class InteractiveTest extends TestCase {
                   System.out.println("failed to fetch conversation:" + targetConversationId + " with clientId:" + clientId);
                   e.printStackTrace();
                   secondStage.countDown();
-                  needExit = true;
                   return;
                 }
                 System.out.println("☑️️☑️️ " + clientId + " try to join target conversation:" + targetConversationId);
@@ -363,13 +352,12 @@ public class InteractiveTest extends TestCase {
                       System.out.println("failed to join conversation:" + targetConversationId + " with clientId:" + clientId);
                       e.printStackTrace();
                       secondStage.countDown();
-                      needExit = true;
                       return;
                     }
                     Map<String, Object> checkpoint = new HashMap<>();
                     checkpoint.put("name", "testCorrectMemberList");
                     checkpoint.put("memberSize", 3);
-                    checkpoint.put("attr.attr", customAttr);
+                    checkpoint.put("attr.attr1", customAttr);
                     boolean assertResult = verifyConversationWithExpect(conversation, checkpoint);
                     if (!assertResult) {
                       System.out.println("❌　Site:" + clientId + " conversation doesn't match expected. conv=" + conversation.toJSONString());
@@ -381,26 +369,29 @@ public class InteractiveTest extends TestCase {
                     conversation.kickMembers(Arrays.asList(thirdMember), new AVIMOperationPartiallySucceededCallback() {
                       @Override
                       public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
-                        if (null == e) {
+                        if (null == e && null != successfulClientIds && successfulClientIds.size() > 0) {
                           Map<String, Object> checkpoint = new HashMap<>();
                           checkpoint.put("name", "testCorrectMemberList");
                           checkpoint.put("memberSize", 2);
-                          checkpoint.put("attr.attr", customAttr);
+                          checkpoint.put("attr.attr1", customAttr);
                           boolean assertResult = verifyConversationWithExpect(conversation, checkpoint);
                           if (!assertResult) {
                             System.out.println("Site:" + clientId + " conversation doesn't match expected. conv=" + conversation.toJSONString());
+                          }
+                        } else {
+                          if (null != e) {
+                            System.out.println("failed to kick member:" + thirdMember + ", exception:" + e.getMessage());
+                          } else if (null != failures && failures.size() > 0){
+                            AVIMOperationFailure failure = failures.get(0);
+                            System.out.println("failed to kick member:" + failure.getMemberIds()
+                                    + ", reason:" + failure.getReason());
+                          } else {
+                            System.out.println("failure list is:" + failures);
                           }
                         }
 
                         secondStage.countDown();
                         System.out.println("☑️️☑️️☑️️ " + clientId + " try to wait first thread running...");
-
-                        if (null != e) {
-                          System.out.println(clientId + " failed to kick member:" + thirdMember);
-                          e.printStackTrace();
-                          needExit = true;
-                          return;
-                        }
                       }
                     });
                   }
@@ -411,15 +402,16 @@ public class InteractiveTest extends TestCase {
         });
         try {
           endStage.await();
-          Thread.sleep(2000);
 
           System.out.println("☑️️☑️️☑️️☑️️ " + clientId + " got notification to exit thread.");
+          Thread.sleep(2000);
+
           AVIMConversation conversation = currentClient.getConversation(targetConversationId);
 
           Map<String, Object> checkpoint = new HashMap<>();
           checkpoint.put("name", "MemberListIsVerified");
-          checkpoint.put("memberSize", 2);
-          checkpoint.put("attr.attr", "Over");
+          checkpoint.put("memberSize", 3);
+          checkpoint.put("attr.attr1", "Over");
           boolean assertResult = verifyConversationWithExpect(conversation, checkpoint);
           if (!assertResult) {
             System.out.println("❌　Site:" + clientId + " conversation doesn't match expected. conv=" + conversation.toJSONString());
@@ -427,19 +419,8 @@ public class InteractiveTest extends TestCase {
             System.out.println("checkpoint all passed.");
           }
           System.out.println("☑️️☑️️☑️️☑️️ " + clientId + " prepare to exit thread.");
-
         } catch (Exception ex) {
           ex.printStackTrace();
-        } finally {
-          needExit = true;
-        }
-
-        while(!needExit) {
-          try {
-            Thread.sleep(1);
-          } catch (Exception ex) {
-            break;
-          }
         }
         System.out.println("Second Thread exit");
       }
@@ -452,7 +433,192 @@ public class InteractiveTest extends TestCase {
   }
 
   public void testCorrectConversationData() throws Exception {
-    ;
+    final String thirdMember = StringUtil.getRandomString(8);
+    final String customAttr = StringUtil.getRandomString(8);
+
+    System.out.println("Main Thread: " + Thread.currentThread().getId());
+    Thread firstThread = new Thread(new Runnable() {
+      @Override
+      public void run() {
+        System.out.println("First Thread: " + Thread.currentThread().getId());
+        final String clientId = "TestUserA";
+        AVIMClient currentClient = AVIMClient.getInstance(clientId);
+
+        currentClient.open(new AVIMClientCallback() {
+          @Override
+          public void done(AVIMClient client, AVIMException e) {
+            if (null != e) {
+              System.out.println("failed to open client:" + clientId);
+              e.printStackTrace();
+              return;
+            }
+            System.out.println("☑️ " + clientId + " try to create conversation...");
+            Map<String, Object> attr = new HashMap<>();
+            attr.put("attr1", customAttr);
+            List<String> members = new ArrayList<>();
+            members.add(thirdMember);
+            client.createConversation(members, "testCorrectMemberList", attr, new AVIMConversationCreatedCallback() {
+              @Override
+              public void done(final AVIMConversation conversation, AVIMException e) {
+                if (null != e) {
+                  System.out.println(clientId + " failed to create conversation: testCorrectMemberList");
+                  e.printStackTrace();
+                  return;
+                }
+                targetConversationId = conversation.getConversationId();
+
+                System.out.println("☑️ " + clientId + " succeed to create conversation, id=" + targetConversationId);
+                Map<String, Object> checkpoint = new HashMap<>();
+                checkpoint.put("name", "testCorrectMemberList");
+                checkpoint.put("memberSize", 2);
+                checkpoint.put("attr.attr1", customAttr);
+                boolean assertResult = verifyConversationWithExpect(conversation, checkpoint);
+                if (!assertResult) {
+                  System.out.println("❌　Site:" + clientId + " conversation doesn't match expected. conv=" + conversation.toJSONString());
+                } else {
+                  System.out.println("checkpoint all passed.");
+                }
+
+                System.out.println("☑️ Thread with " + clientId + " try to notify other thread.");
+                firstStage.countDown();
+              }
+            });
+          }
+        });
+        try {
+          System.out.println("☑️☑️ " + clientId + " try to wait second thread running...");
+          secondStage.await();
+
+          System.out.println("☑️☑️ " + clientId + " continue to modify conversation...");
+          final AVIMConversation conversation = currentClient.getConversation(targetConversationId);
+          conversation.setName("MemberListIsVerified");
+          conversation.setAttribute("attr1", "Over");
+          conversation.updateInfoInBackground(new AVIMConversationCallback() {
+            @Override
+            public void done(AVIMException e) {
+              if (null != e) {
+                System.out.println("failed to update conversationinfo.");
+                e.printStackTrace();
+                return;
+              }
+              System.out.println("☑️☑️☑️ " + clientId + " already modified conversation...");
+              Map<String, Object> checkpoint = new HashMap<>();
+              checkpoint.put("name", "MemberListIsVerified");
+              checkpoint.put("memberSize", 3);
+              checkpoint.put("attr.attr1", "Over");
+              boolean assertResult = verifyConversationWithExpect(conversation, checkpoint);
+              if (!assertResult) {
+                System.out.println("❌　Site:" + clientId + " conversation doesn't match expected. conv=" + conversation.toJSONString());
+              } else {
+                System.out.println("checkpoint all passed.");
+              }
+              try {
+                System.out.println("☑️☑️☑️☑️ " + clientId + " prepare to exit thread.");
+                Thread.sleep(1000);
+                endStage.countDown();
+              } catch (Exception ex) {
+                ex.printStackTrace();
+              }
+            }
+          });
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+        System.out.println("First Thread exit");
+      }
+    });
+
+    Thread secondThread = new Thread(new Runnable() {
+      @Override
+      public void run() {
+        System.out.println("Second Thread: " + Thread.currentThread().getId());
+        try {
+          System.out.println("wait first thread running...");
+          firstStage.await();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+          return;
+        }
+        final String clientId = "TestUserB";
+        AVIMClient currentClient = AVIMClient.getInstance(clientId);
+        System.out.println("☑️️ " + clientId + " try to openClient");
+        currentClient.open(new AVIMClientCallback() {
+          @Override
+          public void done(AVIMClient client, AVIMException e) {
+            if (null != e) {
+              System.out.println("failed to open client:" + clientId);
+              e.printStackTrace();
+              return;
+            }
+            System.out.println("☑️️ " + clientId + " try to fetch target conversation:" + targetConversationId);
+            final AVIMConversation conversation = client.getConversation(targetConversationId);
+            conversation.fetchInfoInBackground(new AVIMConversationCallback() {
+              @Override
+              public void done(AVIMException e) {
+                if (null != e) {
+                  System.out.println("failed to fetch conversation:" + targetConversationId + " with clientId:" + clientId);
+                  e.printStackTrace();
+                  secondStage.countDown();
+                  return;
+                }
+                System.out.println("☑️️☑️️ " + clientId + " try to join target conversation:" + targetConversationId);
+                conversation.join(new AVIMConversationCallback() {
+                  @Override
+                  public void done(AVIMException e) {
+                    if (null != e) {
+                      System.out.println("failed to join conversation:" + targetConversationId + " with clientId:" + clientId);
+                      e.printStackTrace();
+                    } else {
+                      Map<String, Object> checkpoint = new HashMap<>();
+                      checkpoint.put("name", "testCorrectMemberList");
+                      checkpoint.put("memberSize", 3);
+                      checkpoint.put("attr.attr1", customAttr);
+                      boolean assertResult = verifyConversationWithExpect(conversation, checkpoint);
+                      if (!assertResult) {
+                        System.out.println("❌　Site:" + clientId + " conversation doesn't match expected. conv=" + conversation.toJSONString());
+                      } else {
+                        System.out.println("checkpoint all passed.");
+                      }
+
+                      System.out.println("☑️️☑️️☑️️ " + clientId + " has joined.");
+                    }
+                    secondStage.countDown();
+                  }
+                });
+              }
+            });
+          }
+        });
+        try {
+          endStage.await();
+
+          System.out.println("☑️️☑️️☑️️☑️️ " + clientId + " got notification to exit thread.");
+          Thread.sleep(2000);
+
+          AVIMConversation conversation = currentClient.getConversation(targetConversationId);
+
+          Map<String, Object> checkpoint = new HashMap<>();
+          checkpoint.put("name", "MemberListIsVerified");
+          checkpoint.put("memberSize", 3);
+          checkpoint.put("attr.attr1", "Over");
+          boolean assertResult = verifyConversationWithExpect(conversation, checkpoint);
+          if (!assertResult) {
+            System.out.println("❌　Site:" + clientId + " conversation doesn't match expected. conv=" + conversation.toJSONString());
+          } else {
+            System.out.println("checkpoint all passed.");
+          }
+          System.out.println("☑️️☑️️☑️️☑️️ " + clientId + " prepare to exit thread.");
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+        System.out.println("Second Thread exit");
+      }
+    });
+    firstThread.start();
+    secondThread.start();
+    firstThread.join();
+    secondThread.join();
+    System.out.println("Main Thread exit");
   }
 
   public void testCorrectLastMessageNotification() throws Exception {

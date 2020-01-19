@@ -762,6 +762,10 @@ public class AVConversationHolder {
   }
 
   void onJoined(int requestId) {
+    AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+    final AVIMConversation conversation = client.getConversation(this.conversationId);
+    conversation.internalMergeMembers(Arrays.asList(session.getSelfPeerId()));
+
     InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_JOIN, null);
   }
@@ -992,6 +996,7 @@ public class AVConversationHolder {
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
       final AVIMConversation conversation = client.getConversation(this.conversationId);
+      conversation.internalMergeMembers(members);
       refreshConversationThenNotify(conversation, new SimpleCallback() {
         @Override
         public void done() {
@@ -1005,7 +1010,7 @@ public class AVConversationHolder {
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
       final AVIMConversation conversation = client.getConversation(this.conversationId);
-
+      conversation.internalRemoveMembers(members);
       refreshConversationThenNotify(conversation, new SimpleCallback() {
         @Override
         public void done() {
