@@ -764,7 +764,7 @@ public class AVConversationHolder {
   void onJoined(int requestId) {
     AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
     final AVIMConversation conversation = client.getConversation(this.conversationId);
-    conversation.internalMergeMembers(Arrays.asList(session.getSelfPeerId()));
+    ConversationSynchronizer.mergeMembers(conversation, Arrays.asList(session.getSelfPeerId()));
 
     InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_JOIN, null);
@@ -775,7 +775,7 @@ public class AVConversationHolder {
 
     AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
     final AVIMConversation conversation = client.getConversation(this.conversationId);
-    conversation.internalMergeMembers(allowedList);
+    ConversationSynchronizer.mergeMembers(conversation, allowedList);
 
     HashMap<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
@@ -788,7 +788,7 @@ public class AVConversationHolder {
 
     AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
     final AVIMConversation conversation = client.getConversation(this.conversationId);
-    conversation.internalRemoveMembers(allowedList);
+    ConversationSynchronizer.removeMembers(conversation, allowedList);
 
     HashMap<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
@@ -996,7 +996,7 @@ public class AVConversationHolder {
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
       final AVIMConversation conversation = client.getConversation(this.conversationId);
-      conversation.internalMergeMembers(members);
+      ConversationSynchronizer.mergeMembers(conversation, members);
       refreshConversationThenNotify(conversation, new SimpleCallback() {
         @Override
         public void done() {
@@ -1010,7 +1010,7 @@ public class AVConversationHolder {
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
       final AVIMConversation conversation = client.getConversation(this.conversationId);
-      conversation.internalRemoveMembers(members);
+      ConversationSynchronizer.removeMembers(conversation, members);
       refreshConversationThenNotify(conversation, new SimpleCallback() {
         @Override
         public void done() {

@@ -299,7 +299,7 @@ public class AVIMConversation {
     }
   }
 
-  public void internalMergeMembers(List<String> memberList) {
+  void internalMergeMembers(List<String> memberList) {
     if (null != memberList) {
       for (String m: memberList) {
         members.add(m);
@@ -307,7 +307,7 @@ public class AVIMConversation {
     }
   }
 
-  public void internalRemoveMembers(List<String> memberList) {
+  void internalRemoveMembers(List<String> memberList) {
     if (null != memberList) {
       for (String m: memberList) {
         members.remove(m);
