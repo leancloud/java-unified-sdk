@@ -3,7 +3,6 @@ package cn.leancloud.session;
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
-import cn.leancloud.callback.AVCallback;
 import cn.leancloud.codec.Base64Decoder;
 import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
@@ -545,11 +544,12 @@ public class AVConversationHolder {
       onConversationCreated(requestId, convCommand);
     } else if (ConversationControlOp.JOINED.equals(operation)) {
       String invitedBy = convCommand.getInitBy();
-      // 这里是我自己邀请了我自己，这个事件会被忽略。因为伴随这个消息一起来的还有added消息
       if (invitedBy.equals(session.getSelfPeerId())) {
+        // 这里是我自己邀请了我自己，这个事件会被忽略。因为伴随这个消息一起来的还有added消息
         LOGGER.d("ignore command, due to self-invited.");
         return;
       } else if (!invitedBy.equals(session.getSelfPeerId())) {
+        // others invited current User to conversation.
         // need convCommand to instantiate conversation object.
         onInvitedToConversation(invitedBy, convCommand);
       }
@@ -560,7 +560,7 @@ public class AVConversationHolder {
         } else if (imop.getCode() == AVIMOperation.CONVERSATION_QUIT.getCode()) {
           onQuit(requestId);
         } else if (imop.getCode() == AVIMOperation.CONVERSATION_RM_MEMBER.getCode()) {
-          onKicked(requestId);
+          onKicked(requestId, convCommand);
         }
       }
     } else if (ConversationControlOp.ADDED.equals(operation)) {
@@ -571,7 +571,7 @@ public class AVConversationHolder {
         } else if (imop.getCode() == AVIMOperation.CONVERSATION_JOIN.getCode()) {
           onJoined(requestId);
         } else if (imop.getCode() == AVIMOperation.CONVERSATION_ADD_MEMBER.getCode()) {
-          onInvited(requestId);
+          onInvited(requestId, convCommand);
         }
       }
     } else if (ConversationControlOp.LEFT.equals(operation)) {
@@ -696,8 +696,8 @@ public class AVConversationHolder {
       }
     }
     HashMap<String, Object> bundle = new HashMap<>();
-    bundle.put(Conversation.callbackConvMemberMuted_SUCC, allowedMembers);
-    bundle.put(Conversation.callbackConvMemberMuted_FAIL, failedList);
+    bundle.put(Conversation.callbackConvMemberPartial_SUCC, allowedMembers);
+    bundle.put(Conversation.callbackConvMemberPartial_FAIL, failedList);
     return bundle;
   }
 
@@ -765,13 +765,30 @@ public class AVConversationHolder {
     InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_JOIN, null);
   }
-  void onInvited(int requestId) {
-    InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_ADD_MEMBER, null);
+  void onInvited(int requestId, Messages.ConvCommand convCommand) {
+    List<String> allowedList = convCommand.getAllowedPidsList();
+    List<Messages.ErrorCommand> errorCommandList = convCommand.getFailedPidsList();
+
+    AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+    final AVIMConversation conversation = client.getConversation(this.conversationId);
+    conversation.internalMergeMembers(allowedList);
+
+    HashMap<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
+    InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
+            AVIMOperation.CONVERSATION_ADD_MEMBER, bundle);
   }
-  void onKicked(int requestId) {
-    InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_RM_MEMBER, null);
+
+  void onKicked(int requestId, Messages.ConvCommand convCommand) {
+    List<String> allowedList = convCommand.getAllowedPidsList();
+    List<Messages.ErrorCommand> errorCommandList = convCommand.getFailedPidsList();
+
+    AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+    final AVIMConversation conversation = client.getConversation(this.conversationId);
+    conversation.internalRemoveMembers(allowedList);
+
+    HashMap<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
+    InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
+            AVIMOperation.CONVERSATION_RM_MEMBER, bundle);
   }
   void onQuit(int requestId) {
     InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,

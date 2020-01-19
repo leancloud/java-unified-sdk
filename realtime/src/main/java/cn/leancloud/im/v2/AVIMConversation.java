@@ -299,6 +299,21 @@ public class AVIMConversation {
     }
   }
 
+  public void internalMergeMembers(List<String> memberList) {
+    if (null != memberList) {
+      for (String m: memberList) {
+        members.add(m);
+      }
+    }
+  }
+
+  public void internalRemoveMembers(List<String> memberList) {
+    if (null != memberList) {
+      for (String m: memberList) {
+        members.remove(m);
+      }
+    }
+  }
   /**
    * get the latest readAt timestamp
    * @return latest readat timestamp
@@ -1201,10 +1216,10 @@ public class AVIMConversation {
    * @param callback callback function.
    * @since 3.0
    */
-  public void addMembers(final List<String> memberIds, final AVIMConversationCallback callback) {
+  public void addMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
     if (null == memberIds || memberIds.size() < 1) {
       if (null != callback) {
-        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")));
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
       }
       return;
     }
@@ -1225,10 +1240,10 @@ public class AVIMConversation {
    * @param callback callback function.
    * @since 3.0
    */
-  public void kickMembers(final List<String> memberIds, final AVIMConversationCallback callback) {
+  public void kickMembers(final List<String> memberIds, final AVIMOperationPartiallySucceededCallback callback) {
     if (null == memberIds || memberIds.size() < 1) {
       if (null != callback) {
-        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")));
+        callback.done(new AVIMException(new IllegalArgumentException("memberIds is null")), null, null);
       }
       return;
     }
