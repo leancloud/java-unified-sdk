@@ -195,6 +195,10 @@ public class AVIMConversation {
     latestConversationFetch = 0;
   }
 
+  public void updateFetchTimestamp(long timestamp) {
+    latestConversationFetch = timestamp;
+  }
+
   public int getType() {
     if (isSystem()) {
       return Conversation.CONV_TYPE_SYSTEM;
@@ -1709,7 +1713,7 @@ public class AVIMConversation {
     } else {
       originConv = new AVIMConversation(client, conversationId);
     }
-    originConv.latestConversationFetch = System.currentTimeMillis();
+    originConv.updateFetchTimestamp(System.currentTimeMillis());
 
     return updateConversation(originConv, jsonObj);
   }

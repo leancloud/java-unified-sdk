@@ -375,6 +375,7 @@ public class AVIMClient {
           conversation.setCreatedAt(createdAt);
           conversation.setUpdatedAt(createdAt);
           conversation.setTemporary(isTemp);
+          conversation.updateFetchTimestamp(System.currentTimeMillis());
           conversation.setTemporaryExpiredat(System.currentTimeMillis()/1000 + tempTTLFromServer);
           if (AVIMOptions.getGlobalOptions().isMessageQueryCacheEnabled()) {
             storage.insertConversations(Arrays.asList(conversation));
