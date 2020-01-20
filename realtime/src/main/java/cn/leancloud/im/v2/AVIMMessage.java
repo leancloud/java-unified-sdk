@@ -1,18 +1,19 @@
 package cn.leancloud.im.v2;
 
+import cn.leancloud.codec.Base64Decoder;
+import cn.leancloud.codec.Base64Encoder;
+import cn.leancloud.im.AVIMOptions;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import cn.leancloud.utils.StringUtil;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class AVIMMessage {
   protected String conversationId;
   protected String content;
+  protected byte[] bytes;
   protected String from;
   protected long timestamp;
   protected long deliveredAt;
@@ -379,15 +380,143 @@ public class AVIMMessage {
             && StringUtil.equals(uniqueToken, otherMsg.uniqueToken);
   }
 
+  public Map<String, Object> dumpRawData() {
+    Map<String, Object> result = new HashMap<>();
+    if (!StringUtil.isEmpty(conversationId)) {
+      result.put("conversationId", conversationId);
+    }
+    if (!StringUtil.isEmpty(messageId)) {
+      result.put("id", messageId);
+    }
+    if (!StringUtil.isEmpty(from)) {
+      result.put("from", from);
+    }
+    if (!StringUtil.isEmpty(currentClient)) {
+      result.put("clientId", currentClient);
+    }
+    if (!StringUtil.isEmpty(uniqueToken)) {
+      result.put("uniqueToken", uniqueToken);
+    }
+    if (this.timestamp > 0) {
+      result.put("timestamp", this.timestamp);
+    }
+    if (this.updateAt > 0) {
+      result.put("patchTimestamp", this.updateAt);
+    }
+    if (this.deliveredAt > 0) {
+      result.put("ackAt", this.deliveredAt);
+    }
+    if (this.readAt > 0) {
+      result.put("readAt", this.readAt);
+    }
+    result.put("io", ioType.getIOType());
+    result.put("status", status.getStatusCode());
+
+    result.put("mentionAll", this.mentionAll);
+    if (null != this.mentionList && this.mentionList.size() > 0) {
+      result.put("mentionPids", this.mentionList);
+    }
+
+    if (null != bytes && this instanceof AVIMBinaryMessage) {
+      if (AVIMOptions.getGlobalOptions().isWrapMessageBinaryBufferAsString()) {
+        result.put("binaryMsg", Base64Encoder.encode(bytes));
+      } else {
+        result.put("binaryMsg", bytes);
+      }
+    } else if (this instanceof AVIMTypedMessage) {
+      result.put("typeMsgData", getContent());
+    } else {
+      String content = getContent();
+      if (!StringUtil.isEmpty(content)) {
+        result.put("msg", content);
+      }
+    }
+    return result;
+  }
+
   public String toJSONString() {
-    return JSON.toJSONString(this);
+    return JSON.toJSONString(this.dumpRawData());
+  }
+
+  public static AVIMMessage parseJSON(JSONObject jsonObject) {
+    if (null == jsonObject) {
+      return null;
+    }
+    AVIMMessage message;
+    if (jsonObject.containsKey("binaryMsg")) {
+      AVIMBinaryMessage binaryMessage = new AVIMBinaryMessage();
+      Object binValue = jsonObject.get("binaryMsg");
+      if (binValue instanceof String) {
+        String binString = (String) jsonObject.get("binaryMsg");
+        binaryMessage.setBytes(Base64Decoder.decodeToBytes(binString));
+      } else if (binValue instanceof byte[]){
+        binaryMessage.setBytes((byte[]) binValue);
+      }
+      message = binaryMessage;
+    } else if (jsonObject.containsKey("typeMsgData")) {
+      message = new AVIMMessage();
+      Object typedMsgData = jsonObject.get("typeMsgData");
+      if (typedMsgData instanceof String) {
+        message.setContent((String) typedMsgData);
+      } else {
+        message.setContent(JSON.toJSONString(typedMsgData));
+      }
+    } else {
+      message = new AVIMMessage();
+      message.setContent((String) jsonObject.get("msg"));
+    }
+    if (jsonObject.containsKey("clientId")) {
+      message.setCurrentClient((String) jsonObject.get("clientId"));
+    }
+    if (jsonObject.containsKey("uniqueToken")) {
+      message.setUniqueToken((String) jsonObject.get("uniqueToken"));
+    }
+    if (jsonObject.containsKey("io")) {
+      message.setMessageIOType(AVIMMessageIOType.getMessageIOType((int) jsonObject.get("io")));
+    }
+    if (jsonObject.containsKey("status")) {
+      message.setMessageStatus(AVIMMessageStatus.getMessageStatus((int) jsonObject.get("status")));
+    }
+    if (jsonObject.containsKey("timestamp")) {
+      message.setTimestamp(((Number) jsonObject.get("timestamp")).longValue());
+    }
+    if (jsonObject.containsKey("ackAt")) {
+      message.setDeliveredAt(((Number) jsonObject.get("ackAt")).longValue());
+    }
+    if (jsonObject.containsKey("readAt")) {
+      message.setReadAt(((Number) jsonObject.get("readAt")).longValue());
+    }
+    if (jsonObject.containsKey("patchTimestamp")) {
+      message.setUpdateAt(((Number) jsonObject.get("patchTimestamp")).longValue());
+    }
+    if (jsonObject.containsKey("mentionAll")) {
+      message.setMentionAll((boolean) jsonObject.get("mentionAll"));
+    }
+    if (jsonObject.containsKey("mentionPids")) {
+      message.setMentionList((List<String>) jsonObject.get("mentionPids"));
+    }
+    if (jsonObject.containsKey("id")) {
+      message.setMessageId((String) jsonObject.get("id"));
+    }
+    if (jsonObject.containsKey("from")) {
+      message.setFrom((String) jsonObject.get("from"));
+    }
+    if (jsonObject.containsKey("conversationId")) {
+      message.setConversationId((String) jsonObject.get("conversationId"));
+    }
+    if (jsonObject.containsKey("typeMsgData")) {
+      message = AVIMMessageManager.parseTypedMessage(message);
+    }
+    return message;
   }
 
   public static AVIMMessage parseJSONString(String content) {
     if (StringUtil.isEmpty(content)) {
       return null;
     }
-    return JSON.parseObject(content, AVIMMessage.class);
+
+    JSONObject jsonObject = JSON.parseObject(content);
+    return parseJSON(jsonObject);
   }
 
   public enum AVIMMessageStatus {

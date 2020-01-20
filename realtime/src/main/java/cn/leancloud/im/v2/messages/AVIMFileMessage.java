@@ -3,6 +3,7 @@ package cn.leancloud.im.v2.messages;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVFile;
+import cn.leancloud.AVLogger;
 import cn.leancloud.callback.ProgressCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
@@ -10,12 +11,13 @@ import cn.leancloud.core.PaasClient;
 import cn.leancloud.im.v2.AVIMTypedMessage;
 import cn.leancloud.im.v2.annotation.AVIMMessageField;
 import cn.leancloud.im.v2.annotation.AVIMMessageType;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +26,8 @@ import java.util.Map;
 
 @AVIMMessageType(type = AVIMMessageType.FILE_MESSAGE_TYPE)
 public class AVIMFileMessage extends AVIMTypedMessage {
+  private static final AVLogger LOGGER = LogUtil.getLogger(AVIMFileMessage.class);
+
   static final String OBJECT_ID = "objId";
   static final String FILE_URL = "url";
   static final String FILE_META = "metaData";
@@ -99,6 +103,10 @@ public class AVIMFileMessage extends AVIMTypedMessage {
     return null;
   }
 
+  public void attachAVFile(AVFile file) {
+    this.actualFile = file;
+  }
+
   protected void setFile(Map<String, Object> file) {
     this.file = file;
     Map<String, Object> metaData = (Map<String, Object>) file.get(FILE_META);
@@ -139,6 +147,7 @@ public class AVIMFileMessage extends AVIMTypedMessage {
     if (!file.containsKey(FILE_META)) {
       meta = new HashMap<String, Object>();
       meta.put(FILE_SIZE, actualFile.getSize());
+      file.put(FILE_META, meta);
     } else {
       meta = (Map<String, Object>) file.get(FILE_META);
     }
@@ -160,7 +169,8 @@ public class AVIMFileMessage extends AVIMTypedMessage {
 
   protected void upload(final SaveCallback callback) {
     if (actualFile != null) {
-      actualFile.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
+      actualFile.saveInBackground().subscribeOn(Schedulers.io())
+              .subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
         @Override
         public void done(AVException e) {
           if (e != null) {
@@ -248,26 +258,31 @@ public class AVIMFileMessage extends AVIMTypedMessage {
     return;
   }
 
-  protected void getAdditionalMetaData(Map<String, Object> meta, SaveCallback callback) {
+  protected void getAdditionalMetaData(final Map<String, Object> meta, final SaveCallback callback) {
     if (!this.hasAdditionalMetaAttr) {
       callback.internalDone(null);
     } else if (!StringUtil.isEmpty(actualFile.getUrl()) && localFile == null
               && !isExternalAVFile(actualFile)) {
       OkHttpClient client = PaasClient.getGlobalOkHttpClient();
       Request.Builder builder = new Request.Builder();
-      try {
-        Response rawResponse = client.newCall(builder.url(actualFile.getUrl() + getQueryName()).get().build()).execute();
-        String content = rawResponse.body().string();
-        com.alibaba.fastjson.JSONObject response = JSON.parseObject(content);
-        com.alibaba.fastjson.JSONObject formatInfo = response.getJSONObject(FORMAT);
-        parseAdditionalMetaData(meta, formatInfo);
+      final String url = actualFile.getUrl() + getQueryName();
+      Call call = client.newCall(builder.url(url).get().build());
+      call.enqueue(new Callback() {
+        @Override
+        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+          LOGGER.d("error encountered while accessing qiniu with url:" + url);
+          callback.internalDone(null);
+        }
 
-        callback.internalDone(null);
-      } catch (IOException ex) {
-        callback.internalDone(new AVException(ex));
-      } catch (Exception e1) {
-        callback.internalDone(new AVException(e1));
-      }
+        @Override
+        public void onResponse(@NotNull Call call, @NotNull Response rawResponse) throws IOException {
+          String content = rawResponse.body().string();
+          com.alibaba.fastjson.JSONObject response = JSON.parseObject(content);
+          parseAdditionalMetaData(meta, response);
+
+          callback.internalDone(null);
+        }
+      });
     } else {
       callback.internalDone(null);
     }

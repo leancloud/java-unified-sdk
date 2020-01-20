@@ -212,8 +212,8 @@ public interface Conversation {
   //  String callbackTransient = "callbackTransient";
 //  String callbackSystem = "callbackSystem";
   String callbackConvType = "callbackConvType";
-  String callbackConvMemberMuted_SUCC = "callbackConvMemberMutedSUCC";
-  String callbackConvMemberMuted_FAIL = "callbackConvMemberMutedFAIL";
+  String callbackConvMemberPartial_SUCC = "callbackConvMemberPartialSUCC";
+  String callbackConvMemberPartial_FAIL = "callbackConvMemberPartialFAIL";
 
   String QUERY_PARAM_OFFSET = "skip";
   String QUERY_PARAM_LIMIT = "limit";

@@ -50,7 +50,7 @@ public class AVIMImageMessage extends AVIMFileMessage {
     }
     if (localFile != null) {
       Map<String, Object> meta = AVIMFileMessageAccessor.getImageMeta(localFile);
-      meta.put(FILE_SIZE, actualFile.getSize());
+      meta.put(FILE_SIZE, localFile.length());
       file.put(FILE_META, meta);
       return meta;
     } else if (actualFile != null) {
@@ -109,8 +109,14 @@ public class AVIMImageMessage extends AVIMFileMessage {
     if (null == meta || null == response) {
       return;
     }
-    meta.put(FORMAT, response.getString(FORMAT));
-    meta.put(IMAGE_HEIGHT, response.getInteger(IMAGE_HEIGHT));
-    meta.put(IMAGE_WIDTH, response.getInteger(IMAGE_WIDTH));
+    if (response.containsKey(FORMAT)) {
+      meta.put(FORMAT, response.getString(FORMAT));
+    }
+    if (response.containsKey(IMAGE_HEIGHT)) {
+      meta.put(IMAGE_HEIGHT, response.getInteger(IMAGE_HEIGHT));
+    }
+    if (response.containsKey(IMAGE_WIDTH)) {
+      meta.put(IMAGE_WIDTH, response.getInteger(IMAGE_WIDTH));
+    }
   }
 }

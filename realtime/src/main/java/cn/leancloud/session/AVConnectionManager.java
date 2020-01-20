@@ -322,7 +322,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public void onClose(WebSocketClient client, int var1, String var2, boolean var3) {
-    LOGGER.d("websocket(client=" + client + ") closed...");
+    LOGGER.d("client(" + client + ") closed...");
     connectionEstablished = false;
     for (AVConnectionListener listener: connectionListeners.values()) {
       listener.onWebSocketClose();
@@ -336,6 +336,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     WindTalker windTalker = WindTalker.getInstance();
     Messages.GenericCommand command = windTalker.disassemblePacket(bytes);
     if (null == command) {
+      LOGGER.w("client(" + client + ") downlink: invalid command.");
       return;
     }
 

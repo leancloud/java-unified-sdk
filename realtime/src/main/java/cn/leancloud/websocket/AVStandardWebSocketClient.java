@@ -114,7 +114,7 @@ public class AVStandardWebSocketClient extends WebSocketClient {
   }
 
   public void send(CommandPacket packet) {
-    gLogger.d("uplink : " + packet.getGenericCommand().toString());
+    gLogger.d("client(" + this + ") uplink : " + packet.getGenericCommand().toString());
     try {
       send(packet.getGenericCommand().toByteArray());
     } catch (Exception e) {
@@ -140,7 +140,9 @@ public class AVStandardWebSocketClient extends WebSocketClient {
   }
 
   public void onMessage(String var1) {
-    gLogger.d("onMessage " + var1);
+    if (null != this.socketClientMonitor) {
+      this.socketClientMonitor.onMessage(this, ByteBuffer.wrap(var1.getBytes()));
+    }
   }
 
   public void onMessage(ByteBuffer bytes) {

@@ -51,12 +51,12 @@ public class SimpleLogger extends InternalLogger {
 
   protected void internalWriteLog(AVLogger.Level level, String msg) {
     java.util.logging.Level nativeLevel = getNativeLevel(level);
-    this.logger.log(nativeLevel, msg);
+    this.logger.log(nativeLevel, "[Thread-" + Thread.currentThread().getId() + "] " + msg);
   }
 
   protected void internalWriteLog(AVLogger.Level level, String msg, Throwable tr) {
     java.util.logging.Level nativeLevel = getNativeLevel(level);
-    this.logger.log(nativeLevel, msg, tr);
+    this.logger.log(nativeLevel, "[Thread-" + Thread.currentThread().getId() + "] " + msg, tr);
   }
 
   protected void internalWriteLog(AVLogger.Level level, Throwable tr) {

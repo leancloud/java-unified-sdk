@@ -40,11 +40,13 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
     public static final String SESSION_TOKEN_TTL = "stTtl";
   }
 
-  private static final long PATCH_FLAG = 0x01; // support to update and recall message.
+  private static final long PATCH_FLAG = 0x01;                // support to update and recall message.
   private static final long PATCH_FLAG_TEMPORARY_CONV = 0x02; // support temporary conversation.
   private static final long PATCH_FLAG_BIND_INSTALLATION_TO_SESSION = 0x04; // support to bind Installation.
-  private static final long PATCH_FLAG_ACK_4_TRANSIENT_MSG = 0x08; // support to receive ack for transient message.
-  private static final long PATCH_FLAG_SUPPORT_CONVMEMBER_INFO = 0x20;
+  private static final long PATCH_FLAG_ACK_4_TRANSIENT_MSG = 0x08;          // support to receive ack for transient message.
+  private static final long PATCH_FLAG_SUPPORT_CONVMEMBER_INFO = 0x20;      // support partial result for conv operation.
+  private static final long PATCH_FLAG_ACK_4_GROUPCHAT = 0x40;              // support to receive ack for group chatting.
+  private static final long PATCH_FLAG_SUPPORT_RELIABLE_NOTIFICATION = 0x10;// support reliable notification.
 
   private String op;
 
@@ -146,8 +148,8 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
     return genSessionCommand(selfId, peers, op, signature, 0, 0, requestId);
   }
 
-  public static SessionControlPacket genSessionCommand(String selfId, List<String> peers,
-                                                       String op, Signature signature, long lastUnreadNotifyTime, long lastPatchTime, Integer requestId) {
+  public static SessionControlPacket genSessionCommand(String selfId, List<String> peers, String op, Signature signature,
+                                                       long lastUnreadNotifyTime, long lastPatchTime, Integer requestId) {
 
     SessionControlPacket scp = new SessionControlPacket();
 
@@ -176,7 +178,6 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
       // selfId is necessary only when more than one client logins.
       scp.setPeerId(selfId);
     }
-
     if (null == requestId) {
       scp.setRequestId(SessionControlPacket.UNSUPPORTED_OPERATION);
     } else {

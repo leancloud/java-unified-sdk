@@ -3,7 +3,6 @@ package cn.leancloud.session;
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
-import cn.leancloud.callback.AVCallback;
 import cn.leancloud.codec.Base64Decoder;
 import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
@@ -545,11 +544,12 @@ public class AVConversationHolder {
       onConversationCreated(requestId, convCommand);
     } else if (ConversationControlOp.JOINED.equals(operation)) {
       String invitedBy = convCommand.getInitBy();
-      // 这里是我自己邀请了我自己，这个事件会被忽略。因为伴随这个消息一起来的还有added消息
       if (invitedBy.equals(session.getSelfPeerId())) {
+        // 这里是我自己邀请了我自己，这个事件会被忽略。因为伴随这个消息一起来的还有added消息
         LOGGER.d("ignore command, due to self-invited.");
         return;
       } else if (!invitedBy.equals(session.getSelfPeerId())) {
+        // others invited current User to conversation.
         // need convCommand to instantiate conversation object.
         onInvitedToConversation(invitedBy, convCommand);
       }
@@ -560,7 +560,7 @@ public class AVConversationHolder {
         } else if (imop.getCode() == AVIMOperation.CONVERSATION_QUIT.getCode()) {
           onQuit(requestId);
         } else if (imop.getCode() == AVIMOperation.CONVERSATION_RM_MEMBER.getCode()) {
-          onKicked(requestId);
+          onKicked(requestId, convCommand);
         }
       }
     } else if (ConversationControlOp.ADDED.equals(operation)) {
@@ -571,7 +571,7 @@ public class AVConversationHolder {
         } else if (imop.getCode() == AVIMOperation.CONVERSATION_JOIN.getCode()) {
           onJoined(requestId);
         } else if (imop.getCode() == AVIMOperation.CONVERSATION_ADD_MEMBER.getCode()) {
-          onInvited(requestId);
+          onInvited(requestId, convCommand);
         }
       }
     } else if (ConversationControlOp.LEFT.equals(operation)) {
@@ -589,6 +589,7 @@ public class AVConversationHolder {
       } else if (AVIMOperation.CONVERSATION_UNMUTE.getCode() == imop.getCode()) {
         onUnmuted(requestId);
       } else if (AVIMOperation.CONVERSATION_UPDATE.getCode() == imop.getCode()) {
+        mergeServerData(convCommand);
         onInfoUpdated(requestId, convCommand.getUdate());
       }
     } else if (ConversationControlOp.MEMBER_COUNT_QUERY_RESULT.equals(operation)) {
@@ -696,8 +697,8 @@ public class AVConversationHolder {
       }
     }
     HashMap<String, Object> bundle = new HashMap<>();
-    bundle.put(Conversation.callbackConvMemberMuted_SUCC, allowedMembers);
-    bundle.put(Conversation.callbackConvMemberMuted_FAIL, failedList);
+    bundle.put(Conversation.callbackConvMemberPartial_SUCC, allowedMembers);
+    bundle.put(Conversation.callbackConvMemberPartial_FAIL, failedList);
     return bundle;
   }
 
@@ -762,16 +763,37 @@ public class AVConversationHolder {
   }
 
   void onJoined(int requestId) {
+    AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+    final AVIMConversation conversation = client.getConversation(this.conversationId);
+    ConversationSynchronizer.mergeMembers(conversation, Arrays.asList(session.getSelfPeerId()));
+
     InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
             AVIMOperation.CONVERSATION_JOIN, null);
   }
-  void onInvited(int requestId) {
-    InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_ADD_MEMBER, null);
+  void onInvited(int requestId, Messages.ConvCommand convCommand) {
+    List<String> allowedList = convCommand.getAllowedPidsList();
+    List<Messages.ErrorCommand> errorCommandList = convCommand.getFailedPidsList();
+
+    AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+    final AVIMConversation conversation = client.getConversation(this.conversationId);
+    ConversationSynchronizer.mergeMembers(conversation, allowedList);
+
+    HashMap<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
+    InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
+            AVIMOperation.CONVERSATION_ADD_MEMBER, bundle);
   }
-  void onKicked(int requestId) {
-    InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_RM_MEMBER, null);
+
+  void onKicked(int requestId, Messages.ConvCommand convCommand) {
+    List<String> allowedList = convCommand.getAllowedPidsList();
+    List<Messages.ErrorCommand> errorCommandList = convCommand.getFailedPidsList();
+
+    AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+    final AVIMConversation conversation = client.getConversation(this.conversationId);
+    ConversationSynchronizer.removeMembers(conversation, allowedList);
+
+    HashMap<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
+    InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
+            AVIMOperation.CONVERSATION_RM_MEMBER, bundle);
   }
   void onQuit(int requestId) {
     InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
@@ -856,13 +878,28 @@ public class AVConversationHolder {
       });
     }
   }
+
+  private void mergeServerData(Messages.ConvCommand convCommand) {
+    AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
+    final AVIMConversation conversation = client.getConversation(this.conversationId);
+    Messages.JsonObjectMessage attrMsg = convCommand.getAttrModified();
+    if (null != attrMsg && null != attrMsg.getData() && attrMsg.getData().trim().length() > 0) {
+      JSONObject operand = JSON.parseObject(attrMsg.getData());
+      ConversationSynchronizer.mergeConversationFromJsonObject(conversation, operand);
+    }
+    ConversationSynchronizer.changeUpdatedTime(conversation, convCommand.getUdate());
+  }
+
   void onInfoChangedNotify(Messages.ConvCommand convCommand) {
     final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (null != handler) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
       final AVIMConversation conversation = parseConversation(client, convCommand);
       final String operator = convCommand.getInitBy();
-      Messages.JsonObjectMessage attrMsg = convCommand.getAttr();
+      // change from attr to attrModified.
+      Messages.JsonObjectMessage attrMsg = convCommand.getAttrModified();
+      String updatedAt = convCommand.getUdate();
+      ConversationSynchronizer.changeUpdatedTime(conversation, updatedAt);
       JSONObject operand = null;
       if (null == attrMsg || null == attrMsg.getData() || attrMsg.getData().trim().length() < 1) {
         // attached data is empty
@@ -870,7 +907,7 @@ public class AVConversationHolder {
       } else {
         // diff data is pushed, but deleted attr is ignored.
         operand = JSON.parseObject(attrMsg.getData());
-        AVIMConversation.mergeConversationFromJsonObject(conversation, operand);
+        ConversationSynchronizer.mergeConversationFromJsonObject(conversation, operand);
       }
       // Notice: SDK doesn't refresh conversation data automatically.
       handler.processEvent(Conversation.STATUS_ON_INFO_CHANGED, operator, operand, conversation);
@@ -975,6 +1012,7 @@ public class AVConversationHolder {
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
       final AVIMConversation conversation = client.getConversation(this.conversationId);
+      ConversationSynchronizer.mergeMembers(conversation, members);
       refreshConversationThenNotify(conversation, new SimpleCallback() {
         @Override
         public void done() {
@@ -988,7 +1026,7 @@ public class AVConversationHolder {
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
       final AVIMConversation conversation = client.getConversation(this.conversationId);
-
+      ConversationSynchronizer.removeMembers(conversation, members);
       refreshConversationThenNotify(conversation, new SimpleCallback() {
         @Override
         public void done() {

@@ -24,11 +24,13 @@ public abstract class AVIMOperationPartiallySucceededCallback extends AVCallback
   protected final void internalDone0(Map<String, Object> returnValue, AVException e) {
     if (null != e) {
       done(AVIMException.wrapperAVException(e), null, null);
-    } else {
-      String[] allowed = (String[]) returnValue.get(Conversation.callbackConvMemberMuted_SUCC);
-      ArrayList<AVIMOperationFailure> failed = (ArrayList<AVIMOperationFailure>) returnValue.get(Conversation.callbackConvMemberMuted_FAIL);
+    } else if (null != returnValue){
+      String[] allowed = (String[]) returnValue.get(Conversation.callbackConvMemberPartial_SUCC);
+      ArrayList<AVIMOperationFailure> failed = (ArrayList<AVIMOperationFailure>) returnValue.get(Conversation.callbackConvMemberPartial_FAIL);
 
       done(null, Arrays.asList(allowed), failed);
+    } else {
+      done(null, null, null);
     }
   }
 }
