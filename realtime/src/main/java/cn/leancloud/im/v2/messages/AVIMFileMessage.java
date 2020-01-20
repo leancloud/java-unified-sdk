@@ -99,6 +99,10 @@ public class AVIMFileMessage extends AVIMTypedMessage {
     return null;
   }
 
+  public void attachAVFile(AVFile file) {
+    this.actualFile = file;
+  }
+
   protected void setFile(Map<String, Object> file) {
     this.file = file;
     Map<String, Object> metaData = (Map<String, Object>) file.get(FILE_META);

@@ -447,7 +447,7 @@ public class AVIMMessage {
       message = binaryMessage;
     } else if (jsonObject.containsKey("typeMsgData")) {
       message = new AVIMMessage();
-      Object typedMsgData = jsonObject.containsKey("typeMsgData");
+      Object typedMsgData = jsonObject.get("typeMsgData");
       if (typedMsgData instanceof String) {
         message.setContent((String) typedMsgData);
       } else {

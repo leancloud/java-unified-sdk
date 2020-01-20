@@ -70,4 +70,11 @@ public class AVIMMessageTest extends TestCase {
     AVIMMessage copyAudioMessage = AVIMMessage.parseJSONString(jsonString);
     assertTrue(copyAudioMessage instanceof AVIMImageMessage);
   }
+
+  public void testMessageDeserializer() throws Exception {
+    String jsonString = "{\"clientId\":\"23b713e9-1633-4ebf-9243-a3704c279cb8\",\"typeMsgData\":{\"_lctext\":\"d14ee1f0-afd9-438c-8fca-4df10fb70de3\",\"_lctype\":-1}}";
+    AVIMMessage message = AVIMMessage.parseJSONString(jsonString);
+    assertTrue(message instanceof AVIMTextMessage);
+    assertTrue(((AVIMTextMessage) message).getText().equals("d14ee1f0-afd9-438c-8fca-4df10fb70de3"));
+  }
 }
