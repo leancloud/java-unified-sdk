@@ -5,6 +5,7 @@ import cn.leancloud.AVFile;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.im.v2.annotation.AVIMMessageType;
+import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -55,7 +56,7 @@ public class AVIMAudioMessage extends AVIMFileMessage {
     }
     if (localFile != null) {
       Map<String, Object> meta = AVIMFileMessageAccessor.mediaInfo(localFile);
-      meta.put(FILE_SIZE, actualFile.getSize());
+      meta.put(FILE_SIZE, localFile.length());
       file.put(FILE_META, meta);
       return meta;
     } else if (actualFile != null) {
@@ -85,15 +86,22 @@ public class AVIMAudioMessage extends AVIMFileMessage {
   }
 
   @Override
-  protected void parseAdditionalMetaData(final Map<String, Object> meta, JSONObject formatInfo) {
-    if (null == meta || null == formatInfo) {
+  protected void parseAdditionalMetaData(final Map<String, Object> meta, JSONObject response) {
+    if (null == meta || null == response) {
       return;
     }
-    String fileFormat = formatInfo.getString("format_name");
-    Double durationInDouble = formatInfo.getDouble("duration");
-    long size = formatInfo.getLong(FILE_SIZE);
-    meta.put(FILE_SIZE, size);
-    meta.put(DURATION, durationInDouble);
-    meta.put(FORMAT, fileFormat);
+    JSONObject formatInfo = response.getJSONObject("format");
+    if (formatInfo.containsKey("format_name")) {
+      String fileFormat = formatInfo.getString("format_name");
+      meta.put(FORMAT, fileFormat);
+    }
+    if (formatInfo.containsKey("duration")) {
+      Double durationInDouble = formatInfo.getDouble("duration");
+      meta.put(DURATION, AVUtils.normalize2Double(2, durationInDouble));
+    }
+    if (formatInfo.containsKey("FILE_SIZE")) {
+      long size = formatInfo.getLong(FILE_SIZE);
+      meta.put(FILE_SIZE, size);
+    }
   }
 }

@@ -4,6 +4,7 @@ import cn.leancloud.core.AVOSCloud;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -88,6 +89,15 @@ public class AVUtils {
         throw new NullPointerException(errorLog);
       }
     }
+  }
+
+  public static double normalize2Double(int n, Double value) {
+    BigDecimal b = new BigDecimal(value);
+    return normalize2Double(n, b);
+  }
+
+  public static double normalize2Double(int n, BigDecimal bigDecimal) {
+    return bigDecimal.setScale(n, BigDecimal.ROUND_HALF_UP).doubleValue();
   }
 
   public static void mergeConcurrentMap(ConcurrentMap<String, Object> left, Map<String, Object> right) {

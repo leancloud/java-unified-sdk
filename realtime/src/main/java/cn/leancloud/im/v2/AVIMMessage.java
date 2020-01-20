@@ -397,10 +397,18 @@ public class AVIMMessage {
     if (!StringUtil.isEmpty(uniqueToken)) {
       result.put("uniqueToken", uniqueToken);
     }
-    result.put("timestamp", this.timestamp);
-    result.put("patchTimestamp", this.updateAt);
-    result.put("ackAt", this.deliveredAt);
-    result.put("readAt", this.readAt);
+    if (this.timestamp > 0) {
+      result.put("timestamp", this.timestamp);
+    }
+    if (this.updateAt > 0) {
+      result.put("patchTimestamp", this.updateAt);
+    }
+    if (this.deliveredAt > 0) {
+      result.put("ackAt", this.deliveredAt);
+    }
+    if (this.readAt > 0) {
+      result.put("readAt", this.readAt);
+    }
     result.put("io", ioType.getIOType());
     result.put("status", status.getStatusCode());
 
