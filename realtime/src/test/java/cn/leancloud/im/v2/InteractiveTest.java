@@ -667,6 +667,9 @@ public class InteractiveTest extends TestCase {
     System.out.println("Main Thread exit");
   }
 
+  public void testSendBinaryMessage() throws Exception {
+
+  }
   public void testCorrectLastMessageNotification() throws Exception {
     ;
   }

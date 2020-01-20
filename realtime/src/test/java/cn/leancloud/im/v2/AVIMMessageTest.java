@@ -1,6 +1,13 @@
 package cn.leancloud.im.v2;
 
+import cn.leancloud.im.v2.messages.AVIMAudioMessage;
+import cn.leancloud.im.v2.messages.AVIMImageMessage;
+import cn.leancloud.im.v2.messages.AVIMTextMessage;
+import cn.leancloud.utils.StringUtil;
 import junit.framework.TestCase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AVIMMessageTest extends TestCase {
   public AVIMMessageTest(String name) {
@@ -25,5 +32,42 @@ public class AVIMMessageTest extends TestCase {
     AVIMMessage newMsg = AVIMMessage.parseJSONString(jsonString);
     System.out.println(newMsg.toJSONString());
     assertTrue(originMsg.equals(newMsg));
+  }
+
+  public void testBinaryMessageSerializer() throws Exception {
+    AVIMBinaryMessage msg = new AVIMBinaryMessage();
+    msg.setBytes(StringUtil.getRandomString(16).getBytes());
+    String jsonString = msg.toJSONString();
+    System.out.println(jsonString);
+    AVIMMessage copyMsg = AVIMMessage.parseJSONString(jsonString);
+    assertTrue(copyMsg instanceof AVIMBinaryMessage);
+    assertTrue(((AVIMBinaryMessage)copyMsg).getBytes() != null);
+  }
+
+  public void testTypedTextMessageSerializer() throws Exception {
+    long nowTs = System.currentTimeMillis();
+    AVIMTextMessage textMessage = new AVIMTextMessage();
+    textMessage.setText("text");
+    Map<String, Object> attr = new HashMap<>();
+    attr.put("key", nowTs);
+    textMessage.setAttrs(attr);
+    String jsonString = textMessage.toJSONString();
+    System.out.println(jsonString);
+    AVIMMessage copyTextMessage = AVIMMessage.parseJSONString(jsonString);
+    assertTrue(copyTextMessage instanceof AVIMTextMessage);
+  }
+
+  public void testImageMessageSerializer() throws Exception {
+    long nowTs = System.currentTimeMillis();
+    Map<String, Object> attr = new HashMap<>();
+    attr.put("key", nowTs);
+    AVIMImageMessage audioMessage = new AVIMImageMessage("../core/20160704174809.jpeg");
+    audioMessage.setAttrs(attr);
+    audioMessage.setText("listen carefully.");
+
+    String jsonString = audioMessage.toJSONString();
+    System.out.println(jsonString);
+    AVIMMessage copyAudioMessage = AVIMMessage.parseJSONString(jsonString);
+    assertTrue(copyAudioMessage instanceof AVIMImageMessage);
   }
 }

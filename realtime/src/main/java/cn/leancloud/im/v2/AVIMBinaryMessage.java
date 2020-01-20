@@ -3,8 +3,6 @@ package cn.leancloud.im.v2;
 import java.util.Arrays;
 
 public class AVIMBinaryMessage extends AVIMMessage {
-  private byte[] bytes = new byte[0];
-
   /**
    * default constructor
    */

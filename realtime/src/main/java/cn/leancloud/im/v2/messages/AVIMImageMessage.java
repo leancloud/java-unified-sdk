@@ -50,7 +50,7 @@ public class AVIMImageMessage extends AVIMFileMessage {
     }
     if (localFile != null) {
       Map<String, Object> meta = AVIMFileMessageAccessor.getImageMeta(localFile);
-      meta.put(FILE_SIZE, actualFile.getSize());
+      meta.put(FILE_SIZE, localFile.length());
       file.put(FILE_META, meta);
       return meta;
     } else if (actualFile != null) {

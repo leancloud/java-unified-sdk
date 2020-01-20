@@ -8,6 +8,7 @@ import cn.leancloud.im.v2.callback.*;
 import cn.leancloud.im.v2.messages.AVIMRecalledMessage;
 import cn.leancloud.im.v2.messages.AVIMTextMessage;
 import cn.leancloud.session.AVConnectionManager;
+import cn.leancloud.utils.StringUtil;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
@@ -98,6 +99,86 @@ public class AVIMConversationTest extends TestCase {
       }
     });
     countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testSendAndReceiveBinaryMessage() throws Exception {
+    AVIMMessageManager.registerDefaultMessageHandler(new DummyMessageHandler());
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
+    final CountDownLatch tmpCounter2 = new CountDownLatch(1);
+
+    Thread firstThread = new Thread(new Runnable() {
+      private AVIMConversation targetConversation = null;
+      @Override
+      public void run() {
+        client = AVIMClient.getInstance("testUser1");
+        client.open(new AVIMClientCallback() {
+          @Override
+          public void done(AVIMClient client, AVIMException e) {
+            client.createConversation(memebers, convName, null, false, true, new AVIMConversationCreatedCallback() {
+              @Override
+              public void done(AVIMConversation conversation, AVIMException e) {
+                if (null != e) {
+                  e.printStackTrace();
+                  tmpCounter.countDown();
+                  countDownLatch.countDown();
+                } else {
+                  targetConversation = conversation;
+                  tmpCounter.countDown();
+                }
+              }
+            });
+          }
+        });
+        try {
+          tmpCounter2.await();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+        AVIMBinaryMessage msg = new AVIMBinaryMessage();
+        msg.setBytes(StringUtil.getRandomString(16).getBytes());
+        targetConversation.sendMessage(msg, new AVIMConversationCallback() {
+          @Override
+          public void done(AVIMException ex) {
+            if (null != ex) {
+              System.out.println("failed to send binary message");
+              ex.printStackTrace();
+            } else {
+              System.out.println("succeed to send binary message");
+              opersationSucceed = true;
+            }
+            countDownLatch.countDown();
+          }
+        });
+      }
+    });
+    Thread secondThread = new Thread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          tmpCounter.await();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+        AVIMClient client2 = AVIMClient.getInstance("User2");
+        client2.open(new AVIMClientCallback() {
+          @Override
+          public void done(AVIMClient client, AVIMException e) {
+            if (null != e) {
+              System.out.println("User2 open failed.");
+            }
+            tmpCounter2.countDown();
+          }
+        });
+      }
+    });
+
+    firstThread.start();
+    secondThread.start();
+    countDownLatch.await();
+
+    firstThread.join();
+    secondThread.join();
     assertTrue(opersationSucceed);
   }
 
