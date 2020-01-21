@@ -9,12 +9,11 @@ import cn.leancloud.im.v2.messages.AVIMRecalledMessage;
 import cn.leancloud.im.v2.messages.AVIMTextMessage;
 import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.utils.StringUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import junit.framework.TestCase;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +33,7 @@ public class AVIMConversationTest extends TestCase {
     AVConnectionManager manager = AVConnectionManager.getInstance();
     manager.startConnection();
     try {
-      Thread.sleep(3000);
+      Thread.sleep(2000);
     } catch (Exception ex) {
       ex.printStackTrace();
     }
@@ -288,7 +287,6 @@ public class AVIMConversationTest extends TestCase {
     assertTrue(opersationSucceed);
   }
 
-
   public void testUpdateMessage() throws Exception {
     final CountDownLatch tmpCounter = new CountDownLatch(1);
     client = AVIMClient.getInstance("testUser1");
@@ -312,19 +310,20 @@ public class AVIMConversationTest extends TestCase {
             @Override
             public void done(AVIMException ex) {
               if (null != ex) {
-                System.out.println("failed to send message");
+                System.out.println("failed to send message, cause:" + ex.getMessage());
                 ex.printStackTrace();
                 countDownLatch.countDown();
               } else {
-                System.out.println("succeed to send message");
+                System.out.println("succeed to send message. messageId:" + msg.getMessageId());
                 AVIMTextMessage newMsg = new AVIMTextMessage();
                 newMsg.setText("test updated @" + System.currentTimeMillis());
                 conversation.updateMessage(msg, newMsg, new AVIMMessageUpdatedCallback() {
                   @Override
                   public void done(AVIMMessage curMessage, AVException e) {
                     if (null != e) {
-                      System.out.println("failed to update message");
+                      System.out.println("failed to update message， cause:" + e.getMessage());
                     } else {
+                      System.out.println("succeed to patch message");
                       opersationSucceed = true;
                     }
                     countDownLatch.countDown();
@@ -515,6 +514,7 @@ public class AVIMConversationTest extends TestCase {
           System.out.println("failed to create conversation. cause:" + e.getMessage());
           countDownLatch.countDown();
         } else {
+          System.out.println("succeed to create conversation: " + conversation.toJSONString());
           String name = conversation.getName();
           int type = (int)conversation.getAttribute("type");
           System.out.println("created. name=" + name + ", type=" + type + ", uniqueId=" + conversation.getUniqueId());
@@ -548,10 +548,11 @@ public class AVIMConversationTest extends TestCase {
           System.out.println("failed to create conversation. cause:" + e.getMessage());
           countDownLatch.countDown();
         } else {
+          System.out.println("succeed to create conversation: " + conversation.toJSONString());
           String name = conversation.getName();
           int type = (int)conversation.getAttribute("type");
           System.out.println("created. name=" + name + ", type=" + type + ", uniqueId=" + conversation.getUniqueId());
-          opersationSucceed = convName.equals(name) && 3 == type;
+          opersationSucceed = convName.equals(name) && 3 == type && conversation.isUnique();
           countDownLatch.countDown();
         }
       }
@@ -688,6 +689,7 @@ public class AVIMConversationTest extends TestCase {
     });
     tmpCounter.await();
     String conversationId = "5dee02017c4cc935c85c93de";
+    System.out.println("begin to fetch conversation:" + conversationId);
     final AVIMConversation conversation = client.getConversation(conversationId, false, false);
     conversation.fetchInfoInBackground(new AVIMConversationCallback() {
       @Override
@@ -697,6 +699,7 @@ public class AVIMConversationTest extends TestCase {
           e.printStackTrace();
           countDownLatch.countDown();
         } else {
+          System.out.println("succeed fetch conversation:" + conversation.toJSONString());
           conversation.getMemberCount(new AVIMConversationMemberCountCallback() {
             @Override
             public void done(Integer memberCount, AVIMException e) {
@@ -712,6 +715,82 @@ public class AVIMConversationTest extends TestCase {
         }
       }
     });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testModifyAndDeleteAttributes() throws Exception {
+    client = AVIMClient.getInstance("William");
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        System.out.println("client open finished.");
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    String conversationId = "5dee02017c4cc935c85c93de";
+    final AVIMConversation conversation = client.getConversation(conversationId, false, false);
+    conversation.fetchInfoInBackground(new AVIMConversationCallback() {
+      @Override
+      public void done(AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to fetch Conversation. cause: " + e.getMessage());
+          countDownLatch.countDown();
+        } else {
+          final String convName = conversation.getName();
+          final String convAttrName = (String) conversation.getAttribute("name");
+          System.out.println("convName=" + convName + ", convAttrName=" + convAttrName);
+          final long now = System.currentTimeMillis();
+
+          conversation.setName("TestConv" + now);
+          conversation.setAttribute("ts", now);
+          conversation.set("attr.type", 4);
+
+          conversation.updateInfoInBackground(new AVIMConversationCallback() {
+            @Override
+            public void done(AVIMException e) {
+              if (null == e) {
+                boolean verifiedOnFirstUpdate = (int)conversation.get("attr.type") == 4
+                        && conversation.getName().equals("TestConv" + now)
+                        && (long)conversation.getAttribute("ts") == now;
+                if (!verifiedOnFirstUpdate) {
+                  System.out.println("failed to verify conversation attribute after first updated. conv=" + conversation.toJSONString());
+                  countDownLatch.countDown();
+                } else {
+                  System.out.println("conversation attribute after first updated. conv=" + conversation.toJSONString());
+                  conversation.remove("attr.ts");
+                  conversation.remove("attr.type");
+                  conversation.setName(convName);
+                  conversation.updateInfoInBackground(new AVIMConversationCallback() {
+                    @Override
+                    public void done(AVIMException e) {
+                      if (null == e) {
+                        opersationSucceed = null == conversation.get("attr.ts")
+                                && conversation.getName().equals(convName)
+                                && null == conversation.get("attr.type");
+                        if (!opersationSucceed) {
+                          System.out.println("failed to verify conversation attribute after second updated. conv=" + conversation.toJSONString());
+                        } else {
+                          System.out.println("conversation attribute after second updated. conv=" + conversation.toJSONString());
+                        }
+                      }
+                      countDownLatch.countDown();
+                    }
+                  });
+                }
+              } else {
+                e.printStackTrace();
+                countDownLatch.countDown();
+              }
+
+            }
+          });
+        }
+      }
+    });
+
     countDownLatch.await();
     assertTrue(opersationSucceed);
   }
@@ -804,6 +883,7 @@ public class AVIMConversationTest extends TestCase {
     });
     tmpCounter.await();
     String conversationId = "5dee02017c4cc935c85c93de";
+    System.out.println("begin to join converseration: " + conversationId);
     final AVIMConversation conversation = client.getConversation(conversationId, false, false);
     conversation.join(new AVIMConversationCallback() {
       @Override
@@ -812,6 +892,7 @@ public class AVIMConversationTest extends TestCase {
           System.out.println("failed to join conversation. cause:" + e.getMessage());
           countDownLatch.countDown();
         } else {
+          System.out.println("succeed to join to conversation: " + conversation.toJSONString());
           conversation.fetchReceiptTimestamps(new AVIMConversationCallback() {
             @Override
             public void done(AVIMException e) {
@@ -819,7 +900,7 @@ public class AVIMConversationTest extends TestCase {
                 System.out.println("failed to fetch ReceiptTimestamps. cause: " + e.getMessage());
                 countDownLatch.countDown();
               } else {
-                System.out.println("succeed to fetch ReceiptTimestamps.");
+                System.out.println("succeed to fetch ReceiptTimestamps." + conversation.toJSONString());
                 System.out.println("LastReadAt: " + conversation.getLastReadAt());
                 System.out.println("LastDeliveredAt: " + conversation.getLastDeliveredAt());
                 conversation.quit(new AVIMConversationCallback() {
@@ -844,17 +925,61 @@ public class AVIMConversationTest extends TestCase {
     assertTrue(opersationSucceed);
   }
 
+  public void testAttributeGetter() throws Exception {
+    String jsonString = "{\"unique\":true,\"updatedAt\":\"2020-01-21T14:22:48.642Z\",\"name\":\"TestConv1579603439430\"," +
+            "\"objectId\":\"5dee02017c4cc935c85c93de\",\"m\":[\"T8\",\"William\"],\"tr\":false,\"createdAt\":\"2019-12-09T08:12:49.475Z\"," +
+            "\"c\":\"T8\",\"uniqueId\":\"61e52ce97f2b93050655a1c83371b070\",\"mu\":[]," +
+            "\"attr\":{\"alias\":\"TestConv1575943063325\",\"type\":4,\"ts\":1579603439430}}";
+    JSONObject jsonObj = JSON.parseObject(jsonString);
+    AVIMClient client = AVIMClient.getInstance("test");
+    AVIMConversation conv = AVIMConversation.parseFromJson(client, jsonObj);
+    Date createdAt = StringUtil.dateFromString("2019-12-09T08:12:49.475Z");
+    Date updatedAt = StringUtil.dateFromString("2020-01-21T14:22:48.642Z");
+    assertTrue(conv.isUnique());
+    assertTrue(!conv.isSystem());
+    assertTrue(!conv.isTransient());
+    assertTrue(!conv.isTemporary());
+    assertTrue(conv.getTemporaryExpiredat() == 0);
+    assertTrue(conv.getName().equals("TestConv1579603439430"));
+    assertTrue(conv.getConversationId().equals("5dee02017c4cc935c85c93de"));
+    assertTrue(conv.getCreator().equals("T8"));
+    assertTrue(conv.getLastMessage() == null);
+    assertTrue(conv.getUniqueId().equals("61e52ce97f2b93050655a1c83371b070"));
+    assertTrue(conv.getCreatedAt().getTime() == createdAt.getTime());
+    assertTrue(conv.getUpdatedAt().getTime() == updatedAt.getTime());
+
+    assertTrue(conv.getAttribute("name").equals("TestConv1579603439430"));
+    assertTrue(conv.getAttribute("alias").equals("TestConv1575943063325"));
+    assertTrue((int)conv.getAttribute("type") == 4);
+    assertTrue((long)conv.getAttribute("attr.ts") == 1579603439430l);
+
+    assertTrue(conv.get("name").equals("TestConv1579603439430"));
+    assertTrue(conv.get("attr.alias").equals("TestConv1575943063325"));
+    assertTrue((int)conv.get("attr.type") == 4);
+    assertTrue((long)conv.get("attr.ts") == 1579603439430l);
+
+    assertNull(conv.getAttribute("nothing"));
+    assertNull(conv.get("nothing"));
+    assertNull(conv.get("attr.nothing"));
+    assertNull(conv.get("attr.nothing.ts"));
+  }
+
   public void testMuteConversation() throws Exception {
     client = AVIMClient.getInstance("testUser1");
     final CountDownLatch tmpCounter = new CountDownLatch(1);
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
+        if (null != e) {
+          e.printStackTrace();
+        }
+        System.out.println("open client finished.");
         tmpCounter.countDown();
       }
     });
     tmpCounter.await();
     String conversationId = "5dee02017c4cc935c85c93de";
+    System.out.println("begin to join conversation:" + conversationId);
     final AVIMConversation conversation = client.getConversation(conversationId, false, false);
     conversation.join(new AVIMConversationCallback() {
       @Override
@@ -863,12 +988,7 @@ public class AVIMConversationTest extends TestCase {
           System.out.println("failed to join conversation. cause: " + e.getMessage());
           countDownLatch.countDown();
         } else {
-          System.out.println("succeed to join conversation");
-          try {
-            Thread.sleep(1000);
-          } catch (Exception ex) {
-            ex.printStackTrace();
-          }
+          System.out.println("succeed to join conversation：" + conversation.toJSONString());
           conversation.mute(new AVIMConversationCallback() {
             @Override
             public void done(AVIMException e) {
@@ -903,8 +1023,6 @@ public class AVIMConversationTest extends TestCase {
               }
             }
           });
-
-
         }
       }
     });
@@ -964,7 +1082,7 @@ public class AVIMConversationTest extends TestCase {
 
   public void testSendAndReceiveMessage() throws Exception {
     final String senderId = "sender-" + System.currentTimeMillis();
-    Thread.sleep(8000);
+    Thread.sleep(1000);
     final String receiverId = "receiver-" + System.currentTimeMillis();
 
     final CountDownLatch receierOnlineLatch = new CountDownLatch(1);
@@ -982,71 +1100,72 @@ public class AVIMConversationTest extends TestCase {
               e.printStackTrace();
               tmpCounter.countDown();
             } else {
-              try {
-                receierOnlineLatch.await();
-              } catch (Exception ex) {
-                ex.printStackTrace();
-              }
-              client.createConversation(Arrays.asList(receiverId), null, null, false, true,
-                      new AVIMConversationCreatedCallback() {
-                        @Override
-                        public void done(final AVIMConversation conversation, AVIMException e) {
-                          if (null != e) {
-                            System.out.println("failed to create conversation from sender client.");
-                            e.printStackTrace();
-                            tmpCounter.countDown();
-                          } else {
-                            conversation.blockMembers(Arrays.asList("blockedUser"), new AVIMOperationPartiallySucceededCallback() {
-                              @Override
-                              public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
-                                if (null != e) {
-                                  System.out.println("failed to block members from sender client.");
-                                  tmpCounter.countDown();
-                                } else {
-                                  AVIMTextMessage msg = new AVIMTextMessage();
-                                  msg.setText("try to unblock user. @" + System.currentTimeMillis());
-                                  conversation.sendMessage(msg, new AVIMConversationCallback() {
-                                    @Override
-                                    public void done(AVIMException e) {
-                                      if (null != e) {
-                                        System.out.println("failed to send message from sender client.");
-                                        tmpCounter.countDown();
-                                      } else {
-                                        conversation.unblockMembers(Arrays.asList("blockedUser"), new AVIMOperationPartiallySucceededCallback() {
-                                          @Override
-                                          public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
-                                            if (null != e) {
-                                              System.out.println("failed to unblock members from sender client.");
-                                              e.printStackTrace();
-                                            }
-                                            client.close(new AVIMClientCallback() {
-                                              @Override
-                                              public void done(AVIMClient client, AVIMException e) {
-                                                if (null != e) {
-                                                  System.out.println("failed to close sender client.");
-                                                } else {
-                                                  System.out.println("succeed to run all flow on sender side.");
-                                                }
-                                                tmpCounter.countDown();
-                                              }
-                                            });
-                                          }
-                                        });
-                                      }
-                                    }
-                                  });
-
-                                }
-                              }
-                            });
-                          }
-                        }
-                      });
+              System.out.println(client.getClientId() + " logged in, waiting for receiver online...");
             }
           }
         });
         try {
-          tmpCounter.await(60, TimeUnit.SECONDS);
+          receierOnlineLatch.await();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+        client.createConversation(Arrays.asList(receiverId), null, null, false, true,
+                new AVIMConversationCreatedCallback() {
+                  @Override
+                  public void done(final AVIMConversation conversation, AVIMException e) {
+                    if (null != e) {
+                      System.out.println("failed to create conversation from sender client.");
+                      e.printStackTrace();
+                      tmpCounter.countDown();
+                    } else {
+                      conversation.blockMembers(Arrays.asList("blockedUser"), new AVIMOperationPartiallySucceededCallback() {
+                        @Override
+                        public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                          if (null != e) {
+                            System.out.println("failed to block members from sender client.");
+                            tmpCounter.countDown();
+                          } else {
+                            AVIMTextMessage msg = new AVIMTextMessage();
+                            msg.setText("try to unblock user. @" + System.currentTimeMillis());
+                            conversation.sendMessage(msg, new AVIMConversationCallback() {
+                              @Override
+                              public void done(AVIMException e) {
+                                if (null != e) {
+                                  System.out.println("failed to send message from sender client.");
+                                  tmpCounter.countDown();
+                                } else {
+                                  conversation.unblockMembers(Arrays.asList("blockedUser"), new AVIMOperationPartiallySucceededCallback() {
+                                    @Override
+                                    public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                                      if (null != e) {
+                                        System.out.println("failed to unblock members from sender client.");
+                                        e.printStackTrace();
+                                      }
+                                      client.close(new AVIMClientCallback() {
+                                        @Override
+                                        public void done(AVIMClient client, AVIMException e) {
+                                          if (null != e) {
+                                            System.out.println("failed to close sender client.");
+                                          } else {
+                                            System.out.println("succeed to run all flow on sender side.");
+                                          }
+                                          tmpCounter.countDown();
+                                        }
+                                      });
+                                    }
+                                  });
+                                }
+                              }
+                            });
+
+                          }
+                        }
+                      });
+                    }
+                  }
+                });
+        try {
+          tmpCounter.await();
         } catch (Exception ex) {
           ex.printStackTrace();
         }
@@ -1060,41 +1179,46 @@ public class AVIMConversationTest extends TestCase {
         client.open(new AVIMClientCallback() {
           @Override
           public void done(AVIMClient client, AVIMException e) {
-            receierOnlineLatch.countDown();
             if (null != e) {
               System.out.println("failed to open receiver client");
               e.printStackTrace();
-              tmpCounter.countDown();
             } else {
-              try {
-                Thread.sleep(60000);
-              } catch (Exception ex) {
-                ex.printStackTrace();
-              }
-              client.close(new AVIMClientCallback() {
-                @Override
-                public void done(AVIMClient client, AVIMException e) {
-                  if (null != e) {
-                    System.out.println("failed to close receiver client");
-                    e.printStackTrace();
-                  }
-                  tmpCounter.countDown();
-                }
-              });
+              System.out.println(client.getClientId() + " logged in...");
             }
+            receierOnlineLatch.countDown();
+            tmpCounter.countDown();
           }
         });
         try {
-          tmpCounter.await(60, TimeUnit.SECONDS);
+          tmpCounter.await();
         } catch (Exception ex) {
           ex.printStackTrace();
         }
+
+        try {
+          Thread.sleep(10000);
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+        client.close(new AVIMClientCallback() {
+          @Override
+          public void done(AVIMClient client, AVIMException e) {
+            if (null != e) {
+              System.out.println("failed to close receiver client");
+              e.printStackTrace();
+            }
+            tmpCounter.countDown();
+          }
+        });
       }
     };
-    new Thread(sendThread).start();
-    Thread.sleep(6000);
-    new Thread(receiveThread).start();
-    Thread.sleep(80000);
+    Thread t1 = new Thread(sendThread);
+    t1.start();
+    Thread t2 = new Thread(receiveThread);
+    t2.start();
+
+    t1.join();
+    t2.join();
     int notifyCount = this.conversationEventHandler.getCount(0x00FFFF);
     System.out.println("notifyCount=" + notifyCount);
     assertTrue(notifyCount > 2);

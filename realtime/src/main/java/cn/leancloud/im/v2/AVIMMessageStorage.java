@@ -505,11 +505,11 @@ public class AVIMMessageStorage {
     }
     for (AVIMConversation conversation : conversations) {
       Map<String, Object> values = new HashMap<>();
-      values.put(COLUMN_ATTRIBUTE, JSON.toJSONString(conversation.attributes));
+      values.put(COLUMN_ATTRIBUTE, JSON.toJSONString(conversation.getAttributes()));
       values.put(COLUMN_INSTANCEDATA, JSON.toJSONString(conversation.instanceData));
-      values.put(COLUMN_CREATEDAT, conversation.createdAt);
-      values.put(COLUMN_UPDATEDAT, conversation.updatedAt);
-      values.put(COLUMN_CREATOR, conversation.creator);
+      values.put(COLUMN_CREATEDAT, conversation.getCreatedAt());
+      values.put(COLUMN_UPDATEDAT, conversation.getUpdatedAt());
+      values.put(COLUMN_CREATOR, conversation.getCreator());
       values.put(COLUMN_EXPIREAT, System.currentTimeMillis()
               + Conversation.DEFAULT_CONVERSATION_EXPIRE_TIME_IN_MILLS);
       if (conversation.lastMessageAt != null) {
@@ -531,7 +531,7 @@ public class AVIMMessageStorage {
       }
 
       values.put(COLUMN_MEMBERS, JSON.toJSONString(conversation.getMembers()));
-      values.put(COLUMN_TRANSIENT, conversation.isTransient ? 1 : 0);
+      values.put(COLUMN_TRANSIENT, conversation.isTransient() ? 1 : 0);
       values.put(COLUMN_UNREAD_COUNT, conversation.getUnreadMessagesCount());
 
       values.put(COLUMN_CONV_MENTIONED, conversation.unreadMessagesMentioned()? 1:0);

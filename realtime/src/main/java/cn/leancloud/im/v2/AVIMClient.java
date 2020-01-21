@@ -331,7 +331,7 @@ public class AVIMClient {
 
   private void createConversation(final List<String> members, final String name,
                                   final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
-                                  final boolean isTemp, int tempTTL, final AVIMConversationCreatedCallback callback) {
+                                  final boolean isTemp, final int tempTTL, final AVIMConversationCreatedCallback callback) {
     final HashMap<String, Object> conversationAttributes = new HashMap<String, Object>();
     if (attributes != null) {
       conversationAttributes.putAll(attributes);
@@ -368,13 +368,15 @@ public class AVIMClient {
             conversation.setUniqueId((String) result.get(Conversation.callbackUniqueId));
           }
           conversation.setMembers(conversationMembers);
-          conversation.setAttributesForInit(conversationAttributes);
+          conversation.setAttributesForInit(attributes);
+          conversation.setNameForInit(name);
           conversation.setTransientForInit(isTransient);
           conversation.setConversationId(conversationId);
           conversation.setCreator(clientId);
           conversation.setCreatedAt(createdAt);
           conversation.setUpdatedAt(createdAt);
           conversation.setTemporary(isTemp);
+          conversation.setTemporaryExpiredat(tempTTL);
           conversation.updateFetchTimestamp(System.currentTimeMillis());
           conversation.setTemporaryExpiredat(System.currentTimeMillis()/1000 + tempTTLFromServer);
           if (AVIMOptions.getGlobalOptions().isMessageQueryCacheEnabled()) {

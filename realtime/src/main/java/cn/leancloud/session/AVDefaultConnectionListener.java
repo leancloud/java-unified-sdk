@@ -345,6 +345,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
               || operation.equals(ConversationControlOp.UPDATED)
               || operation.equals(ConversationControlOp.MEMBER_COUNT_QUERY_RESULT)
               || operation.equals(ConversationControlOp.SHUTUP_ADDED)
+              || operation.equals(ConversationControlOp.MAX_READ)
               || operation.equals(ConversationControlOp.SHUTUP_REMOVED)
               || operation.equals(ConversationControlOp.MEMBER_UPDATED))
               && requestId != CommandPacket.UNSUPPORTED_OPERATION) {

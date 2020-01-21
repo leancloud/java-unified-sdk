@@ -13,6 +13,8 @@ import cn.leancloud.im.v2.conversation.ConversationMemberRole;
 import cn.leancloud.im.v2.messages.AVIMFileMessage;
 import cn.leancloud.im.v2.messages.AVIMFileMessageAccessor;
 import cn.leancloud.im.v2.messages.AVIMRecalledMessage;
+import cn.leancloud.ops.ObjectFieldOperation;
+import cn.leancloud.ops.OperationBuilder;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.query.QueryConditions;
 import cn.leancloud.query.QueryOperation;
@@ -22,8 +24,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class AVIMConversation {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVIMConversation.class);
@@ -42,14 +45,7 @@ public class AVIMConversation {
 
   private static final String ATTR_PERFIX = Conversation.ATTRIBUTE + ".";
 
-  String conversationId;
-  Set<String> members; // 成员
-  Map<String, Object> attributes; // 用户自定义属性
-  Map<String, Object> pendingAttributes; // 修改中的属性
   AVIMClient client;  // AVIMClient 引用
-  String creator;     // 创建者
-  boolean isTransient; // 是否为临时对话
-
   AVIMMessageStorage storage;
 
   // 注意，sqlite conversation 表中的 lastMessageAt、lastMessage 的来源是 AVIMConversationQuery
@@ -57,11 +53,10 @@ public class AVIMConversation {
   Date lastMessageAt;
   AVIMMessage lastMessage;
 
-  String createdAt;
-  String updatedAt;
-
   Map<String, Object> instanceData = new HashMap<>();
-  Map<String, Object> pendingInstanceData = new HashMap<>();
+  protected ConcurrentMap<String, ObjectFieldOperation> operations = new ConcurrentHashMap<String, ObjectFieldOperation>();
+
+//  Map<String, Object> pendingInstanceData = new HashMap<>();
 
   // 是否与数据库中同步了 lastMessage，避免多次走 sqlite 查询
   private boolean isSyncLastMessage = false;
@@ -84,45 +79,43 @@ public class AVIMConversation {
 
   /**
    * 是否是服务号
-   */
-  boolean isSystem = false;
-
-  /**
-   * 是否是服务号
    * @return flag of service conversation.
    */
   public boolean isSystem() {
-    return isSystem;
+    if (instanceData.containsKey(Conversation.SYSTEM)) {
+      return (boolean) instanceData.get(Conversation.SYSTEM);
+    }
+    return false;
   }
 
-  /**
-   * 是否是临时对话
-   */
-  boolean isTemporary = false;
+  void setSystem(boolean isSystem) {
+    instanceData.put(Conversation.SYSTEM, isSystem);
+  }
 
   /**
    * 是否是临时对话
    * @return flag of temporary conversation.
    */
   public boolean isTemporary() {
-    return isTemporary;
+    if (instanceData.containsKey(Conversation.TEMPORARY)) {
+      return (boolean) instanceData.get(Conversation.TEMPORARY);
+    }
+    return false;
   }
 
   void setTemporary(boolean temporary) {
-    isTemporary = temporary;
+    instanceData.put(Conversation.TEMPORARY, temporary);
   }
-
-  /**
-   * 临时对话过期时间
-   */
-  long temporaryExpiredat = 0l;
 
   /**
    * 获取临时对话过期时间（以秒为单位）
    * @return expired interval.
    */
   public long getTemporaryExpiredat() {
-    return temporaryExpiredat;
+    if (instanceData.containsKey(Conversation.TEMPORARYTTL)) {
+      return (long) instanceData.get(Conversation.TEMPORARYTTL);
+    }
+    return 0;
   }
 
   /**
@@ -132,15 +125,19 @@ public class AVIMConversation {
    */
   public void setTemporaryExpiredat(long temporaryExpiredat) {
     if (this.isTemporary()) {
-      this.temporaryExpiredat = temporaryExpiredat;
+      instanceData.put(Conversation.TEMPORARYTTL, temporaryExpiredat);
     }
   }
+
   public boolean isTransient() {
-    return isTransient;
+    if (!instanceData.containsKey(Conversation.TRANSIENT)) {
+      return false;
+    }
+    return (boolean) get(Conversation.TRANSIENT);
   }
 
   void setTransientForInit(boolean isTransient) {
-    this.isTransient = isTransient;
+    instanceData.put(Conversation.TRANSIENT, isTransient);
   }
 
   /**
@@ -149,11 +146,11 @@ public class AVIMConversation {
    * @return conversation created date.
    */
   public Date getCreatedAt() {
-    return StringUtil.dateFromString(createdAt);
+    return StringUtil.dateFromString((String) instanceData.get(AVObject.KEY_CREATED_AT));
   }
 
   void setCreatedAt(String createdAt) {
-    this.createdAt = createdAt;
+    instanceData.put(AVObject.KEY_CREATED_AT, createdAt);
   }
 
   /**
@@ -162,11 +159,11 @@ public class AVIMConversation {
    * @return conversation updated date.
    */
   public Date getUpdatedAt() {
-    return StringUtil.dateFromString(updatedAt);
+    return StringUtil.dateFromString((String) instanceData.get(AVObject.KEY_UPDATED_AT));
   }
 
   void setUpdatedAt(String updatedAt) {
-    this.updatedAt = updatedAt;
+    instanceData.put(AVObject.KEY_UPDATED_AT, updatedAt);
   }
 
   /**
@@ -236,24 +233,16 @@ public class AVIMConversation {
 
   protected AVIMConversation(AVIMClient client, List<String> members,
                              Map<String, Object> attributes, boolean isTransient) {
-    this.members = new HashSet<String>();
-    if (members != null) {
-      this.members.addAll(members);
-    }
-    this.attributes = new HashMap<String, Object>();
-    if (attributes != null) {
-      this.attributes.putAll(attributes);
-    }
     this.client = client;
-    pendingAttributes = new HashMap<String, Object>();
-    this.isTransient = isTransient;
-
     this.storage = client.getStorage();
+    setMembers(members);
+    setAttributesForInit(attributes);
+    setTransientForInit(isTransient);
   }
 
   protected AVIMConversation(AVIMClient client, String conversationId) {
     this(client, null, null, false);
-    this.conversationId = conversationId;
+    setConversationId(conversationId);
   }
 
   /**
@@ -262,15 +251,15 @@ public class AVIMConversation {
    * @return conversation id.
    */
   public String getConversationId() {
-    return this.conversationId;
+    return (String) get(AVObject.KEY_OBJECT_ID);
   }
 
   protected void setConversationId(String id) {
-    this.conversationId = id;
+    instanceData.put(AVObject.KEY_OBJECT_ID, id);
   }
 
   protected void setCreator(String creator) {
-    this.creator = creator;
+    instanceData.put(Conversation.CREATOR, creator);
   }
 
   /**
@@ -280,7 +269,7 @@ public class AVIMConversation {
    * @since 3.0
    */
   public String getCreator() {
-    return this.creator;
+    return (String) instanceData.get(Conversation.CREATOR);
   }
 
   /**
@@ -290,32 +279,47 @@ public class AVIMConversation {
    * @since 3.0
    */
   public List<String> getMembers() {
-    List<String> allList = new ArrayList<String>();
-    allList.addAll(members);
-
+    List<String> allList = (List<String>) instanceData.get(Conversation.MEMBERS);
     return Collections.unmodifiableList(allList);
   }
 
   protected void setMembers(List<String> m) {
-    members.clear();
-    if (m != null) {
-      members.addAll(m);
-    }
+    instanceData.put(Conversation.MEMBERS, m);
   }
 
   void internalMergeMembers(List<String> memberList) {
-    if (null != memberList) {
-      for (String m: memberList) {
-        members.add(m);
-      }
+    if (null == memberList || memberList.size() < 1) {
+      return;
     }
+    List<String> serverMembers = (List<String>) instanceData.get(Conversation.MEMBERS);
+    if (null == serverMembers) {
+      serverMembers = new ArrayList<>();
+    }
+    serverMembers.addAll(memberList);
+
+    Set<String> dedupMembers = new HashSet<>();
+    dedupMembers.addAll(serverMembers);
+
+    serverMembers.clear();
+    serverMembers.addAll(dedupMembers);
+    setMembers(serverMembers);
   }
 
   void internalRemoveMembers(List<String> memberList) {
-    if (null != memberList) {
+    if (null == memberList || memberList.size() < 1) {
+      return;
+    }
+    List<String> serverMembers = (List<String>) instanceData.get(Conversation.MEMBERS);
+    if (null != serverMembers) {
+      Set<String> dedupMembers = new HashSet<>();
+      dedupMembers.addAll(serverMembers);
       for (String m: memberList) {
-        members.remove(m);
+        dedupMembers.remove(m);
       }
+
+      serverMembers.clear();
+      serverMembers.addAll(dedupMembers);
+      setMembers(serverMembers);
     }
   }
   /**
@@ -364,8 +368,27 @@ public class AVIMConversation {
    */
   public void set(String key, Object value) {
     if (!StringUtil.isEmpty(key) && null != value) {
-      pendingInstanceData.put(key, value);
+      ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Set, key, value);
+      addNewOperation(op);
     }
+  }
+
+  public void remove(String key) {
+    if (!StringUtil.isEmpty(key)) {
+      ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Delete, key, null);
+      addNewOperation(op);
+    }
+  }
+
+  protected void addNewOperation(ObjectFieldOperation op) {
+    if (null == op) {
+      return;
+    }
+    ObjectFieldOperation previous = null;
+    if (this.operations.containsKey(op.getField())) {
+      previous = this.operations.get(op.getField());
+    }
+    this.operations.put(op.getField(), op.merge(previous));
   }
 
   /**
@@ -374,24 +397,60 @@ public class AVIMConversation {
    * @return attribute value.
    */
   public Object get(String key) {
-    if (!StringUtil.isEmpty(key)) {
-      if (key.startsWith(ATTR_PERFIX)) {
-        return getAttribute(key.substring(ATTR_PERFIX.length()));
-      } else {
-        return getGeneralData(key);
-      }
+    if (StringUtil.isEmpty(key)) {
+      return null;
     }
-    return null;
+    Object value = recurGetData(instanceData, key);
+    ObjectFieldOperation op = operations.get(key);
+    if (null != op) {
+      value = op.apply(value);
+    }
+    return value;
   }
 
-  Object getGeneralData(String key) {
-    if (pendingInstanceData.containsKey(key)) {
-      return pendingInstanceData.get(key);
+  static Object recurGetData(Map<String, Object> mapData, String key) {
+    if (null == mapData || StringUtil.isEmpty(key)) {
+      return null;
     }
-    if (instanceData.containsKey(key)) {
-      return instanceData.get(key);
+    int dotIndex = key.indexOf(".");
+    if (dotIndex < 0) {
+      return mapData.get(key);
+    } else {
+      String first = key.substring(0, dotIndex);
+      String left = key.substring(dotIndex + 1);
+      Map<String, Object> nextLevelData = (Map<String, Object>) mapData.get(first);
+      return recurGetData(nextLevelData, left);
     }
-    return null;
+  }
+
+  static void recurSetData(Map<String, Object> mapData, String key, Object value) {
+    if (null == mapData || StringUtil.isEmpty(key)) {
+      return;
+    }
+    int dotIndex = key.indexOf(".");
+    if (dotIndex < 0) {
+      mapData.put(key, value);
+    } else {
+      String first = key.substring(0, dotIndex);
+      String left = key.substring(dotIndex + 1);
+      Map<String, Object> nextLevelData = (Map<String, Object>) mapData.get(first);
+      recurSetData(nextLevelData, left, value);
+    }
+  }
+
+  static void recurDeleteData(Map<String, Object> mapData, String key) {
+    if (null == mapData || StringUtil.isEmpty(key)) {
+      return;
+    }
+    int dotIndex = key.indexOf(".");
+    if (dotIndex < 0) {
+      mapData.remove(key);
+    } else {
+      String first = key.substring(0, dotIndex);
+      String left = key.substring(dotIndex + 1);
+      Map<String, Object> nextLevelData = (Map<String, Object>) mapData.get(first);
+      recurDeleteData(nextLevelData, left);
+    }
   }
 
   /**
@@ -402,13 +461,15 @@ public class AVIMConversation {
    * @since 3.0
    */
   public Object getAttribute(String key) {
-    Object value;
-    if (pendingAttributes.containsKey(key)) {
-      value = pendingAttributes.get(key);
-    } else {
-      value = attributes.get(key);
+    if (StringUtil.isEmpty(key)) {
+      return null;
     }
-    return value;
+    if (Conversation.NAME.equals(key)) {
+      return get(key);
+    } else {
+      String realKey = key.startsWith(ATTR_PERFIX) ? key : ATTR_PERFIX + key;
+      return get(realKey);
+    }
   }
 
   /**
@@ -418,18 +479,20 @@ public class AVIMConversation {
    * @return attributes map.
    */
   public Map<String, Object> getAttributes() {
-    Map<String, Object> attr = new HashMap<>(this.attributes);
-    attr.remove(Conversation.NAME);
-    return attr;
+    Map<String, Object> attrs = (Map<String, Object>) get(Conversation.ATTRIBUTE);
+    if (null != attrs) {
+      attrs = Collections.unmodifiableMap(attrs);
+    }
+    return attrs;
   }
 
   public void setAttribute(String key, Object value) {
     if (!StringUtil.isEmpty(key)) {
-      // 以往的 sdk 支持 setAttribute("attr.key", "attrValue") 这种格式，这里兼容一下
-      if (key.startsWith(ATTR_PERFIX)) {
-        this.pendingAttributes.put(key.substring(ATTR_PERFIX.length()), value);
+      if (Conversation.NAME.equals(key)) {
+        set(key, value);
       } else {
-        this.pendingAttributes.put(key, value);
+        String realKey = key.startsWith(ATTR_PERFIX) ? key : ATTR_PERFIX + key;
+        set(realKey, value);
       }
     }
   }
@@ -441,8 +504,11 @@ public class AVIMConversation {
    * @since 3.0
    */
   public void setAttributes(Map<String, Object> attr) {
-    pendingAttributes.clear();
-    pendingAttributes.putAll(attr);
+    if (null != attr) {
+      for (Map.Entry<String, Object> entry : attr.entrySet()) {
+        setAttribute(entry.getKey(), entry.getValue());
+      }
+    }
   }
 
   /**
@@ -451,10 +517,7 @@ public class AVIMConversation {
    * @param attr attribute map
    */
   void setAttributesForInit(Map<String, Object> attr) {
-    this.attributes.clear();
-    if (attr != null) {
-      this.attributes.putAll(attr);
-    }
+    instanceData.put(Conversation.ATTRIBUTE, attr);
   }
 
   /**
@@ -463,11 +526,15 @@ public class AVIMConversation {
    * @return conversation name.
    */
   public String getName() {
-    return (String) getAttribute(Conversation.NAME);
+    return (String) get(Conversation.NAME);
   }
 
   public void setName(String name) {
-    pendingAttributes.put(Conversation.NAME, name);
+    set(Conversation.NAME, name);
+  }
+
+  void setNameForInit(String name) {
+    instanceData.put(Conversation.NAME, name);
   }
 
   /**
@@ -545,6 +612,7 @@ public class AVIMConversation {
     if (unreadMessagesCount != unreadCount) {
       unreadMessagesCount = unreadCount;
       unreadMessagesMentioned = mentioned;
+      String conversationId = getConversationId();
       storage.updateConversationUreadCount(conversationId, unreadMessagesCount, mentioned);
     }
   }
@@ -585,7 +653,7 @@ public class AVIMConversation {
    *
    */
   public void sendMessage(final AVIMMessage message, final AVIMMessageOption messageOption, final AVIMConversationCallback callback) {
-    message.setConversationId(conversationId);
+    message.setConversationId(getConversationId());
     message.setFrom(client.getClientId());
     message.generateUniqueToken();
     message.setTimestamp(System.currentTimeMillis());
@@ -775,8 +843,10 @@ public class AVIMConversation {
 
           long deliveredAt = 0;
           if (result.containsKey(Conversation.callbackDeliveredAt)) {
-            readAt = (Long) result.get(Conversation.callbackDeliveredAt);
+            deliveredAt = (Long) result.get(Conversation.callbackDeliveredAt);
           }
+          LOGGER.d("lastReadAt=" + readAt + ", lastDeliverAt=" + deliveredAt);
+
           AVIMConversation.this.setLastReadAt(readAt, false);
           AVIMConversation.this.setLastDeliveredAt(deliveredAt, false);
           storage.updateConversationTimes(AVIMConversation.this);
@@ -835,6 +905,7 @@ public class AVIMConversation {
     if (null != messages && !messages.isEmpty()) {
       Collections.sort(messages, messageComparator);
       setLastMessage(messages.get(messages.size() - 1));
+      String conversationId = getConversationId();
       storage.insertContinuousMessages(messages, conversationId);
     }
   }
@@ -918,6 +989,7 @@ public class AVIMConversation {
   private void queryMessagesFromCache(final String msgId, final long timestamp, final int limit,
                                       final AVIMMessagesQueryCallback callback) {
     if (null != callback) {
+      String conversationId = getConversationId();
       storage.getMessages(msgId, timestamp, limit, conversationId,
               new AVIMMessageStorage.StorageQueryCallback() {
                 @Override
@@ -944,6 +1016,7 @@ public class AVIMConversation {
                 "limit should be in [1, 1000]")));
       }
     }
+    String conversationId = getConversationId();
     // 如果屏蔽了本地缓存则全部走网络
     if (!AVIMOptions.getGlobalOptions().isMessageQueryCacheEnabled()) {
       queryMessagesFromServer(null, 0, limit, null, 0, new AVIMMessagesQueryCallback() {
@@ -1047,6 +1120,7 @@ public class AVIMConversation {
       return;
     }
 
+    final String conversationId = getConversationId();
     // 先去本地缓存查询消息
     storage.getMessage(msgId, timestamp, conversationId,
             new AVIMMessageStorage.StorageMessageCallback() {
@@ -1197,7 +1271,7 @@ public class AVIMConversation {
    */
   public void getAllMemberInfo(int offset, int limit, final AVIMConversationMemberQueryCallback callback) {
     QueryConditions conditions = new QueryConditions();
-    conditions.addWhereItem("cid", QueryOperation.EQUAL_OP, this.conversationId);
+    conditions.addWhereItem("cid", QueryOperation.EQUAL_OP, getConversationId());
     conditions.setSkip(offset);
     conditions.setLimit(limit);
     queryMemberInfo(conditions, callback);
@@ -1210,7 +1284,7 @@ public class AVIMConversation {
    */
   public void getMemberInfo(final String memberId, final AVIMConversationMemberQueryCallback callback) {
     QueryConditions conditions = new QueryConditions();
-    conditions.addWhereItem("cid", QueryOperation.EQUAL_OP, this.conversationId);
+    conditions.addWhereItem("cid", QueryOperation.EQUAL_OP, getConversationId());
     conditions.addWhereItem("peerId", QueryOperation.EQUAL_OP, memberId);
     queryMemberInfo(conditions, callback);
   }
@@ -1238,7 +1312,7 @@ public class AVIMConversation {
     }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), getConversationId(),
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_ADD_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
@@ -1262,7 +1336,7 @@ public class AVIMConversation {
     }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), getConversationId(),
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_RM_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
@@ -1277,10 +1351,11 @@ public class AVIMConversation {
    * @param callback  结果回调函数
    */
   public void updateMemberRole(final String memberId, final ConversationMemberRole role, final AVIMConversationCallback callback) {
-    AVIMConversationMemberInfo info = new AVIMConversationMemberInfo(this.conversationId, memberId, role);
+    String conversationId = getConversationId();
+    AVIMConversationMemberInfo info = new AVIMConversationMemberInfo(conversationId, memberId, role);
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS, info.getUpdateAttrs());
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_PROMOTE_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1299,9 +1374,10 @@ public class AVIMConversation {
       }
       return;
     }
+    String conversationId = getConversationId();
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_MUTE_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
@@ -1321,9 +1397,10 @@ public class AVIMConversation {
       }
       return;
     }
+    String conversationId = getConversationId();
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_UNMUTE_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
@@ -1344,10 +1421,11 @@ public class AVIMConversation {
       callback.internalDone(null, new AVIMException(new IllegalArgumentException("offset/limit is illegal.")));
       return;
     }
+    String conversationId = getConversationId();
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.QUERY_PARAM_LIMIT, limit);
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, callback);
     if (!ret) {
       callback.internalDone(null,
@@ -1367,9 +1445,10 @@ public class AVIMConversation {
       }
       return;
     }
+    String conversationId = getConversationId();
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_BLOCK_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1388,9 +1467,10 @@ public class AVIMConversation {
       }
       return;
     }
+    String conversationId = getConversationId();
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_UNBLOCK_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1410,10 +1490,11 @@ public class AVIMConversation {
       callback.internalDone(null, new AVIMException(new IllegalArgumentException("offset/limit is illegal.")));
       return;
     }
+    String conversationId = getConversationId();
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.QUERY_PARAM_LIMIT, limit);
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), this.conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, callback);
     if (!ret) {
       callback.internalDone(null,
@@ -1434,8 +1515,8 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().processMembers(client.getClientId(), conversationId, getType(), null,
-            Conversation.AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, callback);
+    InternalConfiguration.getOperationTube().processMembers(client.getClientId(), getConversationId(), getType(),
+            null, Conversation.AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, callback);
   }
 
   /**
@@ -1452,7 +1533,7 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), conversationId, getType(),
+    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), getConversationId(), getType(),
             null, Conversation.AVIMOperation.CONVERSATION_MUTE, callback);
   }
 
@@ -1470,7 +1551,7 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), conversationId, getType(),
+    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), getConversationId(), getType(),
             null, Conversation.AVIMOperation.CONVERSATION_UNMUTE, callback);
   }
 
@@ -1489,7 +1570,7 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), conversationId, getType(),
+    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), getConversationId(), getType(),
             null, Conversation.AVIMOperation.CONVERSATION_QUIT, callback);
   }
 
@@ -1507,7 +1588,7 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), conversationId, getType(),
+    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), getConversationId(), getType(),
             null, Conversation.AVIMOperation.CONVERSATION_JOIN, callback);
   }
 
@@ -1515,14 +1596,15 @@ public class AVIMConversation {
    * 清除未读消息
    */
   public void read() {
-    if (!isTransient) {
+    if (!isTransient()) {
       AVIMMessage lastMessage = getLastMessage();
       Map<String, Object> params = new HashMap<String, Object>();
       if (null != lastMessage) {
         params.put(Conversation.PARAM_MESSAGE_QUERY_MSGID, lastMessage.getMessageId());
         params.put(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP, lastMessage.getTimestamp());
       }
-      InternalConfiguration.getOperationTube().markConversationRead(client.getClientId(), conversationId, getType(), params);
+      InternalConfiguration.getOperationTube()
+              .markConversationRead(client.getClientId(), getConversationId(), getType(), params);
     }
   }
 
@@ -1533,17 +1615,13 @@ public class AVIMConversation {
    * @since 3.0
    */
   public void updateInfoInBackground(final AVIMConversationCallback callback) {
-    if (!pendingAttributes.isEmpty() || !pendingInstanceData.isEmpty()) {
-      Map<String, Object> attributesMap = new HashMap<>();
-      if (!pendingAttributes.isEmpty()) {
-        final Map<String, Object> pendingAttrMap = processAttributes(pendingAttributes, false);
-        if (null != pendingAttrMap) {
-          attributesMap.putAll(pendingAttrMap);
-        }
-      }
-
-      if (!pendingInstanceData.isEmpty()) {
-        attributesMap.putAll(pendingInstanceData);
+    if (!operations.isEmpty()) {
+      Map<String, Object> params = new HashMap<String, Object>();
+      Set<Map.Entry<String, ObjectFieldOperation>> entries = operations.entrySet();
+      for (Map.Entry<String, ObjectFieldOperation> entry: entries) {
+        //{"attr":{"__op":"Add", "objects":[obj1, obj2]}}
+        Map<String, Object> oneOp = entry.getValue().encode();
+        params.putAll(oneOp);
       }
 
 //      Map<String, Object> params = new HashMap<String, Object>();
@@ -1554,10 +1632,15 @@ public class AVIMConversation {
         @Override
         public void done(Map<String, Object> result, AVIMException e) {
           if (null == e) {
-            attributes.putAll(pendingAttributes);
-            pendingAttributes.clear();
-            instanceData.putAll(pendingInstanceData);
-            pendingInstanceData.clear();
+            for (Map.Entry<String, ObjectFieldOperation> entry: operations.entrySet()) {
+              String attribute = entry.getKey();
+              Object value = get(attribute);
+              if (null == value) {
+                recurDeleteData(instanceData, attribute);
+              } else {
+                recurSetData(instanceData, attribute, value);
+              }
+            }
             storage.insertConversations(Arrays.asList(AVIMConversation.this));
           }
           if (null != callback) {
@@ -1565,8 +1648,8 @@ public class AVIMConversation {
           }
         }
       };
-      InternalConfiguration.getOperationTube().updateConversation(this.client.getClientId(), this.conversationId, this.getType(),
-              attributesMap, tmpCallback);
+      InternalConfiguration.getOperationTube().updateConversation(this.client.getClientId(), getConversationId(),
+              getType(), params, tmpCallback);
     } else {
       if (null != callback) {
         callback.internalDone(null);
@@ -1608,6 +1691,7 @@ public class AVIMConversation {
 
   public Map<String, Object> getFetchRequestParams() {
     Map<String, Object> params = new HashMap<String, Object>();
+    String conversationId = getConversationId();
     if (conversationId.startsWith(Conversation.TEMPCONV_ID_PREFIX)) {
       params.put(Conversation.QUERY_PARAM_TEMPCONV, conversationId);
     } else {
@@ -1750,29 +1834,7 @@ public class AVIMConversation {
     conversation.instanceData.clear();
     for (Map.Entry<String, Object> entry : jsonObj.entrySet()) {
       String key = entry.getKey();
-      if (!Arrays.asList(Conversation.CONVERSATION_COLUMNS).contains(key)) {
-        conversation.instanceData.put(key, entry.getValue());
-      }
-    }
-
-    if (jsonObj.containsKey(Conversation.NAME)) {
-      conversation.instanceData.put(Conversation.NAME, jsonObj.getString(Conversation.NAME));
-    }
-
-    if (jsonObj.containsKey(Conversation.SYSTEM)) {
-      conversation.instanceData.put(Conversation.SYSTEM, jsonObj.get(Conversation.SYSTEM));
-    }
-
-    if (jsonObj.containsKey(Conversation.MUTE)) {
-      conversation.instanceData.put(Conversation.MUTE, jsonObj.get(Conversation.MUTE));
-    }
-
-    if (jsonObj.containsKey(AVObject.KEY_CREATED_AT)) {
-      conversation.setCreatedAt(jsonObj.getString(AVObject.KEY_CREATED_AT));
-    }
-
-    if (jsonObj.containsKey(AVObject.KEY_UPDATED_AT)) {
-      conversation.setUpdatedAt(jsonObj.getString(AVObject.KEY_UPDATED_AT));
+      conversation.instanceData.put(key, entry.getValue());
     }
 
     AVIMMessage message = AVIMTypedMessage.parseMessage(conversationId, jsonObj);
@@ -1780,10 +1842,6 @@ public class AVIMConversation {
 
     if (jsonObj.containsKey(Conversation.LAST_MESSAGE_AT)) {
       conversation.setLastMessageAt(Utils.dateFromMap(jsonObj.getObject(Conversation.LAST_MESSAGE_AT, Map.class)));
-    }
-
-    if (jsonObj.containsKey(Conversation.TRANSIENT)) {
-      conversation.isTransient = jsonObj.getBoolean(Conversation.TRANSIENT);
     }
 
     return conversation;
@@ -1827,19 +1885,6 @@ public class AVIMConversation {
   public Map<String, Object> dumpRawData() {
     Map<String, Object> dataMap = new HashMap<>();
     dataMap.putAll(this.instanceData);
-    dataMap.put(Conversation.ATTRIBUTE, this.attributes);
-    dataMap.put(Conversation.NAME, this.getName());
-    dataMap.put(Conversation.CREATOR, getCreator());
-    dataMap.put(Conversation.MEMBERS, getMembers());
-    dataMap.put(AVObject.KEY_CREATED_AT, StringUtil.stringFromDate(getCreatedAt()));
-    dataMap.put(AVObject.KEY_UPDATED_AT, StringUtil.stringFromDate(getUpdatedAt()));
-    dataMap.put(AVObject.KEY_OBJECT_ID, getConversationId());
-    dataMap.put(Conversation.LAST_MESSAGE_AT, StringUtil.stringFromDate(getLastMessageAt()));
-    dataMap.put(Conversation.TRANSIENT, isTransient);
-    dataMap.put(Conversation.SYSTEM, isSystem);
-    dataMap.put(Conversation.TEMPORARY, isTemporary);
-    dataMap.put(Conversation.TEMPORARYTTL, getTemporaryExpiredat());
-    dataMap.put(Conversation.TYPE, getType());
     return dataMap;
   }
 
