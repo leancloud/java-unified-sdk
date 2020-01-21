@@ -375,12 +375,21 @@ public class AVIMConversation {
    */
   public Object get(String key) {
     if (!StringUtil.isEmpty(key)) {
-      if (pendingInstanceData.containsKey(key)) {
-        return pendingInstanceData.get(key);
+      if (key.startsWith(ATTR_PERFIX)) {
+        return getAttribute(key.substring(ATTR_PERFIX.length()));
+      } else {
+        return getGeneralData(key);
       }
-      if (instanceData.containsKey(key)) {
-        return instanceData.get(key);
-      }
+    }
+    return null;
+  }
+
+  Object getGeneralData(String key) {
+    if (pendingInstanceData.containsKey(key)) {
+      return pendingInstanceData.get(key);
+    }
+    if (instanceData.containsKey(key)) {
+      return instanceData.get(key);
     }
     return null;
   }
@@ -1728,9 +1737,7 @@ public class AVIMConversation {
     conversation.setMembers(m);
     conversation.setCreator(jsonObj.getString(Conversation.CREATOR));
     HashMap<String, Object> attributes = new HashMap<String, Object>();
-    if (jsonObj.containsKey(Conversation.NAME)) {
-      attributes.put(Conversation.NAME, jsonObj.getString(Conversation.NAME));
-    }
+
     if (jsonObj.containsKey(Conversation.ATTRIBUTE)) {
       JSONObject moreAttributes = jsonObj.getJSONObject(Conversation.ATTRIBUTE);
       if (moreAttributes != null) {
@@ -1746,6 +1753,10 @@ public class AVIMConversation {
       if (!Arrays.asList(Conversation.CONVERSATION_COLUMNS).contains(key)) {
         conversation.instanceData.put(key, entry.getValue());
       }
+    }
+
+    if (jsonObj.containsKey(Conversation.NAME)) {
+      conversation.instanceData.put(Conversation.NAME, jsonObj.getString(Conversation.NAME));
     }
 
     if (jsonObj.containsKey(Conversation.SYSTEM)) {

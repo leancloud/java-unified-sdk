@@ -295,10 +295,11 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
         final String conversationId = rcpCommand.getCid();
         int convType = Conversation.CONV_TYPE_NORMAL; // RcpCommand doesn't include convType, so we use default value.
         // Notice: it becomes a problem only when server send RcpCommand to a new device for the logined user.
+        String from = rcpCommand.hasFrom()? rcpCommand.getFrom():null;
 
         if (!StringUtil.isEmpty(conversationId)) {
           processConversationDeliveredAt(conversationId, convType, timestamp);
-          processMessageReceipt(rcpCommand.getId(), conversationId, convType, timestamp);
+          processMessageReceipt(rcpCommand.getId(), conversationId, convType, timestamp, from);
         }
       }
     } catch (Exception e) {
@@ -546,7 +547,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
    * @param conversationId
    * @param timestamp
    */
-  private void processMessageReceipt(String msgId, String conversationId, int convType, long timestamp) {
+  private void processMessageReceipt(String msgId, String conversationId, int convType, long timestamp, String from) {
     Object messageCache =
             MessageReceiptCache.get(session.getSelfPeerId(), msgId);
     if (messageCache == null) {
@@ -559,7 +560,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     msg.setContent(m.msg);
     msg.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusReceipt);
     AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
-    conversation.onMessageReceipt(msg);
+    conversation.onMessageReceipt(msg, from);
   }
 
   private SessionAckPacket genSessionAckPacket(String messageId) {

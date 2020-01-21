@@ -27,4 +27,9 @@ public class AVIMTypedMessageHandler<T extends AVIMTypedMessage> extends Message
   public void onMessageReceipt(T message, AVIMConversation conversation, AVIMClient client) {
     ;
   }
+
+  @Override
+  public void onMessageReceiptEx(T message, String operator, AVIMConversation conversation, AVIMClient client) {
+    onMessageReceipt(message, conversation, client);
+  }
 }

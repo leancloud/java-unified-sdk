@@ -544,15 +544,7 @@ public class AVConversationHolder {
       onConversationCreated(requestId, convCommand);
     } else if (ConversationControlOp.JOINED.equals(operation)) {
       String invitedBy = convCommand.getInitBy();
-      if (invitedBy.equals(session.getSelfPeerId())) {
-        // 这里是我自己邀请了我自己，这个事件会被忽略。因为伴随这个消息一起来的还有added消息
-        LOGGER.d("ignore command, due to self-invited.");
-        return;
-      } else if (!invitedBy.equals(session.getSelfPeerId())) {
-        // others invited current User to conversation.
-        // need convCommand to instantiate conversation object.
-        onInvitedToConversation(invitedBy, convCommand);
-      }
+      onInvitedToConversation(invitedBy, convCommand);
     } else if (ConversationControlOp.REMOVED.equals(operation)) {
       if (requestId != CommandPacket.UNSUPPORTED_OPERATION) {
         if (null == imop) {
@@ -576,8 +568,8 @@ public class AVConversationHolder {
       }
     } else if (ConversationControlOp.LEFT.equals(operation)) {
       String invitedBy = convCommand.getInitBy();
-      if (invitedBy != null && !invitedBy.equals(session.getSelfPeerId())) {
-        this.onKickedFromConversation(invitedBy);
+      if (invitedBy != null) {
+        onKickedFromConversation(invitedBy);
       }
     } else if (ConversationControlOp.UPDATED.equals(operation)) {
       if (null == imop) {
@@ -1058,11 +1050,11 @@ public class AVConversationHolder {
       }
     }
   }
-  void onMessageReceipt(final AVIMMessage message) {
+  void onMessageReceipt(final AVIMMessage message, final String from) {
     refreshConversationThenNotify(message, new SimpleCallback() {
       @Override
       public void done() {
-        AVIMMessageManagerHelper.processMessageReceipt(message, AVIMClient.getInstance(session.getSelfPeerId()));
+        AVIMMessageManagerHelper.processMessageReceipt(message, AVIMClient.getInstance(session.getSelfPeerId()), from);
       }
     });
   }
