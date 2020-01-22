@@ -36,7 +36,8 @@ public class AVIMMessageHandler extends MessageHandler<AVIMMessage> {
    * @param client client instance.
    */
   @Override
-  public void onMessageReceiptEx(AVIMMessage message, String operator, AVIMConversation conversation, AVIMClient client) {
+  public void onMessageReceiptEx(AVIMMessage message, String operator, AVIMConversation conversation,
+                                 AVIMClient client) {
     onMessageReceipt(message, conversation, client);
   }
 }

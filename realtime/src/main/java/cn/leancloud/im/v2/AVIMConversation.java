@@ -1885,6 +1885,7 @@ public class AVIMConversation {
   public Map<String, Object> dumpRawData() {
     Map<String, Object> dataMap = new HashMap<>();
     dataMap.putAll(this.instanceData);
+    dataMap.put("conv_type", getType());
     return dataMap;
   }
 
