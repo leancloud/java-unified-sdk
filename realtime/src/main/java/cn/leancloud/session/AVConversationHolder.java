@@ -1070,7 +1070,7 @@ public class AVConversationHolder {
       }
     });
   }
-  void onMessageUpdateEvent(final AVIMMessage message, final boolean isRecall) {
+  void onMessageUpdateEvent(final AVIMMessage message, final boolean isRecall, long patchCode, String patchReason) {
     final AVIMConversationEventHandler handler = AVIMMessageManagerHelper.getConversationEventHandler();
     if (handler != null) {
       AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());

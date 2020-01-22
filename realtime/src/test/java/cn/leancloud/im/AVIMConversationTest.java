@@ -24,6 +24,7 @@ public class AVIMConversationTest extends TestCase {
   private List<String> memebers = Arrays.asList("User2", "User3");
   private String convName = "RealtimeUnitTest";
   private DummyConversationEventHandler conversationEventHandler = new DummyConversationEventHandler(0x00FFFF);
+  String testConversationId = null;
 
   public AVIMConversationTest(String suiteName) {
     super(suiteName);
@@ -44,6 +45,7 @@ public class AVIMConversationTest extends TestCase {
     this.countDownLatch = new CountDownLatch(1);
     opersationSucceed = false;
     conversationEventHandler.resetAllCount();
+    testConversationId = null;
   }
 
   @Override
@@ -336,6 +338,195 @@ public class AVIMConversationTest extends TestCase {
       }
     });
     countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testUpdateMessageNotification() throws Exception {
+    final CountDownLatch firstStage = new CountDownLatch(1);
+    final CountDownLatch secondStage = new CountDownLatch(1);
+    final CountDownLatch endStage = new CountDownLatch(1);
+
+    Thread senderThread = new Thread(new Runnable() {
+      AVIMConversation targetConversation;
+      AVIMTextMessage targetMessage;
+      @Override
+      public void run() {
+        final CountDownLatch tmpCounter = new CountDownLatch(1);
+
+        client = AVIMClient.getInstance("testUser1");
+        client.open(new AVIMClientCallback() {
+          @Override
+          public void done(AVIMClient client, AVIMException e) {
+            if (null != e) {
+              System.out.println("☑️testUser1 loggin...");
+            }
+            tmpCounter.countDown();
+          }
+        });
+        try {
+          tmpCounter.await();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+        client.createConversation(memebers, convName, null, false, true, new AVIMConversationCreatedCallback() {
+          @Override
+          public void done(final AVIMConversation conversation, AVIMException e) {
+            if (null != e) {
+              e.printStackTrace();
+              firstStage.countDown();
+            } else {
+              System.out.println("☑️☑️testUser1 join conversation:" + conversation.getConversationId() + "...");
+              testConversationId = conversation.getConversationId();
+              final AVIMTextMessage msg = new AVIMTextMessage();
+              msg.setText("test run @" + System.currentTimeMillis());
+              conversation.sendMessage(msg, new AVIMConversationCallback() {
+                @Override
+                public void done(AVIMException ex) {
+                  if (null != ex) {
+                    System.out.println("❌️testUser1 failed to send message, cause:" + ex.getMessage());
+                    ex.printStackTrace();
+                    firstStage.countDown();
+                  } else {
+                    System.out.println("☑️☑️☑️testUser1 succeed to send message. messageId:" + msg.getMessageId());
+                    targetConversation = conversation;
+                    targetMessage = msg;
+                    firstStage.countDown();
+                  }
+                }
+              });
+            }
+          }
+        });
+        try {
+          secondStage.await();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+        final CountDownLatch updateLatch = new CountDownLatch(1);
+        AVIMTextMessage newMsg = new AVIMTextMessage();
+        newMsg.setText("test updated @" + System.currentTimeMillis());
+        targetConversation.updateMessage(targetMessage, newMsg, new AVIMMessageUpdatedCallback() {
+          @Override
+          public void done(AVIMMessage curMessage, AVException e) {
+            if (null != e) {
+              System.out.println("❌️testUser1 failed to update message， cause:" + e.getMessage());
+            } else {
+              System.out.println("☑️☑️☑️☑️testUser1 succeed to patch message");
+              opersationSucceed = true;
+            }
+            updateLatch.countDown();
+          }
+        });
+        try {
+          updateLatch.await();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+        endStage.countDown();
+        System.out.println("Sender Thread exited.");
+      }
+    });
+    Thread receiverThread = new Thread(new Runnable() {
+      AVIMClient currentClient = AVIMClient.getInstance("User2");
+      @Override
+      public void run() {
+        final CountDownLatch loginLatch = new CountDownLatch(1);
+        currentClient.open(new AVIMClientCallback() {
+          @Override
+          public void done(AVIMClient client, AVIMException e) {
+            if (null == e) {
+              System.out.println("☑️User2 loggin...");
+            }
+            loginLatch.countDown();
+          }
+        });
+        try {
+          loginLatch.await();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+        try {
+          firstStage.await();
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+
+        if (!StringUtil.isEmpty(testConversationId)) {
+          final AVIMConversation targetConversation = currentClient.getConversation(testConversationId);
+          final CountDownLatch joinLatch = new CountDownLatch(1);
+          targetConversation.join(new AVIMConversationCallback() {
+            @Override
+            public void done(AVIMException e) {
+              if (null != e) {
+                e.printStackTrace();
+              } else {
+                System.out.println("☑️☑️User2 join conversation: " + testConversationId + "...");
+              }
+              AVIMMessage lastMessage = targetConversation.getLastMessage();
+              joinLatch.countDown();
+            }
+          });
+          try {
+            joinLatch.await();
+          } catch (Exception ex) {
+            ;
+          }
+          secondStage.countDown();
+          System.out.println("☑️☑️User2 notify sender to update message...");
+
+          try {
+            endStage.await();
+          } catch (Exception ex) {
+            ;
+          }
+          final CountDownLatch updateLatch = new CountDownLatch(1);
+          System.out.println("☑️☑️️User2 got notification and try to query message...");
+          targetConversation.queryMessages(1, new AVIMMessagesQueryCallback() {
+            @Override
+            public void done(List<AVIMMessage> messages, AVIMException e) {
+              if (null != e || null == messages || messages.size() < 1) {
+                System.out.println("User2 failed to query messages. cause:" + e.getMessage());
+                updateLatch.countDown();
+              } else {
+                System.out.println("☑️☑️☑️User2 try to update message...");
+                AVIMMessage targetMessage = messages.get(0);
+                AVIMTextMessage newMsg = new AVIMTextMessage();
+                newMsg.setText("test updated @" + System.currentTimeMillis());
+                targetConversation.updateMessage(targetMessage, newMsg, new AVIMMessageUpdatedCallback() {
+                  @Override
+                  public void done(AVIMMessage message, AVException e) {
+                    if (null != e) {
+                      e.printStackTrace();
+                    }
+                    System.out.println("☑️☑️☑️☑️User2 update message result: " + (null != e));
+                    opersationSucceed = true;
+                    currentClient.close(new AVIMClientCallback() {
+                      @Override
+                      public void done(AVIMClient client, AVIMException e) {
+                        updateLatch.countDown();
+                      }
+                    });
+                  }
+                });
+              }
+            }
+          });
+          try {
+            updateLatch.await();
+          } catch (Exception ex) {
+            ;
+          }
+        } else {
+          secondStage.countDown();
+        }
+        System.out.println("Receiver Thread Exit!");
+      }
+    });
+
+    senderThread.start();
+    receiverThread.start();
+    senderThread.join(10000);
+    receiverThread.join(10000);
     assertTrue(opersationSucceed);
   }
 

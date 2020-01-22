@@ -486,16 +486,18 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       }
     }
   }
-  private void processPatchCommand(String peerId, boolean isModify, Integer requestKey, Messages.PatchCommand patchCommand) {
-    updateLocalPatchTime(isModify, patchCommand);
-    if (isModify) {
+  private void processPatchCommand(String peerId, boolean isModifyNotification, Integer requestKey, Messages.PatchCommand patchCommand) {
+    updateLocalPatchTime(isModifyNotification, patchCommand);
+    if (isModifyNotification) {
       if (patchCommand.getPatchesCount() > 0) {
         for (Messages.PatchItem patchItem : patchCommand.getPatchesList()) {
           AVIMMessage message = AVIMTypedMessage.getMessage(patchItem.getCid(), patchItem.getMid(), patchItem.getData(),
                   patchItem.getFrom(), patchItem.getTimestamp(), 0, 0);
           message.setUpdateAt(patchItem.getPatchTimestamp());
+          long patchCode = patchItem.hasPatchCode()? patchItem.getPatchCode() : 0;
+          String patchReason = patchItem.hasPatchReason()? patchItem.getPatchReason() : null;
           AVConversationHolder conversation = session.getConversationHolder(patchItem.getCid(), Conversation.CONV_TYPE_NORMAL);
-          conversation.onMessageUpdateEvent(message, patchItem.getRecall());
+          conversation.onMessageUpdateEvent(message, patchItem.getRecall(), patchCode, patchReason);
         }
       }
     } else {
