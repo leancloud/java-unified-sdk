@@ -8,6 +8,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import cn.leancloud.utils.StringUtil;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.*;
 
 public class AVIMMessage {
@@ -424,7 +426,7 @@ public class AVIMMessage {
         result.put("binaryMsg", bytes);
       }
     } else if (this instanceof AVIMTypedMessage) {
-      result.put("typeMsgData", getContent());
+      result.put("typeMsgData", JSON.parseObject(getContent()));
     } else {
       String content = getContent();
       if (!StringUtil.isEmpty(content)) {
