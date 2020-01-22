@@ -30,19 +30,6 @@ import java.util.concurrent.ConcurrentMap;
 
 public class AVIMConversation {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVIMConversation.class);
-  /**
-   * 暂存消息
-   *
-   * 只有在消息发送时，对方也是在线的才能收到这条消息
-   */
-  public static final int TRANSIENT_MESSAGE_FLAG = 0x10;
-  /**
-   * 回执消息
-   *
-   * 当消息送到到对方以后，发送方会收到消息回执说明消息已经成功达到接收方
-   */
-  public static final int RECEIPT_MESSAGE_FLAG = 0x100;
-
   private static final String ATTR_PERFIX = Conversation.ATTRIBUTE + ".";
 
   AVIMClient client;  // AVIMClient 引用
@@ -458,6 +445,7 @@ public class AVIMConversation {
    *
    * @param key attribute key
    * @return attribute value.
+   * @deprecated Please use {@link #get(String)}
    * @since 3.0
    */
   public Object getAttribute(String key) {
@@ -486,6 +474,12 @@ public class AVIMConversation {
     return attrs;
   }
 
+  /**
+   * Set attribute.
+   * @param key attribute key
+   * @param value attribute value.
+   * @deprecated Please use {@link #set(String, Object)}
+   */
   public void setAttribute(String key, Object value) {
     if (!StringUtil.isEmpty(key)) {
       if (Conversation.NAME.equals(key)) {
