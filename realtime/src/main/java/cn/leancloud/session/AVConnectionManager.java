@@ -368,7 +368,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public void onError(WebSocketClient client, Exception exception) {
-    LOGGER.d("webSocket onError. client:" + client + ", exception:"
+    LOGGER.d("AVConnectionManager onError. client:" + client + ", exception:"
             + ((null != exception)? exception.getMessage(): "null"));
     connectionEstablished = false;
     reConnectionRTMServer();

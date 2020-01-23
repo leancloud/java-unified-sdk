@@ -608,6 +608,9 @@ public class AVIMConversationsQuery {
                 List<AVIMConversation> conversations =
                         client.getStorage().getCachedConversations(conversationList);
                 LOGGER.d("map function. output: " + conversations.size());
+                if (conversations.size() < conversationList.size()) {
+                  throw new AVIMException(AVException.CACHE_MISS, "missing conversation cache in database");
+                }
                 return conversations;
               }
             }).subscribe(new Observer<List<AVIMConversation>>() {
@@ -684,6 +687,8 @@ public class AVIMConversationsQuery {
     }
     if (storage != null) {
       storage.insertConversations(conversations);
+    } else {
+      LOGGER.d("Message Storage is null, skip save queryResult.");
     }
     String cacheKey = QueryResultCache.generateKeyForQueryCondition(CONVERSATION_CLASS_NAME, queryParams);
     QueryResultCache.getInstance().cacheResult(cacheKey, JSON.toJSONString(conversationList));

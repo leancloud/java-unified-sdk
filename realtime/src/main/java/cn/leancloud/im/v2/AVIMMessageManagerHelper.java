@@ -7,8 +7,8 @@ public class AVIMMessageManagerHelper {
     AVIMMessageManager.processMessage(message, convType, client, hasMore, isTransient);
   }
 
-  public static void processMessageReceipt(AVIMMessage message, AVIMClient client) {
-    AVIMMessageManager.processMessageReceipt(message, client);
+  public static void processMessageReceipt(AVIMMessage message, AVIMClient client, String from) {
+    AVIMMessageManager.processMessageReceipt(message, client, from);
   }
 
   public static AVIMClientEventHandler getClientEventHandler() {

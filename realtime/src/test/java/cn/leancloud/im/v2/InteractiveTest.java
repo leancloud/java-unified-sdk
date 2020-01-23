@@ -95,7 +95,10 @@ public class InteractiveTest extends TestCase {
       } else if (key.startsWith("attr.")) {
         String attr = key.substring("attr.".length());
         Object actual = conversation.getAttribute(attr);
-        if (null == actual || !actual.equals(expect)) {
+        if (actual == expect) {
+          // for all NULL
+          System.out.println("Conversation attributes matches!");
+        } else if (null == actual || !actual.equals(expect)) {
           System.out.println("❌Conversation attribute not match, key=" + attr + ", expected=" + expect + ", actual=" + actual);
           result = false;
         } else {
@@ -463,6 +466,7 @@ public class InteractiveTest extends TestCase {
   public void testCorrectConversationData() throws Exception {
     final String thirdMember = StringUtil.getRandomString(8);
     final String customAttr = StringUtil.getRandomString(8);
+    final Date now = new Date();
 
     System.out.println("Main Thread: " + Thread.currentThread().getId());
     Thread firstThread = new Thread(new Runnable() {
@@ -497,6 +501,8 @@ public class InteractiveTest extends TestCase {
                   exitLatch.countDown();
                   return;
                 }
+                System.out.println(conversation.get("attr.attr1"));
+                System.out.println(conversation.getAttribute("attr1"));
                 targetConversationId = conversation.getConversationId();
 
                 System.out.println("☑️ " + clientId + " succeed to create conversation, id=" + targetConversationId);
@@ -523,8 +529,15 @@ public class InteractiveTest extends TestCase {
 
           System.out.println("☑️☑️ " + clientId + " continue to modify conversation...");
           final AVIMConversation conversation = currentClient.getConversation(targetConversationId);
-          conversation.setName("MemberListIsVerified");
-          conversation.setAttribute("attr1", "Over");
+          //conversation.setName("MemberListIsVerified");
+          conversation.set("attr.attr2", now);
+          final Map<String, String> deleteOperation = new HashMap<>();
+          deleteOperation.put("__op", "Delete");
+          conversation.set("attr.attr1", deleteOperation);
+          final Map<String, String> deleteOp = new HashMap<>();
+          deleteOp.put("__op", "Delete");
+          conversation.set("name", deleteOp);
+          conversation.setAttribute("attr3", "nothing");
           conversation.updateInfoInBackground(new AVIMConversationCallback() {
             @Override
             public void done(AVIMException e) {
@@ -538,7 +551,8 @@ public class InteractiveTest extends TestCase {
               Map<String, Object> checkpoint = new HashMap<>();
               checkpoint.put("name", "MemberListIsVerified");
               checkpoint.put("memberSize", 3);
-              checkpoint.put("attr.attr1", "Over");
+              checkpoint.put("attr.attr1", null);
+              checkpoint.put("attr.attr2", now.getTime());
               boolean assertResult = verifyConversationWithExpect(conversation, checkpoint);
               if (!assertResult) {
                 System.out.println("❌　Site:" + clientId + " conversation doesn't match expected. conv=" + conversation.toJSONString());
@@ -633,14 +647,15 @@ public class InteractiveTest extends TestCase {
           endStage.await();
 
           System.out.println("☑️️☑️️☑️️☑️️ " + clientId + " got notification to exit thread.");
-          Thread.sleep(2000);
+          Thread.sleep(30000);
 
           AVIMConversation conversation = currentClient.getConversation(targetConversationId);
 
           Map<String, Object> checkpoint = new HashMap<>();
           checkpoint.put("name", "MemberListIsVerified");
           checkpoint.put("memberSize", 3);
-          checkpoint.put("attr.attr1", "Over");
+          checkpoint.put("attr.attr1", null);
+          checkpoint.put("attr.attr2", now.getTime());
           boolean assertResult = verifyConversationWithExpect(conversation, checkpoint);
           if (!assertResult) {
             System.out.println("❌　Site:" + clientId + " conversation doesn't match expected. conv=" + conversation.toJSONString());

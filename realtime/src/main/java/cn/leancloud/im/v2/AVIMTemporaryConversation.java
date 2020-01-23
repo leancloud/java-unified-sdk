@@ -3,7 +3,7 @@ package cn.leancloud.im.v2;
 public class AVIMTemporaryConversation extends AVIMConversation {
   protected AVIMTemporaryConversation(AVIMClient client, String conversationId) {
     super(client, conversationId);
-    isTemporary = true;
+    setTemporary(true);
   }
 
   /*
@@ -11,6 +11,6 @@ public class AVIMTemporaryConversation extends AVIMConversation {
    */
   public boolean isExpired() {
     long now = System.currentTimeMillis() / 1000;
-    return now > this.temporaryExpiredat;
+    return now > this.getTemporaryExpiredat() + this.getCreatedAt().getTime()/1000;
   }
 }

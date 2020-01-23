@@ -295,10 +295,11 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
         final String conversationId = rcpCommand.getCid();
         int convType = Conversation.CONV_TYPE_NORMAL; // RcpCommand doesn't include convType, so we use default value.
         // Notice: it becomes a problem only when server send RcpCommand to a new device for the logined user.
+        String from = rcpCommand.hasFrom()? rcpCommand.getFrom():null;
 
         if (!StringUtil.isEmpty(conversationId)) {
           processConversationDeliveredAt(conversationId, convType, timestamp);
-          processMessageReceipt(rcpCommand.getId(), conversationId, convType, timestamp);
+          processMessageReceipt(rcpCommand.getId(), conversationId, convType, timestamp, from);
         }
       }
     } catch (Exception e) {
@@ -344,6 +345,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
               || operation.equals(ConversationControlOp.UPDATED)
               || operation.equals(ConversationControlOp.MEMBER_COUNT_QUERY_RESULT)
               || operation.equals(ConversationControlOp.SHUTUP_ADDED)
+              || operation.equals(ConversationControlOp.MAX_READ)
               || operation.equals(ConversationControlOp.SHUTUP_REMOVED)
               || operation.equals(ConversationControlOp.MEMBER_UPDATED))
               && requestId != CommandPacket.UNSUPPORTED_OPERATION) {
@@ -484,16 +486,18 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       }
     }
   }
-  private void processPatchCommand(String peerId, boolean isModify, Integer requestKey, Messages.PatchCommand patchCommand) {
-    updateLocalPatchTime(isModify, patchCommand);
-    if (isModify) {
+  private void processPatchCommand(String peerId, boolean isModifyNotification, Integer requestKey, Messages.PatchCommand patchCommand) {
+    updateLocalPatchTime(isModifyNotification, patchCommand);
+    if (isModifyNotification) {
       if (patchCommand.getPatchesCount() > 0) {
         for (Messages.PatchItem patchItem : patchCommand.getPatchesList()) {
           AVIMMessage message = AVIMTypedMessage.getMessage(patchItem.getCid(), patchItem.getMid(), patchItem.getData(),
                   patchItem.getFrom(), patchItem.getTimestamp(), 0, 0);
           message.setUpdateAt(patchItem.getPatchTimestamp());
+          long patchCode = patchItem.hasPatchCode()? patchItem.getPatchCode() : 0;
+          String patchReason = patchItem.hasPatchReason()? patchItem.getPatchReason() : null;
           AVConversationHolder conversation = session.getConversationHolder(patchItem.getCid(), Conversation.CONV_TYPE_NORMAL);
-          conversation.onMessageUpdateEvent(message, patchItem.getRecall());
+          conversation.onMessageUpdateEvent(message, patchItem.getRecall(), patchCode, patchReason);
         }
       }
     } else {
@@ -546,7 +550,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
    * @param conversationId
    * @param timestamp
    */
-  private void processMessageReceipt(String msgId, String conversationId, int convType, long timestamp) {
+  private void processMessageReceipt(String msgId, String conversationId, int convType, long timestamp, String from) {
     Object messageCache =
             MessageReceiptCache.get(session.getSelfPeerId(), msgId);
     if (messageCache == null) {
@@ -559,7 +563,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     msg.setContent(m.msg);
     msg.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusReceipt);
     AVConversationHolder conversation = session.getConversationHolder(conversationId, convType);
-    conversation.onMessageReceipt(msg);
+    conversation.onMessageReceipt(msg, from);
   }
 
   private SessionAckPacket genSessionAckPacket(String messageId) {

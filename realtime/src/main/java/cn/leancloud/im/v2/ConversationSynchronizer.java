@@ -35,23 +35,9 @@ public class ConversationSynchronizer {
       return;
     }
     // Notice: cannot update deleted attr.
-    HashMap<String, Object> attributes = new HashMap<String, Object>();
-    if (jsonObj.containsKey(Conversation.NAME)) {
-      attributes.put(Conversation.NAME, jsonObj.getString(Conversation.NAME));
-    }
-    if (jsonObj.containsKey(Conversation.ATTRIBUTE)) {
-      JSONObject moreAttributes = jsonObj.getJSONObject(Conversation.ATTRIBUTE);
-      if (moreAttributes != null) {
-        Map<String, Object> moreAttributesMap = JSON.toJavaObject(moreAttributes, Map.class);
-        attributes.putAll(moreAttributesMap);
-      }
-    }
-    conversation.attributes.putAll(attributes);
     for (Map.Entry<String, Object> entry : jsonObj.entrySet()) {
       String key = entry.getKey();
-      if (!Arrays.asList(Conversation.CONVERSATION_COLUMNS).contains(key)) {
-        conversation.instanceData.put(key, entry.getValue());
-      }
+      conversation.instanceData.put(key, entry.getValue());
     }
     conversation.latestConversationFetch = System.currentTimeMillis();
   }

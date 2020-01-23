@@ -1,10 +1,12 @@
 package cn.leancloud.im.v2;
 
+import cn.leancloud.AVLogger;
 import cn.leancloud.codec.Base64;
 import cn.leancloud.im.DatabaseDelegate;
 import cn.leancloud.im.DatabaseDelegateFactory;
 import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.utils.AVUtils;
+import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
 
@@ -14,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class AVIMMessageStorage {
+  private static final AVLogger LOGGER = LogUtil.getLogger(AVIMMessageStorage.class);
+
   public static final int MESSAGE_INNERTYPE_BIN = 1;
   public static final int MESSAGE_INNERTYPE_PLAIN = 0;
   public static final String DB_NAME_PREFIX = "com.avos.avoscloud.im.v2.";
@@ -132,6 +136,7 @@ public class AVIMMessageStorage {
 
   public void insertMessage(AVIMMessage message, boolean breakpoint) {
     if (null == message) {
+      LOGGER.d("delegate is null, skip insertMessage operation.");
       return;
     }
     insertMessages(Arrays.asList(message), breakpoint);
@@ -141,6 +146,7 @@ public class AVIMMessageStorage {
     int insertCount = 0;
 
     if (null == this.delegate) {
+      LOGGER.d("delegate is null, skip insertMessages operation.");
       return insertCount;
     }
     for (AVIMMessage message: messages) {
@@ -167,7 +173,10 @@ public class AVIMMessageStorage {
 
       values.put(COLUMN_MSG_MENTION_ALL, message.isMentionAll()? 1: 0);
       values.put(COLUMN_MSG_MENTION_LIST, message.getMentionListString());
-      insertCount += this.delegate.insert(MESSAGE_TABLE, values);
+      int insertResult = this.delegate.insert(MESSAGE_TABLE, values);
+      if (insertResult >= 0) {
+        insertCount++;
+      }
     }
     return insertCount;
   }
@@ -181,6 +190,7 @@ public class AVIMMessageStorage {
       return false;
     }
     if (null == this.delegate) {
+      LOGGER.d("delegate is null, skip insertLocalMessages operation.");
       return true;
     }
     String internalMessageId = generateInternalMessageId(message.getUniqueToken());
@@ -218,6 +228,7 @@ public class AVIMMessageStorage {
       return false;
     }
     if (null == this.delegate) {
+      LOGGER.d("delegate is null, skip removeLocalMessage operation.");
       return true;
     }
     String internalMessageId = generateInternalMessageId(message.getUniqueToken());
@@ -229,6 +240,7 @@ public class AVIMMessageStorage {
 
   public void insertContinuousMessages(List<AVIMMessage> messages, String conversationId) {
     if (null == this.delegate) {
+      LOGGER.d("delegate is null, skip insertContinuousMessages operation.");
       return;
     }
     if (null == messages || messages.isEmpty() || StringUtil.isEmpty(conversationId)) {
@@ -253,6 +265,7 @@ public class AVIMMessageStorage {
 
   public boolean containMessage(AVIMMessage message) {
     if (null == this.delegate) {
+      LOGGER.d("delegate is null, skip containMessage operation.");
       return false;
     }
     int cnt = this.delegate.queryCount(MESSAGE_TABLE, new String[] {},
@@ -294,6 +307,7 @@ public class AVIMMessageStorage {
 
   public synchronized boolean updateMessage(AVIMMessage message, String originalId) {
     if (null == this.delegate) {
+      LOGGER.d("delegate is null, skip updateMessage operation.");
       return false;
     }
     Map<String, Object> values = new HashMap<>();
@@ -331,6 +345,7 @@ public class AVIMMessageStorage {
 
   public synchronized void deleteMessages(List<AVIMMessage> messages, String conversationId) {
     if (null == this.delegate) {
+      LOGGER.d("delegate is null, skip deleteMessages operation.");
       return;
     }
     for (AVIMMessage message : messages) {
@@ -390,6 +405,7 @@ public class AVIMMessageStorage {
   public void getMessages(String msgId, long timestamp, int limit, String conversationId,
                           StorageQueryCallback callback) {
     if (null == this.delegate) {
+      LOGGER.d("delegate is null, skip getMessages operation.");
       callback.done(null, null);
       return;
     }
@@ -419,6 +435,7 @@ public class AVIMMessageStorage {
 
   public long getMessageCount(String conversationId) {
     if (null == this.delegate) {
+      LOGGER.d("delegate is null, skip messageCount operation.");
       return 0l;
     }
     AVIMMessage lastBreakPointMessage = getLatestMessageWithBreakpoint(conversationId, true);
@@ -501,15 +518,16 @@ public class AVIMMessageStorage {
 
   public int insertConversations(List<AVIMConversation> conversations) {
     if (null == this.delegate) {
+      LOGGER.d("delegate is null, skip insert Conversations.");
       return 0;
     }
     for (AVIMConversation conversation : conversations) {
       Map<String, Object> values = new HashMap<>();
-      values.put(COLUMN_ATTRIBUTE, JSON.toJSONString(conversation.attributes));
+      values.put(COLUMN_ATTRIBUTE, JSON.toJSONString(conversation.getAttributes()));
       values.put(COLUMN_INSTANCEDATA, JSON.toJSONString(conversation.instanceData));
-      values.put(COLUMN_CREATEDAT, conversation.createdAt);
-      values.put(COLUMN_UPDATEDAT, conversation.updatedAt);
-      values.put(COLUMN_CREATOR, conversation.creator);
+      values.put(COLUMN_CREATEDAT, conversation.getCreatedAt());
+      values.put(COLUMN_UPDATEDAT, conversation.getUpdatedAt());
+      values.put(COLUMN_CREATOR, conversation.getCreator());
       values.put(COLUMN_EXPIREAT, System.currentTimeMillis()
               + Conversation.DEFAULT_CONVERSATION_EXPIRE_TIME_IN_MILLS);
       if (conversation.lastMessageAt != null) {
@@ -531,7 +549,7 @@ public class AVIMMessageStorage {
       }
 
       values.put(COLUMN_MEMBERS, JSON.toJSONString(conversation.getMembers()));
-      values.put(COLUMN_TRANSIENT, conversation.isTransient ? 1 : 0);
+      values.put(COLUMN_TRANSIENT, conversation.isTransient() ? 1 : 0);
       values.put(COLUMN_UNREAD_COUNT, conversation.getUnreadMessagesCount());
 
       values.put(COLUMN_CONV_MENTIONED, conversation.unreadMessagesMentioned()? 1:0);
@@ -544,12 +562,22 @@ public class AVIMMessageStorage {
       values.put(COLUMN_CONV_SYSTEM, conversation.isSystem()? 1 : 0);
       values.put(COLUMN_CONV_TEMP, conversation.isTemporary()? 1 : 0);
       values.put(COLUMN_CONV_TEMP_TTL, conversation.getTemporaryExpiredat());
+
+      int insertResult = this.delegate.insert(CONVERSATION_TABLE, values);
+      if (insertResult < 0) {
+        LOGGER.d("failed to insert conversation. conversationId=" + conversation.getConversationId());
+      }
     }
     return 1;
   }
 
   public AVIMConversation getConversation(String conversationId) {
-    return null;
+    List<AVIMConversation> result = getCachedConversations(Arrays.asList(conversationId));
+    if (null == result || result.size() < 1) {
+      return null;
+    } else {
+      return result.get(0);
+    }
   }
 
   public List<AVIMConversation> getCachedConversations(List<String> conversationIds) {
@@ -563,6 +591,7 @@ public class AVIMMessageStorage {
 
   public void deleteConversation(String conversationId) {
     if (null == this.delegate) {
+      LOGGER.d("delegate is null, skip delete operation.");
       return;
     }
     this.delegate.delete(CONVERSATION_TABLE, getWhereClause(COLUMN_CONVERSATION_ID),

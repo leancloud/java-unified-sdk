@@ -480,6 +480,8 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
           conversations.add(conversation);
           cursor.moveToNext();
         }
+      } else {
+        LOGGER.d("rawQuery cursor is empty.");
       }
       cursor.close();
     } catch (Exception e) {
@@ -523,23 +525,26 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
       conversation = new AVIMConversation(AVIMClient.getInstance(clientId), conversationId);
     }
 
-    conversation.createdAt = createdAt;
-    conversation.updatedAt = updatedAt;
     try {
-      conversation.members.clear();
-      if (!StringUtil.isEmpty(membersStr)) {
-        conversation.members.addAll(JSON.parseObject(membersStr, Set.class));
-      }
-
-      conversation.attributes.clear();
-      if (!StringUtil.isEmpty(attrsStr)) {
-        conversation.attributes.putAll(JSON.parseObject(attrsStr, HashMap.class));
-      }
-
-      conversation.instanceData.clear();
       if (!StringUtil.isEmpty(instanceData)) {
         conversation.instanceData.putAll(JSON.parseObject(instanceData, HashMap.class));
       }
+
+      conversation.setCreatedAt(createdAt);
+      conversation.setUpdatedAt(updatedAt);
+
+      if (!StringUtil.isEmpty(membersStr)) {
+        List<String> members = new ArrayList<>();
+        members.addAll(JSON.parseObject(membersStr, Set.class));
+        conversation.setMembers(members);
+      }
+
+      //conversation.attributes.clear();
+      if (!StringUtil.isEmpty(attrsStr)) {
+        //conversation.attributes.putAll(JSON.parseObject(attrsStr, HashMap.class));
+        conversation.setAttributesForInit(JSON.parseObject(attrsStr, HashMap.class));
+      }
+
       if (lastMessageInnerType != MESSAGE_INNERTYPE_BIN) {
         AVIMMessage msg = JSON.parseObject(lastMessage, AVIMMessage.class);
         conversation.lastMessage = msg;
@@ -551,7 +556,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
     } catch (Exception e) {
       LOGGER.w("failed to parse conversation query result. cause: " + e.getMessage());
     }
-    conversation.creator = creator;
+    conversation.setCreator(creator);
     conversation.lastMessageAt = new Date(lastMessageTS);
     conversation.unreadMessagesCount = unreadCount;
     conversation.unreadMessagesMentioned = mentioned == 1;

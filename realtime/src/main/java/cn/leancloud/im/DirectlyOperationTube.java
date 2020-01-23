@@ -375,6 +375,9 @@ public class DirectlyOperationTube implements OperationTube {
       case CONVERSATION_MESSAGE_QUERY:
         callback.internalDone(resultData.get(Conversation.callbackHistoryMessages), null);
         break;
+      case CONVERSATION_MEMBER_COUNT_QUERY:
+        callback.internalDone(resultData.get(Conversation.callbackMemberCount), null);
+        break;
       default:
         callback.internalDone(resultData, null);
         break;

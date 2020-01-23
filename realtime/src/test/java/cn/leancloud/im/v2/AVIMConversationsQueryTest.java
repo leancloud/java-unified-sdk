@@ -97,6 +97,30 @@ public class AVIMConversationsQueryTest extends TestCase {
     assertTrue(opersationSucceed);
   }
 
+  public void testQueryTwice() throws Exception {
+    final AVIMConversationsQuery query = client.getConversationsQuery();
+    query.whereContains("m", "testUser1");
+    query.findInBackground(new AVIMConversationQueryCallback() {
+      @Override
+      public void done(List<AVIMConversation> conversations, AVIMException e) {
+        if (null != e) {
+          e.printStackTrace();
+          countDownLatch.countDown();
+        } else {
+          query.findInBackground(new AVIMConversationQueryCallback() {
+            @Override
+            public void done(List<AVIMConversation> conversations, AVIMException e) {
+              opersationSucceed = null != conversations && conversations.size() > 0;
+              countDownLatch.countDown();
+            }
+          });
+        }
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
   public void testQueryNotExistedTempConversations() throws Exception {
     List<String> tempConvIds = new ArrayList<>();
     tempConvIds.add("fhaeihfafheh4247932472hfe");

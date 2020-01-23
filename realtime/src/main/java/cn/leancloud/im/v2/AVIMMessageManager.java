@@ -138,18 +138,18 @@ public class AVIMMessageManager {
     }
     conversation.setLastMessageAt(new Date(message.getTimestamp()));
 
-    retrieveAllMessageHandlers(message, conversation, false);
+    retrieveAllMessageHandlers(message, conversation, false, null);
   }
 
-  protected static void processMessageReceipt(AVIMMessage message, AVIMClient client) {
+  protected static void processMessageReceipt(AVIMMessage message, AVIMClient client, String from) {
     client.getStorage().updateMessage(message, message.getMessageId());
     message = parseTypedMessage(message);
     final AVIMConversation conversation = client.getConversation(message.getConversationId());
-    retrieveAllMessageHandlers(message, conversation, true);
+    retrieveAllMessageHandlers(message, conversation, true, from);
   }
 
   private static void retrieveAllMessageHandlers(AVIMMessage message,
-                                                 AVIMConversation conversation, boolean receipt) {
+                                                 AVIMConversation conversation, boolean receipt, String operator) {
     boolean messageProcessed = false;
     for (Map.Entry<Class<? extends AVIMMessage>, Set<MessageHandler>> entry : messageHandlerRepository.entrySet()) {
       if (entry.getKey().isAssignableFrom(message.getClass())) {
@@ -159,10 +159,10 @@ public class AVIMMessageManager {
         }
         for (MessageHandler handler : handlers) {
           if (receipt) {
-            handler.processEvent(Conversation.STATUS_ON_MESSAGE_RECEIPTED, null, message,
+            handler.processEvent(Conversation.STATUS_ON_MESSAGE_RECEIPTED, operator, message,
                     conversation);
           } else {
-            handler.processEvent(Conversation.STATUS_ON_MESSAGE, null, message,
+            handler.processEvent(Conversation.STATUS_ON_MESSAGE, operator, message,
                     conversation);
           }
         }
@@ -171,10 +171,10 @@ public class AVIMMessageManager {
     }
     if (!messageProcessed && defaultMessageHandler != null) {
       if (receipt) {
-        defaultMessageHandler.processEvent(Conversation.STATUS_ON_MESSAGE_RECEIPTED, null, message,
+        defaultMessageHandler.processEvent(Conversation.STATUS_ON_MESSAGE_RECEIPTED, operator, message,
                 conversation);
       } else {
-        defaultMessageHandler.processEvent(Conversation.STATUS_ON_MESSAGE, null, message,
+        defaultMessageHandler.processEvent(Conversation.STATUS_ON_MESSAGE, operator, message,
                 conversation);
       }
     }

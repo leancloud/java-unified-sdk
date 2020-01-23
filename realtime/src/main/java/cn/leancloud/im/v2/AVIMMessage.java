@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import cn.leancloud.utils.StringUtil;
+
 import java.util.*;
 
 public class AVIMMessage {
@@ -130,7 +131,6 @@ public class AVIMMessage {
    * 获取消息成功到达接收方的时间
    *
    * @return message receipt timestamp
-   * @see AVIMConversation#RECEIPT_MESSAGE_FLAG
    */
   public long getReceiptTimestamp() {
     return getDeliveredAt();
@@ -139,7 +139,6 @@ public class AVIMMessage {
   /**
    * @param receiptTimestamp message receipt timestamp
    * @deprecated Please use {@link #setDeliveredAt(long)}
-   * @see AVIMConversation#RECEIPT_MESSAGE_FLAG
    */
   public void setReceiptTimestamp(long receiptTimestamp) {
     setDeliveredAt(receiptTimestamp);
@@ -424,7 +423,7 @@ public class AVIMMessage {
         result.put("binaryMsg", bytes);
       }
     } else if (this instanceof AVIMTypedMessage) {
-      result.put("typeMsgData", getContent());
+      result.put("typeMsgData", JSON.parseObject(getContent()));
     } else {
       String content = getContent();
       if (!StringUtil.isEmpty(content)) {
