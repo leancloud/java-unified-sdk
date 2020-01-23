@@ -1888,6 +1888,11 @@ public class AVIMConversation {
     return JSON.toJSONString(dataMap);
   }
 
+  @Override
+  public String toString() {
+    return toJSONString();
+  }
+
   interface OperationCompleteCallback {
     void onComplete();
 
