@@ -6,7 +6,7 @@ public class AVIMOptions {
   private SignatureFactory signatureFactory = null;
   private int timeoutInSecs = 10;
   private boolean isAutoOpen = true;
-  private boolean messageQueryCacheEnabled = true;
+  private boolean messageQueryCacheEnabled = false;
 
   private boolean wrapMessageBinaryBufferAsString = false;
 
