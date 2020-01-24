@@ -48,6 +48,7 @@ public class AndroidInitializer {
     init();
 
     LOGGER.i("[LeanCloud] initialize InternalConfiguration within AVIMEventHandler.");
+    AVIMOptions.getGlobalOptions().setMessageQueryCacheEnabled(true);
     InternalConfiguration.setFileMetaAccessor(new AndroidFileMetaAccessor());
     InternalConfiguration.setOperationTube(new AndroidOperationTube());
     InternalConfiguration.setDatabaseDelegateFactory(new AndroidDatabaseDelegateFactory(context));

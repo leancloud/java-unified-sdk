@@ -23,7 +23,8 @@ public class AVIMConversationTest extends TestCase {
   private AVIMClient client = null;
   private List<String> memebers = Arrays.asList("User2", "User3");
   private String convName = "RealtimeUnitTest";
-  private DummyConversationEventHandler conversationEventHandler = new DummyConversationEventHandler(0x00FFFF);
+  private DummyConversationEventHandler conversationEventHandler =
+          new DummyConversationEventHandler(0x00FFFF);
   String testConversationId = null;
 
   public AVIMConversationTest(String suiteName) {
@@ -34,7 +35,7 @@ public class AVIMConversationTest extends TestCase {
     AVConnectionManager manager = AVConnectionManager.getInstance();
     manager.startConnection();
     try {
-      Thread.sleep(2000);
+      Thread.sleep(1000);
     } catch (Exception ex) {
       ex.printStackTrace();
     }
@@ -412,7 +413,6 @@ public class AVIMConversationTest extends TestCase {
               System.out.println("❌️testUser1 failed to update message， cause:" + e.getMessage());
             } else {
               System.out.println("☑️☑️☑️☑️testUser1 succeed to patch message");
-              opersationSucceed = true;
             }
             updateLatch.countDown();
           }
@@ -530,6 +530,78 @@ public class AVIMConversationTest extends TestCase {
     assertTrue(opersationSucceed);
   }
 
+  public void testQueryMessagesWithUser2() throws Exception {
+    final AVIMClient client = AVIMClient.getInstance("User2");
+    final CountDownLatch loginLatch = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        if (null == e) {
+          System.out.println("☑️User2 loggin...");
+        }
+        loginLatch.countDown();
+      }
+    });
+    try {
+      loginLatch.await();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    testConversationId = "5ce23b8ec320f1ab6f53fd50";
+    final AVIMConversation targetConversation = client.getConversation(testConversationId);
+    final CountDownLatch joinLatch = new CountDownLatch(1);
+    targetConversation.join(new AVIMConversationCallback() {
+      @Override
+      public void done(AVIMException e) {
+        if (null != e) {
+          e.printStackTrace();
+        } else {
+          System.out.println("☑️☑️User2 join conversation: " + testConversationId + "...");
+        }
+        AVIMMessage lastMessage = targetConversation.getLastMessage();
+        joinLatch.countDown();
+      }
+    });
+    try {
+      joinLatch.await();
+    } catch (Exception ex) {
+      ;
+    }
+
+    final CountDownLatch updateLatch = new CountDownLatch(1);
+    System.out.println("☑️☑️️User2 got notification and try to query message...");
+    targetConversation.queryMessages(1, new AVIMMessagesQueryCallback() {
+      @Override
+      public void done(List<AVIMMessage> messages, AVIMException e) {
+        if (null != e ) {
+          System.out.println("User2 failed to query messages. cause:" + e.getMessage());
+          updateLatch.countDown();
+        } else if (null == messages || messages.size() < 1) {
+          System.out.println("User2 failed to query messages. result: null");
+          updateLatch.countDown();
+        } else {
+          System.out.println("☑️☑️☑️User2 try to update message...");
+          AVIMMessage targetMessage = messages.get(0);
+          AVIMTextMessage newMsg = new AVIMTextMessage();
+          newMsg.setText("test updated @" + System.currentTimeMillis());
+          targetConversation.updateMessage(targetMessage, newMsg, new AVIMMessageUpdatedCallback() {
+            @Override
+            public void done(AVIMMessage message, AVException e) {
+              if (null != e) {
+                e.printStackTrace();
+              }
+              System.out.println("☑️☑️☑️☑️User2 update message result: " + (null != e));
+              opersationSucceed = true;
+              updateLatch.countDown();
+            }
+          });
+        }
+      }
+    });
+    updateLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
   public void testQueryMessages() throws Exception {
     final CountDownLatch tmpCounter = new CountDownLatch(1);
     client = AVIMClient.getInstance("testUser1");
@@ -554,7 +626,7 @@ public class AVIMConversationTest extends TestCase {
                 System.out.println("failed to query message");
                 ex.printStackTrace();
               } else {
-                System.out.println("succeed to query message");
+                System.out.println("succeed to query message: " + messages.size());
                 opersationSucceed = true;
               }
               countDownLatch.countDown();
