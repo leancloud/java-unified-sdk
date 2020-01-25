@@ -2,6 +2,25 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.3.0 release
+
+Happy New Year of the Rat.
+
+#### Break changes
+- AVIMConversation changed #addMember/removeMember callback from AVIMConversationCallback to AVIMConversationPartiallySucceededCallback.
+- AVIMConversation deprecated #getAttribute/setAttribute, you should use #get/#set instead of.
+
+
+#### New features
+- realtime sdk will throw self-joined/self-left notification to application.
+- add onMessageReceiptEx into MessageHandler, application can get operator info than onMessageReceipt interface.
+
+#### Optimization and fixed bugs
+- fixed: async call qiniu rest api for retrieving meta data.
+- fixed: call AVIMConversationsQuery#findInBackground twice, the second one will return nothing.
+- lots of performance optimization.
+
+
 ## 6.2.1 release
 
 re-release for something wrong on sonatype.org.
