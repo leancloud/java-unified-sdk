@@ -38,6 +38,7 @@ public class AVIMFileMessage extends AVIMTypedMessage {
 
   File localFile;
   AVFile actualFile;
+  boolean keepFileName = false;
 
   boolean hasAdditionalMetaAttr = false;
 
@@ -103,8 +104,9 @@ public class AVIMFileMessage extends AVIMTypedMessage {
     return null;
   }
 
-  public void attachAVFile(AVFile file) {
+  public void attachAVFile(AVFile file, boolean keepName) {
     this.actualFile = file;
+    this.keepFileName = keepName;
   }
 
   protected void setFile(Map<String, Object> file) {
@@ -169,7 +171,7 @@ public class AVIMFileMessage extends AVIMTypedMessage {
 
   protected void upload(final SaveCallback callback) {
     if (actualFile != null) {
-      actualFile.saveInBackground().subscribeOn(Schedulers.io())
+      actualFile.saveInBackground(this.keepFileName).subscribeOn(Schedulers.io())
               .subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
         @Override
         public void done(AVException e) {

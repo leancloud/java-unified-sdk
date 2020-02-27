@@ -98,9 +98,13 @@ public class AVIMConversation {
    * 获取临时对话过期时间（以秒为单位）
    * @return expired interval.
    */
-  public long getTemporaryExpiredat() {
+  public int getTemporaryExpiredat() {
     if (instanceData.containsKey(Conversation.TEMPORARYTTL)) {
-      return (long) instanceData.get(Conversation.TEMPORARYTTL);
+      if (instanceData.get(Conversation.TEMPORARYTTL) instanceof Long) {
+        return Long.valueOf((long)instanceData.get(Conversation.TEMPORARYTTL)).intValue();
+      } else {
+        return (int)instanceData.get(Conversation.TEMPORARYTTL);
+      }
     }
     return 0;
   }
@@ -267,6 +271,9 @@ public class AVIMConversation {
    */
   public List<String> getMembers() {
     List<String> allList = (List<String>) instanceData.get(Conversation.MEMBERS);
+    if (null == allList) {
+      return new ArrayList<>();
+    }
     return Collections.unmodifiableList(allList);
   }
 
@@ -753,7 +760,24 @@ public class AVIMConversation {
         }
       }
     };
-    InternalConfiguration.getOperationTube().updateMessage(client.getClientId(), getType(), oldMessage, newMessage, tmpCallback);
+    if (AVIMFileMessage.class.isAssignableFrom(newMessage.getClass())) {
+      AVIMFileMessageAccessor.upload((AVIMFileMessage) newMessage, new SaveCallback() {
+        public void done(AVException e) {
+          if (e != null) {
+            newMessage.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed);
+            if (callback != null) {
+              callback.internalDone(e);
+            }
+          } else {
+            InternalConfiguration.getOperationTube().updateMessage(client.getClientId(), getType(), oldMessage,
+                    newMessage, tmpCallback);
+          }
+        }
+      });
+    } else {
+      InternalConfiguration.getOperationTube().updateMessage(client.getClientId(), getType(), oldMessage, newMessage,
+              tmpCallback);
+    }
   }
 
   /**
