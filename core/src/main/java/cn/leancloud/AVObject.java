@@ -829,7 +829,7 @@ public class AVObject {
     }
 
     final JSONObject paramData = generateChangedParam();
-    logger.i("saveObject param: " + paramData.toJSONString());
+    logger.d("saveObject param: " + paramData.toJSONString());
 
     final String currentObjectId = getObjectId();
 
