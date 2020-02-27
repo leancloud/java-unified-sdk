@@ -1909,6 +1909,9 @@ public class AVIMConversation {
 
   public String toJSONString() {
     Map<String, Object> dataMap = dumpRawData();
+    if (null != this.lastMessage) {
+      dataMap.put("msg", this.lastMessage.dumpRawData());
+    }
     return JSON.toJSONString(dataMap);
   }
 
