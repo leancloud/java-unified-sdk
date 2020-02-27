@@ -1904,14 +1904,14 @@ public class AVIMConversation {
     Map<String, Object> dataMap = new HashMap<>();
     dataMap.putAll(this.instanceData);
     dataMap.put("conv_type", getType());
+    if (null != this.lastMessage) {
+      dataMap.put("msg", this.lastMessage.dumpRawData());
+    }
     return dataMap;
   }
 
   public String toJSONString() {
     Map<String, Object> dataMap = dumpRawData();
-    if (null != this.lastMessage) {
-      dataMap.put("msg", this.lastMessage.dumpRawData());
-    }
     return JSON.toJSONString(dataMap);
   }
 
