@@ -576,13 +576,15 @@ public class AVConversationHolder {
         // LogUtil.log.e("IllegalState. operation is null, excepted is MUTE / UNMUTE / UPDATE, originalOp=" + operation);
         // conv/updated notification
         onInfoChangedNotify(convCommand);
-      } else if (AVIMOperation.CONVERSATION_MUTE.getCode() == imop.getCode()) {
-        onMuted(requestId);
-      } else if (AVIMOperation.CONVERSATION_UNMUTE.getCode() == imop.getCode()) {
-        onUnmuted(requestId);
-      } else if (AVIMOperation.CONVERSATION_UPDATE.getCode() == imop.getCode()) {
+      } else {
         mergeServerData(convCommand);
-        onInfoUpdated(requestId, convCommand.getUdate());
+        if (AVIMOperation.CONVERSATION_MUTE.getCode() == imop.getCode()) {
+          onMuted(requestId);
+        } else if (AVIMOperation.CONVERSATION_UNMUTE.getCode() == imop.getCode()) {
+          onUnmuted(requestId);
+        } else if (AVIMOperation.CONVERSATION_UPDATE.getCode() == imop.getCode()) {
+          onInfoUpdated(requestId, convCommand.getUdate());
+        }
       }
     } else if (ConversationControlOp.MEMBER_COUNT_QUERY_RESULT.equals(operation)) {
       int memberCount = convCommand.getCount();
