@@ -2,6 +2,33 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.3.1 release
+
+#### Break changes
+- None
+
+
+#### New features
+- enable specify customized PushReceiver for xiaomi/huawei/flyme mix Push. New methods in AVMixPushManager:
+```
+public static void registerXiaomiPush(Context context, String miAppId, String miAppKey, Class customizedReceiver);
+public static void registerXiaomiPush(Context context, String miAppId, String miAppKey, String profile, Class customizedReceiver);
+public static void registerXiaomiPush(Context context, String miAppId, String miAppKey, String profile, boolean isInternationalVendor, Class customizedReceiver);
+
+public static void registerHMSPush(Application application, Class customizedReceiver);
+public static void registerHMSPush(Application application, String profile, Class customizedReceiver);
+
+public static boolean registerFlymePush(Context context, String flymeId, String flymeKey, String profile, Class customizedReceiver);
+public static boolean registerFlymePush(Context context, String flymeId, String flymeKey, Class customizedReceiver);
+```
+
+#### Optimization and fixed bugs
+- change return value type from long to int for AVIMConversation#getTemporaryExpiredat().
+- update Conversation updatedAt field while receiving muted/unmuted response.
+- fixed: upload file-based message at frist within AVIMConversation#updateMessage.
+- some performance optimizations.
+
+
 ## 6.3.0 release
 
 Happy New Year of the Rat.
