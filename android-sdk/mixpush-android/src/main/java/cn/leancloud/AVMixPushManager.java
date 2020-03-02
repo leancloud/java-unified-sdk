@@ -26,17 +26,20 @@ public class AVMixPushManager {
    * 小米推送的 deviceProfile
    */
   static String miDeviceProfile = "";
+  static Class miPushReceiverClazz = AVMiPushMessageReceiver.class;
 
   /**
    * 华为推送的 deviceProfile
    */
   static String hwDeviceProfile = "";
+  static Class hwPushReceiverClazz = AVHMSPushMessageReceiver.class;
 
   /**
    * 魅族推送的 deviceProfile
    */
   static String flymeDeviceProfile = "";
   static int flymeMStatusBarIcon = 0;
+  static Class flymePushReceiverClazz = AVFlymePushMessageReceiver.class;
 
   static String vivoDeviceProfile = "";
   static String oppoDeviceProfile = "";
@@ -45,9 +48,9 @@ public class AVMixPushManager {
    * 注册小米推送
    * 只有 appId、appKey 有效 且 MIUI 且 manifest 正确填写 才能注册
    *
-   * @param context
-   * @param miAppId
-   * @param miAppKey
+   * @param context 上下文
+   * @param miAppId 小米 appId
+   * @param miAppKey 小米 appKey
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey) {
     registerXiaomiPush(context, miAppId, miAppKey, "");
@@ -57,12 +60,41 @@ public class AVMixPushManager {
    * 注册小米推送
    * 只有 appId、appKey 有效 且 MIUI 且 manifest 正确填写 才能注册
    *
-   * @param context
-   * @param miAppId
-   * @param miAppKey
+   * @param context 上下文
+   * @param miAppId 小米 appId
+   * @param miAppKey 小米 appKey
+   * @param customizedReceiver 自定义 receiver
+   */
+  public static void registerXiaomiPush(Context context, String miAppId, String miAppKey,
+                                        Class customizedReceiver) {
+    registerXiaomiPush(context, miAppId, miAppKey, "", customizedReceiver);
+  }
+
+  /**
+   * 注册小米推送
+   * 只有 appId、appKey 有效 且 MIUI 且 manifest 正确填写 才能注册
+   *
+   * @param context 上下文
+   * @param miAppId 小米 appId
+   * @param miAppKey 小米 appKey
    * @param profile  小米推送配置
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey, String profile) {
+    registerXiaomiPush(context, miAppId, miAppKey, profile, null);
+  }
+
+  /**
+   * 注册小米推送
+   * 只有 appId、appKey 有效 且 MIUI 且 manifest 正确填写 才能注册
+   *
+   * @param context 上下文
+   * @param miAppId 小米 appId
+   * @param miAppKey 小米 appKey
+   * @param profile  小米推送配置
+   * @param customizedReceiver 自定义 receiver
+   */
+  public static void registerXiaomiPush(Context context, String miAppId, String miAppKey, String profile,
+                                        Class customizedReceiver) {
     if (null == context) {
       throw new IllegalArgumentException("context cannot be null.");
     }
@@ -73,6 +105,10 @@ public class AVMixPushManager {
 
     if (StringUtil.isEmpty(miAppKey)) {
       throw new IllegalArgumentException("miAppKey cannot be null.");
+    }
+
+    if (null != customizedReceiver) {
+      miPushReceiverClazz = customizedReceiver;
     }
 
     if (!isXiaomiPhone()) {
@@ -96,34 +132,73 @@ public class AVMixPushManager {
    * 注册小米推送
    * 只有 appId、appKey 有效 且 MIUI 且 manifest 正确填写 才能注册
    *
-   * @param context
-   * @param miAppId
-   * @param miAppKey
+   * @param context 上下文
+   * @param miAppId 小米 appId
+   * @param miAppKey 小米 appKey
    * @param profile  小米推送配置
    * @param isInternationalVendor  是否为小米国际版设备
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey,
                                         String profile, boolean isInternationalVendor) {
+    registerXiaomiPush(context, miAppId, miAppKey, profile, isInternationalVendor, null);
+  }
+
+  /**
+   * 注册小米推送
+   * 只有 appId、appKey 有效 且 MIUI 且 manifest 正确填写 才能注册
+   *
+   * @param context 上下文
+   * @param miAppId 小米 appId
+   * @param miAppKey 小米 appKey
+   * @param profile  小米推送配置
+   * @param isInternationalVendor  是否为小米国际版设备
+   * @param customizedReceiver 自定义 receiver
+   */
+  public static void registerXiaomiPush(Context context, String miAppId, String miAppKey,
+                                        String profile, boolean isInternationalVendor, Class customizedReceiver) {
     AVMiPushMessageReceiver.setInternationalVendor(isInternationalVendor);
-    registerXiaomiPush(context, miAppId, miAppKey, profile);
+    registerXiaomiPush(context, miAppId, miAppKey, profile, customizedReceiver);
   }
 
   /**
    * 初始化方法，建议在 Application onCreate 里面调用
-   * @param application
+   * @param application 应用实例
    */
   public static void registerHMSPush(Application application) {
-    registerHMSPush(application, "");
+    registerHMSPush(application, "", null);
   }
 
   /**
    * 初始化方法，建议在 Application onCreate 里面调用
-   * @param application
+   * @param application 应用实例
+   * @param customizedReceiver 自定义 receiver
+   */
+  public static void registerHMSPush(Application application, Class customizedReceiver) {
+    registerHMSPush(application, "", customizedReceiver);
+  }
+
+  /**
+   * 初始化方法，建议在 Application onCreate 里面调用
+   * @param application 应用实例
    * @param profile 华为推送配置
    */
   public static void registerHMSPush(Application application, String profile) {
+    registerHMSPush(application, profile, null);
+  }
+
+  /**
+   * 初始化方法，建议在 Application onCreate 里面调用
+   * @param application 应用实例
+   * @param profile 华为推送配置
+   * @param customizedReceiver 自定义 receiver
+   */
+  public static void registerHMSPush(Application application, String profile, Class customizedReceiver) {
     if (null == application) {
       throw new IllegalArgumentException("[HMS] context cannot be null.");
+    }
+
+    if (null != customizedReceiver) {
+      hwPushReceiverClazz = customizedReceiver;
     }
 
     if (!isHuaweiPhone()) {
@@ -149,8 +224,10 @@ public class AVMixPushManager {
    * 连接HMS SDK， 可能拉起界面(包括升级引导等)，建议在第一个界面进行连接。
    * 此方法可以重复调用，没必要为了只调用一次做复杂处理
    * 方法为异步调用，调用结果在主线程回调
-   *  Connecting to the HMS SDK may pull up the activity (including upgrade guard, etc.), and it is recommended that you connect in the first activity.
-   *  This method can be called repeatedly, and there is no need to do complex processing for only one call at a time
+   *  Connecting to the HMS SDK may pull up the activity (including upgrade guard, etc.), and it is
+   *  recommended that you connect in the first activity.
+   *  This method can be called repeatedly, and there is no need to do complex processing
+   *  for only one call at a time
    *  Method is called asynchronously, and the result is invoked in the main thread callback
    */
   public static void connectHMS(Activity activity) {
@@ -211,7 +288,8 @@ public class AVMixPushManager {
    *  Request Push Protocol Display
    */
   public static void showHMSAgreement() {
-    com.huawei.android.hms.agent.HMSAgent.Push.queryAgreement(new com.huawei.android.hms.agent.push.handler.QueryAgreementHandler() {
+    com.huawei.android.hms.agent.HMSAgent.Push.queryAgreement(
+        new com.huawei.android.hms.agent.push.handler.QueryAgreementHandler() {
       @Override
       public void onResult(int rst) {
         LOGGER.d("[HMS] query agreement result: " + rst);
@@ -221,12 +299,30 @@ public class AVMixPushManager {
 
   /**
    * 注册魅族推送
-   * @param context
-   * @param flymeId
-   * @param flymeKey
+   * @param context 上下文
+   * @param flymeId flyme app id
+   * @param flymeKey flyme app key
    * @param profile 魅族推送配置
+   * @return true - register succeed
+   *         false - register failed
    */
-  public static boolean registerFlymePush(Context context, String flymeId, String flymeKey, String profile) {
+  public static boolean registerFlymePush(Context context, String flymeId, String flymeKey,
+                                          String profile) {
+    return registerFlymePush(context, flymeId, flymeKey, profile, null);
+  }
+
+  /**
+   * 注册魅族推送
+   * @param context 上下文
+   * @param flymeId flyme app id
+   * @param flymeKey flyme app key
+   * @param profile 魅族推送配置
+   * @param customizedReceiver 自定义 receiver
+   * @return true - register succeed
+   *         false - register failed
+   */
+  public static boolean registerFlymePush(Context context, String flymeId, String flymeKey,
+                                          String profile, Class customizedReceiver) {
     if (null == context) {
       printErrorLog("register error, context is null!");
       return false;
@@ -235,6 +331,9 @@ public class AVMixPushManager {
     if (!com.meizu.cloud.pushsdk.util.MzSystemUtils.isBrandMeizu(context)) {
       printErrorLog("register error, is not flyme phone!");
     } else {
+      if (null != customizedReceiver) {
+        flymePushReceiverClazz = customizedReceiver;
+      }
       if (!checkFlymeManifest(context)) {
         printErrorLog("register error, mainifest is incomplete!");
       } else {
@@ -249,14 +348,35 @@ public class AVMixPushManager {
 
   /**
    * 注册魅族推送
-   * @param context
-   * @param flymeId
-   * @param flymeKey
+   * @param context 上下文
+   * @param flymeId flyme app id
+   * @param flymeKey flyme app key
+   * @return true - register succeed
+   *         false - register failed
    */
   public static boolean registerFlymePush(Context context, String flymeId, String flymeKey) {
-    return registerFlymePush(context, flymeId, flymeKey, "");
+    return registerFlymePush(context, flymeId, flymeKey, "", null);
   }
 
+  /**
+   * 注册魅族推送
+   * @param context 上下文
+   * @param flymeId flyme app id
+   * @param flymeKey flyme app key
+   * @param customizedReceiver 自定义 receiver
+   * @return true - register succeed
+   *         false - register failed
+   */
+  public static boolean registerFlymePush(Context context, String flymeId, String flymeKey,
+                                          Class customizedReceiver) {
+    return registerFlymePush(context, flymeId, flymeKey, "", customizedReceiver);
+  }
+
+  /**
+   * set flyme MStatus bar icon.
+   *
+   * @param icon icon resource id.
+   */
   public static void setFlymeMStatusbarIcon(int icon) {
     flymeMStatusBarIcon = icon;
   }
@@ -658,7 +778,7 @@ public class AVMixPushManager {
 
   private static boolean checkXiaomiManifest(Context context) {
     try {
-      return AVManifestUtils.checkReceiver(context, AVMiPushMessageReceiver.class);
+      return AVManifestUtils.checkReceiver(context, miPushReceiverClazz);
     } catch (Exception e) {
       LOGGER.d(e.getMessage());
     }
@@ -672,7 +792,7 @@ public class AVMixPushManager {
           && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE)
           && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)
           && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE)
-          && AVManifestUtils.checkReceiver(context, AVHMSPushMessageReceiver.class);
+          && AVManifestUtils.checkReceiver(context, hwPushReceiverClazz);
     } catch (Exception e) {
     }
     return result;
@@ -685,7 +805,7 @@ public class AVMixPushManager {
           && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE)
           && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE)
           && AVManifestUtils.checkPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-          && AVManifestUtils.checkReceiver(context, AVFlymePushMessageReceiver.class);
+          && AVManifestUtils.checkReceiver(context, flymePushReceiverClazz);
     } catch (Exception e) {
     }
     return result;
