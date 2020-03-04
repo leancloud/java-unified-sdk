@@ -1154,6 +1154,2779 @@ public final class Messages {
     // @@protoc_insertion_point(enum_scope:cn.leancloud.StatusType)
   }
 
+  /**
+   * Protobuf enum {@code cn.leancloud.DeviceType}
+   */
+  public enum DeviceType
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>unknown = 0;</code>
+     */
+    unknown(0),
+    /**
+     * <code>android = 1;</code>
+     */
+    android(1),
+    /**
+     * <code>ios = 2;</code>
+     */
+    ios(2),
+    ;
+
+    /**
+     * <code>unknown = 0;</code>
+     */
+    public static final int unknown_VALUE = 0;
+    /**
+     * <code>android = 1;</code>
+     */
+    public static final int android_VALUE = 1;
+    /**
+     * <code>ios = 2;</code>
+     */
+    public static final int ios_VALUE = 2;
+
+
+    public final int getNumber() {
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static DeviceType valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static DeviceType forNumber(int value) {
+      switch (value) {
+        case 0: return unknown;
+        case 1: return android;
+        case 2: return ios;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<DeviceType>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        DeviceType> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<DeviceType>() {
+            public DeviceType findValueByNumber(int number) {
+              return DeviceType.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return cn.leancloud.Messages.getDescriptor().getEnumTypes().get(3);
+    }
+
+    private static final DeviceType[] VALUES = values();
+
+    public static DeviceType valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private DeviceType(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:cn.leancloud.DeviceType)
+  }
+
+  public interface SemanticVersionOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:cn.leancloud.SemanticVersion)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional int32 major = 1;</code>
+     */
+    boolean hasMajor();
+    /**
+     * <code>optional int32 major = 1;</code>
+     */
+    int getMajor();
+
+    /**
+     * <code>optional int32 minor = 2;</code>
+     */
+    boolean hasMinor();
+    /**
+     * <code>optional int32 minor = 2;</code>
+     */
+    int getMinor();
+
+    /**
+     * <code>optional int32 patch = 3;</code>
+     */
+    boolean hasPatch();
+    /**
+     * <code>optional int32 patch = 3;</code>
+     */
+    int getPatch();
+
+    /**
+     * <code>optional string preRelease = 4;</code>
+     */
+    boolean hasPreRelease();
+    /**
+     * <code>optional string preRelease = 4;</code>
+     */
+    java.lang.String getPreRelease();
+    /**
+     * <code>optional string preRelease = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getPreReleaseBytes();
+
+    /**
+     * <code>optional string build = 5;</code>
+     */
+    boolean hasBuild();
+    /**
+     * <code>optional string build = 5;</code>
+     */
+    java.lang.String getBuild();
+    /**
+     * <code>optional string build = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getBuildBytes();
+  }
+  /**
+   * Protobuf type {@code cn.leancloud.SemanticVersion}
+   */
+  public  static final class SemanticVersion extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:cn.leancloud.SemanticVersion)
+      SemanticVersionOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use SemanticVersion.newBuilder() to construct.
+    private SemanticVersion(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private SemanticVersion() {
+      major_ = 0;
+      minor_ = 0;
+      patch_ = 0;
+      preRelease_ = "";
+      build_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SemanticVersion(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              major_ = input.readInt32();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              minor_ = input.readInt32();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              patch_ = input.readInt32();
+              break;
+            }
+            case 34: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000008;
+              preRelease_ = bs;
+              break;
+            }
+            case 42: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000010;
+              build_ = bs;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return cn.leancloud.Messages.internal_static_cn_leancloud_SemanticVersion_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return cn.leancloud.Messages.internal_static_cn_leancloud_SemanticVersion_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              cn.leancloud.Messages.SemanticVersion.class, cn.leancloud.Messages.SemanticVersion.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int MAJOR_FIELD_NUMBER = 1;
+    private int major_;
+    /**
+     * <code>optional int32 major = 1;</code>
+     */
+    public boolean hasMajor() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional int32 major = 1;</code>
+     */
+    public int getMajor() {
+      return major_;
+    }
+
+    public static final int MINOR_FIELD_NUMBER = 2;
+    private int minor_;
+    /**
+     * <code>optional int32 minor = 2;</code>
+     */
+    public boolean hasMinor() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional int32 minor = 2;</code>
+     */
+    public int getMinor() {
+      return minor_;
+    }
+
+    public static final int PATCH_FIELD_NUMBER = 3;
+    private int patch_;
+    /**
+     * <code>optional int32 patch = 3;</code>
+     */
+    public boolean hasPatch() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional int32 patch = 3;</code>
+     */
+    public int getPatch() {
+      return patch_;
+    }
+
+    public static final int PRERELEASE_FIELD_NUMBER = 4;
+    private volatile java.lang.Object preRelease_;
+    /**
+     * <code>optional string preRelease = 4;</code>
+     */
+    public boolean hasPreRelease() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional string preRelease = 4;</code>
+     */
+    public java.lang.String getPreRelease() {
+      java.lang.Object ref = preRelease_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          preRelease_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string preRelease = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPreReleaseBytes() {
+      java.lang.Object ref = preRelease_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        preRelease_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int BUILD_FIELD_NUMBER = 5;
+    private volatile java.lang.Object build_;
+    /**
+     * <code>optional string build = 5;</code>
+     */
+    public boolean hasBuild() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional string build = 5;</code>
+     */
+    public java.lang.String getBuild() {
+      java.lang.Object ref = build_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          build_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string build = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getBuildBytes() {
+      java.lang.Object ref = build_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        build_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, major_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(2, minor_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(3, patch_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, preRelease_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, build_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, major_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, minor_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, patch_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, preRelease_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, build_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof cn.leancloud.Messages.SemanticVersion)) {
+        return super.equals(obj);
+      }
+      cn.leancloud.Messages.SemanticVersion other = (cn.leancloud.Messages.SemanticVersion) obj;
+
+      boolean result = true;
+      result = result && (hasMajor() == other.hasMajor());
+      if (hasMajor()) {
+        result = result && (getMajor()
+            == other.getMajor());
+      }
+      result = result && (hasMinor() == other.hasMinor());
+      if (hasMinor()) {
+        result = result && (getMinor()
+            == other.getMinor());
+      }
+      result = result && (hasPatch() == other.hasPatch());
+      if (hasPatch()) {
+        result = result && (getPatch()
+            == other.getPatch());
+      }
+      result = result && (hasPreRelease() == other.hasPreRelease());
+      if (hasPreRelease()) {
+        result = result && getPreRelease()
+            .equals(other.getPreRelease());
+      }
+      result = result && (hasBuild() == other.hasBuild());
+      if (hasBuild()) {
+        result = result && getBuild()
+            .equals(other.getBuild());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasMajor()) {
+        hash = (37 * hash) + MAJOR_FIELD_NUMBER;
+        hash = (53 * hash) + getMajor();
+      }
+      if (hasMinor()) {
+        hash = (37 * hash) + MINOR_FIELD_NUMBER;
+        hash = (53 * hash) + getMinor();
+      }
+      if (hasPatch()) {
+        hash = (37 * hash) + PATCH_FIELD_NUMBER;
+        hash = (53 * hash) + getPatch();
+      }
+      if (hasPreRelease()) {
+        hash = (37 * hash) + PRERELEASE_FIELD_NUMBER;
+        hash = (53 * hash) + getPreRelease().hashCode();
+      }
+      if (hasBuild()) {
+        hash = (37 * hash) + BUILD_FIELD_NUMBER;
+        hash = (53 * hash) + getBuild().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static cn.leancloud.Messages.SemanticVersion parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.SemanticVersion parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.SemanticVersion parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.SemanticVersion parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.SemanticVersion parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.SemanticVersion parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.SemanticVersion parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.SemanticVersion parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.SemanticVersion parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.SemanticVersion parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.SemanticVersion parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.SemanticVersion parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(cn.leancloud.Messages.SemanticVersion prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code cn.leancloud.SemanticVersion}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:cn.leancloud.SemanticVersion)
+        cn.leancloud.Messages.SemanticVersionOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_SemanticVersion_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_SemanticVersion_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                cn.leancloud.Messages.SemanticVersion.class, cn.leancloud.Messages.SemanticVersion.Builder.class);
+      }
+
+      // Construct using cn.leancloud.Messages.SemanticVersion.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        major_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        minor_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        patch_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        preRelease_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        build_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_SemanticVersion_descriptor;
+      }
+
+      public cn.leancloud.Messages.SemanticVersion getDefaultInstanceForType() {
+        return cn.leancloud.Messages.SemanticVersion.getDefaultInstance();
+      }
+
+      public cn.leancloud.Messages.SemanticVersion build() {
+        cn.leancloud.Messages.SemanticVersion result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public cn.leancloud.Messages.SemanticVersion buildPartial() {
+        cn.leancloud.Messages.SemanticVersion result = new cn.leancloud.Messages.SemanticVersion(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.major_ = major_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.minor_ = minor_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.patch_ = patch_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.preRelease_ = preRelease_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.build_ = build_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof cn.leancloud.Messages.SemanticVersion) {
+          return mergeFrom((cn.leancloud.Messages.SemanticVersion)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(cn.leancloud.Messages.SemanticVersion other) {
+        if (other == cn.leancloud.Messages.SemanticVersion.getDefaultInstance()) return this;
+        if (other.hasMajor()) {
+          setMajor(other.getMajor());
+        }
+        if (other.hasMinor()) {
+          setMinor(other.getMinor());
+        }
+        if (other.hasPatch()) {
+          setPatch(other.getPatch());
+        }
+        if (other.hasPreRelease()) {
+          bitField0_ |= 0x00000008;
+          preRelease_ = other.preRelease_;
+          onChanged();
+        }
+        if (other.hasBuild()) {
+          bitField0_ |= 0x00000010;
+          build_ = other.build_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        cn.leancloud.Messages.SemanticVersion parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (cn.leancloud.Messages.SemanticVersion) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private int major_ ;
+      /**
+       * <code>optional int32 major = 1;</code>
+       */
+      public boolean hasMajor() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional int32 major = 1;</code>
+       */
+      public int getMajor() {
+        return major_;
+      }
+      /**
+       * <code>optional int32 major = 1;</code>
+       */
+      public Builder setMajor(int value) {
+        bitField0_ |= 0x00000001;
+        major_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 major = 1;</code>
+       */
+      public Builder clearMajor() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        major_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int minor_ ;
+      /**
+       * <code>optional int32 minor = 2;</code>
+       */
+      public boolean hasMinor() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional int32 minor = 2;</code>
+       */
+      public int getMinor() {
+        return minor_;
+      }
+      /**
+       * <code>optional int32 minor = 2;</code>
+       */
+      public Builder setMinor(int value) {
+        bitField0_ |= 0x00000002;
+        minor_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 minor = 2;</code>
+       */
+      public Builder clearMinor() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        minor_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int patch_ ;
+      /**
+       * <code>optional int32 patch = 3;</code>
+       */
+      public boolean hasPatch() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional int32 patch = 3;</code>
+       */
+      public int getPatch() {
+        return patch_;
+      }
+      /**
+       * <code>optional int32 patch = 3;</code>
+       */
+      public Builder setPatch(int value) {
+        bitField0_ |= 0x00000004;
+        patch_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 patch = 3;</code>
+       */
+      public Builder clearPatch() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        patch_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object preRelease_ = "";
+      /**
+       * <code>optional string preRelease = 4;</code>
+       */
+      public boolean hasPreRelease() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional string preRelease = 4;</code>
+       */
+      public java.lang.String getPreRelease() {
+        java.lang.Object ref = preRelease_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            preRelease_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string preRelease = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getPreReleaseBytes() {
+        java.lang.Object ref = preRelease_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          preRelease_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string preRelease = 4;</code>
+       */
+      public Builder setPreRelease(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        preRelease_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string preRelease = 4;</code>
+       */
+      public Builder clearPreRelease() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        preRelease_ = getDefaultInstance().getPreRelease();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string preRelease = 4;</code>
+       */
+      public Builder setPreReleaseBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        preRelease_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object build_ = "";
+      /**
+       * <code>optional string build = 5;</code>
+       */
+      public boolean hasBuild() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional string build = 5;</code>
+       */
+      public java.lang.String getBuild() {
+        java.lang.Object ref = build_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            build_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string build = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getBuildBytes() {
+        java.lang.Object ref = build_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          build_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string build = 5;</code>
+       */
+      public Builder setBuild(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        build_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string build = 5;</code>
+       */
+      public Builder clearBuild() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        build_ = getDefaultInstance().getBuild();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string build = 5;</code>
+       */
+      public Builder setBuildBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        build_ = value;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:cn.leancloud.SemanticVersion)
+    }
+
+    // @@protoc_insertion_point(class_scope:cn.leancloud.SemanticVersion)
+    private static final cn.leancloud.Messages.SemanticVersion DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new cn.leancloud.Messages.SemanticVersion();
+    }
+
+    public static cn.leancloud.Messages.SemanticVersion getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<SemanticVersion>
+        PARSER = new com.google.protobuf.AbstractParser<SemanticVersion>() {
+      public SemanticVersion parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new SemanticVersion(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<SemanticVersion> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SemanticVersion> getParserForType() {
+      return PARSER;
+    }
+
+    public cn.leancloud.Messages.SemanticVersion getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface AndroidVersionOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:cn.leancloud.AndroidVersion)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional string codename = 1;</code>
+     */
+    boolean hasCodename();
+    /**
+     * <code>optional string codename = 1;</code>
+     */
+    java.lang.String getCodename();
+    /**
+     * <code>optional string codename = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getCodenameBytes();
+
+    /**
+     * <code>optional string apiLevel = 2;</code>
+     */
+    boolean hasApiLevel();
+    /**
+     * <code>optional string apiLevel = 2;</code>
+     */
+    java.lang.String getApiLevel();
+    /**
+     * <code>optional string apiLevel = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getApiLevelBytes();
+  }
+  /**
+   * Protobuf type {@code cn.leancloud.AndroidVersion}
+   */
+  public  static final class AndroidVersion extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:cn.leancloud.AndroidVersion)
+      AndroidVersionOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use AndroidVersion.newBuilder() to construct.
+    private AndroidVersion(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private AndroidVersion() {
+      codename_ = "";
+      apiLevel_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private AndroidVersion(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000001;
+              codename_ = bs;
+              break;
+            }
+            case 18: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000002;
+              apiLevel_ = bs;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return cn.leancloud.Messages.internal_static_cn_leancloud_AndroidVersion_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return cn.leancloud.Messages.internal_static_cn_leancloud_AndroidVersion_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              cn.leancloud.Messages.AndroidVersion.class, cn.leancloud.Messages.AndroidVersion.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int CODENAME_FIELD_NUMBER = 1;
+    private volatile java.lang.Object codename_;
+    /**
+     * <code>optional string codename = 1;</code>
+     */
+    public boolean hasCodename() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional string codename = 1;</code>
+     */
+    public java.lang.String getCodename() {
+      java.lang.Object ref = codename_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          codename_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string codename = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getCodenameBytes() {
+      java.lang.Object ref = codename_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        codename_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int APILEVEL_FIELD_NUMBER = 2;
+    private volatile java.lang.Object apiLevel_;
+    /**
+     * <code>optional string apiLevel = 2;</code>
+     */
+    public boolean hasApiLevel() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional string apiLevel = 2;</code>
+     */
+    public java.lang.String getApiLevel() {
+      java.lang.Object ref = apiLevel_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          apiLevel_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string apiLevel = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getApiLevelBytes() {
+      java.lang.Object ref = apiLevel_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        apiLevel_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, codename_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, apiLevel_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, codename_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, apiLevel_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof cn.leancloud.Messages.AndroidVersion)) {
+        return super.equals(obj);
+      }
+      cn.leancloud.Messages.AndroidVersion other = (cn.leancloud.Messages.AndroidVersion) obj;
+
+      boolean result = true;
+      result = result && (hasCodename() == other.hasCodename());
+      if (hasCodename()) {
+        result = result && getCodename()
+            .equals(other.getCodename());
+      }
+      result = result && (hasApiLevel() == other.hasApiLevel());
+      if (hasApiLevel()) {
+        result = result && getApiLevel()
+            .equals(other.getApiLevel());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasCodename()) {
+        hash = (37 * hash) + CODENAME_FIELD_NUMBER;
+        hash = (53 * hash) + getCodename().hashCode();
+      }
+      if (hasApiLevel()) {
+        hash = (37 * hash) + APILEVEL_FIELD_NUMBER;
+        hash = (53 * hash) + getApiLevel().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static cn.leancloud.Messages.AndroidVersion parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.AndroidVersion parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.AndroidVersion parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.AndroidVersion parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.AndroidVersion parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.AndroidVersion parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.AndroidVersion parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.AndroidVersion parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.AndroidVersion parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.AndroidVersion parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.AndroidVersion parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.AndroidVersion parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(cn.leancloud.Messages.AndroidVersion prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code cn.leancloud.AndroidVersion}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:cn.leancloud.AndroidVersion)
+        cn.leancloud.Messages.AndroidVersionOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_AndroidVersion_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_AndroidVersion_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                cn.leancloud.Messages.AndroidVersion.class, cn.leancloud.Messages.AndroidVersion.Builder.class);
+      }
+
+      // Construct using cn.leancloud.Messages.AndroidVersion.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        codename_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        apiLevel_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_AndroidVersion_descriptor;
+      }
+
+      public cn.leancloud.Messages.AndroidVersion getDefaultInstanceForType() {
+        return cn.leancloud.Messages.AndroidVersion.getDefaultInstance();
+      }
+
+      public cn.leancloud.Messages.AndroidVersion build() {
+        cn.leancloud.Messages.AndroidVersion result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public cn.leancloud.Messages.AndroidVersion buildPartial() {
+        cn.leancloud.Messages.AndroidVersion result = new cn.leancloud.Messages.AndroidVersion(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.codename_ = codename_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.apiLevel_ = apiLevel_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof cn.leancloud.Messages.AndroidVersion) {
+          return mergeFrom((cn.leancloud.Messages.AndroidVersion)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(cn.leancloud.Messages.AndroidVersion other) {
+        if (other == cn.leancloud.Messages.AndroidVersion.getDefaultInstance()) return this;
+        if (other.hasCodename()) {
+          bitField0_ |= 0x00000001;
+          codename_ = other.codename_;
+          onChanged();
+        }
+        if (other.hasApiLevel()) {
+          bitField0_ |= 0x00000002;
+          apiLevel_ = other.apiLevel_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        cn.leancloud.Messages.AndroidVersion parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (cn.leancloud.Messages.AndroidVersion) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object codename_ = "";
+      /**
+       * <code>optional string codename = 1;</code>
+       */
+      public boolean hasCodename() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional string codename = 1;</code>
+       */
+      public java.lang.String getCodename() {
+        java.lang.Object ref = codename_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            codename_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string codename = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getCodenameBytes() {
+        java.lang.Object ref = codename_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          codename_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string codename = 1;</code>
+       */
+      public Builder setCodename(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        codename_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string codename = 1;</code>
+       */
+      public Builder clearCodename() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        codename_ = getDefaultInstance().getCodename();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string codename = 1;</code>
+       */
+      public Builder setCodenameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        codename_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object apiLevel_ = "";
+      /**
+       * <code>optional string apiLevel = 2;</code>
+       */
+      public boolean hasApiLevel() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string apiLevel = 2;</code>
+       */
+      public java.lang.String getApiLevel() {
+        java.lang.Object ref = apiLevel_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            apiLevel_ = s;
+          }
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string apiLevel = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getApiLevelBytes() {
+        java.lang.Object ref = apiLevel_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          apiLevel_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string apiLevel = 2;</code>
+       */
+      public Builder setApiLevel(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        apiLevel_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string apiLevel = 2;</code>
+       */
+      public Builder clearApiLevel() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        apiLevel_ = getDefaultInstance().getApiLevel();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string apiLevel = 2;</code>
+       */
+      public Builder setApiLevelBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        apiLevel_ = value;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:cn.leancloud.AndroidVersion)
+    }
+
+    // @@protoc_insertion_point(class_scope:cn.leancloud.AndroidVersion)
+    private static final cn.leancloud.Messages.AndroidVersion DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new cn.leancloud.Messages.AndroidVersion();
+    }
+
+    public static cn.leancloud.Messages.AndroidVersion getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<AndroidVersion>
+        PARSER = new com.google.protobuf.AbstractParser<AndroidVersion>() {
+      public AndroidVersion parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new AndroidVersion(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<AndroidVersion> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<AndroidVersion> getParserForType() {
+      return PARSER;
+    }
+
+    public cn.leancloud.Messages.AndroidVersion getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface SystemInfoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:cn.leancloud.SystemInfo)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional .cn.leancloud.DeviceType deviceType = 1;</code>
+     */
+    boolean hasDeviceType();
+    /**
+     * <code>optional .cn.leancloud.DeviceType deviceType = 1;</code>
+     */
+    cn.leancloud.Messages.DeviceType getDeviceType();
+
+    /**
+     * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+     */
+    boolean hasOsVersion();
+    /**
+     * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+     */
+    cn.leancloud.Messages.SemanticVersion getOsVersion();
+    /**
+     * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+     */
+    cn.leancloud.Messages.SemanticVersionOrBuilder getOsVersionOrBuilder();
+
+    /**
+     * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+     */
+    boolean hasAndroidVersion();
+    /**
+     * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+     */
+    cn.leancloud.Messages.AndroidVersion getAndroidVersion();
+    /**
+     * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+     */
+    cn.leancloud.Messages.AndroidVersionOrBuilder getAndroidVersionOrBuilder();
+
+    /**
+     * <code>optional bool isEmulator = 4;</code>
+     */
+    boolean hasIsEmulator();
+    /**
+     * <code>optional bool isEmulator = 4;</code>
+     */
+    boolean getIsEmulator();
+  }
+  /**
+   * Protobuf type {@code cn.leancloud.SystemInfo}
+   */
+  public  static final class SystemInfo extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:cn.leancloud.SystemInfo)
+      SystemInfoOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use SystemInfo.newBuilder() to construct.
+    private SystemInfo(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private SystemInfo() {
+      deviceType_ = 0;
+      isEmulator_ = false;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SystemInfo(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              int rawValue = input.readEnum();
+              cn.leancloud.Messages.DeviceType value = cn.leancloud.Messages.DeviceType.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(1, rawValue);
+              } else {
+                bitField0_ |= 0x00000001;
+                deviceType_ = rawValue;
+              }
+              break;
+            }
+            case 18: {
+              cn.leancloud.Messages.SemanticVersion.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                subBuilder = osVersion_.toBuilder();
+              }
+              osVersion_ = input.readMessage(cn.leancloud.Messages.SemanticVersion.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(osVersion_);
+                osVersion_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000002;
+              break;
+            }
+            case 26: {
+              cn.leancloud.Messages.AndroidVersion.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000004) == 0x00000004)) {
+                subBuilder = androidVersion_.toBuilder();
+              }
+              androidVersion_ = input.readMessage(cn.leancloud.Messages.AndroidVersion.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(androidVersion_);
+                androidVersion_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000004;
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              isEmulator_ = input.readBool();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return cn.leancloud.Messages.internal_static_cn_leancloud_SystemInfo_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return cn.leancloud.Messages.internal_static_cn_leancloud_SystemInfo_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              cn.leancloud.Messages.SystemInfo.class, cn.leancloud.Messages.SystemInfo.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int DEVICETYPE_FIELD_NUMBER = 1;
+    private int deviceType_;
+    /**
+     * <code>optional .cn.leancloud.DeviceType deviceType = 1;</code>
+     */
+    public boolean hasDeviceType() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional .cn.leancloud.DeviceType deviceType = 1;</code>
+     */
+    public cn.leancloud.Messages.DeviceType getDeviceType() {
+      cn.leancloud.Messages.DeviceType result = cn.leancloud.Messages.DeviceType.valueOf(deviceType_);
+      return result == null ? cn.leancloud.Messages.DeviceType.unknown : result;
+    }
+
+    public static final int OSVERSION_FIELD_NUMBER = 2;
+    private cn.leancloud.Messages.SemanticVersion osVersion_;
+    /**
+     * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+     */
+    public boolean hasOsVersion() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+     */
+    public cn.leancloud.Messages.SemanticVersion getOsVersion() {
+      return osVersion_ == null ? cn.leancloud.Messages.SemanticVersion.getDefaultInstance() : osVersion_;
+    }
+    /**
+     * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+     */
+    public cn.leancloud.Messages.SemanticVersionOrBuilder getOsVersionOrBuilder() {
+      return osVersion_ == null ? cn.leancloud.Messages.SemanticVersion.getDefaultInstance() : osVersion_;
+    }
+
+    public static final int ANDROIDVERSION_FIELD_NUMBER = 3;
+    private cn.leancloud.Messages.AndroidVersion androidVersion_;
+    /**
+     * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+     */
+    public boolean hasAndroidVersion() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+     */
+    public cn.leancloud.Messages.AndroidVersion getAndroidVersion() {
+      return androidVersion_ == null ? cn.leancloud.Messages.AndroidVersion.getDefaultInstance() : androidVersion_;
+    }
+    /**
+     * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+     */
+    public cn.leancloud.Messages.AndroidVersionOrBuilder getAndroidVersionOrBuilder() {
+      return androidVersion_ == null ? cn.leancloud.Messages.AndroidVersion.getDefaultInstance() : androidVersion_;
+    }
+
+    public static final int ISEMULATOR_FIELD_NUMBER = 4;
+    private boolean isEmulator_;
+    /**
+     * <code>optional bool isEmulator = 4;</code>
+     */
+    public boolean hasIsEmulator() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional bool isEmulator = 4;</code>
+     */
+    public boolean getIsEmulator() {
+      return isEmulator_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeEnum(1, deviceType_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(2, getOsVersion());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeMessage(3, getAndroidVersion());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBool(4, isEmulator_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(1, deviceType_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, getOsVersion());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, getAndroidVersion());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(4, isEmulator_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof cn.leancloud.Messages.SystemInfo)) {
+        return super.equals(obj);
+      }
+      cn.leancloud.Messages.SystemInfo other = (cn.leancloud.Messages.SystemInfo) obj;
+
+      boolean result = true;
+      result = result && (hasDeviceType() == other.hasDeviceType());
+      if (hasDeviceType()) {
+        result = result && deviceType_ == other.deviceType_;
+      }
+      result = result && (hasOsVersion() == other.hasOsVersion());
+      if (hasOsVersion()) {
+        result = result && getOsVersion()
+            .equals(other.getOsVersion());
+      }
+      result = result && (hasAndroidVersion() == other.hasAndroidVersion());
+      if (hasAndroidVersion()) {
+        result = result && getAndroidVersion()
+            .equals(other.getAndroidVersion());
+      }
+      result = result && (hasIsEmulator() == other.hasIsEmulator());
+      if (hasIsEmulator()) {
+        result = result && (getIsEmulator()
+            == other.getIsEmulator());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasDeviceType()) {
+        hash = (37 * hash) + DEVICETYPE_FIELD_NUMBER;
+        hash = (53 * hash) + deviceType_;
+      }
+      if (hasOsVersion()) {
+        hash = (37 * hash) + OSVERSION_FIELD_NUMBER;
+        hash = (53 * hash) + getOsVersion().hashCode();
+      }
+      if (hasAndroidVersion()) {
+        hash = (37 * hash) + ANDROIDVERSION_FIELD_NUMBER;
+        hash = (53 * hash) + getAndroidVersion().hashCode();
+      }
+      if (hasIsEmulator()) {
+        hash = (37 * hash) + ISEMULATOR_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getIsEmulator());
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static cn.leancloud.Messages.SystemInfo parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.SystemInfo parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.SystemInfo parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.SystemInfo parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.SystemInfo parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.SystemInfo parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.SystemInfo parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.SystemInfo parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.SystemInfo parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.SystemInfo parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.SystemInfo parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.SystemInfo parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(cn.leancloud.Messages.SystemInfo prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code cn.leancloud.SystemInfo}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:cn.leancloud.SystemInfo)
+        cn.leancloud.Messages.SystemInfoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_SystemInfo_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_SystemInfo_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                cn.leancloud.Messages.SystemInfo.class, cn.leancloud.Messages.SystemInfo.Builder.class);
+      }
+
+      // Construct using cn.leancloud.Messages.SystemInfo.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getOsVersionFieldBuilder();
+          getAndroidVersionFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        deviceType_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (osVersionBuilder_ == null) {
+          osVersion_ = null;
+        } else {
+          osVersionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        if (androidVersionBuilder_ == null) {
+          androidVersion_ = null;
+        } else {
+          androidVersionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        isEmulator_ = false;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_SystemInfo_descriptor;
+      }
+
+      public cn.leancloud.Messages.SystemInfo getDefaultInstanceForType() {
+        return cn.leancloud.Messages.SystemInfo.getDefaultInstance();
+      }
+
+      public cn.leancloud.Messages.SystemInfo build() {
+        cn.leancloud.Messages.SystemInfo result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public cn.leancloud.Messages.SystemInfo buildPartial() {
+        cn.leancloud.Messages.SystemInfo result = new cn.leancloud.Messages.SystemInfo(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.deviceType_ = deviceType_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (osVersionBuilder_ == null) {
+          result.osVersion_ = osVersion_;
+        } else {
+          result.osVersion_ = osVersionBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        if (androidVersionBuilder_ == null) {
+          result.androidVersion_ = androidVersion_;
+        } else {
+          result.androidVersion_ = androidVersionBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.isEmulator_ = isEmulator_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof cn.leancloud.Messages.SystemInfo) {
+          return mergeFrom((cn.leancloud.Messages.SystemInfo)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(cn.leancloud.Messages.SystemInfo other) {
+        if (other == cn.leancloud.Messages.SystemInfo.getDefaultInstance()) return this;
+        if (other.hasDeviceType()) {
+          setDeviceType(other.getDeviceType());
+        }
+        if (other.hasOsVersion()) {
+          mergeOsVersion(other.getOsVersion());
+        }
+        if (other.hasAndroidVersion()) {
+          mergeAndroidVersion(other.getAndroidVersion());
+        }
+        if (other.hasIsEmulator()) {
+          setIsEmulator(other.getIsEmulator());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        cn.leancloud.Messages.SystemInfo parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (cn.leancloud.Messages.SystemInfo) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private int deviceType_ = 0;
+      /**
+       * <code>optional .cn.leancloud.DeviceType deviceType = 1;</code>
+       */
+      public boolean hasDeviceType() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional .cn.leancloud.DeviceType deviceType = 1;</code>
+       */
+      public cn.leancloud.Messages.DeviceType getDeviceType() {
+        cn.leancloud.Messages.DeviceType result = cn.leancloud.Messages.DeviceType.valueOf(deviceType_);
+        return result == null ? cn.leancloud.Messages.DeviceType.unknown : result;
+      }
+      /**
+       * <code>optional .cn.leancloud.DeviceType deviceType = 1;</code>
+       */
+      public Builder setDeviceType(cn.leancloud.Messages.DeviceType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000001;
+        deviceType_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.DeviceType deviceType = 1;</code>
+       */
+      public Builder clearDeviceType() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        deviceType_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private cn.leancloud.Messages.SemanticVersion osVersion_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cn.leancloud.Messages.SemanticVersion, cn.leancloud.Messages.SemanticVersion.Builder, cn.leancloud.Messages.SemanticVersionOrBuilder> osVersionBuilder_;
+      /**
+       * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+       */
+      public boolean hasOsVersion() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+       */
+      public cn.leancloud.Messages.SemanticVersion getOsVersion() {
+        if (osVersionBuilder_ == null) {
+          return osVersion_ == null ? cn.leancloud.Messages.SemanticVersion.getDefaultInstance() : osVersion_;
+        } else {
+          return osVersionBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+       */
+      public Builder setOsVersion(cn.leancloud.Messages.SemanticVersion value) {
+        if (osVersionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          osVersion_ = value;
+          onChanged();
+        } else {
+          osVersionBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+       */
+      public Builder setOsVersion(
+          cn.leancloud.Messages.SemanticVersion.Builder builderForValue) {
+        if (osVersionBuilder_ == null) {
+          osVersion_ = builderForValue.build();
+          onChanged();
+        } else {
+          osVersionBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+       */
+      public Builder mergeOsVersion(cn.leancloud.Messages.SemanticVersion value) {
+        if (osVersionBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              osVersion_ != null &&
+              osVersion_ != cn.leancloud.Messages.SemanticVersion.getDefaultInstance()) {
+            osVersion_ =
+              cn.leancloud.Messages.SemanticVersion.newBuilder(osVersion_).mergeFrom(value).buildPartial();
+          } else {
+            osVersion_ = value;
+          }
+          onChanged();
+        } else {
+          osVersionBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+       */
+      public Builder clearOsVersion() {
+        if (osVersionBuilder_ == null) {
+          osVersion_ = null;
+          onChanged();
+        } else {
+          osVersionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+       */
+      public cn.leancloud.Messages.SemanticVersion.Builder getOsVersionBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getOsVersionFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+       */
+      public cn.leancloud.Messages.SemanticVersionOrBuilder getOsVersionOrBuilder() {
+        if (osVersionBuilder_ != null) {
+          return osVersionBuilder_.getMessageOrBuilder();
+        } else {
+          return osVersion_ == null ?
+              cn.leancloud.Messages.SemanticVersion.getDefaultInstance() : osVersion_;
+        }
+      }
+      /**
+       * <code>optional .cn.leancloud.SemanticVersion osVersion = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cn.leancloud.Messages.SemanticVersion, cn.leancloud.Messages.SemanticVersion.Builder, cn.leancloud.Messages.SemanticVersionOrBuilder> 
+          getOsVersionFieldBuilder() {
+        if (osVersionBuilder_ == null) {
+          osVersionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              cn.leancloud.Messages.SemanticVersion, cn.leancloud.Messages.SemanticVersion.Builder, cn.leancloud.Messages.SemanticVersionOrBuilder>(
+                  getOsVersion(),
+                  getParentForChildren(),
+                  isClean());
+          osVersion_ = null;
+        }
+        return osVersionBuilder_;
+      }
+
+      private cn.leancloud.Messages.AndroidVersion androidVersion_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cn.leancloud.Messages.AndroidVersion, cn.leancloud.Messages.AndroidVersion.Builder, cn.leancloud.Messages.AndroidVersionOrBuilder> androidVersionBuilder_;
+      /**
+       * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+       */
+      public boolean hasAndroidVersion() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+       */
+      public cn.leancloud.Messages.AndroidVersion getAndroidVersion() {
+        if (androidVersionBuilder_ == null) {
+          return androidVersion_ == null ? cn.leancloud.Messages.AndroidVersion.getDefaultInstance() : androidVersion_;
+        } else {
+          return androidVersionBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+       */
+      public Builder setAndroidVersion(cn.leancloud.Messages.AndroidVersion value) {
+        if (androidVersionBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          androidVersion_ = value;
+          onChanged();
+        } else {
+          androidVersionBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+       */
+      public Builder setAndroidVersion(
+          cn.leancloud.Messages.AndroidVersion.Builder builderForValue) {
+        if (androidVersionBuilder_ == null) {
+          androidVersion_ = builderForValue.build();
+          onChanged();
+        } else {
+          androidVersionBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+       */
+      public Builder mergeAndroidVersion(cn.leancloud.Messages.AndroidVersion value) {
+        if (androidVersionBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004) &&
+              androidVersion_ != null &&
+              androidVersion_ != cn.leancloud.Messages.AndroidVersion.getDefaultInstance()) {
+            androidVersion_ =
+              cn.leancloud.Messages.AndroidVersion.newBuilder(androidVersion_).mergeFrom(value).buildPartial();
+          } else {
+            androidVersion_ = value;
+          }
+          onChanged();
+        } else {
+          androidVersionBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000004;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+       */
+      public Builder clearAndroidVersion() {
+        if (androidVersionBuilder_ == null) {
+          androidVersion_ = null;
+          onChanged();
+        } else {
+          androidVersionBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+       */
+      public cn.leancloud.Messages.AndroidVersion.Builder getAndroidVersionBuilder() {
+        bitField0_ |= 0x00000004;
+        onChanged();
+        return getAndroidVersionFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+       */
+      public cn.leancloud.Messages.AndroidVersionOrBuilder getAndroidVersionOrBuilder() {
+        if (androidVersionBuilder_ != null) {
+          return androidVersionBuilder_.getMessageOrBuilder();
+        } else {
+          return androidVersion_ == null ?
+              cn.leancloud.Messages.AndroidVersion.getDefaultInstance() : androidVersion_;
+        }
+      }
+      /**
+       * <code>optional .cn.leancloud.AndroidVersion androidVersion = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cn.leancloud.Messages.AndroidVersion, cn.leancloud.Messages.AndroidVersion.Builder, cn.leancloud.Messages.AndroidVersionOrBuilder> 
+          getAndroidVersionFieldBuilder() {
+        if (androidVersionBuilder_ == null) {
+          androidVersionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              cn.leancloud.Messages.AndroidVersion, cn.leancloud.Messages.AndroidVersion.Builder, cn.leancloud.Messages.AndroidVersionOrBuilder>(
+                  getAndroidVersion(),
+                  getParentForChildren(),
+                  isClean());
+          androidVersion_ = null;
+        }
+        return androidVersionBuilder_;
+      }
+
+      private boolean isEmulator_ ;
+      /**
+       * <code>optional bool isEmulator = 4;</code>
+       */
+      public boolean hasIsEmulator() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional bool isEmulator = 4;</code>
+       */
+      public boolean getIsEmulator() {
+        return isEmulator_;
+      }
+      /**
+       * <code>optional bool isEmulator = 4;</code>
+       */
+      public Builder setIsEmulator(boolean value) {
+        bitField0_ |= 0x00000008;
+        isEmulator_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool isEmulator = 4;</code>
+       */
+      public Builder clearIsEmulator() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        isEmulator_ = false;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:cn.leancloud.SystemInfo)
+    }
+
+    // @@protoc_insertion_point(class_scope:cn.leancloud.SystemInfo)
+    private static final cn.leancloud.Messages.SystemInfo DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new cn.leancloud.Messages.SystemInfo();
+    }
+
+    public static cn.leancloud.Messages.SystemInfo getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<SystemInfo>
+        PARSER = new com.google.protobuf.AbstractParser<SystemInfo>() {
+      public SystemInfo parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new SystemInfo(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<SystemInfo> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SystemInfo> getParserForType() {
+      return PARSER;
+    }
+
+    public cn.leancloud.Messages.SystemInfo getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface JsonObjectMessageOrBuilder extends
       // @@protoc_insertion_point(interface_extends:cn.leancloud.JsonObjectMessage)
       com.google.protobuf.MessageOrBuilder {
@@ -5881,6 +8654,1073 @@ public final class Messages {
 
   }
 
+  public interface LoginCommandOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:cn.leancloud.LoginCommand)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+     */
+    boolean hasSystemInfo();
+    /**
+     * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+     */
+    cn.leancloud.Messages.SystemInfo getSystemInfo();
+    /**
+     * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+     */
+    cn.leancloud.Messages.SystemInfoOrBuilder getSystemInfoOrBuilder();
+  }
+  /**
+   * Protobuf type {@code cn.leancloud.LoginCommand}
+   */
+  public  static final class LoginCommand extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:cn.leancloud.LoginCommand)
+      LoginCommandOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use LoginCommand.newBuilder() to construct.
+    private LoginCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private LoginCommand() {
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private LoginCommand(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              cn.leancloud.Messages.SystemInfo.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                subBuilder = systemInfo_.toBuilder();
+              }
+              systemInfo_ = input.readMessage(cn.leancloud.Messages.SystemInfo.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(systemInfo_);
+                systemInfo_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000001;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return cn.leancloud.Messages.internal_static_cn_leancloud_LoginCommand_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return cn.leancloud.Messages.internal_static_cn_leancloud_LoginCommand_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              cn.leancloud.Messages.LoginCommand.class, cn.leancloud.Messages.LoginCommand.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int SYSTEMINFO_FIELD_NUMBER = 1;
+    private cn.leancloud.Messages.SystemInfo systemInfo_;
+    /**
+     * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+     */
+    public boolean hasSystemInfo() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+     */
+    public cn.leancloud.Messages.SystemInfo getSystemInfo() {
+      return systemInfo_ == null ? cn.leancloud.Messages.SystemInfo.getDefaultInstance() : systemInfo_;
+    }
+    /**
+     * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+     */
+    public cn.leancloud.Messages.SystemInfoOrBuilder getSystemInfoOrBuilder() {
+      return systemInfo_ == null ? cn.leancloud.Messages.SystemInfo.getDefaultInstance() : systemInfo_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, getSystemInfo());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getSystemInfo());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof cn.leancloud.Messages.LoginCommand)) {
+        return super.equals(obj);
+      }
+      cn.leancloud.Messages.LoginCommand other = (cn.leancloud.Messages.LoginCommand) obj;
+
+      boolean result = true;
+      result = result && (hasSystemInfo() == other.hasSystemInfo());
+      if (hasSystemInfo()) {
+        result = result && getSystemInfo()
+            .equals(other.getSystemInfo());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasSystemInfo()) {
+        hash = (37 * hash) + SYSTEMINFO_FIELD_NUMBER;
+        hash = (53 * hash) + getSystemInfo().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static cn.leancloud.Messages.LoginCommand parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.LoginCommand parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.LoginCommand parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.LoginCommand parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.LoginCommand parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.LoginCommand parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.LoginCommand parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.LoginCommand parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.LoginCommand parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.LoginCommand parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.LoginCommand parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.LoginCommand parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(cn.leancloud.Messages.LoginCommand prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code cn.leancloud.LoginCommand}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:cn.leancloud.LoginCommand)
+        cn.leancloud.Messages.LoginCommandOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_LoginCommand_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_LoginCommand_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                cn.leancloud.Messages.LoginCommand.class, cn.leancloud.Messages.LoginCommand.Builder.class);
+      }
+
+      // Construct using cn.leancloud.Messages.LoginCommand.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getSystemInfoFieldBuilder();
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        if (systemInfoBuilder_ == null) {
+          systemInfo_ = null;
+        } else {
+          systemInfoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_LoginCommand_descriptor;
+      }
+
+      public cn.leancloud.Messages.LoginCommand getDefaultInstanceForType() {
+        return cn.leancloud.Messages.LoginCommand.getDefaultInstance();
+      }
+
+      public cn.leancloud.Messages.LoginCommand build() {
+        cn.leancloud.Messages.LoginCommand result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public cn.leancloud.Messages.LoginCommand buildPartial() {
+        cn.leancloud.Messages.LoginCommand result = new cn.leancloud.Messages.LoginCommand(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (systemInfoBuilder_ == null) {
+          result.systemInfo_ = systemInfo_;
+        } else {
+          result.systemInfo_ = systemInfoBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof cn.leancloud.Messages.LoginCommand) {
+          return mergeFrom((cn.leancloud.Messages.LoginCommand)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(cn.leancloud.Messages.LoginCommand other) {
+        if (other == cn.leancloud.Messages.LoginCommand.getDefaultInstance()) return this;
+        if (other.hasSystemInfo()) {
+          mergeSystemInfo(other.getSystemInfo());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        cn.leancloud.Messages.LoginCommand parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (cn.leancloud.Messages.LoginCommand) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private cn.leancloud.Messages.SystemInfo systemInfo_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cn.leancloud.Messages.SystemInfo, cn.leancloud.Messages.SystemInfo.Builder, cn.leancloud.Messages.SystemInfoOrBuilder> systemInfoBuilder_;
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+       */
+      public boolean hasSystemInfo() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+       */
+      public cn.leancloud.Messages.SystemInfo getSystemInfo() {
+        if (systemInfoBuilder_ == null) {
+          return systemInfo_ == null ? cn.leancloud.Messages.SystemInfo.getDefaultInstance() : systemInfo_;
+        } else {
+          return systemInfoBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+       */
+      public Builder setSystemInfo(cn.leancloud.Messages.SystemInfo value) {
+        if (systemInfoBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          systemInfo_ = value;
+          onChanged();
+        } else {
+          systemInfoBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+       */
+      public Builder setSystemInfo(
+          cn.leancloud.Messages.SystemInfo.Builder builderForValue) {
+        if (systemInfoBuilder_ == null) {
+          systemInfo_ = builderForValue.build();
+          onChanged();
+        } else {
+          systemInfoBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+       */
+      public Builder mergeSystemInfo(cn.leancloud.Messages.SystemInfo value) {
+        if (systemInfoBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              systemInfo_ != null &&
+              systemInfo_ != cn.leancloud.Messages.SystemInfo.getDefaultInstance()) {
+            systemInfo_ =
+              cn.leancloud.Messages.SystemInfo.newBuilder(systemInfo_).mergeFrom(value).buildPartial();
+          } else {
+            systemInfo_ = value;
+          }
+          onChanged();
+        } else {
+          systemInfoBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+       */
+      public Builder clearSystemInfo() {
+        if (systemInfoBuilder_ == null) {
+          systemInfo_ = null;
+          onChanged();
+        } else {
+          systemInfoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+       */
+      public cn.leancloud.Messages.SystemInfo.Builder getSystemInfoBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getSystemInfoFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+       */
+      public cn.leancloud.Messages.SystemInfoOrBuilder getSystemInfoOrBuilder() {
+        if (systemInfoBuilder_ != null) {
+          return systemInfoBuilder_.getMessageOrBuilder();
+        } else {
+          return systemInfo_ == null ?
+              cn.leancloud.Messages.SystemInfo.getDefaultInstance() : systemInfo_;
+        }
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cn.leancloud.Messages.SystemInfo, cn.leancloud.Messages.SystemInfo.Builder, cn.leancloud.Messages.SystemInfoOrBuilder> 
+          getSystemInfoFieldBuilder() {
+        if (systemInfoBuilder_ == null) {
+          systemInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              cn.leancloud.Messages.SystemInfo, cn.leancloud.Messages.SystemInfo.Builder, cn.leancloud.Messages.SystemInfoOrBuilder>(
+                  getSystemInfo(),
+                  getParentForChildren(),
+                  isClean());
+          systemInfo_ = null;
+        }
+        return systemInfoBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:cn.leancloud.LoginCommand)
+    }
+
+    // @@protoc_insertion_point(class_scope:cn.leancloud.LoginCommand)
+    private static final cn.leancloud.Messages.LoginCommand DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new cn.leancloud.Messages.LoginCommand();
+    }
+
+    public static cn.leancloud.Messages.LoginCommand getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<LoginCommand>
+        PARSER = new com.google.protobuf.AbstractParser<LoginCommand>() {
+      public LoginCommand parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new LoginCommand(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<LoginCommand> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<LoginCommand> getParserForType() {
+      return PARSER;
+    }
+
+    public cn.leancloud.Messages.LoginCommand getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface LoggedinCommandOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:cn.leancloud.LoggedinCommand)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>optional bool pushDisabled = 1;</code>
+     */
+    boolean hasPushDisabled();
+    /**
+     * <code>optional bool pushDisabled = 1;</code>
+     */
+    boolean getPushDisabled();
+  }
+  /**
+   * Protobuf type {@code cn.leancloud.LoggedinCommand}
+   */
+  public  static final class LoggedinCommand extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:cn.leancloud.LoggedinCommand)
+      LoggedinCommandOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use LoggedinCommand.newBuilder() to construct.
+    private LoggedinCommand(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private LoggedinCommand() {
+      pushDisabled_ = false;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private LoggedinCommand(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              pushDisabled_ = input.readBool();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return cn.leancloud.Messages.internal_static_cn_leancloud_LoggedinCommand_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return cn.leancloud.Messages.internal_static_cn_leancloud_LoggedinCommand_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              cn.leancloud.Messages.LoggedinCommand.class, cn.leancloud.Messages.LoggedinCommand.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int PUSHDISABLED_FIELD_NUMBER = 1;
+    private boolean pushDisabled_;
+    /**
+     * <code>optional bool pushDisabled = 1;</code>
+     */
+    public boolean hasPushDisabled() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional bool pushDisabled = 1;</code>
+     */
+    public boolean getPushDisabled() {
+      return pushDisabled_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBool(1, pushDisabled_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(1, pushDisabled_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof cn.leancloud.Messages.LoggedinCommand)) {
+        return super.equals(obj);
+      }
+      cn.leancloud.Messages.LoggedinCommand other = (cn.leancloud.Messages.LoggedinCommand) obj;
+
+      boolean result = true;
+      result = result && (hasPushDisabled() == other.hasPushDisabled());
+      if (hasPushDisabled()) {
+        result = result && (getPushDisabled()
+            == other.getPushDisabled());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasPushDisabled()) {
+        hash = (37 * hash) + PUSHDISABLED_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getPushDisabled());
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static cn.leancloud.Messages.LoggedinCommand parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.LoggedinCommand parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.LoggedinCommand parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.LoggedinCommand parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.LoggedinCommand parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static cn.leancloud.Messages.LoggedinCommand parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.LoggedinCommand parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.LoggedinCommand parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.LoggedinCommand parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.LoggedinCommand parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static cn.leancloud.Messages.LoggedinCommand parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static cn.leancloud.Messages.LoggedinCommand parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(cn.leancloud.Messages.LoggedinCommand prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code cn.leancloud.LoggedinCommand}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:cn.leancloud.LoggedinCommand)
+        cn.leancloud.Messages.LoggedinCommandOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_LoggedinCommand_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_LoggedinCommand_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                cn.leancloud.Messages.LoggedinCommand.class, cn.leancloud.Messages.LoggedinCommand.Builder.class);
+      }
+
+      // Construct using cn.leancloud.Messages.LoggedinCommand.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        pushDisabled_ = false;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return cn.leancloud.Messages.internal_static_cn_leancloud_LoggedinCommand_descriptor;
+      }
+
+      public cn.leancloud.Messages.LoggedinCommand getDefaultInstanceForType() {
+        return cn.leancloud.Messages.LoggedinCommand.getDefaultInstance();
+      }
+
+      public cn.leancloud.Messages.LoggedinCommand build() {
+        cn.leancloud.Messages.LoggedinCommand result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public cn.leancloud.Messages.LoggedinCommand buildPartial() {
+        cn.leancloud.Messages.LoggedinCommand result = new cn.leancloud.Messages.LoggedinCommand(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.pushDisabled_ = pushDisabled_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof cn.leancloud.Messages.LoggedinCommand) {
+          return mergeFrom((cn.leancloud.Messages.LoggedinCommand)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(cn.leancloud.Messages.LoggedinCommand other) {
+        if (other == cn.leancloud.Messages.LoggedinCommand.getDefaultInstance()) return this;
+        if (other.hasPushDisabled()) {
+          setPushDisabled(other.getPushDisabled());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        cn.leancloud.Messages.LoggedinCommand parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (cn.leancloud.Messages.LoggedinCommand) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private boolean pushDisabled_ ;
+      /**
+       * <code>optional bool pushDisabled = 1;</code>
+       */
+      public boolean hasPushDisabled() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional bool pushDisabled = 1;</code>
+       */
+      public boolean getPushDisabled() {
+        return pushDisabled_;
+      }
+      /**
+       * <code>optional bool pushDisabled = 1;</code>
+       */
+      public Builder setPushDisabled(boolean value) {
+        bitField0_ |= 0x00000001;
+        pushDisabled_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool pushDisabled = 1;</code>
+       */
+      public Builder clearPushDisabled() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        pushDisabled_ = false;
+        onChanged();
+        return this;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:cn.leancloud.LoggedinCommand)
+    }
+
+    // @@protoc_insertion_point(class_scope:cn.leancloud.LoggedinCommand)
+    private static final cn.leancloud.Messages.LoggedinCommand DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new cn.leancloud.Messages.LoggedinCommand();
+    }
+
+    public static cn.leancloud.Messages.LoggedinCommand getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<LoggedinCommand>
+        PARSER = new com.google.protobuf.AbstractParser<LoggedinCommand>() {
+      public LoggedinCommand parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new LoggedinCommand(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<LoggedinCommand> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<LoggedinCommand> getParserForType() {
+      return PARSER;
+    }
+
+    public cn.leancloud.Messages.LoggedinCommand getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface DataCommandOrBuilder extends
       // @@protoc_insertion_point(interface_extends:cn.leancloud.DataCommand)
       com.google.protobuf.MessageOrBuilder {
@@ -7164,6 +11004,19 @@ public final class Messages {
      * <code>optional int64 configBitmap = 19;</code>
      */
     long getConfigBitmap();
+
+    /**
+     * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+     */
+    boolean hasSystemInfo();
+    /**
+     * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+     */
+    cn.leancloud.Messages.SystemInfo getSystemInfo();
+    /**
+     * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+     */
+    cn.leancloud.Messages.SystemInfoOrBuilder getSystemInfoOrBuilder();
   }
   /**
    * Protobuf type {@code cn.leancloud.SessionCommand}
@@ -7337,6 +11190,19 @@ public final class Messages {
             case 152: {
               bitField0_ |= 0x00010000;
               configBitmap_ = input.readInt64();
+              break;
+            }
+            case 162: {
+              cn.leancloud.Messages.SystemInfo.Builder subBuilder = null;
+              if (((bitField0_ & 0x00020000) == 0x00020000)) {
+                subBuilder = systemInfo_.toBuilder();
+              }
+              systemInfo_ = input.readMessage(cn.leancloud.Messages.SystemInfo.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(systemInfo_);
+                systemInfo_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00020000;
               break;
             }
           }
@@ -7926,6 +11792,27 @@ public final class Messages {
       return configBitmap_;
     }
 
+    public static final int SYSTEMINFO_FIELD_NUMBER = 20;
+    private cn.leancloud.Messages.SystemInfo systemInfo_;
+    /**
+     * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+     */
+    public boolean hasSystemInfo() {
+      return ((bitField0_ & 0x00020000) == 0x00020000);
+    }
+    /**
+     * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+     */
+    public cn.leancloud.Messages.SystemInfo getSystemInfo() {
+      return systemInfo_ == null ? cn.leancloud.Messages.SystemInfo.getDefaultInstance() : systemInfo_;
+    }
+    /**
+     * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+     */
+    public cn.leancloud.Messages.SystemInfoOrBuilder getSystemInfoOrBuilder() {
+      return systemInfo_ == null ? cn.leancloud.Messages.SystemInfo.getDefaultInstance() : systemInfo_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -7994,6 +11881,9 @@ public final class Messages {
       }
       if (((bitField0_ & 0x00010000) == 0x00010000)) {
         output.writeInt64(19, configBitmap_);
+      }
+      if (((bitField0_ & 0x00020000) == 0x00020000)) {
+        output.writeMessage(20, getSystemInfo());
       }
       unknownFields.writeTo(output);
     }
@@ -8077,6 +11967,10 @@ public final class Messages {
       if (((bitField0_ & 0x00010000) == 0x00010000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(19, configBitmap_);
+      }
+      if (((bitField0_ & 0x00020000) == 0x00020000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(20, getSystemInfo());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -8183,6 +12077,11 @@ public final class Messages {
         result = result && (getConfigBitmap()
             == other.getConfigBitmap());
       }
+      result = result && (hasSystemInfo() == other.hasSystemInfo());
+      if (hasSystemInfo()) {
+        result = result && getSystemInfo()
+            .equals(other.getSystemInfo());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -8275,6 +12174,10 @@ public final class Messages {
         hash = (37 * hash) + CONFIGBITMAP_FIELD_NUMBER;
         hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
             getConfigBitmap());
+      }
+      if (hasSystemInfo()) {
+        hash = (37 * hash) + SYSTEMINFO_FIELD_NUMBER;
+        hash = (53 * hash) + getSystemInfo().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -8401,6 +12304,7 @@ public final class Messages {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getSystemInfoFieldBuilder();
         }
       }
       public Builder clear() {
@@ -8443,6 +12347,12 @@ public final class Messages {
         bitField0_ = (bitField0_ & ~0x00020000);
         configBitmap_ = 0L;
         bitField0_ = (bitField0_ & ~0x00040000);
+        if (systemInfoBuilder_ == null) {
+          systemInfo_ = null;
+        } else {
+          systemInfoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00080000);
         return this;
       }
 
@@ -8545,6 +12455,14 @@ public final class Messages {
           to_bitField0_ |= 0x00010000;
         }
         result.configBitmap_ = configBitmap_;
+        if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
+          to_bitField0_ |= 0x00020000;
+        }
+        if (systemInfoBuilder_ == null) {
+          result.systemInfo_ = systemInfo_;
+        } else {
+          result.systemInfo_ = systemInfoBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -8675,6 +12593,9 @@ public final class Messages {
         }
         if (other.hasConfigBitmap()) {
           setConfigBitmap(other.getConfigBitmap());
+        }
+        if (other.hasSystemInfo()) {
+          mergeSystemInfo(other.getSystemInfo());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -9828,6 +13749,124 @@ public final class Messages {
         configBitmap_ = 0L;
         onChanged();
         return this;
+      }
+
+      private cn.leancloud.Messages.SystemInfo systemInfo_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cn.leancloud.Messages.SystemInfo, cn.leancloud.Messages.SystemInfo.Builder, cn.leancloud.Messages.SystemInfoOrBuilder> systemInfoBuilder_;
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+       */
+      public boolean hasSystemInfo() {
+        return ((bitField0_ & 0x00080000) == 0x00080000);
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+       */
+      public cn.leancloud.Messages.SystemInfo getSystemInfo() {
+        if (systemInfoBuilder_ == null) {
+          return systemInfo_ == null ? cn.leancloud.Messages.SystemInfo.getDefaultInstance() : systemInfo_;
+        } else {
+          return systemInfoBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+       */
+      public Builder setSystemInfo(cn.leancloud.Messages.SystemInfo value) {
+        if (systemInfoBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          systemInfo_ = value;
+          onChanged();
+        } else {
+          systemInfoBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00080000;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+       */
+      public Builder setSystemInfo(
+          cn.leancloud.Messages.SystemInfo.Builder builderForValue) {
+        if (systemInfoBuilder_ == null) {
+          systemInfo_ = builderForValue.build();
+          onChanged();
+        } else {
+          systemInfoBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00080000;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+       */
+      public Builder mergeSystemInfo(cn.leancloud.Messages.SystemInfo value) {
+        if (systemInfoBuilder_ == null) {
+          if (((bitField0_ & 0x00080000) == 0x00080000) &&
+              systemInfo_ != null &&
+              systemInfo_ != cn.leancloud.Messages.SystemInfo.getDefaultInstance()) {
+            systemInfo_ =
+              cn.leancloud.Messages.SystemInfo.newBuilder(systemInfo_).mergeFrom(value).buildPartial();
+          } else {
+            systemInfo_ = value;
+          }
+          onChanged();
+        } else {
+          systemInfoBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00080000;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+       */
+      public Builder clearSystemInfo() {
+        if (systemInfoBuilder_ == null) {
+          systemInfo_ = null;
+          onChanged();
+        } else {
+          systemInfoBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00080000);
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+       */
+      public cn.leancloud.Messages.SystemInfo.Builder getSystemInfoBuilder() {
+        bitField0_ |= 0x00080000;
+        onChanged();
+        return getSystemInfoFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+       */
+      public cn.leancloud.Messages.SystemInfoOrBuilder getSystemInfoOrBuilder() {
+        if (systemInfoBuilder_ != null) {
+          return systemInfoBuilder_.getMessageOrBuilder();
+        } else {
+          return systemInfo_ == null ?
+              cn.leancloud.Messages.SystemInfo.getDefaultInstance() : systemInfo_;
+        }
+      }
+      /**
+       * <code>optional .cn.leancloud.SystemInfo systemInfo = 20;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cn.leancloud.Messages.SystemInfo, cn.leancloud.Messages.SystemInfo.Builder, cn.leancloud.Messages.SystemInfoOrBuilder> 
+          getSystemInfoFieldBuilder() {
+        if (systemInfoBuilder_ == null) {
+          systemInfoBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              cn.leancloud.Messages.SystemInfo, cn.leancloud.Messages.SystemInfo.Builder, cn.leancloud.Messages.SystemInfoOrBuilder>(
+                  getSystemInfo(),
+                  getParentForChildren(),
+                  isClean());
+          systemInfo_ = null;
+        }
+        return systemInfoBuilder_;
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -39268,6 +43307,19 @@ public final class Messages {
     int getNotificationType();
 
     /**
+     * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+     */
+    boolean hasLoginMessage();
+    /**
+     * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+     */
+    cn.leancloud.Messages.LoginCommand getLoginMessage();
+    /**
+     * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+     */
+    cn.leancloud.Messages.LoginCommandOrBuilder getLoginMessageOrBuilder();
+
+    /**
      * <code>optional .cn.leancloud.DataCommand dataMessage = 101;</code>
      */
     boolean hasDataMessage();
@@ -39474,6 +43526,19 @@ public final class Messages {
      * <code>optional .cn.leancloud.BlacklistCommand blacklistMessage = 116;</code>
      */
     cn.leancloud.Messages.BlacklistCommandOrBuilder getBlacklistMessageOrBuilder();
+
+    /**
+     * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+     */
+    boolean hasLoggedinMessage();
+    /**
+     * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+     */
+    cn.leancloud.Messages.LoggedinCommand getLoggedinMessage();
+    /**
+     * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+     */
+    cn.leancloud.Messages.LoggedinCommandOrBuilder getLoggedinMessageOrBuilder();
   }
   /**
    * Protobuf type {@code cn.leancloud.GenericCommand}
@@ -39599,9 +43664,22 @@ public final class Messages {
               notificationType_ = input.readInt32();
               break;
             }
+            case 802: {
+              cn.leancloud.Messages.LoginCommand.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000800) == 0x00000800)) {
+                subBuilder = loginMessage_.toBuilder();
+              }
+              loginMessage_ = input.readMessage(cn.leancloud.Messages.LoginCommand.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(loginMessage_);
+                loginMessage_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000800;
+              break;
+            }
             case 810: {
               cn.leancloud.Messages.DataCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000800) == 0x00000800)) {
+              if (((bitField0_ & 0x00001000) == 0x00001000)) {
                 subBuilder = dataMessage_.toBuilder();
               }
               dataMessage_ = input.readMessage(cn.leancloud.Messages.DataCommand.PARSER, extensionRegistry);
@@ -39609,12 +43687,12 @@ public final class Messages {
                 subBuilder.mergeFrom(dataMessage_);
                 dataMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000800;
+              bitField0_ |= 0x00001000;
               break;
             }
             case 818: {
               cn.leancloud.Messages.SessionCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00001000) == 0x00001000)) {
+              if (((bitField0_ & 0x00002000) == 0x00002000)) {
                 subBuilder = sessionMessage_.toBuilder();
               }
               sessionMessage_ = input.readMessage(cn.leancloud.Messages.SessionCommand.PARSER, extensionRegistry);
@@ -39622,12 +43700,12 @@ public final class Messages {
                 subBuilder.mergeFrom(sessionMessage_);
                 sessionMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00001000;
+              bitField0_ |= 0x00002000;
               break;
             }
             case 826: {
               cn.leancloud.Messages.ErrorCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00002000) == 0x00002000)) {
+              if (((bitField0_ & 0x00004000) == 0x00004000)) {
                 subBuilder = errorMessage_.toBuilder();
               }
               errorMessage_ = input.readMessage(cn.leancloud.Messages.ErrorCommand.PARSER, extensionRegistry);
@@ -39635,12 +43713,12 @@ public final class Messages {
                 subBuilder.mergeFrom(errorMessage_);
                 errorMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00002000;
+              bitField0_ |= 0x00004000;
               break;
             }
             case 834: {
               cn.leancloud.Messages.DirectCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00004000) == 0x00004000)) {
+              if (((bitField0_ & 0x00008000) == 0x00008000)) {
                 subBuilder = directMessage_.toBuilder();
               }
               directMessage_ = input.readMessage(cn.leancloud.Messages.DirectCommand.PARSER, extensionRegistry);
@@ -39648,12 +43726,12 @@ public final class Messages {
                 subBuilder.mergeFrom(directMessage_);
                 directMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00004000;
+              bitField0_ |= 0x00008000;
               break;
             }
             case 842: {
               cn.leancloud.Messages.AckCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00008000) == 0x00008000)) {
+              if (((bitField0_ & 0x00010000) == 0x00010000)) {
                 subBuilder = ackMessage_.toBuilder();
               }
               ackMessage_ = input.readMessage(cn.leancloud.Messages.AckCommand.PARSER, extensionRegistry);
@@ -39661,12 +43739,12 @@ public final class Messages {
                 subBuilder.mergeFrom(ackMessage_);
                 ackMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00008000;
+              bitField0_ |= 0x00010000;
               break;
             }
             case 850: {
               cn.leancloud.Messages.UnreadCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00010000) == 0x00010000)) {
+              if (((bitField0_ & 0x00020000) == 0x00020000)) {
                 subBuilder = unreadMessage_.toBuilder();
               }
               unreadMessage_ = input.readMessage(cn.leancloud.Messages.UnreadCommand.PARSER, extensionRegistry);
@@ -39674,12 +43752,12 @@ public final class Messages {
                 subBuilder.mergeFrom(unreadMessage_);
                 unreadMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00010000;
+              bitField0_ |= 0x00020000;
               break;
             }
             case 858: {
               cn.leancloud.Messages.ReadCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00020000) == 0x00020000)) {
+              if (((bitField0_ & 0x00040000) == 0x00040000)) {
                 subBuilder = readMessage_.toBuilder();
               }
               readMessage_ = input.readMessage(cn.leancloud.Messages.ReadCommand.PARSER, extensionRegistry);
@@ -39687,12 +43765,12 @@ public final class Messages {
                 subBuilder.mergeFrom(readMessage_);
                 readMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00020000;
+              bitField0_ |= 0x00040000;
               break;
             }
             case 866: {
               cn.leancloud.Messages.RcpCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00040000) == 0x00040000)) {
+              if (((bitField0_ & 0x00080000) == 0x00080000)) {
                 subBuilder = rcpMessage_.toBuilder();
               }
               rcpMessage_ = input.readMessage(cn.leancloud.Messages.RcpCommand.PARSER, extensionRegistry);
@@ -39700,12 +43778,12 @@ public final class Messages {
                 subBuilder.mergeFrom(rcpMessage_);
                 rcpMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00040000;
+              bitField0_ |= 0x00080000;
               break;
             }
             case 874: {
               cn.leancloud.Messages.LogsCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00080000) == 0x00080000)) {
+              if (((bitField0_ & 0x00100000) == 0x00100000)) {
                 subBuilder = logsMessage_.toBuilder();
               }
               logsMessage_ = input.readMessage(cn.leancloud.Messages.LogsCommand.PARSER, extensionRegistry);
@@ -39713,12 +43791,12 @@ public final class Messages {
                 subBuilder.mergeFrom(logsMessage_);
                 logsMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00080000;
+              bitField0_ |= 0x00100000;
               break;
             }
             case 882: {
               cn.leancloud.Messages.ConvCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00100000) == 0x00100000)) {
+              if (((bitField0_ & 0x00200000) == 0x00200000)) {
                 subBuilder = convMessage_.toBuilder();
               }
               convMessage_ = input.readMessage(cn.leancloud.Messages.ConvCommand.PARSER, extensionRegistry);
@@ -39726,12 +43804,12 @@ public final class Messages {
                 subBuilder.mergeFrom(convMessage_);
                 convMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00100000;
+              bitField0_ |= 0x00200000;
               break;
             }
             case 890: {
               cn.leancloud.Messages.RoomCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00200000) == 0x00200000)) {
+              if (((bitField0_ & 0x00400000) == 0x00400000)) {
                 subBuilder = roomMessage_.toBuilder();
               }
               roomMessage_ = input.readMessage(cn.leancloud.Messages.RoomCommand.PARSER, extensionRegistry);
@@ -39739,12 +43817,12 @@ public final class Messages {
                 subBuilder.mergeFrom(roomMessage_);
                 roomMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00200000;
+              bitField0_ |= 0x00400000;
               break;
             }
             case 898: {
               cn.leancloud.Messages.PresenceCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00400000) == 0x00400000)) {
+              if (((bitField0_ & 0x00800000) == 0x00800000)) {
                 subBuilder = presenceMessage_.toBuilder();
               }
               presenceMessage_ = input.readMessage(cn.leancloud.Messages.PresenceCommand.PARSER, extensionRegistry);
@@ -39752,12 +43830,12 @@ public final class Messages {
                 subBuilder.mergeFrom(presenceMessage_);
                 presenceMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00400000;
+              bitField0_ |= 0x00800000;
               break;
             }
             case 906: {
               cn.leancloud.Messages.ReportCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x00800000) == 0x00800000)) {
+              if (((bitField0_ & 0x01000000) == 0x01000000)) {
                 subBuilder = reportMessage_.toBuilder();
               }
               reportMessage_ = input.readMessage(cn.leancloud.Messages.ReportCommand.PARSER, extensionRegistry);
@@ -39765,12 +43843,12 @@ public final class Messages {
                 subBuilder.mergeFrom(reportMessage_);
                 reportMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00800000;
+              bitField0_ |= 0x01000000;
               break;
             }
             case 914: {
               cn.leancloud.Messages.PatchCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x01000000) == 0x01000000)) {
+              if (((bitField0_ & 0x02000000) == 0x02000000)) {
                 subBuilder = patchMessage_.toBuilder();
               }
               patchMessage_ = input.readMessage(cn.leancloud.Messages.PatchCommand.PARSER, extensionRegistry);
@@ -39778,12 +43856,12 @@ public final class Messages {
                 subBuilder.mergeFrom(patchMessage_);
                 patchMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x01000000;
+              bitField0_ |= 0x02000000;
               break;
             }
             case 922: {
               cn.leancloud.Messages.PubsubCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x02000000) == 0x02000000)) {
+              if (((bitField0_ & 0x04000000) == 0x04000000)) {
                 subBuilder = pubsubMessage_.toBuilder();
               }
               pubsubMessage_ = input.readMessage(cn.leancloud.Messages.PubsubCommand.PARSER, extensionRegistry);
@@ -39791,12 +43869,12 @@ public final class Messages {
                 subBuilder.mergeFrom(pubsubMessage_);
                 pubsubMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x02000000;
+              bitField0_ |= 0x04000000;
               break;
             }
             case 930: {
               cn.leancloud.Messages.BlacklistCommand.Builder subBuilder = null;
-              if (((bitField0_ & 0x04000000) == 0x04000000)) {
+              if (((bitField0_ & 0x08000000) == 0x08000000)) {
                 subBuilder = blacklistMessage_.toBuilder();
               }
               blacklistMessage_ = input.readMessage(cn.leancloud.Messages.BlacklistCommand.PARSER, extensionRegistry);
@@ -39804,7 +43882,20 @@ public final class Messages {
                 subBuilder.mergeFrom(blacklistMessage_);
                 blacklistMessage_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x04000000;
+              bitField0_ |= 0x08000000;
+              break;
+            }
+            case 938: {
+              cn.leancloud.Messages.LoggedinCommand.Builder subBuilder = null;
+              if (((bitField0_ & 0x10000000) == 0x10000000)) {
+                subBuilder = loggedinMessage_.toBuilder();
+              }
+              loggedinMessage_ = input.readMessage(cn.leancloud.Messages.LoggedinCommand.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(loggedinMessage_);
+                loggedinMessage_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x10000000;
               break;
             }
           }
@@ -40080,13 +44171,34 @@ public final class Messages {
       return notificationType_;
     }
 
+    public static final int LOGINMESSAGE_FIELD_NUMBER = 100;
+    private cn.leancloud.Messages.LoginCommand loginMessage_;
+    /**
+     * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+     */
+    public boolean hasLoginMessage() {
+      return ((bitField0_ & 0x00000800) == 0x00000800);
+    }
+    /**
+     * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+     */
+    public cn.leancloud.Messages.LoginCommand getLoginMessage() {
+      return loginMessage_ == null ? cn.leancloud.Messages.LoginCommand.getDefaultInstance() : loginMessage_;
+    }
+    /**
+     * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+     */
+    public cn.leancloud.Messages.LoginCommandOrBuilder getLoginMessageOrBuilder() {
+      return loginMessage_ == null ? cn.leancloud.Messages.LoginCommand.getDefaultInstance() : loginMessage_;
+    }
+
     public static final int DATAMESSAGE_FIELD_NUMBER = 101;
     private cn.leancloud.Messages.DataCommand dataMessage_;
     /**
      * <code>optional .cn.leancloud.DataCommand dataMessage = 101;</code>
      */
     public boolean hasDataMessage() {
-      return ((bitField0_ & 0x00000800) == 0x00000800);
+      return ((bitField0_ & 0x00001000) == 0x00001000);
     }
     /**
      * <code>optional .cn.leancloud.DataCommand dataMessage = 101;</code>
@@ -40107,7 +44219,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.SessionCommand sessionMessage = 102;</code>
      */
     public boolean hasSessionMessage() {
-      return ((bitField0_ & 0x00001000) == 0x00001000);
+      return ((bitField0_ & 0x00002000) == 0x00002000);
     }
     /**
      * <code>optional .cn.leancloud.SessionCommand sessionMessage = 102;</code>
@@ -40128,7 +44240,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.ErrorCommand errorMessage = 103;</code>
      */
     public boolean hasErrorMessage() {
-      return ((bitField0_ & 0x00002000) == 0x00002000);
+      return ((bitField0_ & 0x00004000) == 0x00004000);
     }
     /**
      * <code>optional .cn.leancloud.ErrorCommand errorMessage = 103;</code>
@@ -40149,7 +44261,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.DirectCommand directMessage = 104;</code>
      */
     public boolean hasDirectMessage() {
-      return ((bitField0_ & 0x00004000) == 0x00004000);
+      return ((bitField0_ & 0x00008000) == 0x00008000);
     }
     /**
      * <code>optional .cn.leancloud.DirectCommand directMessage = 104;</code>
@@ -40170,7 +44282,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.AckCommand ackMessage = 105;</code>
      */
     public boolean hasAckMessage() {
-      return ((bitField0_ & 0x00008000) == 0x00008000);
+      return ((bitField0_ & 0x00010000) == 0x00010000);
     }
     /**
      * <code>optional .cn.leancloud.AckCommand ackMessage = 105;</code>
@@ -40191,7 +44303,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.UnreadCommand unreadMessage = 106;</code>
      */
     public boolean hasUnreadMessage() {
-      return ((bitField0_ & 0x00010000) == 0x00010000);
+      return ((bitField0_ & 0x00020000) == 0x00020000);
     }
     /**
      * <code>optional .cn.leancloud.UnreadCommand unreadMessage = 106;</code>
@@ -40212,7 +44324,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.ReadCommand readMessage = 107;</code>
      */
     public boolean hasReadMessage() {
-      return ((bitField0_ & 0x00020000) == 0x00020000);
+      return ((bitField0_ & 0x00040000) == 0x00040000);
     }
     /**
      * <code>optional .cn.leancloud.ReadCommand readMessage = 107;</code>
@@ -40233,7 +44345,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.RcpCommand rcpMessage = 108;</code>
      */
     public boolean hasRcpMessage() {
-      return ((bitField0_ & 0x00040000) == 0x00040000);
+      return ((bitField0_ & 0x00080000) == 0x00080000);
     }
     /**
      * <code>optional .cn.leancloud.RcpCommand rcpMessage = 108;</code>
@@ -40254,7 +44366,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.LogsCommand logsMessage = 109;</code>
      */
     public boolean hasLogsMessage() {
-      return ((bitField0_ & 0x00080000) == 0x00080000);
+      return ((bitField0_ & 0x00100000) == 0x00100000);
     }
     /**
      * <code>optional .cn.leancloud.LogsCommand logsMessage = 109;</code>
@@ -40275,7 +44387,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.ConvCommand convMessage = 110;</code>
      */
     public boolean hasConvMessage() {
-      return ((bitField0_ & 0x00100000) == 0x00100000);
+      return ((bitField0_ & 0x00200000) == 0x00200000);
     }
     /**
      * <code>optional .cn.leancloud.ConvCommand convMessage = 110;</code>
@@ -40296,7 +44408,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.RoomCommand roomMessage = 111;</code>
      */
     public boolean hasRoomMessage() {
-      return ((bitField0_ & 0x00200000) == 0x00200000);
+      return ((bitField0_ & 0x00400000) == 0x00400000);
     }
     /**
      * <code>optional .cn.leancloud.RoomCommand roomMessage = 111;</code>
@@ -40317,7 +44429,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.PresenceCommand presenceMessage = 112;</code>
      */
     public boolean hasPresenceMessage() {
-      return ((bitField0_ & 0x00400000) == 0x00400000);
+      return ((bitField0_ & 0x00800000) == 0x00800000);
     }
     /**
      * <code>optional .cn.leancloud.PresenceCommand presenceMessage = 112;</code>
@@ -40338,7 +44450,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.ReportCommand reportMessage = 113;</code>
      */
     public boolean hasReportMessage() {
-      return ((bitField0_ & 0x00800000) == 0x00800000);
+      return ((bitField0_ & 0x01000000) == 0x01000000);
     }
     /**
      * <code>optional .cn.leancloud.ReportCommand reportMessage = 113;</code>
@@ -40359,7 +44471,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.PatchCommand patchMessage = 114;</code>
      */
     public boolean hasPatchMessage() {
-      return ((bitField0_ & 0x01000000) == 0x01000000);
+      return ((bitField0_ & 0x02000000) == 0x02000000);
     }
     /**
      * <code>optional .cn.leancloud.PatchCommand patchMessage = 114;</code>
@@ -40380,7 +44492,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.PubsubCommand pubsubMessage = 115;</code>
      */
     public boolean hasPubsubMessage() {
-      return ((bitField0_ & 0x02000000) == 0x02000000);
+      return ((bitField0_ & 0x04000000) == 0x04000000);
     }
     /**
      * <code>optional .cn.leancloud.PubsubCommand pubsubMessage = 115;</code>
@@ -40401,7 +44513,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.BlacklistCommand blacklistMessage = 116;</code>
      */
     public boolean hasBlacklistMessage() {
-      return ((bitField0_ & 0x04000000) == 0x04000000);
+      return ((bitField0_ & 0x08000000) == 0x08000000);
     }
     /**
      * <code>optional .cn.leancloud.BlacklistCommand blacklistMessage = 116;</code>
@@ -40414,6 +44526,27 @@ public final class Messages {
      */
     public cn.leancloud.Messages.BlacklistCommandOrBuilder getBlacklistMessageOrBuilder() {
       return blacklistMessage_ == null ? cn.leancloud.Messages.BlacklistCommand.getDefaultInstance() : blacklistMessage_;
+    }
+
+    public static final int LOGGEDINMESSAGE_FIELD_NUMBER = 117;
+    private cn.leancloud.Messages.LoggedinCommand loggedinMessage_;
+    /**
+     * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+     */
+    public boolean hasLoggedinMessage() {
+      return ((bitField0_ & 0x10000000) == 0x10000000);
+    }
+    /**
+     * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+     */
+    public cn.leancloud.Messages.LoggedinCommand getLoggedinMessage() {
+      return loggedinMessage_ == null ? cn.leancloud.Messages.LoggedinCommand.getDefaultInstance() : loggedinMessage_;
+    }
+    /**
+     * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+     */
+    public cn.leancloud.Messages.LoggedinCommandOrBuilder getLoggedinMessageOrBuilder() {
+      return loggedinMessage_ == null ? cn.leancloud.Messages.LoggedinCommand.getDefaultInstance() : loggedinMessage_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -40504,52 +44637,58 @@ public final class Messages {
         output.writeInt32(11, notificationType_);
       }
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
-        output.writeMessage(101, getDataMessage());
+        output.writeMessage(100, getLoginMessage());
       }
       if (((bitField0_ & 0x00001000) == 0x00001000)) {
-        output.writeMessage(102, getSessionMessage());
+        output.writeMessage(101, getDataMessage());
       }
       if (((bitField0_ & 0x00002000) == 0x00002000)) {
-        output.writeMessage(103, getErrorMessage());
+        output.writeMessage(102, getSessionMessage());
       }
       if (((bitField0_ & 0x00004000) == 0x00004000)) {
-        output.writeMessage(104, getDirectMessage());
+        output.writeMessage(103, getErrorMessage());
       }
       if (((bitField0_ & 0x00008000) == 0x00008000)) {
-        output.writeMessage(105, getAckMessage());
+        output.writeMessage(104, getDirectMessage());
       }
       if (((bitField0_ & 0x00010000) == 0x00010000)) {
-        output.writeMessage(106, getUnreadMessage());
+        output.writeMessage(105, getAckMessage());
       }
       if (((bitField0_ & 0x00020000) == 0x00020000)) {
-        output.writeMessage(107, getReadMessage());
+        output.writeMessage(106, getUnreadMessage());
       }
       if (((bitField0_ & 0x00040000) == 0x00040000)) {
-        output.writeMessage(108, getRcpMessage());
+        output.writeMessage(107, getReadMessage());
       }
       if (((bitField0_ & 0x00080000) == 0x00080000)) {
-        output.writeMessage(109, getLogsMessage());
+        output.writeMessage(108, getRcpMessage());
       }
       if (((bitField0_ & 0x00100000) == 0x00100000)) {
-        output.writeMessage(110, getConvMessage());
+        output.writeMessage(109, getLogsMessage());
       }
       if (((bitField0_ & 0x00200000) == 0x00200000)) {
-        output.writeMessage(111, getRoomMessage());
+        output.writeMessage(110, getConvMessage());
       }
       if (((bitField0_ & 0x00400000) == 0x00400000)) {
-        output.writeMessage(112, getPresenceMessage());
+        output.writeMessage(111, getRoomMessage());
       }
       if (((bitField0_ & 0x00800000) == 0x00800000)) {
-        output.writeMessage(113, getReportMessage());
+        output.writeMessage(112, getPresenceMessage());
       }
       if (((bitField0_ & 0x01000000) == 0x01000000)) {
-        output.writeMessage(114, getPatchMessage());
+        output.writeMessage(113, getReportMessage());
       }
       if (((bitField0_ & 0x02000000) == 0x02000000)) {
-        output.writeMessage(115, getPubsubMessage());
+        output.writeMessage(114, getPatchMessage());
       }
       if (((bitField0_ & 0x04000000) == 0x04000000)) {
+        output.writeMessage(115, getPubsubMessage());
+      }
+      if (((bitField0_ & 0x08000000) == 0x08000000)) {
         output.writeMessage(116, getBlacklistMessage());
+      }
+      if (((bitField0_ & 0x10000000) == 0x10000000)) {
+        output.writeMessage(117, getLoggedinMessage());
       }
       unknownFields.writeTo(output);
     }
@@ -40602,67 +44741,75 @@ public final class Messages {
       }
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(101, getDataMessage());
+          .computeMessageSize(100, getLoginMessage());
       }
       if (((bitField0_ & 0x00001000) == 0x00001000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(102, getSessionMessage());
+          .computeMessageSize(101, getDataMessage());
       }
       if (((bitField0_ & 0x00002000) == 0x00002000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(103, getErrorMessage());
+          .computeMessageSize(102, getSessionMessage());
       }
       if (((bitField0_ & 0x00004000) == 0x00004000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(104, getDirectMessage());
+          .computeMessageSize(103, getErrorMessage());
       }
       if (((bitField0_ & 0x00008000) == 0x00008000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(105, getAckMessage());
+          .computeMessageSize(104, getDirectMessage());
       }
       if (((bitField0_ & 0x00010000) == 0x00010000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(106, getUnreadMessage());
+          .computeMessageSize(105, getAckMessage());
       }
       if (((bitField0_ & 0x00020000) == 0x00020000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(107, getReadMessage());
+          .computeMessageSize(106, getUnreadMessage());
       }
       if (((bitField0_ & 0x00040000) == 0x00040000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(108, getRcpMessage());
+          .computeMessageSize(107, getReadMessage());
       }
       if (((bitField0_ & 0x00080000) == 0x00080000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(109, getLogsMessage());
+          .computeMessageSize(108, getRcpMessage());
       }
       if (((bitField0_ & 0x00100000) == 0x00100000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(110, getConvMessage());
+          .computeMessageSize(109, getLogsMessage());
       }
       if (((bitField0_ & 0x00200000) == 0x00200000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(111, getRoomMessage());
+          .computeMessageSize(110, getConvMessage());
       }
       if (((bitField0_ & 0x00400000) == 0x00400000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(112, getPresenceMessage());
+          .computeMessageSize(111, getRoomMessage());
       }
       if (((bitField0_ & 0x00800000) == 0x00800000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(113, getReportMessage());
+          .computeMessageSize(112, getPresenceMessage());
       }
       if (((bitField0_ & 0x01000000) == 0x01000000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(114, getPatchMessage());
+          .computeMessageSize(113, getReportMessage());
       }
       if (((bitField0_ & 0x02000000) == 0x02000000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(115, getPubsubMessage());
+          .computeMessageSize(114, getPatchMessage());
       }
       if (((bitField0_ & 0x04000000) == 0x04000000)) {
         size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(115, getPubsubMessage());
+      }
+      if (((bitField0_ & 0x08000000) == 0x08000000)) {
+        size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(116, getBlacklistMessage());
+      }
+      if (((bitField0_ & 0x10000000) == 0x10000000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(117, getLoggedinMessage());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -40732,6 +44879,11 @@ public final class Messages {
       if (hasNotificationType()) {
         result = result && (getNotificationType()
             == other.getNotificationType());
+      }
+      result = result && (hasLoginMessage() == other.hasLoginMessage());
+      if (hasLoginMessage()) {
+        result = result && getLoginMessage()
+            .equals(other.getLoginMessage());
       }
       result = result && (hasDataMessage() == other.hasDataMessage());
       if (hasDataMessage()) {
@@ -40813,6 +44965,11 @@ public final class Messages {
         result = result && getBlacklistMessage()
             .equals(other.getBlacklistMessage());
       }
+      result = result && (hasLoggedinMessage() == other.hasLoggedinMessage());
+      if (hasLoggedinMessage()) {
+        result = result && getLoggedinMessage()
+            .equals(other.getLoggedinMessage());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -40869,6 +45026,10 @@ public final class Messages {
       if (hasNotificationType()) {
         hash = (37 * hash) + NOTIFICATIONTYPE_FIELD_NUMBER;
         hash = (53 * hash) + getNotificationType();
+      }
+      if (hasLoginMessage()) {
+        hash = (37 * hash) + LOGINMESSAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getLoginMessage().hashCode();
       }
       if (hasDataMessage()) {
         hash = (37 * hash) + DATAMESSAGE_FIELD_NUMBER;
@@ -40933,6 +45094,10 @@ public final class Messages {
       if (hasBlacklistMessage()) {
         hash = (37 * hash) + BLACKLISTMESSAGE_FIELD_NUMBER;
         hash = (53 * hash) + getBlacklistMessage().hashCode();
+      }
+      if (hasLoggedinMessage()) {
+        hash = (37 * hash) + LOGGEDINMESSAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getLoggedinMessage().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -41059,6 +45224,7 @@ public final class Messages {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getLoginMessageFieldBuilder();
           getDataMessageFieldBuilder();
           getSessionMessageFieldBuilder();
           getErrorMessageFieldBuilder();
@@ -41075,6 +45241,7 @@ public final class Messages {
           getPatchMessageFieldBuilder();
           getPubsubMessageFieldBuilder();
           getBlacklistMessageFieldBuilder();
+          getLoggedinMessageFieldBuilder();
         }
       }
       public Builder clear() {
@@ -41101,102 +45268,114 @@ public final class Messages {
         bitField0_ = (bitField0_ & ~0x00000200);
         notificationType_ = 0;
         bitField0_ = (bitField0_ & ~0x00000400);
+        if (loginMessageBuilder_ == null) {
+          loginMessage_ = null;
+        } else {
+          loginMessageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000800);
         if (dataMessageBuilder_ == null) {
           dataMessage_ = null;
         } else {
           dataMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000800);
+        bitField0_ = (bitField0_ & ~0x00001000);
         if (sessionMessageBuilder_ == null) {
           sessionMessage_ = null;
         } else {
           sessionMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00002000);
         if (errorMessageBuilder_ == null) {
           errorMessage_ = null;
         } else {
           errorMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00002000);
+        bitField0_ = (bitField0_ & ~0x00004000);
         if (directMessageBuilder_ == null) {
           directMessage_ = null;
         } else {
           directMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00008000);
         if (ackMessageBuilder_ == null) {
           ackMessage_ = null;
         } else {
           ackMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00008000);
+        bitField0_ = (bitField0_ & ~0x00010000);
         if (unreadMessageBuilder_ == null) {
           unreadMessage_ = null;
         } else {
           unreadMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00010000);
+        bitField0_ = (bitField0_ & ~0x00020000);
         if (readMessageBuilder_ == null) {
           readMessage_ = null;
         } else {
           readMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00020000);
+        bitField0_ = (bitField0_ & ~0x00040000);
         if (rcpMessageBuilder_ == null) {
           rcpMessage_ = null;
         } else {
           rcpMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00040000);
+        bitField0_ = (bitField0_ & ~0x00080000);
         if (logsMessageBuilder_ == null) {
           logsMessage_ = null;
         } else {
           logsMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00080000);
+        bitField0_ = (bitField0_ & ~0x00100000);
         if (convMessageBuilder_ == null) {
           convMessage_ = null;
         } else {
           convMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00100000);
+        bitField0_ = (bitField0_ & ~0x00200000);
         if (roomMessageBuilder_ == null) {
           roomMessage_ = null;
         } else {
           roomMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00200000);
+        bitField0_ = (bitField0_ & ~0x00400000);
         if (presenceMessageBuilder_ == null) {
           presenceMessage_ = null;
         } else {
           presenceMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00400000);
+        bitField0_ = (bitField0_ & ~0x00800000);
         if (reportMessageBuilder_ == null) {
           reportMessage_ = null;
         } else {
           reportMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00800000);
+        bitField0_ = (bitField0_ & ~0x01000000);
         if (patchMessageBuilder_ == null) {
           patchMessage_ = null;
         } else {
           patchMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x01000000);
+        bitField0_ = (bitField0_ & ~0x02000000);
         if (pubsubMessageBuilder_ == null) {
           pubsubMessage_ = null;
         } else {
           pubsubMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x02000000);
+        bitField0_ = (bitField0_ & ~0x04000000);
         if (blacklistMessageBuilder_ == null) {
           blacklistMessage_ = null;
         } else {
           blacklistMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x04000000);
+        bitField0_ = (bitField0_ & ~0x08000000);
+        if (loggedinMessageBuilder_ == null) {
+          loggedinMessage_ = null;
+        } else {
+          loggedinMessageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x10000000);
         return this;
       }
 
@@ -41268,130 +45447,146 @@ public final class Messages {
         if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
           to_bitField0_ |= 0x00000800;
         }
+        if (loginMessageBuilder_ == null) {
+          result.loginMessage_ = loginMessage_;
+        } else {
+          result.loginMessage_ = loginMessageBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+          to_bitField0_ |= 0x00001000;
+        }
         if (dataMessageBuilder_ == null) {
           result.dataMessage_ = dataMessage_;
         } else {
           result.dataMessage_ = dataMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
-          to_bitField0_ |= 0x00001000;
+        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
+          to_bitField0_ |= 0x00002000;
         }
         if (sessionMessageBuilder_ == null) {
           result.sessionMessage_ = sessionMessage_;
         } else {
           result.sessionMessage_ = sessionMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
-          to_bitField0_ |= 0x00002000;
+        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
+          to_bitField0_ |= 0x00004000;
         }
         if (errorMessageBuilder_ == null) {
           result.errorMessage_ = errorMessage_;
         } else {
           result.errorMessage_ = errorMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
-          to_bitField0_ |= 0x00004000;
+        if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
+          to_bitField0_ |= 0x00008000;
         }
         if (directMessageBuilder_ == null) {
           result.directMessage_ = directMessage_;
         } else {
           result.directMessage_ = directMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00008000) == 0x00008000)) {
-          to_bitField0_ |= 0x00008000;
+        if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
+          to_bitField0_ |= 0x00010000;
         }
         if (ackMessageBuilder_ == null) {
           result.ackMessage_ = ackMessage_;
         } else {
           result.ackMessage_ = ackMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00010000) == 0x00010000)) {
-          to_bitField0_ |= 0x00010000;
+        if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
+          to_bitField0_ |= 0x00020000;
         }
         if (unreadMessageBuilder_ == null) {
           result.unreadMessage_ = unreadMessage_;
         } else {
           result.unreadMessage_ = unreadMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00020000) == 0x00020000)) {
-          to_bitField0_ |= 0x00020000;
+        if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
+          to_bitField0_ |= 0x00040000;
         }
         if (readMessageBuilder_ == null) {
           result.readMessage_ = readMessage_;
         } else {
           result.readMessage_ = readMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00040000) == 0x00040000)) {
-          to_bitField0_ |= 0x00040000;
+        if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
+          to_bitField0_ |= 0x00080000;
         }
         if (rcpMessageBuilder_ == null) {
           result.rcpMessage_ = rcpMessage_;
         } else {
           result.rcpMessage_ = rcpMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00080000) == 0x00080000)) {
-          to_bitField0_ |= 0x00080000;
+        if (((from_bitField0_ & 0x00100000) == 0x00100000)) {
+          to_bitField0_ |= 0x00100000;
         }
         if (logsMessageBuilder_ == null) {
           result.logsMessage_ = logsMessage_;
         } else {
           result.logsMessage_ = logsMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00100000) == 0x00100000)) {
-          to_bitField0_ |= 0x00100000;
+        if (((from_bitField0_ & 0x00200000) == 0x00200000)) {
+          to_bitField0_ |= 0x00200000;
         }
         if (convMessageBuilder_ == null) {
           result.convMessage_ = convMessage_;
         } else {
           result.convMessage_ = convMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00200000) == 0x00200000)) {
-          to_bitField0_ |= 0x00200000;
+        if (((from_bitField0_ & 0x00400000) == 0x00400000)) {
+          to_bitField0_ |= 0x00400000;
         }
         if (roomMessageBuilder_ == null) {
           result.roomMessage_ = roomMessage_;
         } else {
           result.roomMessage_ = roomMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00400000) == 0x00400000)) {
-          to_bitField0_ |= 0x00400000;
+        if (((from_bitField0_ & 0x00800000) == 0x00800000)) {
+          to_bitField0_ |= 0x00800000;
         }
         if (presenceMessageBuilder_ == null) {
           result.presenceMessage_ = presenceMessage_;
         } else {
           result.presenceMessage_ = presenceMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x00800000) == 0x00800000)) {
-          to_bitField0_ |= 0x00800000;
+        if (((from_bitField0_ & 0x01000000) == 0x01000000)) {
+          to_bitField0_ |= 0x01000000;
         }
         if (reportMessageBuilder_ == null) {
           result.reportMessage_ = reportMessage_;
         } else {
           result.reportMessage_ = reportMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x01000000) == 0x01000000)) {
-          to_bitField0_ |= 0x01000000;
+        if (((from_bitField0_ & 0x02000000) == 0x02000000)) {
+          to_bitField0_ |= 0x02000000;
         }
         if (patchMessageBuilder_ == null) {
           result.patchMessage_ = patchMessage_;
         } else {
           result.patchMessage_ = patchMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x02000000) == 0x02000000)) {
-          to_bitField0_ |= 0x02000000;
+        if (((from_bitField0_ & 0x04000000) == 0x04000000)) {
+          to_bitField0_ |= 0x04000000;
         }
         if (pubsubMessageBuilder_ == null) {
           result.pubsubMessage_ = pubsubMessage_;
         } else {
           result.pubsubMessage_ = pubsubMessageBuilder_.build();
         }
-        if (((from_bitField0_ & 0x04000000) == 0x04000000)) {
-          to_bitField0_ |= 0x04000000;
+        if (((from_bitField0_ & 0x08000000) == 0x08000000)) {
+          to_bitField0_ |= 0x08000000;
         }
         if (blacklistMessageBuilder_ == null) {
           result.blacklistMessage_ = blacklistMessage_;
         } else {
           result.blacklistMessage_ = blacklistMessageBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x10000000) == 0x10000000)) {
+          to_bitField0_ |= 0x10000000;
+        }
+        if (loggedinMessageBuilder_ == null) {
+          result.loggedinMessage_ = loggedinMessage_;
+        } else {
+          result.loggedinMessage_ = loggedinMessageBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -41474,6 +45669,9 @@ public final class Messages {
         if (other.hasNotificationType()) {
           setNotificationType(other.getNotificationType());
         }
+        if (other.hasLoginMessage()) {
+          mergeLoginMessage(other.getLoginMessage());
+        }
         if (other.hasDataMessage()) {
           mergeDataMessage(other.getDataMessage());
         }
@@ -41521,6 +45719,9 @@ public final class Messages {
         }
         if (other.hasBlacklistMessage()) {
           mergeBlacklistMessage(other.getBlacklistMessage());
+        }
+        if (other.hasLoggedinMessage()) {
+          mergeLoggedinMessage(other.getLoggedinMessage());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -42077,6 +46278,124 @@ public final class Messages {
         return this;
       }
 
+      private cn.leancloud.Messages.LoginCommand loginMessage_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cn.leancloud.Messages.LoginCommand, cn.leancloud.Messages.LoginCommand.Builder, cn.leancloud.Messages.LoginCommandOrBuilder> loginMessageBuilder_;
+      /**
+       * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+       */
+      public boolean hasLoginMessage() {
+        return ((bitField0_ & 0x00000800) == 0x00000800);
+      }
+      /**
+       * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+       */
+      public cn.leancloud.Messages.LoginCommand getLoginMessage() {
+        if (loginMessageBuilder_ == null) {
+          return loginMessage_ == null ? cn.leancloud.Messages.LoginCommand.getDefaultInstance() : loginMessage_;
+        } else {
+          return loginMessageBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+       */
+      public Builder setLoginMessage(cn.leancloud.Messages.LoginCommand value) {
+        if (loginMessageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          loginMessage_ = value;
+          onChanged();
+        } else {
+          loginMessageBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000800;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+       */
+      public Builder setLoginMessage(
+          cn.leancloud.Messages.LoginCommand.Builder builderForValue) {
+        if (loginMessageBuilder_ == null) {
+          loginMessage_ = builderForValue.build();
+          onChanged();
+        } else {
+          loginMessageBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000800;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+       */
+      public Builder mergeLoginMessage(cn.leancloud.Messages.LoginCommand value) {
+        if (loginMessageBuilder_ == null) {
+          if (((bitField0_ & 0x00000800) == 0x00000800) &&
+              loginMessage_ != null &&
+              loginMessage_ != cn.leancloud.Messages.LoginCommand.getDefaultInstance()) {
+            loginMessage_ =
+              cn.leancloud.Messages.LoginCommand.newBuilder(loginMessage_).mergeFrom(value).buildPartial();
+          } else {
+            loginMessage_ = value;
+          }
+          onChanged();
+        } else {
+          loginMessageBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000800;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+       */
+      public Builder clearLoginMessage() {
+        if (loginMessageBuilder_ == null) {
+          loginMessage_ = null;
+          onChanged();
+        } else {
+          loginMessageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000800);
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+       */
+      public cn.leancloud.Messages.LoginCommand.Builder getLoginMessageBuilder() {
+        bitField0_ |= 0x00000800;
+        onChanged();
+        return getLoginMessageFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+       */
+      public cn.leancloud.Messages.LoginCommandOrBuilder getLoginMessageOrBuilder() {
+        if (loginMessageBuilder_ != null) {
+          return loginMessageBuilder_.getMessageOrBuilder();
+        } else {
+          return loginMessage_ == null ?
+              cn.leancloud.Messages.LoginCommand.getDefaultInstance() : loginMessage_;
+        }
+      }
+      /**
+       * <code>optional .cn.leancloud.LoginCommand loginMessage = 100;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cn.leancloud.Messages.LoginCommand, cn.leancloud.Messages.LoginCommand.Builder, cn.leancloud.Messages.LoginCommandOrBuilder> 
+          getLoginMessageFieldBuilder() {
+        if (loginMessageBuilder_ == null) {
+          loginMessageBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              cn.leancloud.Messages.LoginCommand, cn.leancloud.Messages.LoginCommand.Builder, cn.leancloud.Messages.LoginCommandOrBuilder>(
+                  getLoginMessage(),
+                  getParentForChildren(),
+                  isClean());
+          loginMessage_ = null;
+        }
+        return loginMessageBuilder_;
+      }
+
       private cn.leancloud.Messages.DataCommand dataMessage_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
           cn.leancloud.Messages.DataCommand, cn.leancloud.Messages.DataCommand.Builder, cn.leancloud.Messages.DataCommandOrBuilder> dataMessageBuilder_;
@@ -42084,7 +46403,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.DataCommand dataMessage = 101;</code>
        */
       public boolean hasDataMessage() {
-        return ((bitField0_ & 0x00000800) == 0x00000800);
+        return ((bitField0_ & 0x00001000) == 0x00001000);
       }
       /**
        * <code>optional .cn.leancloud.DataCommand dataMessage = 101;</code>
@@ -42109,7 +46428,7 @@ public final class Messages {
         } else {
           dataMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00001000;
         return this;
       }
       /**
@@ -42123,7 +46442,7 @@ public final class Messages {
         } else {
           dataMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00001000;
         return this;
       }
       /**
@@ -42131,7 +46450,7 @@ public final class Messages {
        */
       public Builder mergeDataMessage(cn.leancloud.Messages.DataCommand value) {
         if (dataMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00000800) == 0x00000800) &&
+          if (((bitField0_ & 0x00001000) == 0x00001000) &&
               dataMessage_ != null &&
               dataMessage_ != cn.leancloud.Messages.DataCommand.getDefaultInstance()) {
             dataMessage_ =
@@ -42143,7 +46462,7 @@ public final class Messages {
         } else {
           dataMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00001000;
         return this;
       }
       /**
@@ -42156,14 +46475,14 @@ public final class Messages {
         } else {
           dataMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000800);
+        bitField0_ = (bitField0_ & ~0x00001000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.DataCommand dataMessage = 101;</code>
        */
       public cn.leancloud.Messages.DataCommand.Builder getDataMessageBuilder() {
-        bitField0_ |= 0x00000800;
+        bitField0_ |= 0x00001000;
         onChanged();
         return getDataMessageFieldBuilder().getBuilder();
       }
@@ -42202,7 +46521,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.SessionCommand sessionMessage = 102;</code>
        */
       public boolean hasSessionMessage() {
-        return ((bitField0_ & 0x00001000) == 0x00001000);
+        return ((bitField0_ & 0x00002000) == 0x00002000);
       }
       /**
        * <code>optional .cn.leancloud.SessionCommand sessionMessage = 102;</code>
@@ -42227,7 +46546,7 @@ public final class Messages {
         } else {
           sessionMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00002000;
         return this;
       }
       /**
@@ -42241,7 +46560,7 @@ public final class Messages {
         } else {
           sessionMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00002000;
         return this;
       }
       /**
@@ -42249,7 +46568,7 @@ public final class Messages {
        */
       public Builder mergeSessionMessage(cn.leancloud.Messages.SessionCommand value) {
         if (sessionMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00001000) == 0x00001000) &&
+          if (((bitField0_ & 0x00002000) == 0x00002000) &&
               sessionMessage_ != null &&
               sessionMessage_ != cn.leancloud.Messages.SessionCommand.getDefaultInstance()) {
             sessionMessage_ =
@@ -42261,7 +46580,7 @@ public final class Messages {
         } else {
           sessionMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00002000;
         return this;
       }
       /**
@@ -42274,14 +46593,14 @@ public final class Messages {
         } else {
           sessionMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00001000);
+        bitField0_ = (bitField0_ & ~0x00002000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.SessionCommand sessionMessage = 102;</code>
        */
       public cn.leancloud.Messages.SessionCommand.Builder getSessionMessageBuilder() {
-        bitField0_ |= 0x00001000;
+        bitField0_ |= 0x00002000;
         onChanged();
         return getSessionMessageFieldBuilder().getBuilder();
       }
@@ -42320,7 +46639,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.ErrorCommand errorMessage = 103;</code>
        */
       public boolean hasErrorMessage() {
-        return ((bitField0_ & 0x00002000) == 0x00002000);
+        return ((bitField0_ & 0x00004000) == 0x00004000);
       }
       /**
        * <code>optional .cn.leancloud.ErrorCommand errorMessage = 103;</code>
@@ -42345,7 +46664,7 @@ public final class Messages {
         } else {
           errorMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00004000;
         return this;
       }
       /**
@@ -42359,7 +46678,7 @@ public final class Messages {
         } else {
           errorMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00004000;
         return this;
       }
       /**
@@ -42367,7 +46686,7 @@ public final class Messages {
        */
       public Builder mergeErrorMessage(cn.leancloud.Messages.ErrorCommand value) {
         if (errorMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00002000) == 0x00002000) &&
+          if (((bitField0_ & 0x00004000) == 0x00004000) &&
               errorMessage_ != null &&
               errorMessage_ != cn.leancloud.Messages.ErrorCommand.getDefaultInstance()) {
             errorMessage_ =
@@ -42379,7 +46698,7 @@ public final class Messages {
         } else {
           errorMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00004000;
         return this;
       }
       /**
@@ -42392,14 +46711,14 @@ public final class Messages {
         } else {
           errorMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00002000);
+        bitField0_ = (bitField0_ & ~0x00004000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.ErrorCommand errorMessage = 103;</code>
        */
       public cn.leancloud.Messages.ErrorCommand.Builder getErrorMessageBuilder() {
-        bitField0_ |= 0x00002000;
+        bitField0_ |= 0x00004000;
         onChanged();
         return getErrorMessageFieldBuilder().getBuilder();
       }
@@ -42438,7 +46757,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.DirectCommand directMessage = 104;</code>
        */
       public boolean hasDirectMessage() {
-        return ((bitField0_ & 0x00004000) == 0x00004000);
+        return ((bitField0_ & 0x00008000) == 0x00008000);
       }
       /**
        * <code>optional .cn.leancloud.DirectCommand directMessage = 104;</code>
@@ -42463,7 +46782,7 @@ public final class Messages {
         } else {
           directMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00008000;
         return this;
       }
       /**
@@ -42477,7 +46796,7 @@ public final class Messages {
         } else {
           directMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00008000;
         return this;
       }
       /**
@@ -42485,7 +46804,7 @@ public final class Messages {
        */
       public Builder mergeDirectMessage(cn.leancloud.Messages.DirectCommand value) {
         if (directMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00004000) == 0x00004000) &&
+          if (((bitField0_ & 0x00008000) == 0x00008000) &&
               directMessage_ != null &&
               directMessage_ != cn.leancloud.Messages.DirectCommand.getDefaultInstance()) {
             directMessage_ =
@@ -42497,7 +46816,7 @@ public final class Messages {
         } else {
           directMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00008000;
         return this;
       }
       /**
@@ -42510,14 +46829,14 @@ public final class Messages {
         } else {
           directMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00004000);
+        bitField0_ = (bitField0_ & ~0x00008000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.DirectCommand directMessage = 104;</code>
        */
       public cn.leancloud.Messages.DirectCommand.Builder getDirectMessageBuilder() {
-        bitField0_ |= 0x00004000;
+        bitField0_ |= 0x00008000;
         onChanged();
         return getDirectMessageFieldBuilder().getBuilder();
       }
@@ -42556,7 +46875,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.AckCommand ackMessage = 105;</code>
        */
       public boolean hasAckMessage() {
-        return ((bitField0_ & 0x00008000) == 0x00008000);
+        return ((bitField0_ & 0x00010000) == 0x00010000);
       }
       /**
        * <code>optional .cn.leancloud.AckCommand ackMessage = 105;</code>
@@ -42581,7 +46900,7 @@ public final class Messages {
         } else {
           ackMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00010000;
         return this;
       }
       /**
@@ -42595,7 +46914,7 @@ public final class Messages {
         } else {
           ackMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00010000;
         return this;
       }
       /**
@@ -42603,7 +46922,7 @@ public final class Messages {
        */
       public Builder mergeAckMessage(cn.leancloud.Messages.AckCommand value) {
         if (ackMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00008000) == 0x00008000) &&
+          if (((bitField0_ & 0x00010000) == 0x00010000) &&
               ackMessage_ != null &&
               ackMessage_ != cn.leancloud.Messages.AckCommand.getDefaultInstance()) {
             ackMessage_ =
@@ -42615,7 +46934,7 @@ public final class Messages {
         } else {
           ackMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00010000;
         return this;
       }
       /**
@@ -42628,14 +46947,14 @@ public final class Messages {
         } else {
           ackMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00008000);
+        bitField0_ = (bitField0_ & ~0x00010000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.AckCommand ackMessage = 105;</code>
        */
       public cn.leancloud.Messages.AckCommand.Builder getAckMessageBuilder() {
-        bitField0_ |= 0x00008000;
+        bitField0_ |= 0x00010000;
         onChanged();
         return getAckMessageFieldBuilder().getBuilder();
       }
@@ -42674,7 +46993,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.UnreadCommand unreadMessage = 106;</code>
        */
       public boolean hasUnreadMessage() {
-        return ((bitField0_ & 0x00010000) == 0x00010000);
+        return ((bitField0_ & 0x00020000) == 0x00020000);
       }
       /**
        * <code>optional .cn.leancloud.UnreadCommand unreadMessage = 106;</code>
@@ -42699,7 +47018,7 @@ public final class Messages {
         } else {
           unreadMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -42713,7 +47032,7 @@ public final class Messages {
         } else {
           unreadMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -42721,7 +47040,7 @@ public final class Messages {
        */
       public Builder mergeUnreadMessage(cn.leancloud.Messages.UnreadCommand value) {
         if (unreadMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00010000) == 0x00010000) &&
+          if (((bitField0_ & 0x00020000) == 0x00020000) &&
               unreadMessage_ != null &&
               unreadMessage_ != cn.leancloud.Messages.UnreadCommand.getDefaultInstance()) {
             unreadMessage_ =
@@ -42733,7 +47052,7 @@ public final class Messages {
         } else {
           unreadMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00020000;
         return this;
       }
       /**
@@ -42746,14 +47065,14 @@ public final class Messages {
         } else {
           unreadMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00010000);
+        bitField0_ = (bitField0_ & ~0x00020000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.UnreadCommand unreadMessage = 106;</code>
        */
       public cn.leancloud.Messages.UnreadCommand.Builder getUnreadMessageBuilder() {
-        bitField0_ |= 0x00010000;
+        bitField0_ |= 0x00020000;
         onChanged();
         return getUnreadMessageFieldBuilder().getBuilder();
       }
@@ -42792,7 +47111,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.ReadCommand readMessage = 107;</code>
        */
       public boolean hasReadMessage() {
-        return ((bitField0_ & 0x00020000) == 0x00020000);
+        return ((bitField0_ & 0x00040000) == 0x00040000);
       }
       /**
        * <code>optional .cn.leancloud.ReadCommand readMessage = 107;</code>
@@ -42817,7 +47136,7 @@ public final class Messages {
         } else {
           readMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -42831,7 +47150,7 @@ public final class Messages {
         } else {
           readMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -42839,7 +47158,7 @@ public final class Messages {
        */
       public Builder mergeReadMessage(cn.leancloud.Messages.ReadCommand value) {
         if (readMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00020000) == 0x00020000) &&
+          if (((bitField0_ & 0x00040000) == 0x00040000) &&
               readMessage_ != null &&
               readMessage_ != cn.leancloud.Messages.ReadCommand.getDefaultInstance()) {
             readMessage_ =
@@ -42851,7 +47170,7 @@ public final class Messages {
         } else {
           readMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00040000;
         return this;
       }
       /**
@@ -42864,14 +47183,14 @@ public final class Messages {
         } else {
           readMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00020000);
+        bitField0_ = (bitField0_ & ~0x00040000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.ReadCommand readMessage = 107;</code>
        */
       public cn.leancloud.Messages.ReadCommand.Builder getReadMessageBuilder() {
-        bitField0_ |= 0x00020000;
+        bitField0_ |= 0x00040000;
         onChanged();
         return getReadMessageFieldBuilder().getBuilder();
       }
@@ -42910,7 +47229,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.RcpCommand rcpMessage = 108;</code>
        */
       public boolean hasRcpMessage() {
-        return ((bitField0_ & 0x00040000) == 0x00040000);
+        return ((bitField0_ & 0x00080000) == 0x00080000);
       }
       /**
        * <code>optional .cn.leancloud.RcpCommand rcpMessage = 108;</code>
@@ -42935,7 +47254,7 @@ public final class Messages {
         } else {
           rcpMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00040000;
+        bitField0_ |= 0x00080000;
         return this;
       }
       /**
@@ -42949,7 +47268,7 @@ public final class Messages {
         } else {
           rcpMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00040000;
+        bitField0_ |= 0x00080000;
         return this;
       }
       /**
@@ -42957,7 +47276,7 @@ public final class Messages {
        */
       public Builder mergeRcpMessage(cn.leancloud.Messages.RcpCommand value) {
         if (rcpMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00040000) == 0x00040000) &&
+          if (((bitField0_ & 0x00080000) == 0x00080000) &&
               rcpMessage_ != null &&
               rcpMessage_ != cn.leancloud.Messages.RcpCommand.getDefaultInstance()) {
             rcpMessage_ =
@@ -42969,7 +47288,7 @@ public final class Messages {
         } else {
           rcpMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00040000;
+        bitField0_ |= 0x00080000;
         return this;
       }
       /**
@@ -42982,14 +47301,14 @@ public final class Messages {
         } else {
           rcpMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00040000);
+        bitField0_ = (bitField0_ & ~0x00080000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.RcpCommand rcpMessage = 108;</code>
        */
       public cn.leancloud.Messages.RcpCommand.Builder getRcpMessageBuilder() {
-        bitField0_ |= 0x00040000;
+        bitField0_ |= 0x00080000;
         onChanged();
         return getRcpMessageFieldBuilder().getBuilder();
       }
@@ -43028,7 +47347,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.LogsCommand logsMessage = 109;</code>
        */
       public boolean hasLogsMessage() {
-        return ((bitField0_ & 0x00080000) == 0x00080000);
+        return ((bitField0_ & 0x00100000) == 0x00100000);
       }
       /**
        * <code>optional .cn.leancloud.LogsCommand logsMessage = 109;</code>
@@ -43053,7 +47372,7 @@ public final class Messages {
         } else {
           logsMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00080000;
+        bitField0_ |= 0x00100000;
         return this;
       }
       /**
@@ -43067,7 +47386,7 @@ public final class Messages {
         } else {
           logsMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00080000;
+        bitField0_ |= 0x00100000;
         return this;
       }
       /**
@@ -43075,7 +47394,7 @@ public final class Messages {
        */
       public Builder mergeLogsMessage(cn.leancloud.Messages.LogsCommand value) {
         if (logsMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00080000) == 0x00080000) &&
+          if (((bitField0_ & 0x00100000) == 0x00100000) &&
               logsMessage_ != null &&
               logsMessage_ != cn.leancloud.Messages.LogsCommand.getDefaultInstance()) {
             logsMessage_ =
@@ -43087,7 +47406,7 @@ public final class Messages {
         } else {
           logsMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00080000;
+        bitField0_ |= 0x00100000;
         return this;
       }
       /**
@@ -43100,14 +47419,14 @@ public final class Messages {
         } else {
           logsMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00080000);
+        bitField0_ = (bitField0_ & ~0x00100000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.LogsCommand logsMessage = 109;</code>
        */
       public cn.leancloud.Messages.LogsCommand.Builder getLogsMessageBuilder() {
-        bitField0_ |= 0x00080000;
+        bitField0_ |= 0x00100000;
         onChanged();
         return getLogsMessageFieldBuilder().getBuilder();
       }
@@ -43146,7 +47465,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.ConvCommand convMessage = 110;</code>
        */
       public boolean hasConvMessage() {
-        return ((bitField0_ & 0x00100000) == 0x00100000);
+        return ((bitField0_ & 0x00200000) == 0x00200000);
       }
       /**
        * <code>optional .cn.leancloud.ConvCommand convMessage = 110;</code>
@@ -43171,7 +47490,7 @@ public final class Messages {
         } else {
           convMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00200000;
         return this;
       }
       /**
@@ -43185,7 +47504,7 @@ public final class Messages {
         } else {
           convMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00200000;
         return this;
       }
       /**
@@ -43193,7 +47512,7 @@ public final class Messages {
        */
       public Builder mergeConvMessage(cn.leancloud.Messages.ConvCommand value) {
         if (convMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00100000) == 0x00100000) &&
+          if (((bitField0_ & 0x00200000) == 0x00200000) &&
               convMessage_ != null &&
               convMessage_ != cn.leancloud.Messages.ConvCommand.getDefaultInstance()) {
             convMessage_ =
@@ -43205,7 +47524,7 @@ public final class Messages {
         } else {
           convMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00200000;
         return this;
       }
       /**
@@ -43218,14 +47537,14 @@ public final class Messages {
         } else {
           convMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00100000);
+        bitField0_ = (bitField0_ & ~0x00200000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.ConvCommand convMessage = 110;</code>
        */
       public cn.leancloud.Messages.ConvCommand.Builder getConvMessageBuilder() {
-        bitField0_ |= 0x00100000;
+        bitField0_ |= 0x00200000;
         onChanged();
         return getConvMessageFieldBuilder().getBuilder();
       }
@@ -43264,7 +47583,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.RoomCommand roomMessage = 111;</code>
        */
       public boolean hasRoomMessage() {
-        return ((bitField0_ & 0x00200000) == 0x00200000);
+        return ((bitField0_ & 0x00400000) == 0x00400000);
       }
       /**
        * <code>optional .cn.leancloud.RoomCommand roomMessage = 111;</code>
@@ -43289,7 +47608,7 @@ public final class Messages {
         } else {
           roomMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00200000;
+        bitField0_ |= 0x00400000;
         return this;
       }
       /**
@@ -43303,7 +47622,7 @@ public final class Messages {
         } else {
           roomMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00200000;
+        bitField0_ |= 0x00400000;
         return this;
       }
       /**
@@ -43311,7 +47630,7 @@ public final class Messages {
        */
       public Builder mergeRoomMessage(cn.leancloud.Messages.RoomCommand value) {
         if (roomMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00200000) == 0x00200000) &&
+          if (((bitField0_ & 0x00400000) == 0x00400000) &&
               roomMessage_ != null &&
               roomMessage_ != cn.leancloud.Messages.RoomCommand.getDefaultInstance()) {
             roomMessage_ =
@@ -43323,7 +47642,7 @@ public final class Messages {
         } else {
           roomMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00200000;
+        bitField0_ |= 0x00400000;
         return this;
       }
       /**
@@ -43336,14 +47655,14 @@ public final class Messages {
         } else {
           roomMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00200000);
+        bitField0_ = (bitField0_ & ~0x00400000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.RoomCommand roomMessage = 111;</code>
        */
       public cn.leancloud.Messages.RoomCommand.Builder getRoomMessageBuilder() {
-        bitField0_ |= 0x00200000;
+        bitField0_ |= 0x00400000;
         onChanged();
         return getRoomMessageFieldBuilder().getBuilder();
       }
@@ -43382,7 +47701,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.PresenceCommand presenceMessage = 112;</code>
        */
       public boolean hasPresenceMessage() {
-        return ((bitField0_ & 0x00400000) == 0x00400000);
+        return ((bitField0_ & 0x00800000) == 0x00800000);
       }
       /**
        * <code>optional .cn.leancloud.PresenceCommand presenceMessage = 112;</code>
@@ -43407,7 +47726,7 @@ public final class Messages {
         } else {
           presenceMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00400000;
+        bitField0_ |= 0x00800000;
         return this;
       }
       /**
@@ -43421,7 +47740,7 @@ public final class Messages {
         } else {
           presenceMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00400000;
+        bitField0_ |= 0x00800000;
         return this;
       }
       /**
@@ -43429,7 +47748,7 @@ public final class Messages {
        */
       public Builder mergePresenceMessage(cn.leancloud.Messages.PresenceCommand value) {
         if (presenceMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00400000) == 0x00400000) &&
+          if (((bitField0_ & 0x00800000) == 0x00800000) &&
               presenceMessage_ != null &&
               presenceMessage_ != cn.leancloud.Messages.PresenceCommand.getDefaultInstance()) {
             presenceMessage_ =
@@ -43441,7 +47760,7 @@ public final class Messages {
         } else {
           presenceMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00400000;
+        bitField0_ |= 0x00800000;
         return this;
       }
       /**
@@ -43454,14 +47773,14 @@ public final class Messages {
         } else {
           presenceMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00400000);
+        bitField0_ = (bitField0_ & ~0x00800000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.PresenceCommand presenceMessage = 112;</code>
        */
       public cn.leancloud.Messages.PresenceCommand.Builder getPresenceMessageBuilder() {
-        bitField0_ |= 0x00400000;
+        bitField0_ |= 0x00800000;
         onChanged();
         return getPresenceMessageFieldBuilder().getBuilder();
       }
@@ -43500,7 +47819,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.ReportCommand reportMessage = 113;</code>
        */
       public boolean hasReportMessage() {
-        return ((bitField0_ & 0x00800000) == 0x00800000);
+        return ((bitField0_ & 0x01000000) == 0x01000000);
       }
       /**
        * <code>optional .cn.leancloud.ReportCommand reportMessage = 113;</code>
@@ -43525,7 +47844,7 @@ public final class Messages {
         } else {
           reportMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00800000;
+        bitField0_ |= 0x01000000;
         return this;
       }
       /**
@@ -43539,7 +47858,7 @@ public final class Messages {
         } else {
           reportMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00800000;
+        bitField0_ |= 0x01000000;
         return this;
       }
       /**
@@ -43547,7 +47866,7 @@ public final class Messages {
        */
       public Builder mergeReportMessage(cn.leancloud.Messages.ReportCommand value) {
         if (reportMessageBuilder_ == null) {
-          if (((bitField0_ & 0x00800000) == 0x00800000) &&
+          if (((bitField0_ & 0x01000000) == 0x01000000) &&
               reportMessage_ != null &&
               reportMessage_ != cn.leancloud.Messages.ReportCommand.getDefaultInstance()) {
             reportMessage_ =
@@ -43559,7 +47878,7 @@ public final class Messages {
         } else {
           reportMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00800000;
+        bitField0_ |= 0x01000000;
         return this;
       }
       /**
@@ -43572,14 +47891,14 @@ public final class Messages {
         } else {
           reportMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00800000);
+        bitField0_ = (bitField0_ & ~0x01000000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.ReportCommand reportMessage = 113;</code>
        */
       public cn.leancloud.Messages.ReportCommand.Builder getReportMessageBuilder() {
-        bitField0_ |= 0x00800000;
+        bitField0_ |= 0x01000000;
         onChanged();
         return getReportMessageFieldBuilder().getBuilder();
       }
@@ -43618,7 +47937,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.PatchCommand patchMessage = 114;</code>
        */
       public boolean hasPatchMessage() {
-        return ((bitField0_ & 0x01000000) == 0x01000000);
+        return ((bitField0_ & 0x02000000) == 0x02000000);
       }
       /**
        * <code>optional .cn.leancloud.PatchCommand patchMessage = 114;</code>
@@ -43643,7 +47962,7 @@ public final class Messages {
         } else {
           patchMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x01000000;
+        bitField0_ |= 0x02000000;
         return this;
       }
       /**
@@ -43657,7 +47976,7 @@ public final class Messages {
         } else {
           patchMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x01000000;
+        bitField0_ |= 0x02000000;
         return this;
       }
       /**
@@ -43665,7 +47984,7 @@ public final class Messages {
        */
       public Builder mergePatchMessage(cn.leancloud.Messages.PatchCommand value) {
         if (patchMessageBuilder_ == null) {
-          if (((bitField0_ & 0x01000000) == 0x01000000) &&
+          if (((bitField0_ & 0x02000000) == 0x02000000) &&
               patchMessage_ != null &&
               patchMessage_ != cn.leancloud.Messages.PatchCommand.getDefaultInstance()) {
             patchMessage_ =
@@ -43677,7 +47996,7 @@ public final class Messages {
         } else {
           patchMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x01000000;
+        bitField0_ |= 0x02000000;
         return this;
       }
       /**
@@ -43690,14 +48009,14 @@ public final class Messages {
         } else {
           patchMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x01000000);
+        bitField0_ = (bitField0_ & ~0x02000000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.PatchCommand patchMessage = 114;</code>
        */
       public cn.leancloud.Messages.PatchCommand.Builder getPatchMessageBuilder() {
-        bitField0_ |= 0x01000000;
+        bitField0_ |= 0x02000000;
         onChanged();
         return getPatchMessageFieldBuilder().getBuilder();
       }
@@ -43736,7 +48055,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.PubsubCommand pubsubMessage = 115;</code>
        */
       public boolean hasPubsubMessage() {
-        return ((bitField0_ & 0x02000000) == 0x02000000);
+        return ((bitField0_ & 0x04000000) == 0x04000000);
       }
       /**
        * <code>optional .cn.leancloud.PubsubCommand pubsubMessage = 115;</code>
@@ -43761,7 +48080,7 @@ public final class Messages {
         } else {
           pubsubMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x02000000;
+        bitField0_ |= 0x04000000;
         return this;
       }
       /**
@@ -43775,7 +48094,7 @@ public final class Messages {
         } else {
           pubsubMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x02000000;
+        bitField0_ |= 0x04000000;
         return this;
       }
       /**
@@ -43783,7 +48102,7 @@ public final class Messages {
        */
       public Builder mergePubsubMessage(cn.leancloud.Messages.PubsubCommand value) {
         if (pubsubMessageBuilder_ == null) {
-          if (((bitField0_ & 0x02000000) == 0x02000000) &&
+          if (((bitField0_ & 0x04000000) == 0x04000000) &&
               pubsubMessage_ != null &&
               pubsubMessage_ != cn.leancloud.Messages.PubsubCommand.getDefaultInstance()) {
             pubsubMessage_ =
@@ -43795,7 +48114,7 @@ public final class Messages {
         } else {
           pubsubMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x02000000;
+        bitField0_ |= 0x04000000;
         return this;
       }
       /**
@@ -43808,14 +48127,14 @@ public final class Messages {
         } else {
           pubsubMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x02000000);
+        bitField0_ = (bitField0_ & ~0x04000000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.PubsubCommand pubsubMessage = 115;</code>
        */
       public cn.leancloud.Messages.PubsubCommand.Builder getPubsubMessageBuilder() {
-        bitField0_ |= 0x02000000;
+        bitField0_ |= 0x04000000;
         onChanged();
         return getPubsubMessageFieldBuilder().getBuilder();
       }
@@ -43854,7 +48173,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.BlacklistCommand blacklistMessage = 116;</code>
        */
       public boolean hasBlacklistMessage() {
-        return ((bitField0_ & 0x04000000) == 0x04000000);
+        return ((bitField0_ & 0x08000000) == 0x08000000);
       }
       /**
        * <code>optional .cn.leancloud.BlacklistCommand blacklistMessage = 116;</code>
@@ -43879,7 +48198,7 @@ public final class Messages {
         } else {
           blacklistMessageBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x04000000;
+        bitField0_ |= 0x08000000;
         return this;
       }
       /**
@@ -43893,7 +48212,7 @@ public final class Messages {
         } else {
           blacklistMessageBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x04000000;
+        bitField0_ |= 0x08000000;
         return this;
       }
       /**
@@ -43901,7 +48220,7 @@ public final class Messages {
        */
       public Builder mergeBlacklistMessage(cn.leancloud.Messages.BlacklistCommand value) {
         if (blacklistMessageBuilder_ == null) {
-          if (((bitField0_ & 0x04000000) == 0x04000000) &&
+          if (((bitField0_ & 0x08000000) == 0x08000000) &&
               blacklistMessage_ != null &&
               blacklistMessage_ != cn.leancloud.Messages.BlacklistCommand.getDefaultInstance()) {
             blacklistMessage_ =
@@ -43913,7 +48232,7 @@ public final class Messages {
         } else {
           blacklistMessageBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x04000000;
+        bitField0_ |= 0x08000000;
         return this;
       }
       /**
@@ -43926,14 +48245,14 @@ public final class Messages {
         } else {
           blacklistMessageBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x04000000);
+        bitField0_ = (bitField0_ & ~0x08000000);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.BlacklistCommand blacklistMessage = 116;</code>
        */
       public cn.leancloud.Messages.BlacklistCommand.Builder getBlacklistMessageBuilder() {
-        bitField0_ |= 0x04000000;
+        bitField0_ |= 0x08000000;
         onChanged();
         return getBlacklistMessageFieldBuilder().getBuilder();
       }
@@ -43963,6 +48282,124 @@ public final class Messages {
           blacklistMessage_ = null;
         }
         return blacklistMessageBuilder_;
+      }
+
+      private cn.leancloud.Messages.LoggedinCommand loggedinMessage_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cn.leancloud.Messages.LoggedinCommand, cn.leancloud.Messages.LoggedinCommand.Builder, cn.leancloud.Messages.LoggedinCommandOrBuilder> loggedinMessageBuilder_;
+      /**
+       * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+       */
+      public boolean hasLoggedinMessage() {
+        return ((bitField0_ & 0x10000000) == 0x10000000);
+      }
+      /**
+       * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+       */
+      public cn.leancloud.Messages.LoggedinCommand getLoggedinMessage() {
+        if (loggedinMessageBuilder_ == null) {
+          return loggedinMessage_ == null ? cn.leancloud.Messages.LoggedinCommand.getDefaultInstance() : loggedinMessage_;
+        } else {
+          return loggedinMessageBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+       */
+      public Builder setLoggedinMessage(cn.leancloud.Messages.LoggedinCommand value) {
+        if (loggedinMessageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          loggedinMessage_ = value;
+          onChanged();
+        } else {
+          loggedinMessageBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x10000000;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+       */
+      public Builder setLoggedinMessage(
+          cn.leancloud.Messages.LoggedinCommand.Builder builderForValue) {
+        if (loggedinMessageBuilder_ == null) {
+          loggedinMessage_ = builderForValue.build();
+          onChanged();
+        } else {
+          loggedinMessageBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x10000000;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+       */
+      public Builder mergeLoggedinMessage(cn.leancloud.Messages.LoggedinCommand value) {
+        if (loggedinMessageBuilder_ == null) {
+          if (((bitField0_ & 0x10000000) == 0x10000000) &&
+              loggedinMessage_ != null &&
+              loggedinMessage_ != cn.leancloud.Messages.LoggedinCommand.getDefaultInstance()) {
+            loggedinMessage_ =
+              cn.leancloud.Messages.LoggedinCommand.newBuilder(loggedinMessage_).mergeFrom(value).buildPartial();
+          } else {
+            loggedinMessage_ = value;
+          }
+          onChanged();
+        } else {
+          loggedinMessageBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x10000000;
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+       */
+      public Builder clearLoggedinMessage() {
+        if (loggedinMessageBuilder_ == null) {
+          loggedinMessage_ = null;
+          onChanged();
+        } else {
+          loggedinMessageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x10000000);
+        return this;
+      }
+      /**
+       * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+       */
+      public cn.leancloud.Messages.LoggedinCommand.Builder getLoggedinMessageBuilder() {
+        bitField0_ |= 0x10000000;
+        onChanged();
+        return getLoggedinMessageFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+       */
+      public cn.leancloud.Messages.LoggedinCommandOrBuilder getLoggedinMessageOrBuilder() {
+        if (loggedinMessageBuilder_ != null) {
+          return loggedinMessageBuilder_.getMessageOrBuilder();
+        } else {
+          return loggedinMessage_ == null ?
+              cn.leancloud.Messages.LoggedinCommand.getDefaultInstance() : loggedinMessage_;
+        }
+      }
+      /**
+       * <code>optional .cn.leancloud.LoggedinCommand loggedinMessage = 117;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          cn.leancloud.Messages.LoggedinCommand, cn.leancloud.Messages.LoggedinCommand.Builder, cn.leancloud.Messages.LoggedinCommandOrBuilder> 
+          getLoggedinMessageFieldBuilder() {
+        if (loggedinMessageBuilder_ == null) {
+          loggedinMessageBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              cn.leancloud.Messages.LoggedinCommand, cn.leancloud.Messages.LoggedinCommand.Builder, cn.leancloud.Messages.LoggedinCommandOrBuilder>(
+                  getLoggedinMessage(),
+                  getParentForChildren(),
+                  isClean());
+          loggedinMessage_ = null;
+        }
+        return loggedinMessageBuilder_;
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -44014,6 +48451,21 @@ public final class Messages {
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_cn_leancloud_SemanticVersion_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_cn_leancloud_SemanticVersion_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_cn_leancloud_AndroidVersion_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_cn_leancloud_AndroidVersion_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_cn_leancloud_SystemInfo_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_cn_leancloud_SystemInfo_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_cn_leancloud_JsonObjectMessage_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -44033,6 +48485,16 @@ public final class Messages {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_cn_leancloud_ConvMemberInfo_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_cn_leancloud_LoginCommand_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_cn_leancloud_LoginCommand_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_cn_leancloud_LoggedinCommand_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_cn_leancloud_LoggedinCommand_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_cn_leancloud_DataCommand_descriptor;
   private static final 
@@ -44142,171 +48604,187 @@ public final class Messages {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\016messages.proto\022\014cn.leancloud\"!\n\021JsonOb" +
-      "jectMessage\022\014\n\004data\030\001 \002(\t\"\266\001\n\013UnreadTupl" +
-      "e\022\013\n\003cid\030\001 \002(\t\022\016\n\006unread\030\002 \002(\005\022\013\n\003mid\030\003 " +
-      "\001(\t\022\021\n\ttimestamp\030\004 \001(\003\022\014\n\004from\030\005 \001(\t\022\014\n\004" +
-      "data\030\006 \001(\t\022\026\n\016patchTimestamp\030\007 \001(\003\022\021\n\tme" +
-      "ntioned\030\010 \001(\010\022\021\n\tbinaryMsg\030\t \001(\014\022\020\n\010conv" +
-      "Type\030\n \001(\005\"\306\001\n\007LogItem\022\014\n\004from\030\001 \001(\t\022\014\n\004" +
-      "data\030\002 \001(\t\022\021\n\ttimestamp\030\003 \001(\003\022\r\n\005msgId\030\004" +
-      " \001(\t\022\r\n\005ackAt\030\005 \001(\003\022\016\n\006readAt\030\006 \001(\003\022\026\n\016p" +
-      "atchTimestamp\030\007 \001(\003\022\022\n\nmentionAll\030\010 \001(\010\022",
-      "\023\n\013mentionPids\030\t \003(\t\022\013\n\003bin\030\n \001(\010\022\020\n\010con" +
-      "vType\030\013 \001(\005\";\n\016ConvMemberInfo\022\013\n\003pid\030\001 \001" +
-      "(\t\022\014\n\004role\030\002 \001(\t\022\016\n\006infoId\030\003 \001(\t\"Y\n\013Data" +
-      "Command\022\013\n\003ids\030\001 \003(\t\022,\n\003msg\030\002 \003(\0132\037.cn.l" +
-      "eancloud.JsonObjectMessage\022\017\n\007offline\030\003 " +
-      "\001(\010\"\321\002\n\016SessionCommand\022\t\n\001t\030\001 \001(\003\022\t\n\001n\030\002" +
-      " \001(\t\022\t\n\001s\030\003 \001(\t\022\n\n\002ua\030\004 \001(\t\022\t\n\001r\030\005 \001(\010\022\013" +
-      "\n\003tag\030\006 \001(\t\022\020\n\010deviceId\030\007 \001(\t\022\026\n\016session" +
-      "PeerIds\030\010 \003(\t\022\034\n\024onlineSessionPeerIds\030\t " +
-      "\003(\t\022\n\n\002st\030\n \001(\t\022\r\n\005stTtl\030\013 \001(\005\022\014\n\004code\030\014",
-      " \001(\005\022\016\n\006reason\030\r \001(\t\022\023\n\013deviceToken\030\016 \001(" +
-      "\t\022\n\n\002sp\030\017 \001(\010\022\016\n\006detail\030\020 \001(\t\022\033\n\023lastUnr" +
-      "eadNotifTime\030\021 \001(\003\022\025\n\rlastPatchTime\030\022 \001(" +
-      "\003\022\024\n\014configBitmap\030\023 \001(\003\"k\n\014ErrorCommand\022" +
-      "\014\n\004code\030\001 \002(\005\022\016\n\006reason\030\002 \002(\t\022\017\n\007appCode" +
-      "\030\003 \001(\005\022\016\n\006detail\030\004 \001(\t\022\014\n\004pids\030\005 \003(\t\022\016\n\006" +
-      "appMsg\030\006 \001(\t\"\336\002\n\rDirectCommand\022\013\n\003msg\030\001 " +
-      "\001(\t\022\013\n\003uid\030\002 \001(\t\022\022\n\nfromPeerId\030\003 \001(\t\022\021\n\t" +
-      "timestamp\030\004 \001(\003\022\017\n\007offline\030\005 \001(\010\022\017\n\007hasM" +
-      "ore\030\006 \001(\010\022\021\n\ttoPeerIds\030\007 \003(\t\022\t\n\001r\030\n \001(\010\022",
-      "\013\n\003cid\030\013 \001(\t\022\n\n\002id\030\014 \001(\t\022\021\n\ttransient\030\r " +
-      "\001(\010\022\n\n\002dt\030\016 \001(\t\022\016\n\006roomId\030\017 \001(\t\022\020\n\010pushD" +
-      "ata\030\020 \001(\t\022\014\n\004will\030\021 \001(\010\022\026\n\016patchTimestam" +
-      "p\030\022 \001(\003\022\021\n\tbinaryMsg\030\023 \001(\014\022\023\n\013mentionPid" +
-      "s\030\024 \003(\t\022\022\n\nmentionAll\030\025 \001(\010\022\020\n\010convType\030" +
-      "\026 \001(\005\"\266\001\n\nAckCommand\022\014\n\004code\030\001 \001(\005\022\016\n\006re" +
-      "ason\030\002 \001(\t\022\013\n\003mid\030\003 \001(\t\022\013\n\003cid\030\004 \001(\t\022\t\n\001" +
-      "t\030\005 \001(\003\022\013\n\003uid\030\006 \001(\t\022\016\n\006fromts\030\007 \001(\003\022\014\n\004" +
-      "tots\030\010 \001(\003\022\014\n\004type\030\t \001(\t\022\013\n\003ids\030\n \003(\t\022\017\n" +
-      "\007appCode\030\013 \001(\005\022\016\n\006appMsg\030\014 \001(\t\"L\n\rUnread",
-      "Command\022(\n\005convs\030\001 \003(\0132\031.cn.leancloud.Un" +
-      "readTuple\022\021\n\tnotifTime\030\002 \001(\003\"\322\006\n\013ConvCom" +
-      "mand\022\t\n\001m\030\001 \003(\t\022\021\n\ttransient\030\002 \001(\010\022\016\n\006un" +
-      "ique\030\003 \001(\010\022\013\n\003cid\030\004 \001(\t\022\r\n\005cdate\030\005 \001(\t\022\016" +
-      "\n\006initBy\030\006 \001(\t\022\014\n\004sort\030\007 \001(\t\022\r\n\005limit\030\010 " +
-      "\001(\005\022\014\n\004skip\030\t \001(\005\022\014\n\004flag\030\n \001(\005\022\r\n\005count" +
-      "\030\013 \001(\005\022\r\n\005udate\030\014 \001(\t\022\t\n\001t\030\r \001(\003\022\t\n\001n\030\016 " +
-      "\001(\t\022\t\n\001s\030\017 \001(\t\022\021\n\tstatusSub\030\020 \001(\010\022\021\n\tsta" +
-      "tusPub\030\021 \001(\010\022\021\n\tstatusTTL\030\022 \001(\005\022\020\n\010uniqu" +
-      "eId\030\023 \001(\t\022\026\n\016targetClientId\030\024 \001(\t\022\030\n\020max",
-      "ReadTimestamp\030\025 \001(\003\022\027\n\017maxAckTimestamp\030\026" +
-      " \001(\003\022\027\n\017queryAllMembers\030\027 \001(\010\0221\n\rmaxRead" +
-      "Tuples\030\030 \003(\0132\032.cn.leancloud.MaxReadTuple" +
-      "\022\014\n\004cids\030\031 \003(\t\022*\n\004info\030\032 \001(\0132\034.cn.leancl" +
-      "oud.ConvMemberInfo\022\020\n\010tempConv\030\033 \001(\010\022\023\n\013" +
-      "tempConvTTL\030\034 \001(\005\022\023\n\013tempConvIds\030\035 \003(\t\022\023" +
-      "\n\013allowedPids\030\036 \003(\t\022.\n\nfailedPids\030\037 \003(\0132" +
-      "\032.cn.leancloud.ErrorCommand\022\014\n\004next\030( \001(" +
-      "\t\0220\n\007results\030d \001(\0132\037.cn.leancloud.JsonOb" +
-      "jectMessage\022.\n\005where\030e \001(\0132\037.cn.leanclou",
-      "d.JsonObjectMessage\022-\n\004attr\030g \001(\0132\037.cn.l" +
-      "eancloud.JsonObjectMessage\0225\n\014attrModifi" +
-      "ed\030h \001(\0132\037.cn.leancloud.JsonObjectMessag" +
-      "e\"x\n\013RoomCommand\022\016\n\006roomId\030\001 \001(\t\022\t\n\001s\030\002 " +
-      "\001(\t\022\t\n\001t\030\003 \001(\003\022\t\n\001n\030\004 \001(\t\022\021\n\ttransient\030\005" +
-      " \001(\010\022\023\n\013roomPeerIds\030\006 \003(\t\022\020\n\010byPeerId\030\007 " +
-      "\001(\t\"\312\002\n\013LogsCommand\022\013\n\003cid\030\001 \001(\t\022\t\n\001l\030\002 " +
-      "\001(\005\022\r\n\005limit\030\003 \001(\005\022\t\n\001t\030\004 \001(\003\022\n\n\002tt\030\005 \001(" +
-      "\003\022\014\n\004tmid\030\006 \001(\t\022\013\n\003mid\030\007 \001(\t\022\020\n\010checksum" +
-      "\030\010 \001(\t\022\016\n\006stored\030\t \001(\010\022@\n\tdirection\030\n \001(",
-      "\0162(.cn.leancloud.LogsCommand.QueryDirect" +
-      "ion:\003OLD\022\021\n\ttIncluded\030\013 \001(\010\022\022\n\nttInclude" +
-      "d\030\014 \001(\010\022\016\n\006lctype\030\r \001(\005\022#\n\004logs\030i \003(\0132\025." +
-      "cn.leancloud.LogItem\"\"\n\016QueryDirection\022\007" +
-      "\n\003OLD\020\001\022\007\n\003NEW\020\002\"L\n\nRcpCommand\022\n\n\002id\030\001 \001" +
-      "(\t\022\013\n\003cid\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\014\n\004read\030\004 \001(\010" +
-      "\022\014\n\004from\030\005 \001(\t\"8\n\tReadTuple\022\013\n\003cid\030\001 \002(\t" +
-      "\022\021\n\ttimestamp\030\002 \001(\003\022\013\n\003mid\030\003 \001(\t\"N\n\014MaxR" +
-      "eadTuple\022\013\n\003pid\030\001 \001(\t\022\027\n\017maxAckTimestamp" +
-      "\030\002 \001(\003\022\030\n\020maxReadTimestamp\030\003 \001(\003\"P\n\013Read",
-      "Command\022\013\n\003cid\030\001 \001(\t\022\014\n\004cids\030\002 \003(\t\022&\n\005co" +
-      "nvs\030\003 \003(\0132\027.cn.leancloud.ReadTuple\"`\n\017Pr" +
-      "esenceCommand\022(\n\006status\030\001 \001(\0162\030.cn.leanc" +
-      "loud.StatusType\022\026\n\016sessionPeerIds\030\002 \003(\t\022" +
-      "\013\n\003cid\030\003 \001(\t\"?\n\rReportCommand\022\022\n\ninitiat" +
-      "ive\030\001 \001(\010\022\014\n\004type\030\002 \001(\t\022\014\n\004data\030\003 \001(\t\"\340\001" +
-      "\n\tPatchItem\022\013\n\003cid\030\001 \001(\t\022\013\n\003mid\030\002 \001(\t\022\021\n" +
-      "\ttimestamp\030\003 \001(\003\022\016\n\006recall\030\004 \001(\010\022\014\n\004data" +
-      "\030\005 \001(\t\022\026\n\016patchTimestamp\030\006 \001(\003\022\014\n\004from\030\007" +
-      " \001(\t\022\021\n\tbinaryMsg\030\010 \001(\014\022\022\n\nmentionAll\030\t ",
-      "\001(\010\022\023\n\013mentionPids\030\n \003(\t\022\021\n\tpatchCode\030\013 " +
-      "\001(\003\022\023\n\013patchReason\030\014 \001(\t\"O\n\014PatchCommand" +
-      "\022(\n\007patches\030\001 \003(\0132\027.cn.leancloud.PatchIt" +
-      "em\022\025\n\rlastPatchTime\030\002 \001(\003\"\240\001\n\rPubsubComm" +
-      "and\022\013\n\003cid\030\001 \001(\t\022\014\n\004cids\030\002 \003(\t\022\r\n\005topic\030" +
-      "\003 \001(\t\022\020\n\010subtopic\030\004 \001(\t\022\016\n\006topics\030\005 \003(\t\022" +
-      "\021\n\tsubtopics\030\006 \003(\t\0220\n\007results\030\007 \001(\0132\037.cn" +
-      ".leancloud.JsonObjectMessage\"\377\001\n\020Blackli" +
-      "stCommand\022\016\n\006srcCid\030\001 \001(\t\022\016\n\006toPids\030\002 \003(" +
-      "\t\022\016\n\006srcPid\030\003 \001(\t\022\016\n\006toCids\030\004 \003(\t\022\r\n\005lim",
-      "it\030\005 \001(\005\022\014\n\004next\030\006 \001(\t\022\023\n\013blockedPids\030\010 " +
-      "\003(\t\022\023\n\013blockedCids\030\t \003(\t\022\023\n\013allowedPids\030" +
-      "\n \003(\t\022.\n\nfailedPids\030\013 \003(\0132\032.cn.leancloud" +
-      ".ErrorCommand\022\t\n\001t\030\014 \001(\003\022\t\n\001n\030\r \001(\t\022\t\n\001s" +
-      "\030\016 \001(\t\"\245\010\n\016GenericCommand\022&\n\003cmd\030\001 \001(\0162\031" +
-      ".cn.leancloud.CommandType\022 \n\002op\030\002 \001(\0162\024." +
-      "cn.leancloud.OpType\022\r\n\005appId\030\003 \001(\t\022\016\n\006pe" +
-      "erId\030\004 \001(\t\022\t\n\001i\030\005 \001(\005\022\026\n\016installationId\030" +
-      "\006 \001(\t\022\020\n\010priority\030\007 \001(\005\022\017\n\007service\030\010 \001(\005" +
-      "\022\020\n\010serverTs\030\t \001(\003\022\020\n\010clientTs\030\n \001(\003\022\030\n\020",
-      "notificationType\030\013 \001(\005\022.\n\013dataMessage\030e " +
-      "\001(\0132\031.cn.leancloud.DataCommand\0224\n\016sessio" +
-      "nMessage\030f \001(\0132\034.cn.leancloud.SessionCom" +
-      "mand\0220\n\014errorMessage\030g \001(\0132\032.cn.leanclou" +
-      "d.ErrorCommand\0222\n\rdirectMessage\030h \001(\0132\033." +
-      "cn.leancloud.DirectCommand\022,\n\nackMessage" +
-      "\030i \001(\0132\030.cn.leancloud.AckCommand\0222\n\runre" +
-      "adMessage\030j \001(\0132\033.cn.leancloud.UnreadCom" +
-      "mand\022.\n\013readMessage\030k \001(\0132\031.cn.leancloud" +
-      ".ReadCommand\022,\n\nrcpMessage\030l \001(\0132\030.cn.le",
-      "ancloud.RcpCommand\022.\n\013logsMessage\030m \001(\0132" +
-      "\031.cn.leancloud.LogsCommand\022.\n\013convMessag" +
-      "e\030n \001(\0132\031.cn.leancloud.ConvCommand\022.\n\013ro" +
-      "omMessage\030o \001(\0132\031.cn.leancloud.RoomComma" +
-      "nd\0226\n\017presenceMessage\030p \001(\0132\035.cn.leanclo" +
-      "ud.PresenceCommand\0222\n\rreportMessage\030q \001(" +
-      "\0132\033.cn.leancloud.ReportCommand\0220\n\014patchM" +
-      "essage\030r \001(\0132\032.cn.leancloud.PatchCommand" +
-      "\0222\n\rpubsubMessage\030s \001(\0132\033.cn.leancloud.P" +
-      "ubsubCommand\0228\n\020blacklistMessage\030t \001(\0132\036",
-      ".cn.leancloud.BlacklistCommand*\213\002\n\013Comma" +
-      "ndType\022\013\n\007session\020\000\022\010\n\004conv\020\001\022\n\n\006direct\020" +
-      "\002\022\007\n\003ack\020\003\022\007\n\003rcp\020\004\022\n\n\006unread\020\005\022\010\n\004logs\020" +
-      "\006\022\t\n\005error\020\007\022\t\n\005login\020\010\022\010\n\004data\020\t\022\010\n\004roo" +
-      "m\020\n\022\010\n\004read\020\013\022\014\n\010presence\020\014\022\n\n\006report\020\r\022" +
-      "\010\n\004echo\020\016\022\014\n\010loggedin\020\017\022\n\n\006logout\020\020\022\r\n\tl" +
-      "oggedout\020\021\022\t\n\005patch\020\022\022\n\n\006pubsub\020\023\022\r\n\tbla" +
-      "cklist\020\024\022\n\n\006goaway\020\025*\215\010\n\006OpType\022\010\n\004open\020" +
-      "\001\022\007\n\003add\020\002\022\n\n\006remove\020\003\022\t\n\005close\020\004\022\n\n\006ope" +
-      "ned\020\005\022\n\n\006closed\020\006\022\t\n\005query\020\007\022\020\n\014query_re",
-      "sult\020\010\022\014\n\010conflict\020\t\022\t\n\005added\020\n\022\013\n\007remov" +
-      "ed\020\013\022\013\n\007refresh\020\014\022\r\n\trefreshed\020\r\022\t\n\005star" +
-      "t\020\036\022\013\n\007started\020\037\022\n\n\006joined\020 \022\022\n\016members_" +
-      "joined\020!\022\010\n\004left\020\'\022\020\n\014members_left\020(\022\013\n\007" +
-      "results\020*\022\t\n\005count\020+\022\n\n\006result\020,\022\n\n\006upda" +
-      "te\020-\022\013\n\007updated\020.\022\010\n\004mute\020/\022\n\n\006unmute\0200\022" +
-      "\n\n\006status\0201\022\013\n\007members\0202\022\014\n\010max_read\0203\022\r" +
-      "\n\tis_member\0204\022\026\n\022member_info_update\0205\022\027\n" +
-      "\023member_info_updated\0206\022\027\n\023member_info_ch" +
-      "anged\0207\022\010\n\004join\020P\022\n\n\006invite\020Q\022\t\n\005leave\020R",
-      "\022\010\n\004kick\020S\022\n\n\006reject\020T\022\013\n\007invited\020U\022\n\n\006k" +
-      "icked\020V\022\n\n\006upload\020d\022\014\n\010uploaded\020e\022\r\n\tsub" +
-      "scribe\020x\022\016\n\nsubscribed\020y\022\017\n\013unsubscribe\020" +
-      "z\022\020\n\014unsubscribed\020{\022\021\n\ris_subscribed\020|\022\013" +
-      "\n\006modify\020\226\001\022\r\n\010modified\020\227\001\022\n\n\005block\020\252\001\022\014" +
-      "\n\007unblock\020\253\001\022\014\n\007blocked\020\254\001\022\016\n\tunblocked\020" +
-      "\255\001\022\024\n\017members_blocked\020\256\001\022\026\n\021members_unbl" +
-      "ocked\020\257\001\022\020\n\013check_block\020\260\001\022\021\n\014check_resu" +
-      "lt\020\261\001\022\017\n\nadd_shutup\020\264\001\022\022\n\rremove_shutup\020" +
-      "\265\001\022\021\n\014query_shutup\020\266\001\022\021\n\014shutup_added\020\267\001",
-      "\022\023\n\016shutup_removed\020\270\001\022\022\n\rshutup_result\020\271" +
-      "\001\022\r\n\010shutuped\020\272\001\022\017\n\nunshutuped\020\273\001\022\025\n\020mem" +
-      "bers_shutuped\020\274\001\022\027\n\022members_unshutuped\020\275" +
-      "\001\022\021\n\014check_shutup\020\276\001*\035\n\nStatusType\022\006\n\002on" +
-      "\020\001\022\007\n\003off\020\002B\007\242\002\004AVIM"
+      "\n\016messages.proto\022\014cn.leancloud\"a\n\017Semant" +
+      "icVersion\022\r\n\005major\030\001 \001(\005\022\r\n\005minor\030\002 \001(\005\022" +
+      "\r\n\005patch\030\003 \001(\005\022\022\n\npreRelease\030\004 \001(\t\022\r\n\005bu" +
+      "ild\030\005 \001(\t\"4\n\016AndroidVersion\022\020\n\010codename\030" +
+      "\001 \001(\t\022\020\n\010apiLevel\030\002 \001(\t\"\266\001\n\nSystemInfo\022," +
+      "\n\ndeviceType\030\001 \001(\0162\030.cn.leancloud.Device" +
+      "Type\0220\n\tosVersion\030\002 \001(\0132\035.cn.leancloud.S" +
+      "emanticVersion\0224\n\016androidVersion\030\003 \001(\0132\034" +
+      ".cn.leancloud.AndroidVersion\022\022\n\nisEmulat" +
+      "or\030\004 \001(\010\"!\n\021JsonObjectMessage\022\014\n\004data\030\001 ",
+      "\002(\t\"\266\001\n\013UnreadTuple\022\013\n\003cid\030\001 \002(\t\022\016\n\006unre" +
+      "ad\030\002 \002(\005\022\013\n\003mid\030\003 \001(\t\022\021\n\ttimestamp\030\004 \001(\003" +
+      "\022\014\n\004from\030\005 \001(\t\022\014\n\004data\030\006 \001(\t\022\026\n\016patchTim" +
+      "estamp\030\007 \001(\003\022\021\n\tmentioned\030\010 \001(\010\022\021\n\tbinar" +
+      "yMsg\030\t \001(\014\022\020\n\010convType\030\n \001(\005\"\306\001\n\007LogItem" +
+      "\022\014\n\004from\030\001 \001(\t\022\014\n\004data\030\002 \001(\t\022\021\n\ttimestam" +
+      "p\030\003 \001(\003\022\r\n\005msgId\030\004 \001(\t\022\r\n\005ackAt\030\005 \001(\003\022\016\n" +
+      "\006readAt\030\006 \001(\003\022\026\n\016patchTimestamp\030\007 \001(\003\022\022\n" +
+      "\nmentionAll\030\010 \001(\010\022\023\n\013mentionPids\030\t \003(\t\022\013" +
+      "\n\003bin\030\n \001(\010\022\020\n\010convType\030\013 \001(\005\";\n\016ConvMem",
+      "berInfo\022\013\n\003pid\030\001 \001(\t\022\014\n\004role\030\002 \001(\t\022\016\n\006in" +
+      "foId\030\003 \001(\t\"<\n\014LoginCommand\022,\n\nsystemInfo" +
+      "\030\001 \001(\0132\030.cn.leancloud.SystemInfo\"\'\n\017Logg" +
+      "edinCommand\022\024\n\014pushDisabled\030\001 \001(\010\"Y\n\013Dat" +
+      "aCommand\022\013\n\003ids\030\001 \003(\t\022,\n\003msg\030\002 \003(\0132\037.cn." +
+      "leancloud.JsonObjectMessage\022\017\n\007offline\030\003" +
+      " \001(\010\"\377\002\n\016SessionCommand\022\t\n\001t\030\001 \001(\003\022\t\n\001n\030" +
+      "\002 \001(\t\022\t\n\001s\030\003 \001(\t\022\n\n\002ua\030\004 \001(\t\022\t\n\001r\030\005 \001(\010\022" +
+      "\013\n\003tag\030\006 \001(\t\022\020\n\010deviceId\030\007 \001(\t\022\026\n\016sessio" +
+      "nPeerIds\030\010 \003(\t\022\034\n\024onlineSessionPeerIds\030\t",
+      " \003(\t\022\n\n\002st\030\n \001(\t\022\r\n\005stTtl\030\013 \001(\005\022\014\n\004code\030" +
+      "\014 \001(\005\022\016\n\006reason\030\r \001(\t\022\023\n\013deviceToken\030\016 \001" +
+      "(\t\022\n\n\002sp\030\017 \001(\010\022\016\n\006detail\030\020 \001(\t\022\033\n\023lastUn" +
+      "readNotifTime\030\021 \001(\003\022\025\n\rlastPatchTime\030\022 \001" +
+      "(\003\022\024\n\014configBitmap\030\023 \001(\003\022,\n\nsystemInfo\030\024" +
+      " \001(\0132\030.cn.leancloud.SystemInfo\"k\n\014ErrorC" +
+      "ommand\022\014\n\004code\030\001 \002(\005\022\016\n\006reason\030\002 \002(\t\022\017\n\007" +
+      "appCode\030\003 \001(\005\022\016\n\006detail\030\004 \001(\t\022\014\n\004pids\030\005 " +
+      "\003(\t\022\016\n\006appMsg\030\006 \001(\t\"\336\002\n\rDirectCommand\022\013\n" +
+      "\003msg\030\001 \001(\t\022\013\n\003uid\030\002 \001(\t\022\022\n\nfromPeerId\030\003 ",
+      "\001(\t\022\021\n\ttimestamp\030\004 \001(\003\022\017\n\007offline\030\005 \001(\010\022" +
+      "\017\n\007hasMore\030\006 \001(\010\022\021\n\ttoPeerIds\030\007 \003(\t\022\t\n\001r" +
+      "\030\n \001(\010\022\013\n\003cid\030\013 \001(\t\022\n\n\002id\030\014 \001(\t\022\021\n\ttrans" +
+      "ient\030\r \001(\010\022\n\n\002dt\030\016 \001(\t\022\016\n\006roomId\030\017 \001(\t\022\020" +
+      "\n\010pushData\030\020 \001(\t\022\014\n\004will\030\021 \001(\010\022\026\n\016patchT" +
+      "imestamp\030\022 \001(\003\022\021\n\tbinaryMsg\030\023 \001(\014\022\023\n\013men" +
+      "tionPids\030\024 \003(\t\022\022\n\nmentionAll\030\025 \001(\010\022\020\n\010co" +
+      "nvType\030\026 \001(\005\"\266\001\n\nAckCommand\022\014\n\004code\030\001 \001(" +
+      "\005\022\016\n\006reason\030\002 \001(\t\022\013\n\003mid\030\003 \001(\t\022\013\n\003cid\030\004 " +
+      "\001(\t\022\t\n\001t\030\005 \001(\003\022\013\n\003uid\030\006 \001(\t\022\016\n\006fromts\030\007 ",
+      "\001(\003\022\014\n\004tots\030\010 \001(\003\022\014\n\004type\030\t \001(\t\022\013\n\003ids\030\n" +
+      " \003(\t\022\017\n\007appCode\030\013 \001(\005\022\016\n\006appMsg\030\014 \001(\t\"L\n" +
+      "\rUnreadCommand\022(\n\005convs\030\001 \003(\0132\031.cn.leanc" +
+      "loud.UnreadTuple\022\021\n\tnotifTime\030\002 \001(\003\"\322\006\n\013" +
+      "ConvCommand\022\t\n\001m\030\001 \003(\t\022\021\n\ttransient\030\002 \001(" +
+      "\010\022\016\n\006unique\030\003 \001(\010\022\013\n\003cid\030\004 \001(\t\022\r\n\005cdate\030" +
+      "\005 \001(\t\022\016\n\006initBy\030\006 \001(\t\022\014\n\004sort\030\007 \001(\t\022\r\n\005l" +
+      "imit\030\010 \001(\005\022\014\n\004skip\030\t \001(\005\022\014\n\004flag\030\n \001(\005\022\r" +
+      "\n\005count\030\013 \001(\005\022\r\n\005udate\030\014 \001(\t\022\t\n\001t\030\r \001(\003\022" +
+      "\t\n\001n\030\016 \001(\t\022\t\n\001s\030\017 \001(\t\022\021\n\tstatusSub\030\020 \001(\010",
+      "\022\021\n\tstatusPub\030\021 \001(\010\022\021\n\tstatusTTL\030\022 \001(\005\022\020" +
+      "\n\010uniqueId\030\023 \001(\t\022\026\n\016targetClientId\030\024 \001(\t" +
+      "\022\030\n\020maxReadTimestamp\030\025 \001(\003\022\027\n\017maxAckTime" +
+      "stamp\030\026 \001(\003\022\027\n\017queryAllMembers\030\027 \001(\010\0221\n\r" +
+      "maxReadTuples\030\030 \003(\0132\032.cn.leancloud.MaxRe" +
+      "adTuple\022\014\n\004cids\030\031 \003(\t\022*\n\004info\030\032 \001(\0132\034.cn" +
+      ".leancloud.ConvMemberInfo\022\020\n\010tempConv\030\033 " +
+      "\001(\010\022\023\n\013tempConvTTL\030\034 \001(\005\022\023\n\013tempConvIds\030" +
+      "\035 \003(\t\022\023\n\013allowedPids\030\036 \003(\t\022.\n\nfailedPids" +
+      "\030\037 \003(\0132\032.cn.leancloud.ErrorCommand\022\014\n\004ne",
+      "xt\030( \001(\t\0220\n\007results\030d \001(\0132\037.cn.leancloud" +
+      ".JsonObjectMessage\022.\n\005where\030e \001(\0132\037.cn.l" +
+      "eancloud.JsonObjectMessage\022-\n\004attr\030g \001(\013" +
+      "2\037.cn.leancloud.JsonObjectMessage\0225\n\014att" +
+      "rModified\030h \001(\0132\037.cn.leancloud.JsonObjec" +
+      "tMessage\"x\n\013RoomCommand\022\016\n\006roomId\030\001 \001(\t\022" +
+      "\t\n\001s\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\t\n\001n\030\004 \001(\t\022\021\n\ttran" +
+      "sient\030\005 \001(\010\022\023\n\013roomPeerIds\030\006 \003(\t\022\020\n\010byPe" +
+      "erId\030\007 \001(\t\"\312\002\n\013LogsCommand\022\013\n\003cid\030\001 \001(\t\022" +
+      "\t\n\001l\030\002 \001(\005\022\r\n\005limit\030\003 \001(\005\022\t\n\001t\030\004 \001(\003\022\n\n\002",
+      "tt\030\005 \001(\003\022\014\n\004tmid\030\006 \001(\t\022\013\n\003mid\030\007 \001(\t\022\020\n\010c" +
+      "hecksum\030\010 \001(\t\022\016\n\006stored\030\t \001(\010\022@\n\tdirecti" +
+      "on\030\n \001(\0162(.cn.leancloud.LogsCommand.Quer" +
+      "yDirection:\003OLD\022\021\n\ttIncluded\030\013 \001(\010\022\022\n\ntt" +
+      "Included\030\014 \001(\010\022\016\n\006lctype\030\r \001(\005\022#\n\004logs\030i" +
+      " \003(\0132\025.cn.leancloud.LogItem\"\"\n\016QueryDire" +
+      "ction\022\007\n\003OLD\020\001\022\007\n\003NEW\020\002\"L\n\nRcpCommand\022\n\n" +
+      "\002id\030\001 \001(\t\022\013\n\003cid\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\014\n\004rea" +
+      "d\030\004 \001(\010\022\014\n\004from\030\005 \001(\t\"8\n\tReadTuple\022\013\n\003ci" +
+      "d\030\001 \002(\t\022\021\n\ttimestamp\030\002 \001(\003\022\013\n\003mid\030\003 \001(\t\"",
+      "N\n\014MaxReadTuple\022\013\n\003pid\030\001 \001(\t\022\027\n\017maxAckTi" +
+      "mestamp\030\002 \001(\003\022\030\n\020maxReadTimestamp\030\003 \001(\003\"" +
+      "P\n\013ReadCommand\022\013\n\003cid\030\001 \001(\t\022\014\n\004cids\030\002 \003(" +
+      "\t\022&\n\005convs\030\003 \003(\0132\027.cn.leancloud.ReadTupl" +
+      "e\"`\n\017PresenceCommand\022(\n\006status\030\001 \001(\0162\030.c" +
+      "n.leancloud.StatusType\022\026\n\016sessionPeerIds" +
+      "\030\002 \003(\t\022\013\n\003cid\030\003 \001(\t\"?\n\rReportCommand\022\022\n\n" +
+      "initiative\030\001 \001(\010\022\014\n\004type\030\002 \001(\t\022\014\n\004data\030\003" +
+      " \001(\t\"\340\001\n\tPatchItem\022\013\n\003cid\030\001 \001(\t\022\013\n\003mid\030\002" +
+      " \001(\t\022\021\n\ttimestamp\030\003 \001(\003\022\016\n\006recall\030\004 \001(\010\022",
+      "\014\n\004data\030\005 \001(\t\022\026\n\016patchTimestamp\030\006 \001(\003\022\014\n" +
+      "\004from\030\007 \001(\t\022\021\n\tbinaryMsg\030\010 \001(\014\022\022\n\nmentio" +
+      "nAll\030\t \001(\010\022\023\n\013mentionPids\030\n \003(\t\022\021\n\tpatch" +
+      "Code\030\013 \001(\003\022\023\n\013patchReason\030\014 \001(\t\"O\n\014Patch" +
+      "Command\022(\n\007patches\030\001 \003(\0132\027.cn.leancloud." +
+      "PatchItem\022\025\n\rlastPatchTime\030\002 \001(\003\"\240\001\n\rPub" +
+      "subCommand\022\013\n\003cid\030\001 \001(\t\022\014\n\004cids\030\002 \003(\t\022\r\n" +
+      "\005topic\030\003 \001(\t\022\020\n\010subtopic\030\004 \001(\t\022\016\n\006topics" +
+      "\030\005 \003(\t\022\021\n\tsubtopics\030\006 \003(\t\0220\n\007results\030\007 \001" +
+      "(\0132\037.cn.leancloud.JsonObjectMessage\"\377\001\n\020",
+      "BlacklistCommand\022\016\n\006srcCid\030\001 \001(\t\022\016\n\006toPi" +
+      "ds\030\002 \003(\t\022\016\n\006srcPid\030\003 \001(\t\022\016\n\006toCids\030\004 \003(\t" +
+      "\022\r\n\005limit\030\005 \001(\005\022\014\n\004next\030\006 \001(\t\022\023\n\013blocked" +
+      "Pids\030\010 \003(\t\022\023\n\013blockedCids\030\t \003(\t\022\023\n\013allow" +
+      "edPids\030\n \003(\t\022.\n\nfailedPids\030\013 \003(\0132\032.cn.le" +
+      "ancloud.ErrorCommand\022\t\n\001t\030\014 \001(\003\022\t\n\001n\030\r \001" +
+      "(\t\022\t\n\001s\030\016 \001(\t\"\217\t\n\016GenericCommand\022&\n\003cmd\030" +
+      "\001 \001(\0162\031.cn.leancloud.CommandType\022 \n\002op\030\002" +
+      " \001(\0162\024.cn.leancloud.OpType\022\r\n\005appId\030\003 \001(" +
+      "\t\022\016\n\006peerId\030\004 \001(\t\022\t\n\001i\030\005 \001(\005\022\026\n\016installa",
+      "tionId\030\006 \001(\t\022\020\n\010priority\030\007 \001(\005\022\017\n\007servic" +
+      "e\030\010 \001(\005\022\020\n\010serverTs\030\t \001(\003\022\020\n\010clientTs\030\n " +
+      "\001(\003\022\030\n\020notificationType\030\013 \001(\005\0220\n\014loginMe" +
+      "ssage\030d \001(\0132\032.cn.leancloud.LoginCommand\022" +
+      ".\n\013dataMessage\030e \001(\0132\031.cn.leancloud.Data" +
+      "Command\0224\n\016sessionMessage\030f \001(\0132\034.cn.lea" +
+      "ncloud.SessionCommand\0220\n\014errorMessage\030g " +
+      "\001(\0132\032.cn.leancloud.ErrorCommand\0222\n\rdirec" +
+      "tMessage\030h \001(\0132\033.cn.leancloud.DirectComm" +
+      "and\022,\n\nackMessage\030i \001(\0132\030.cn.leancloud.A",
+      "ckCommand\0222\n\runreadMessage\030j \001(\0132\033.cn.le" +
+      "ancloud.UnreadCommand\022.\n\013readMessage\030k \001" +
+      "(\0132\031.cn.leancloud.ReadCommand\022,\n\nrcpMess" +
+      "age\030l \001(\0132\030.cn.leancloud.RcpCommand\022.\n\013l" +
+      "ogsMessage\030m \001(\0132\031.cn.leancloud.LogsComm" +
+      "and\022.\n\013convMessage\030n \001(\0132\031.cn.leancloud." +
+      "ConvCommand\022.\n\013roomMessage\030o \001(\0132\031.cn.le" +
+      "ancloud.RoomCommand\0226\n\017presenceMessage\030p" +
+      " \001(\0132\035.cn.leancloud.PresenceCommand\0222\n\rr" +
+      "eportMessage\030q \001(\0132\033.cn.leancloud.Report",
+      "Command\0220\n\014patchMessage\030r \001(\0132\032.cn.leanc" +
+      "loud.PatchCommand\0222\n\rpubsubMessage\030s \001(\013" +
+      "2\033.cn.leancloud.PubsubCommand\0228\n\020blackli" +
+      "stMessage\030t \001(\0132\036.cn.leancloud.Blacklist" +
+      "Command\0226\n\017loggedinMessage\030u \001(\0132\035.cn.le" +
+      "ancloud.LoggedinCommand*\213\002\n\013CommandType\022" +
+      "\013\n\007session\020\000\022\010\n\004conv\020\001\022\n\n\006direct\020\002\022\007\n\003ac" +
+      "k\020\003\022\007\n\003rcp\020\004\022\n\n\006unread\020\005\022\010\n\004logs\020\006\022\t\n\005er" +
+      "ror\020\007\022\t\n\005login\020\010\022\010\n\004data\020\t\022\010\n\004room\020\n\022\010\n\004" +
+      "read\020\013\022\014\n\010presence\020\014\022\n\n\006report\020\r\022\010\n\004echo",
+      "\020\016\022\014\n\010loggedin\020\017\022\n\n\006logout\020\020\022\r\n\tloggedou" +
+      "t\020\021\022\t\n\005patch\020\022\022\n\n\006pubsub\020\023\022\r\n\tblacklist\020" +
+      "\024\022\n\n\006goaway\020\025*\215\010\n\006OpType\022\010\n\004open\020\001\022\007\n\003ad" +
+      "d\020\002\022\n\n\006remove\020\003\022\t\n\005close\020\004\022\n\n\006opened\020\005\022\n" +
+      "\n\006closed\020\006\022\t\n\005query\020\007\022\020\n\014query_result\020\010\022" +
+      "\014\n\010conflict\020\t\022\t\n\005added\020\n\022\013\n\007removed\020\013\022\013\n" +
+      "\007refresh\020\014\022\r\n\trefreshed\020\r\022\t\n\005start\020\036\022\013\n\007" +
+      "started\020\037\022\n\n\006joined\020 \022\022\n\016members_joined\020" +
+      "!\022\010\n\004left\020\'\022\020\n\014members_left\020(\022\013\n\007results" +
+      "\020*\022\t\n\005count\020+\022\n\n\006result\020,\022\n\n\006update\020-\022\013\n",
+      "\007updated\020.\022\010\n\004mute\020/\022\n\n\006unmute\0200\022\n\n\006stat" +
+      "us\0201\022\013\n\007members\0202\022\014\n\010max_read\0203\022\r\n\tis_me" +
+      "mber\0204\022\026\n\022member_info_update\0205\022\027\n\023member" +
+      "_info_updated\0206\022\027\n\023member_info_changed\0207" +
+      "\022\010\n\004join\020P\022\n\n\006invite\020Q\022\t\n\005leave\020R\022\010\n\004kic" +
+      "k\020S\022\n\n\006reject\020T\022\013\n\007invited\020U\022\n\n\006kicked\020V" +
+      "\022\n\n\006upload\020d\022\014\n\010uploaded\020e\022\r\n\tsubscribe\020" +
+      "x\022\016\n\nsubscribed\020y\022\017\n\013unsubscribe\020z\022\020\n\014un" +
+      "subscribed\020{\022\021\n\ris_subscribed\020|\022\013\n\006modif" +
+      "y\020\226\001\022\r\n\010modified\020\227\001\022\n\n\005block\020\252\001\022\014\n\007unblo",
+      "ck\020\253\001\022\014\n\007blocked\020\254\001\022\016\n\tunblocked\020\255\001\022\024\n\017m" +
+      "embers_blocked\020\256\001\022\026\n\021members_unblocked\020\257" +
+      "\001\022\020\n\013check_block\020\260\001\022\021\n\014check_result\020\261\001\022\017" +
+      "\n\nadd_shutup\020\264\001\022\022\n\rremove_shutup\020\265\001\022\021\n\014q" +
+      "uery_shutup\020\266\001\022\021\n\014shutup_added\020\267\001\022\023\n\016shu" +
+      "tup_removed\020\270\001\022\022\n\rshutup_result\020\271\001\022\r\n\010sh" +
+      "utuped\020\272\001\022\017\n\nunshutuped\020\273\001\022\025\n\020members_sh" +
+      "utuped\020\274\001\022\027\n\022members_unshutuped\020\275\001\022\021\n\014ch" +
+      "eck_shutup\020\276\001*\035\n\nStatusType\022\006\n\002on\020\001\022\007\n\003o" +
+      "ff\020\002*/\n\nDeviceType\022\013\n\007unknown\020\000\022\013\n\007andro",
+      "id\020\001\022\007\n\003ios\020\002B\007\242\002\004AVIM"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -44320,150 +48798,180 @@ public final class Messages {
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
-    internal_static_cn_leancloud_JsonObjectMessage_descriptor =
+    internal_static_cn_leancloud_SemanticVersion_descriptor =
       getDescriptor().getMessageTypes().get(0);
+    internal_static_cn_leancloud_SemanticVersion_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_cn_leancloud_SemanticVersion_descriptor,
+        new java.lang.String[] { "Major", "Minor", "Patch", "PreRelease", "Build", });
+    internal_static_cn_leancloud_AndroidVersion_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_cn_leancloud_AndroidVersion_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_cn_leancloud_AndroidVersion_descriptor,
+        new java.lang.String[] { "Codename", "ApiLevel", });
+    internal_static_cn_leancloud_SystemInfo_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_cn_leancloud_SystemInfo_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_cn_leancloud_SystemInfo_descriptor,
+        new java.lang.String[] { "DeviceType", "OsVersion", "AndroidVersion", "IsEmulator", });
+    internal_static_cn_leancloud_JsonObjectMessage_descriptor =
+      getDescriptor().getMessageTypes().get(3);
     internal_static_cn_leancloud_JsonObjectMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_JsonObjectMessage_descriptor,
         new java.lang.String[] { "Data", });
     internal_static_cn_leancloud_UnreadTuple_descriptor =
-      getDescriptor().getMessageTypes().get(1);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_cn_leancloud_UnreadTuple_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_UnreadTuple_descriptor,
         new java.lang.String[] { "Cid", "Unread", "Mid", "Timestamp", "From", "Data", "PatchTimestamp", "Mentioned", "BinaryMsg", "ConvType", });
     internal_static_cn_leancloud_LogItem_descriptor =
-      getDescriptor().getMessageTypes().get(2);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_cn_leancloud_LogItem_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_LogItem_descriptor,
         new java.lang.String[] { "From", "Data", "Timestamp", "MsgId", "AckAt", "ReadAt", "PatchTimestamp", "MentionAll", "MentionPids", "Bin", "ConvType", });
     internal_static_cn_leancloud_ConvMemberInfo_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_cn_leancloud_ConvMemberInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_ConvMemberInfo_descriptor,
         new java.lang.String[] { "Pid", "Role", "InfoId", });
+    internal_static_cn_leancloud_LoginCommand_descriptor =
+      getDescriptor().getMessageTypes().get(7);
+    internal_static_cn_leancloud_LoginCommand_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_cn_leancloud_LoginCommand_descriptor,
+        new java.lang.String[] { "SystemInfo", });
+    internal_static_cn_leancloud_LoggedinCommand_descriptor =
+      getDescriptor().getMessageTypes().get(8);
+    internal_static_cn_leancloud_LoggedinCommand_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_cn_leancloud_LoggedinCommand_descriptor,
+        new java.lang.String[] { "PushDisabled", });
     internal_static_cn_leancloud_DataCommand_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(9);
     internal_static_cn_leancloud_DataCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_DataCommand_descriptor,
         new java.lang.String[] { "Ids", "Msg", "Offline", });
     internal_static_cn_leancloud_SessionCommand_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(10);
     internal_static_cn_leancloud_SessionCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_SessionCommand_descriptor,
-        new java.lang.String[] { "T", "N", "S", "Ua", "R", "Tag", "DeviceId", "SessionPeerIds", "OnlineSessionPeerIds", "St", "StTtl", "Code", "Reason", "DeviceToken", "Sp", "Detail", "LastUnreadNotifTime", "LastPatchTime", "ConfigBitmap", });
+        new java.lang.String[] { "T", "N", "S", "Ua", "R", "Tag", "DeviceId", "SessionPeerIds", "OnlineSessionPeerIds", "St", "StTtl", "Code", "Reason", "DeviceToken", "Sp", "Detail", "LastUnreadNotifTime", "LastPatchTime", "ConfigBitmap", "SystemInfo", });
     internal_static_cn_leancloud_ErrorCommand_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(11);
     internal_static_cn_leancloud_ErrorCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_ErrorCommand_descriptor,
         new java.lang.String[] { "Code", "Reason", "AppCode", "Detail", "Pids", "AppMsg", });
     internal_static_cn_leancloud_DirectCommand_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(12);
     internal_static_cn_leancloud_DirectCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_DirectCommand_descriptor,
         new java.lang.String[] { "Msg", "Uid", "FromPeerId", "Timestamp", "Offline", "HasMore", "ToPeerIds", "R", "Cid", "Id", "Transient", "Dt", "RoomId", "PushData", "Will", "PatchTimestamp", "BinaryMsg", "MentionPids", "MentionAll", "ConvType", });
     internal_static_cn_leancloud_AckCommand_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(13);
     internal_static_cn_leancloud_AckCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_AckCommand_descriptor,
         new java.lang.String[] { "Code", "Reason", "Mid", "Cid", "T", "Uid", "Fromts", "Tots", "Type", "Ids", "AppCode", "AppMsg", });
     internal_static_cn_leancloud_UnreadCommand_descriptor =
-      getDescriptor().getMessageTypes().get(9);
+      getDescriptor().getMessageTypes().get(14);
     internal_static_cn_leancloud_UnreadCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_UnreadCommand_descriptor,
         new java.lang.String[] { "Convs", "NotifTime", });
     internal_static_cn_leancloud_ConvCommand_descriptor =
-      getDescriptor().getMessageTypes().get(10);
+      getDescriptor().getMessageTypes().get(15);
     internal_static_cn_leancloud_ConvCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_ConvCommand_descriptor,
         new java.lang.String[] { "M", "Transient", "Unique", "Cid", "Cdate", "InitBy", "Sort", "Limit", "Skip", "Flag", "Count", "Udate", "T", "N", "S", "StatusSub", "StatusPub", "StatusTTL", "UniqueId", "TargetClientId", "MaxReadTimestamp", "MaxAckTimestamp", "QueryAllMembers", "MaxReadTuples", "Cids", "Info", "TempConv", "TempConvTTL", "TempConvIds", "AllowedPids", "FailedPids", "Next", "Results", "Where", "Attr", "AttrModified", });
     internal_static_cn_leancloud_RoomCommand_descriptor =
-      getDescriptor().getMessageTypes().get(11);
+      getDescriptor().getMessageTypes().get(16);
     internal_static_cn_leancloud_RoomCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_RoomCommand_descriptor,
         new java.lang.String[] { "RoomId", "S", "T", "N", "Transient", "RoomPeerIds", "ByPeerId", });
     internal_static_cn_leancloud_LogsCommand_descriptor =
-      getDescriptor().getMessageTypes().get(12);
+      getDescriptor().getMessageTypes().get(17);
     internal_static_cn_leancloud_LogsCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_LogsCommand_descriptor,
         new java.lang.String[] { "Cid", "L", "Limit", "T", "Tt", "Tmid", "Mid", "Checksum", "Stored", "Direction", "TIncluded", "TtIncluded", "Lctype", "Logs", });
     internal_static_cn_leancloud_RcpCommand_descriptor =
-      getDescriptor().getMessageTypes().get(13);
+      getDescriptor().getMessageTypes().get(18);
     internal_static_cn_leancloud_RcpCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_RcpCommand_descriptor,
         new java.lang.String[] { "Id", "Cid", "T", "Read", "From", });
     internal_static_cn_leancloud_ReadTuple_descriptor =
-      getDescriptor().getMessageTypes().get(14);
+      getDescriptor().getMessageTypes().get(19);
     internal_static_cn_leancloud_ReadTuple_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_ReadTuple_descriptor,
         new java.lang.String[] { "Cid", "Timestamp", "Mid", });
     internal_static_cn_leancloud_MaxReadTuple_descriptor =
-      getDescriptor().getMessageTypes().get(15);
+      getDescriptor().getMessageTypes().get(20);
     internal_static_cn_leancloud_MaxReadTuple_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_MaxReadTuple_descriptor,
         new java.lang.String[] { "Pid", "MaxAckTimestamp", "MaxReadTimestamp", });
     internal_static_cn_leancloud_ReadCommand_descriptor =
-      getDescriptor().getMessageTypes().get(16);
+      getDescriptor().getMessageTypes().get(21);
     internal_static_cn_leancloud_ReadCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_ReadCommand_descriptor,
         new java.lang.String[] { "Cid", "Cids", "Convs", });
     internal_static_cn_leancloud_PresenceCommand_descriptor =
-      getDescriptor().getMessageTypes().get(17);
+      getDescriptor().getMessageTypes().get(22);
     internal_static_cn_leancloud_PresenceCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_PresenceCommand_descriptor,
         new java.lang.String[] { "Status", "SessionPeerIds", "Cid", });
     internal_static_cn_leancloud_ReportCommand_descriptor =
-      getDescriptor().getMessageTypes().get(18);
+      getDescriptor().getMessageTypes().get(23);
     internal_static_cn_leancloud_ReportCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_ReportCommand_descriptor,
         new java.lang.String[] { "Initiative", "Type", "Data", });
     internal_static_cn_leancloud_PatchItem_descriptor =
-      getDescriptor().getMessageTypes().get(19);
+      getDescriptor().getMessageTypes().get(24);
     internal_static_cn_leancloud_PatchItem_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_PatchItem_descriptor,
         new java.lang.String[] { "Cid", "Mid", "Timestamp", "Recall", "Data", "PatchTimestamp", "From", "BinaryMsg", "MentionAll", "MentionPids", "PatchCode", "PatchReason", });
     internal_static_cn_leancloud_PatchCommand_descriptor =
-      getDescriptor().getMessageTypes().get(20);
+      getDescriptor().getMessageTypes().get(25);
     internal_static_cn_leancloud_PatchCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_PatchCommand_descriptor,
         new java.lang.String[] { "Patches", "LastPatchTime", });
     internal_static_cn_leancloud_PubsubCommand_descriptor =
-      getDescriptor().getMessageTypes().get(21);
+      getDescriptor().getMessageTypes().get(26);
     internal_static_cn_leancloud_PubsubCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_PubsubCommand_descriptor,
         new java.lang.String[] { "Cid", "Cids", "Topic", "Subtopic", "Topics", "Subtopics", "Results", });
     internal_static_cn_leancloud_BlacklistCommand_descriptor =
-      getDescriptor().getMessageTypes().get(22);
+      getDescriptor().getMessageTypes().get(27);
     internal_static_cn_leancloud_BlacklistCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_BlacklistCommand_descriptor,
         new java.lang.String[] { "SrcCid", "ToPids", "SrcPid", "ToCids", "Limit", "Next", "BlockedPids", "BlockedCids", "AllowedPids", "FailedPids", "T", "N", "S", });
     internal_static_cn_leancloud_GenericCommand_descriptor =
-      getDescriptor().getMessageTypes().get(23);
+      getDescriptor().getMessageTypes().get(28);
     internal_static_cn_leancloud_GenericCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_GenericCommand_descriptor,
-        new java.lang.String[] { "Cmd", "Op", "AppId", "PeerId", "I", "InstallationId", "Priority", "Service", "ServerTs", "ClientTs", "NotificationType", "DataMessage", "SessionMessage", "ErrorMessage", "DirectMessage", "AckMessage", "UnreadMessage", "ReadMessage", "RcpMessage", "LogsMessage", "ConvMessage", "RoomMessage", "PresenceMessage", "ReportMessage", "PatchMessage", "PubsubMessage", "BlacklistMessage", });
+        new java.lang.String[] { "Cmd", "Op", "AppId", "PeerId", "I", "InstallationId", "Priority", "Service", "ServerTs", "ClientTs", "NotificationType", "LoginMessage", "DataMessage", "SessionMessage", "ErrorMessage", "DirectMessage", "AckMessage", "UnreadMessage", "ReadMessage", "RcpMessage", "LogsMessage", "ConvMessage", "RoomMessage", "PresenceMessage", "ReportMessage", "PatchMessage", "PubsubMessage", "BlacklistMessage", "LoggedinMessage", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
