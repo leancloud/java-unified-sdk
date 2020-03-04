@@ -114,6 +114,14 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     LOGGER.d("new message arriving. peerId=" + peerId + ", requestId=" + requestKey + ", command=" + command.getCmd().getNumber());
     if (command.getCmd().getNumber() == Messages.CommandType.loggedin_VALUE) {
       LOGGER.w("ignore loggedin command bcz invalid service.");
+      Messages.LoggedinCommand loggedinCommand = command.getLoggedinMessage();
+      if (null != loggedinCommand && loggedinCommand.hasPushDisabled()) {
+        boolean pushDisabled = loggedinCommand.getPushDisabled();
+        if (pushDisabled) {
+          LOGGER.i("close connection bcz of instruction from server.");
+          AVConnectionManager.getInstance().resetConnection();
+        }
+      }
     } else {
       switch (command.getCmd().getNumber()) {
         case Messages.CommandType.direct_VALUE:
