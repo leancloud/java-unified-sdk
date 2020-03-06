@@ -7,6 +7,7 @@ import cn.leancloud.callback.AVCallback;
 import cn.leancloud.command.CommandPacket;
 import cn.leancloud.command.LiveQueryLoginPacket;
 import cn.leancloud.command.LoginPacket;
+import cn.leancloud.command.SessionControlPacket;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AVOSService;
 import cn.leancloud.core.AppRouter;
@@ -47,6 +48,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private volatile boolean connectionEstablished = false;
   private volatile boolean connecting = false;
   private volatile AVCallback pendingCallback = null;
+  private volatile boolean sessionCommandFound = false;
 
   private Map<String, AVConnectionListener> connectionListeners = new ConcurrentHashMap<>(1);
   private Map<String, AVConnectionListener> defaultConnectionListeners = new HashMap<>(2);
@@ -275,6 +277,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   public void sendPacket(CommandPacket packet) {
     synchronized (webSocketClientWatcher) {
       if (null != this.webSocketClient) {
+        if (!sessionCommandFound) {
+          sessionCommandFound = SessionControlPacket.SESSION_COMMAND.equals(packet.getCmd());
+        }
         this.webSocketClient.send(packet);
       } else {
         LOGGER.w("StateException: web socket client is null, drop CommandPacket: " + packet);
@@ -301,10 +306,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     lp.setAppId(AVOSCloud.getApplicationId());
     lp.setInstallationId(AVInstallation.getCurrentInstallation().getInstallationId());
     if (null != globalOptions.getSystemReporter()) {
-      LOGGER.d("append system info to login packet.");
       lp.setSystemInfo(globalOptions.getSystemReporter().getInfo());
-    } else {
-      LOGGER.d("no default system reporter within AVIMOptions.");
     }
     sendPacket(lp);
 
@@ -365,8 +367,12 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
       if (null != loggedinCommand && loggedinCommand.hasPushDisabled()) {
         boolean pushDisabled = loggedinCommand.getPushDisabled();
         if (pushDisabled) {
-          LOGGER.i("close connection bcz of instruction from server.");
-          resetConnection();
+          if (sessionCommandFound) {
+            LOGGER.i("ignore close instruction from server bcz session command found.");
+          } else {
+            LOGGER.i("close connection bcz of instruction from server.");
+            resetConnection();
+          }
         }
       }
       return;

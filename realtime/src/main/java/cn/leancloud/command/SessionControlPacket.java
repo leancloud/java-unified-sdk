@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class SessionControlPacket extends PeerBasedCommandPacket {
+  public static final String SESSION_COMMAND = "session";
   public static class SessionControlOp {
     public static final String OPEN = "open";
 
@@ -70,7 +71,7 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
   String sessionToken;
 
   public SessionControlPacket() {
-    this.setCmd("session");
+    this.setCmd(SESSION_COMMAND);
   }
 
   public void setSessionToken(String sessionToken) {
