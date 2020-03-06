@@ -10,6 +10,8 @@ public class AVIMOptions {
 
   private boolean wrapMessageBinaryBufferAsString = false;
 
+  private SystemReporter systemReporter = null;
+
   /**
    * 离线消息推送模式
    * true 为仅推送数量，false 为推送具体消息
@@ -91,6 +93,15 @@ public class AVIMOptions {
   public void setMessageQueryCacheEnabled(boolean messageQueryCacheEnabled) {
     this.messageQueryCacheEnabled = messageQueryCacheEnabled;
   }
+
+  public SystemReporter getSystemReporter() {
+    return systemReporter;
+  }
+
+  public void setSystemReporter(SystemReporter reporter) {
+    this.systemReporter = reporter;
+  }
+
   /**
    * 设置离线消息推送模式
    * @param isOnlyCount flag indicates only push count or not

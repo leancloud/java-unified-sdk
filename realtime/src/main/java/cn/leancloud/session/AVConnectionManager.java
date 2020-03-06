@@ -296,9 +296,16 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     resetConnectingStatus(true);
 
     // auto send login packet.
+    AVIMOptions globalOptions = AVIMOptions.getGlobalOptions();
     LoginPacket lp = new LoginPacket();
     lp.setAppId(AVOSCloud.getApplicationId());
     lp.setInstallationId(AVInstallation.getCurrentInstallation().getInstallationId());
+    if (null != globalOptions.getSystemReporter()) {
+      LOGGER.d("append system info to login packet.");
+      lp.setSystemInfo(globalOptions.getSystemReporter().getInfo());
+    } else {
+      LOGGER.d("no default system reporter within AVIMOptions.");
+    }
     sendPacket(lp);
 
     initSessionsIfExists();
@@ -354,6 +361,14 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     if (command.hasService() && command.getService() == LiveQueryLoginPacket.SERVICE_PUSH
             && command.getCmd().getNumber() == Messages.CommandType.loggedin_VALUE) {
       // push login response.
+      Messages.LoggedinCommand loggedinCommand = command.getLoggedinMessage();
+      if (null != loggedinCommand && loggedinCommand.hasPushDisabled()) {
+        boolean pushDisabled = loggedinCommand.getPushDisabled();
+        if (pushDisabled) {
+          LOGGER.i("close connection bcz of instruction from server.");
+          resetConnection();
+        }
+      }
       return;
     }
     AVConnectionListener listener = this.connectionListeners.get(peerId);
