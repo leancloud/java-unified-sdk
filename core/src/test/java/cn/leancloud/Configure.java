@@ -18,8 +18,8 @@ public class Configure {
     TEST_APP_KEY = StringUtil.isEmpty(appKEY) ? "6j8fuggqkbc5m86b8mp4pf2no170i5m7vmax5iypmi72wldc" : appKEY;
     String regionStr = System.getenv("APP_REGION");
     reGion = StringUtil.isEmpty(regionStr) ? AVOSCloud.REGION.NorthChina : AVOSCloud.REGION.valueOf(regionStr);
-    API_HOST = System.getenv("API_HOST");
-    //API_HOST = "http://localhost:8080";
+    //API_HOST = System.getenv("API_HOST");
+    API_HOST = "https://ohqhxu3m.lc-cn-n1-shared.com";
 
     System.out.println("Test APP_id: " + TEST_APP_ID);
     System.out.println("Test APP_key: " + TEST_APP_KEY);
@@ -56,7 +56,7 @@ public class Configure {
     if (!StringUtil.isEmpty(API_HOST)) {
       AVOSCloud.setServer(AVOSService.API, API_HOST);
     }
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
+    AVOSCloud.setLogLevel(AVLogger.Level.DEBUG);
     AVOSCloud.initialize(TEST_APP_ID, TEST_APP_KEY);
   }
 }

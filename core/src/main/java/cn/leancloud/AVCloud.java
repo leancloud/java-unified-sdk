@@ -33,6 +33,11 @@ public class AVCloud {
     return PaasClient.getStorageClient().callFunction(name, Utils.getParsedMap(params));
   }
 
+  public static <T> Observable<T> callFunctionWithCacheInBackground(String name, Map<String, Object> params,
+                                                                    AVQuery.CachePolicy cachePolicy, long maxCacheAge) {
+    return PaasClient.getStorageClient().callFunctionWithCachePolicy(name, Utils.getParsedMap(params), cachePolicy, maxCacheAge);
+  }
+
   /**
    * Call Cloud RPC Function in Background.
    * @param name function name.
@@ -42,6 +47,11 @@ public class AVCloud {
    */
   public static <T> Observable<T> callRPCInBackground(String name, Object params) {
     return PaasClient.getStorageClient().callRPC(name, Utils.getParsedObject(params));
+  }
+
+  public static <T> Observable<T> callRPCWithCacheInBackground(String name, Map<String, Object> params,
+                                                               AVQuery.CachePolicy cachePolicy, long maxCacheAge) {
+    return PaasClient.getStorageClient().callRPCWithCachePolicy(name, Utils.getParsedMap(params), cachePolicy, maxCacheAge);
   }
 
   private AVCloud() {

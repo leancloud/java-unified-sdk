@@ -24,33 +24,53 @@ public class AVCloudFunctionTest extends TestCase {
   }
 
   public void testCloudFunction() {
-//    String name = "joinLive";
-//    Map<String, Object> param = new HashMap<String, Object>();
-//    param.put("liveOld", "5e5cedca0a8a840067f6b0b8");
-//    param.put("deviceCode", null);
-//    param.put("version", "2140303121");
-//    param.put("platform", "android");
-//    Observable<JSONObject> res = AVCloud.callFunctionInBackground(name, param);
-//    res.subscribe(new Observer<JSONObject>() {
-//      @Override
-//      public void onSubscribe(Disposable disposable) {
-//
-//      }
-//
-//      @Override
-//      public void onNext(JSONObject jsonObject) {
-//        System.out.println("结果 = " + jsonObject);
-//      }
-//
-//      @Override
-//      public void onError(Throwable throwable) {
-//        System.out.println("error occurred! " + throwable);
-//      }
-//
-//      @Override
-//      public void onComplete() {
-//
-//      }
-//    });
+    String name = "currentTime";
+    Map<String, Object> param = new HashMap<String, Object>();
+    param.put("platform", "android");
+    Observable<Long> res = AVCloud.callFunctionInBackground(name, param);
+    res.subscribe(new Observer<Long>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+      }
+
+      @Override
+      public void onNext(Long jsonObject) {
+        System.out.println("结果 = " + jsonObject);
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        System.out.println("error occurred! " + throwable);
+      }
+
+      @Override
+      public void onComplete() {
+      }
+    });
+  }
+  public void testCloudFunctionWithCache() {
+    String name = "currentTime";
+    Map<String, Object> param = new HashMap<String, Object>();
+    param.put("platform", "android");
+    Observable<Long> res = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
+    res.subscribe(new Observer<Long>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+      }
+
+      @Override
+      public void onNext(Long jsonObject) {
+        System.out.println("结果 = " + jsonObject);
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        System.out.println("error occurred! " + throwable);
+      }
+
+      @Override
+      public void onComplete() {
+      }
+    });
   }
 }

@@ -59,6 +59,19 @@ public class QueryResultCache extends LocalStorage {
     return MD5.computeMD5(sb.toString());
   }
 
+  public static String generateCachedKey(String className, Map<String, Object> params) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(className);
+    sb.append(":");
+    for (Map.Entry<String, Object> entry: params.entrySet()) {
+      sb.append(entry.getKey());
+      sb.append("=");
+      sb.append(entry.getValue().toString());
+      sb.append("&");
+    }
+    return MD5.computeMD5(sb.toString());
+  }
+
   public boolean hasCachedResult(String className, Map<String, String> query, long maxAgeInMilliseconds) {
     String cacheKey = generateKeyForQueryCondition(className, query);
     File cacheFile = getCacheFile(cacheKey);
@@ -76,12 +89,18 @@ public class QueryResultCache extends LocalStorage {
   public Observable<String> getCacheRawResult(final String className, final Map<String, String> query,
                                               final long maxAgeInMilliseconds, final boolean isFinal) {
     LOGGER.d("try to get cache raw result for class:" + className);
+    String cacheKey = generateKeyForQueryCondition(className, query);
+    return getCacheRawResult(className, cacheKey, maxAgeInMilliseconds, isFinal);
+  }
+
+  public Observable<String> getCacheRawResult(final String className, final String cacheKey,
+                                              final long maxAgeInMilliseconds, final boolean isFinal) {
+    LOGGER.d("try to get cache raw result for class:" + className);
     AppConfiguration.SchedulerCreator creator = AppConfiguration.getDefaultScheduler();
     boolean isAsync = AppConfiguration.isAsynchronized();
 
     Callable<String> callable = new Callable<String>() {
       public String call() throws Exception {
-        String cacheKey = generateKeyForQueryCondition(className, query);
         File cacheFile = getCacheFile(cacheKey);
         if (null == cacheFile || !cacheFile.exists()) {
           LOGGER.d("cache file(key=" + cacheKey + ") not existed.");

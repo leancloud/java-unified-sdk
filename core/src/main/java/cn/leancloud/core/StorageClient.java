@@ -15,11 +15,14 @@ import cn.leancloud.upload.FileUploadToken;
 import cn.leancloud.utils.ErrorUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.Scheduler;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -69,7 +72,7 @@ public class StorageClient {
     return observable;
   }
 
-  private Observable wrappObservableInBackground(Observable observable) {
+  private Observable wrapObservableInBackground(Observable observable) {
     if (null == observable) {
       return null;
     }
@@ -129,29 +132,27 @@ public class StorageClient {
         break;
       case CACHE_ELSE_NETWORK:
         result = wrapObservable(
-                QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, false));
-        if (null != result) {
-          result = result.onErrorResumeNext(new Function<Throwable, ObservableSource<? extends List<AVObject>>>() {
-            @Override
-            public ObservableSource<? extends List<AVObject>> apply(Throwable throwable) throws Exception {
-              LOGGER.d("failed to query local cache, cause: " + throwable.getMessage() + ", try to query networking");
+                QueryResultCache.getInstance().getCacheResult(className, query, maxAgeInMilliseconds, false))
+                .onErrorResumeNext(new Function<Throwable, ObservableSource<? extends List<AVObject>>>() {
+                  @Override
+                  public ObservableSource<? extends List<AVObject>> apply(Throwable throwable) throws Exception {
+                    LOGGER.d("failed to query local cache, cause: " + throwable.getMessage() + ", try to query networking");
 
-              return queryRemoteServer(className, query)
-                      .map(new Function<AVQueryResult, List<AVObject>>() {
-                        public List<AVObject> apply(AVQueryResult o) throws Exception {
-                          o.setClassName(className);
-                          for (AVObject obj: o.getResults()) {
-                            obj.setClassName(className);
-                          }
-                          QueryResultCache.getInstance().cacheResult(cacheKey, o.toJSONString());
-                          LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:"
-                                  + ((null != o.getResults())? o.getResults().size(): 0));
-                          return o.getResults();
-                        }
-                      });
-            }
-          });
-        }
+                    return queryRemoteServer(className, query)
+                            .map(new Function<AVQueryResult, List<AVObject>>() {
+                              public List<AVObject> apply(AVQueryResult o) throws Exception {
+                                o.setClassName(className);
+                                for (AVObject obj: o.getResults()) {
+                                  obj.setClassName(className);
+                                }
+                                QueryResultCache.getInstance().cacheResult(cacheKey, o.toJSONString());
+                                LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:"
+                                        + ((null != o.getResults())? o.getResults().size(): 0));
+                                return o.getResults();
+                              }
+                            });
+                  }
+                });
         break;
       case NETWORK_ELSE_CACHE:
         queryResult =  queryRemoteServer(className, query);
@@ -291,7 +292,7 @@ public class StorageClient {
   }
 
   public Observable<FileUploadToken> newUploadToken(JSONObject fileData) {
-    return wrappObservableInBackground(apiService.createUploadToken(fileData));
+    return wrapObservableInBackground(apiService.createUploadToken(fileData));
   }
 
   public void fileCallback(JSONObject result) throws IOException {
@@ -542,52 +543,180 @@ public class StorageClient {
   }
 
   public <T> Observable<T> callRPC(String name, Object param) {
+    return callRPC(name, param, false, null);
+  }
+
+  <T> Observable<T> callRPC(final String name, final Object param, final boolean enableCache, final String cacheKey) {
     Observable<Map<String, ?>> cloudCall =  wrapObservable(apiService.cloudRPC(name, param));
     if (null == cloudCall) {
       return null;
     }
     return cloudCall.map(new Function<Map<String, ?>, T>() {
-              public T apply(Map<String, ?> resultMap) throws Exception {
-                try {
-                  Object resultValue = resultMap.get("result");
-                  if (resultValue instanceof Collection) {
-                    return (T) Utils.getObjectFrom((Collection) resultValue);
-                  } else if (resultValue instanceof Map) {
-                    return (T) Utils.getObjectFrom((Map) resultValue);
-                  } else {
-                    return (T) resultValue;
-                  }
-                } catch (Exception ex) {
-                  LOGGER.d("RPCFunction error: " + ex.getMessage());
-                  return null;
-                }
-              }
-            });
+      public T apply(Map<String, ?> resultMap) throws Exception {
+        try {
+          Object resultValue = resultMap.get("result");
+          if (enableCache && !StringUtil.isEmpty(cacheKey)) {
+            QueryResultCache.getInstance().cacheResult(cacheKey, JSON.toJSONString(resultValue));
+          }
+          if (resultValue instanceof Collection) {
+            return (T) Utils.getObjectFrom((Collection) resultValue);
+          } else if (resultValue instanceof Map) {
+            return (T) Utils.getObjectFrom((Map) resultValue);
+          } else {
+            return (T) resultValue;
+          }
+        } catch (Exception ex) {
+          LOGGER.d("RPCFunction error: " + ex.getMessage());
+          return null;
+        }
+      }
+    });
   }
 
   public <T> Observable<T> callFunction(String name, Map<String, Object> params) {
+    return callFunction(name, params, false, null);
+  }
+
+  <T> Observable<T> callFunction(String name, Map<String, Object> params, final boolean enableCache, final String cacheKey) {
     Observable<Map<String, ?>> cloudCall = wrapObservable(apiService.cloudFunction(name, params));
     if (null == cloudCall) {
       return null;
     }
     return cloudCall.map(new Function<Map<String, ?>, T>() {
-              public T apply(Map<String, ?> resultMap) throws Exception {
-                try {
-                  Object resultValue = resultMap.get("result");
-                  if (resultValue instanceof Collection) {
-                    return (T) Utils.getObjectFrom((Collection) resultValue);
-                  } else if (resultValue instanceof Map) {
-                    return (T) Utils.getObjectFrom((Map) resultValue);
-                  } else {
-                    return (T) resultValue;
-                  }
-                } catch (Exception ex) {
-                  LOGGER.d("CloudFunction error: " + ex.getMessage());
-                  return null;
-                }
+      public T apply(Map<String, ?> resultMap) throws Exception {
+        try {
+          Object resultValue = resultMap.get("result");
+          if (enableCache && !StringUtil.isEmpty(cacheKey)) {
+            QueryResultCache.getInstance().cacheResult(cacheKey, JSON.toJSONString(resultValue));
+          }
+          if (resultValue instanceof Collection) {
+            return (T) Utils.getObjectFrom((Collection) resultValue);
+          } else if (resultValue instanceof Map) {
+            return (T) Utils.getObjectFrom((Map) resultValue);
+          } else {
+            return (T) resultValue;
+          }
+        } catch (Exception ex) {
+          LOGGER.d("CloudFunction error: " + ex.getMessage());
+          return null;
+        }
+      }
+    });
+  }
+
+  interface QueryExecutor {
+    <T> Observable<T> executor();
+  }
+  <T> Observable<T> executeCachedQuery(final String clazz, final Map<String, Object> query,
+                                       AVQuery.CachePolicy cachePolicy, final long maxAgeInMilliseconds,
+                                       final QueryExecutor cacheQueryExecutor,
+                                       final QueryExecutor remoteQueryExecutor) {
+    Observable<T> result = null;
+    switch (cachePolicy) {
+      case CACHE_ONLY:
+        result = cacheQueryExecutor.executor();
+        break;
+      case CACHE_ELSE_NETWORK:
+        result = cacheQueryExecutor.executor();
+        result = result.onErrorResumeNext(new Function<Throwable, Observable<T>>() {
+          @Override
+          public Observable<T> apply(Throwable throwable) throws Exception {
+            LOGGER.d("failed to query local cache, cause: " + throwable.getMessage() + ", try to query networking");
+            return remoteQueryExecutor.executor();
+          }
+        });
+        break;
+      case NETWORK_ELSE_CACHE:
+        result = remoteQueryExecutor.executor();
+        result = result.onErrorResumeNext(new Function<Throwable, Observable<T>>() {
+          @Override
+          public Observable<T> apply(Throwable throwable) throws Exception {
+            LOGGER.d("failed to query networking, cause: " + throwable.getMessage()
+                    + ", try to query local cache.");
+            return cacheQueryExecutor.executor();
+          }
+        });
+        break;
+      case IGNORE_CACHE:
+      default:
+        result = remoteQueryExecutor.executor();
+        break;
+    }
+    return result;
+  }
+
+  public <T> Observable<T> callRPCWithCachePolicy(final String name, final Map<String, Object> param,
+                                                  final AVQuery.CachePolicy cachePolicy, final long maxCacheAge) {
+    final String cacheKey = QueryResultCache.generateCachedKey(name, param);
+    return executeCachedQuery(name, param, cachePolicy, maxCacheAge,
+            new QueryExecutor() {
+              @Override
+              public <T> Observable<T> executor() {
+                return QueryResultCache.getInstance().getCacheRawResult(name, cacheKey, maxCacheAge, true)
+                        .map(new Function<String, T>() {
+                          @Override
+                          public T apply(String s) throws Exception {
+                            if (StringUtil.isEmpty(s)) {
+                              return null;
+                            }
+                            Object parsedObject = JSON.parse(s);
+                            if (parsedObject instanceof Collection) {
+                              return (T) Utils.getObjectFrom((Collection) parsedObject);
+                            } else if (parsedObject instanceof Map) {
+                              return (T) Utils.getObjectFrom((Map) parsedObject);
+                            } else {
+                              return (T) parsedObject;
+                            }
+                          }
+                        });
+              }
+            },
+            new QueryExecutor() {
+              @Override
+              public <T> Observable<T> executor() {
+                return callRPC(name, param,
+                        cachePolicy != AVQuery.CachePolicy.IGNORE_CACHE && cachePolicy != AVQuery.CachePolicy.NETWORK_ONLY,
+                        cacheKey);
               }
             });
   }
+
+  public <T> Observable<T> callFunctionWithCachePolicy(final String name, final Map<String, Object> params,
+                                                       final AVQuery.CachePolicy cachePolicy, final long maxCacheAge) {
+    final String cacheKey = QueryResultCache.generateCachedKey(name, params);
+    return executeCachedQuery(name, params, cachePolicy, maxCacheAge,
+            new QueryExecutor() {
+              @Override
+              public <T> Observable<T> executor() {
+                return QueryResultCache.getInstance().getCacheRawResult(name, cacheKey, maxCacheAge, true)
+                        .map(new Function<String, T>() {
+                          @Override
+                          public T apply(String s) throws Exception {
+                            if (StringUtil.isEmpty(s)) {
+                              return null;
+                            }
+                            Object parsedObject = JSON.parse(s);
+                            if (parsedObject instanceof Collection) {
+                              return (T) Utils.getObjectFrom((Collection) parsedObject);
+                            } else if (parsedObject instanceof Map) {
+                              return (T) Utils.getObjectFrom((Map) parsedObject);
+                            } else {
+                              return (T) parsedObject;
+                            }
+                          }
+                        });
+              }
+            },
+            new QueryExecutor() {
+              @Override
+              public <T> Observable<T> executor() {
+                return callFunction(name, params,
+                        cachePolicy != AVQuery.CachePolicy.IGNORE_CACHE && cachePolicy != AVQuery.CachePolicy.NETWORK_ONLY,
+                        cacheKey);
+              }
+            });
+  }
+
 
   public Observable<AVCaptchaDigest> requestCaptcha(AVCaptchaOption option) {
     return wrapObservable(apiService.requestCaptcha(option.getRequestParam()));
