@@ -2,6 +2,7 @@ package cn.leancloud.push;
 
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -74,6 +75,10 @@ public class PushService extends Service {
 
   private static boolean isAutoWakeUp = true;
   static String DefaultChannelId = "";
+
+  static volatile boolean enableForegroundService = false;
+  static int foregroundIdentifier = 0;
+  static Notification foregroundNotification = null;
 
   AVConnectivityReceiver connectivityReceiver;
   AVShutdownReceiver shutdownReceiver;
@@ -173,7 +178,11 @@ public class PushService extends Service {
   @Override
   public int onStartCommand(final Intent intent, int flags, int startId) {
     LOGGER.d("PushService#onStartCommand");
-    notifyOtherApplication(null != intent ? intent.getAction() : null);
+    if (enableForegroundService) {
+      startForeground(foregroundIdentifier, foregroundNotification);
+    } else {
+      notifyOtherApplication(null != intent ? intent.getAction() : null);
+    }
 
     boolean connected = AppConfiguration.getGlobalNetworkingDetector().isConnected();
     if (connected && !connectionManager.isConnectionEstablished()) {
@@ -221,26 +230,31 @@ public class PushService extends Service {
     LOGGER.d("PushService#onDestroy");
     connectionManager.cleanup();
 
-    try {
-      unregisterReceiver(this.connectivityReceiver);
-      unregisterReceiver(this.shutdownReceiver);
-    } catch (Exception ex) {
-      LOGGER.w("failed to unregister CONNECTIVITY/SHUTDOWN receiver. cause: " + ex.getMessage());
-    }
-
-    isStarted = false;
-
-    if (isAutoWakeUp && Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+    if (enableForegroundService) {
+      stopForeground(true);
+    } else {
       try {
-        LOGGER.d("Let's try to wake PushService again");
-        Intent i = new Intent(AVOSCloud.getContext(), PushService.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startService(i);
+        unregisterReceiver(this.connectivityReceiver);
+        unregisterReceiver(this.shutdownReceiver);
       } catch (Exception ex) {
-        // i have tried my best.
-        LOGGER.e("failed to start PushService. cause: " + ex.getMessage());
+        LOGGER.w("failed to unregister CONNECTIVITY/SHUTDOWN receiver. cause: " + ex.getMessage());
+      }
+
+      isStarted = false;
+
+      if (isAutoWakeUp && Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+        try {
+          LOGGER.d("Let's try to wake PushService again");
+          Intent i = new Intent(AVOSCloud.getContext(), PushService.class);
+          i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          startService(i);
+        } catch (Exception ex) {
+          // i have tried my best.
+          LOGGER.e("failed to start PushService. cause: " + ex.getMessage());
+        }
       }
     }
+
     super.onDestroy();
   }
 
@@ -260,16 +274,22 @@ public class PushService extends Service {
     LOGGER.d("try to restart service on task Removed");
 
     if (isAutoWakeUp) {
+
       Intent restartServiceIntent = new Intent(getApplicationContext(), this.getClass());
       restartServiceIntent.setPackage(getPackageName());
 
-      PendingIntent restartServicePendingIntent =
-          PendingIntent.getService(getApplicationContext(), 1, restartServiceIntent,
-              PendingIntent.FLAG_UPDATE_CURRENT);
-      AlarmManager alarmService =
-          (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-      alarmService.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 500,
-          restartServicePendingIntent);
+      if (enableForegroundService && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        startForegroundService(restartServiceIntent);
+      } else {
+        PendingIntent restartServicePendingIntent =
+            PendingIntent.getService(getApplicationContext(), 1, restartServiceIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmService =
+            (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmService.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 500,
+            restartServicePendingIntent);
+      }
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -316,6 +336,12 @@ public class PushService extends Service {
    */
   public static void setNotificationIcon(int icon) {
     AVPushMessageListener.getInstance().getNotificationManager().setNotificationIcon(icon);
+  }
+
+  public static void setForegroundMode(boolean enableForeground, int identifier, Notification notification) {
+    enableForegroundService = enableForeground;
+    foregroundIdentifier = identifier;
+    foregroundNotification = notification;
   }
 
   /**
