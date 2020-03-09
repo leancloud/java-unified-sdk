@@ -1,8 +1,15 @@
 package cn.leancloud.realtime_sample_app;
 
 import android.app.Application;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.StrictMode;
 
+import androidx.core.app.NotificationCompat;
 import cn.leancloud.AVInstallation;
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVOSCloud;
@@ -86,6 +93,17 @@ public class MyApplication extends Application {
 
       }
     });
-    PushService.setDefaultChannelId(this, "1");
+    String channelId = "cn.leancloud.simpleapp";
+    PushService.setDefaultChannelId(this, channelId);
+
+    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
+    Notification notification = notificationBuilder.setOngoing(true)
+        .setSmallIcon(R.mipmap.ic_launcher)
+        .setContentTitle("App is running in background")
+        .setPriority(NotificationManager.IMPORTANCE_MIN)
+        .setCategory(Notification.CATEGORY_SERVICE)
+        .build();
+    PushService.setForegroundMode(true, 101, notification);
   }
+
 }
