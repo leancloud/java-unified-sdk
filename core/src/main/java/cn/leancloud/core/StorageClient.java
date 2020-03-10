@@ -556,6 +556,7 @@ public class StorageClient {
         try {
           Object resultValue = resultMap.get("result");
           if (enableCache && !StringUtil.isEmpty(cacheKey)) {
+            LOGGER.d("cache rpc result:" + JSON.toJSONString(resultValue));
             QueryResultCache.getInstance().cacheResult(cacheKey, JSON.toJSONString(resultValue));
           }
           if (resultValue instanceof Collection) {
@@ -587,6 +588,7 @@ public class StorageClient {
         try {
           Object resultValue = resultMap.get("result");
           if (enableCache && !StringUtil.isEmpty(cacheKey)) {
+            LOGGER.d("cache cloud function result:" + JSON.toJSONString(resultValue));
             QueryResultCache.getInstance().cacheResult(cacheKey, JSON.toJSONString(resultValue));
           }
           if (resultValue instanceof Collection) {
@@ -659,6 +661,7 @@ public class StorageClient {
                             if (StringUtil.isEmpty(s)) {
                               return null;
                             }
+                            LOGGER.d("found cached rpc result: " + s);
                             Object parsedObject = JSON.parse(s);
                             if (parsedObject instanceof Collection) {
                               return (T) Utils.getObjectFrom((Collection) parsedObject);
@@ -695,6 +698,7 @@ public class StorageClient {
                             if (StringUtil.isEmpty(s)) {
                               return null;
                             }
+                            LOGGER.d("found cached function result: " + s);
                             Object parsedObject = JSON.parse(s);
                             if (parsedObject instanceof Collection) {
                               return (T) Utils.getObjectFrom((Collection) parsedObject);
