@@ -27,7 +27,7 @@ public class AppRouterTest extends TestCase {
   public void testFetchApiEndpoint() {
     AppRouter router = AppRouter.getInstance();
     String apiHost = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.API).blockingSingle();
-    assertEquals("https://ohqhxu3m.api.lncld.net", apiHost);
+    assertEquals("https://ohqhxu3m.lc-cn-n1-shared.com", apiHost);
     String pushHost = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.PUSH).blockingSingle();
     assertEquals("https://ohqhxu3m.push.lncld.net", pushHost);
   }

@@ -338,6 +338,17 @@ public class PushService extends Service {
     AVPushMessageListener.getInstance().getNotificationManager().setNotificationIcon(icon);
   }
 
+  /**
+   * 设置 PushService 以前台进程的方式运行（默认是 background service）。
+   * Android 前台 Service 必须要显示一个 Notification 在通知栏，详见说明：
+   * https://developer.android.com/guide/components/services
+   *
+   * @param enableForeground enable PushService run on foreground or not.
+   * @param identifier The identifier for this notification as per
+   * {@link NotificationManager#notify(int, Notification)
+   * NotificationManager.notify(int, Notification)}; must not be 0.
+   * @param notification The Notification to be displayed.
+   */
   public static void setForegroundMode(boolean enableForeground, int identifier, Notification notification) {
     enableForegroundService = enableForeground;
     foregroundIdentifier = identifier;
