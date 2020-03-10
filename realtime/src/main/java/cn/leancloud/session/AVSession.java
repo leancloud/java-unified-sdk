@@ -417,7 +417,11 @@ public class AVSession {
     long currentTime = getLastNotifyTime();
     if (notifyTime > currentTime) {
       lastNotifyTime = notifyTime;
-      AppConfiguration.getDefaultSetting().saveLong(selfId, LAST_NOTIFY_TIME, notifyTime);
+      if (AVIMOptions.getGlobalOptions().isAlwaysRetrieveAllNotification()) {
+        // DO NOT persist last notify timestamp.
+      } else {
+        AppConfiguration.getDefaultSetting().saveLong(selfId, LAST_NOTIFY_TIME, notifyTime);
+      }
     }
   }
 

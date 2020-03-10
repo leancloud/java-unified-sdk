@@ -13,6 +13,11 @@ public class AVIMOptions {
   private SystemReporter systemReporter = null;
 
   /**
+   * 在 session/open 的时候是否总是获取全部未读消息通知
+   */
+  private boolean alwaysRetrieveAllNotification = false;
+
+  /**
    * 离线消息推送模式
    * true 为仅推送数量，false 为推送具体消息
    */
@@ -92,6 +97,22 @@ public class AVIMOptions {
 
   public void setMessageQueryCacheEnabled(boolean messageQueryCacheEnabled) {
     this.messageQueryCacheEnabled = messageQueryCacheEnabled;
+  }
+
+  public boolean isAlwaysRetrieveAllNotification() {
+    return alwaysRetrieveAllNotification;
+  }
+
+  /**
+   * 在 session/open 的时候是否总是获取全部未读消息通知
+   * 1，如果不是每次都获取全部的未读消息通知（默认方式），那么应用层需要缓存之前收到的通知数据；
+   * 2，如果强制每次都获取全部的未读消息通知，由于 LeanCloud 即时通讯云端最多缓存 50 个对话的未读消息通知，所以应用层也还是应该缓存之前收到
+   * 的通知数据（如果业务层面保证一个人不会拥有超过 50 个对话，则可以不必缓存）。
+   *
+   * @param alwaysRetrieveAllNotification 强制总是获取
+   */
+  public void setAlwaysRetrieveAllNotification(boolean alwaysRetrieveAllNotification) {
+    this.alwaysRetrieveAllNotification = alwaysRetrieveAllNotification;
   }
 
   public SystemReporter getSystemReporter() {
