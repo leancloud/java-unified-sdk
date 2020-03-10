@@ -2,6 +2,33 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.4.0 release
+
+#### Break changes
+- None
+
+#### New features
+- enable cache policy for cloud function calling, add following methods to AVCloud:
+```java
+public static <T> Observable<T> callFunctionWithCacheInBackground(String name, Map<String, Object> params,
+    AVQuery.CachePolicy cachePolicy, long maxCacheAge);
+public static <T> Observable<T> callRPCWithCacheInBackground(String name, Map<String, Object> params,
+    AVQuery.CachePolicy cachePolicy, long maxCacheAge);
+```
+- support foreground service for PushService:
+```java
+PushService.setForegroundMode(true, 101, notification);
+```
+- add IMOption for persisting last notify timestamp or not:
+```java
+AVIMOptions.getGlobalOptions().setAlwaysRetrieveAllNotification(true);
+```
+
+#### Optimization and fixed bugs
+- upgrade realtime protocol, auto-close connection under special instruction from server,
+ and report android os info within session open request.
+- some performance optimizations.
+
 ## 6.3.1 release
 
 #### Break changes
