@@ -314,10 +314,18 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       LOGGER.d("poll operation with requestId=" + requestKey + ", result=" + op);
       if (null != op && op.operation == AVIMOperation.CONVERSATION_QUERY.getCode()) {
         String result = convCommand.getResults().getData();
-        HashMap<String, Object> bundle = new HashMap<>();
+        final HashMap<String, Object> bundle = new HashMap<>();
         bundle.put(Conversation.callbackData, result);
-        InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
-                AVIMOperation.CONVERSATION_QUERY, bundle);
+        RequestStormSuppression.getInstance().release(op, new RequestStormSuppression.RequestCallback() {
+          @Override
+          public void done(Operation operation) {
+            LOGGER.d("[RequestSuppression] requestId=" + operation.requestId + ", selfId=" + operation.sessionId + " completed.");
+            InternalConfiguration.getOperationTube().onOperationCompletedEx(operation.sessionId, null, operation.requestId,
+                    AVIMOperation.CONVERSATION_QUERY, bundle);
+          }
+        });
+//        InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
+//                AVIMOperation.CONVERSATION_QUERY, bundle);
       } else {
         LOGGER.w("not found requestKey: " + requestKey + ", op=" + op);
       }

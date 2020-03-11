@@ -318,7 +318,7 @@ public class AVSession {
     AVConnectionManager.getInstance().sendPacket(scp);
   }
 
-  public void queryConversations(Map<String, Object> params, int requestId) {
+  public void queryConversations(Map<String, Object> params, int requestId, String identifier) {
     if (Status.Closed == currentStatus) {
       RuntimeException se = new RuntimeException("Connection Lost");
       InternalConfiguration.getOperationTube().onOperationCompleted(getSelfPeerId(), null, requestId,
@@ -326,13 +326,20 @@ public class AVSession {
       return;
     }
 
-    conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_QUERY.getCode(), selfId, null, requestId));
-    LOGGER.d("offer operation with requestId=" + requestId + ", selfId=" + selfId);
+    // TODO: add request suppression.
+    Operation op = Operation.getOperation(
+            AVIMOperation.CONVERSATION_QUERY.getCode(), selfId, null, requestId);
+    op.setIdentifier(identifier);
 
-    ConversationQueryPacket packet = ConversationQueryPacket.getConversationQueryPacket(getSelfPeerId(),
-            params, requestId);
-    AVConnectionManager.getInstance().sendPacket(packet);
+    conversationOperationCache.offer(op);
+    if (!RequestStormSuppression.getInstance().postpone(op)) {
+      LOGGER.d("[RequestSuppression] offer operation with requestId=" + requestId + ", selfId=" + selfId);
+      ConversationQueryPacket packet = ConversationQueryPacket.getConversationQueryPacket(getSelfPeerId(),
+              params, requestId);
+      AVConnectionManager.getInstance().sendPacket(packet);
+    } else {
+      LOGGER.d("[RequestSuppression] other request is running, pending current request(requestId=" + requestId + ", selfId=" + selfId + ")" );
+    }
   }
 
   public AVException checkSessionStatus() {

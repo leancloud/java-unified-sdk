@@ -19,6 +19,7 @@ import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVOSCloud;
 import cn.leancloud.callback.AVCallback;
+import cn.leancloud.codec.MD5;
 import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.im.v2.AVIMClient.AVIMClientStatus;
 import cn.leancloud.im.v2.AVIMException;
@@ -220,7 +221,7 @@ public class AndroidOperationTube implements OperationTube {
     int requestId = WindTalker.getNextIMRequestId();
     RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
     AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
-    session.queryConversations(JSON.parseObject(queryString, Map.class), requestId);
+    session.queryConversations(JSON.parseObject(queryString, Map.class), requestId, MD5.computeMD5(queryString));
     return true;
   }
 

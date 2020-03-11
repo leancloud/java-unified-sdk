@@ -17,6 +17,7 @@ public class AVIMOperationQueue {
     int operation;
     String sessionId;
     String conversationId;
+    String identifier;
 
     public static Operation getOperation(int operation, String sessionId, String conversationId,
                                          int requestId) {
@@ -26,6 +27,15 @@ public class AVIMOperationQueue {
       op.operation = operation;
       op.requestId = requestId;
       return op;
+    }
+
+
+    public String getIdentifier() {
+      return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+      this.identifier = identifier;
     }
   }
 

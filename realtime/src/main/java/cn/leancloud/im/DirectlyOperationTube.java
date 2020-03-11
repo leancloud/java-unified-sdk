@@ -4,6 +4,7 @@ import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.callback.AVCallback;
+import cn.leancloud.codec.MD5;
 import cn.leancloud.command.LiveQueryLoginPacket;
 import cn.leancloud.im.v2.*;
 import cn.leancloud.im.v2.callback.*;
@@ -246,7 +247,7 @@ public class DirectlyOperationTube implements OperationTube {
 
   public boolean queryConversationsDirectly(final String clientId, final String queryString, int requestId) {
     AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
-    session.queryConversations(JSON.parseObject(queryString, Map.class), requestId);
+    session.queryConversations(JSON.parseObject(queryString, Map.class), requestId, MD5.computeMD5(queryString));
     return true;
   }
 
