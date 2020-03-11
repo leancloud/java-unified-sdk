@@ -1,7 +1,8 @@
 package cn.leancloud.session;
 
+import cn.leancloud.util.WeakConcurrentHashMap;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -12,7 +13,8 @@ public class RequestStormSuppression {
     void done(AVIMOperationQueue.Operation operation);
   }
 
-  ConcurrentMap<String, List<AVIMOperationQueue.Operation>> operations = new ConcurrentHashMap<>();
+//  ConcurrentMap<String, List<AVIMOperationQueue.Operation>> operations = new ConcurrentHashMap<>();
+  WeakConcurrentHashMap<String, AVIMOperationQueue.Operation> operations = new WeakConcurrentHashMap<>(30000);
 
   public static RequestStormSuppression getInstance() {
     return instance;
@@ -34,13 +36,7 @@ public class RequestStormSuppression {
     boolean found = false;
     synchronized (this) {
       found = operations.containsKey(cachedKey);
-      if (found) {
-        operations.get(cachedKey).add(operation);
-      } else {
-        List<AVIMOperationQueue.Operation> array = new ArrayList<>();
-        array.add(operation);
-        operations.put(cachedKey, array);
-      }
+      operations.addElement(cachedKey, operation);
     }
     return found;
   }
