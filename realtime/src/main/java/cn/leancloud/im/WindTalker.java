@@ -48,9 +48,9 @@ public class WindTalker {
             SessionControlPacket.SessionControlOp.OPEN, signature,
             lastNotifyTime, lastPatchTime, requestId);
     scp.setTag(tag);
-    if (AVIMClient.getClientsCount() > 1) {
+//    if (AVIMOptions.getGlobalOptions().isDisableAutoLogin4Push() || AVIMClient.getClientsCount() > 1) {
       scp.setAppId(AVOSCloud.getApplicationId());
-    }
+//    }
     scp.setReconnectionRequest(reConnect);
     return scp;
   }

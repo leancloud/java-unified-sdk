@@ -258,6 +258,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
         }
         session.sessionListener.onSessionClose(session, requestId);
       }
+      session.setSessionStatus(AVSession.Status.Closed);
     } else {
       LOGGER.w("unknown operation: " + op);
     }

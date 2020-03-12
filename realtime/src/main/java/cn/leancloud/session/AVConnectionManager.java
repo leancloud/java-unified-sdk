@@ -301,14 +301,16 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     resetConnectingStatus(true);
 
     // auto send login packet.
-    AVIMOptions globalOptions = AVIMOptions.getGlobalOptions();
-    LoginPacket lp = new LoginPacket();
-    lp.setAppId(AVOSCloud.getApplicationId());
-    lp.setInstallationId(AVInstallation.getCurrentInstallation().getInstallationId());
-    if (null != globalOptions.getSystemReporter()) {
-      lp.setSystemInfo(globalOptions.getSystemReporter().getInfo());
+    if (!AVIMOptions.getGlobalOptions().isDisableAutoLogin4Push()) {
+      AVIMOptions globalOptions = AVIMOptions.getGlobalOptions();
+      LoginPacket lp = new LoginPacket();
+      lp.setAppId(AVOSCloud.getApplicationId());
+      lp.setInstallationId(AVInstallation.getCurrentInstallation().getInstallationId());
+      if (null != globalOptions.getSystemReporter()) {
+        lp.setSystemInfo(globalOptions.getSystemReporter().getInfo());
+      }
+      sendPacket(lp);
     }
-    sendPacket(lp);
 
     initSessionsIfExists();
     for (AVConnectionListener listener: connectionListeners.values()) {

@@ -18,6 +18,11 @@ public class AVIMOptions {
   private boolean alwaysRetrieveAllNotification = false;
 
   /**
+   * 停止推送的自动 login 请求（针对不使用推送的应用）
+   */
+  private boolean disableAutoLogin4Push = false;
+
+  /**
    * 离线消息推送模式
    * true 为仅推送数量，false 为推送具体消息
    */
@@ -113,6 +118,20 @@ public class AVIMOptions {
    */
   public void setAlwaysRetrieveAllNotification(boolean alwaysRetrieveAllNotification) {
     this.alwaysRetrieveAllNotification = alwaysRetrieveAllNotification;
+  }
+
+  public boolean isDisableAutoLogin4Push() {
+    return disableAutoLogin4Push;
+  }
+
+  /**
+   * 设置是否禁止推送服务的自动 login 请求
+   * 对于部分应用来说，如果不使用 LeanCloud 推送服务，仅仅只使用了即时通讯服务的话，可以将这个标志设为 true，以避免不必要的网络连接。
+   *
+   * @param disableAutoLogin4Push disable flag
+   */
+  public void setDisableAutoLogin4Push(boolean disableAutoLogin4Push) {
+    this.disableAutoLogin4Push = disableAutoLogin4Push;
   }
 
   public SystemReporter getSystemReporter() {
