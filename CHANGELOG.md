@@ -2,6 +2,24 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.4.1 release
+
+#### Break changes
+- None
+
+#### New features
+- add IMOption to disable auto login for Push:
+```java
+/**
+* 设置是否禁止推送服务的自动 login 请求
+* 对于部分应用来说，如果不使用 LeanCloud 推送服务，仅仅只使用了即时通讯服务的话，可以将这个标志设为 true，以避免不必要的网络连接。
+*/
+AVIMOptions.getGlobalOptions().setDisableAutoLogin4Push(boolean disableAutoLogin4Push);
+```
+
+#### Optimization and fixed bugs
+- some performance optimizations.
+
 ## 6.4.0 release
 
 #### Break changes
