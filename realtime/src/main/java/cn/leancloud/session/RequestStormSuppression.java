@@ -1,27 +1,36 @@
 package cn.leancloud.session;
 
+import cn.leancloud.im.AVIMOptions;
 import cn.leancloud.util.WeakConcurrentHashMap;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public class RequestStormSuppression {
-  private static final RequestStormSuppression instance = new RequestStormSuppression();
+  private static volatile RequestStormSuppression _instance = null;
   interface RequestCallback {
     void done(AVIMOperationQueue.Operation operation);
   }
 
 //  ConcurrentMap<String, List<AVIMOperationQueue.Operation>> operations = new ConcurrentHashMap<>();
-  WeakConcurrentHashMap<String, AVIMOperationQueue.Operation> operations = new WeakConcurrentHashMap<>(30000);
+  WeakConcurrentHashMap<String, AVIMOperationQueue.Operation> operations = null;
 
   public static RequestStormSuppression getInstance() {
-    return instance;
+    if (null == _instance) {
+      synchronized (RequestStormSuppression.class) {
+        if (null == _instance) {
+          _instance = new RequestStormSuppression();
+        }
+      }
+    }
+    return _instance;
   }
 
   private RequestStormSuppression() {
-    ;
+    long expiryInMillis = AVIMOptions.getGlobalOptions().getTimeoutInSecs() * 1000;
+    if (expiryInMillis < 1000) {
+      expiryInMillis = 10000;
+    }
+    operations = new WeakConcurrentHashMap<>(expiryInMillis);
   }
 
   String getCacheKey(AVIMOperationQueue.Operation operation) {

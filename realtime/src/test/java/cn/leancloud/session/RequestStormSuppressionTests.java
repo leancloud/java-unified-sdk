@@ -1,5 +1,6 @@
 package cn.leancloud.session;
 
+import cn.leancloud.im.AVIMOptions;
 import junit.framework.TestCase;
 
 import java.util.concurrent.CountDownLatch;
@@ -11,11 +12,11 @@ public class RequestStormSuppressionTests extends TestCase {
 
   @Override
   protected void setUp() throws Exception {
-    RequestStormSuppression.getInstance().cleanup();
   }
 
   @Override
   protected void tearDown() throws Exception {
+    RequestStormSuppression.getInstance().cleanup();
   }
 
   public void testSingleOperation() throws Exception {
@@ -133,6 +134,76 @@ public class RequestStormSuppressionTests extends TestCase {
     }
     latch.await();
     assertEquals(2, RequestStormSuppression.getInstance().getCacheSize());
+    for (int i = 0; i < 10;i++) {
+      final int current = i;
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          AVIMOperationQueue.Operation op1 = new AVIMOperationQueue.Operation();
+          op1.setIdentifier(identifier);
+          op1.sessionId = sessionId;
+          op1.conversationId = conversationId;
+          op1.operation = operationCodes[current % 2];
+          RequestStormSuppression.getInstance().release(op1, new RequestStormSuppression.RequestCallback() {
+            @Override
+            public void done(AVIMOperationQueue.Operation operation) {
+              System.out.println("thread " + current + " release operation(" + operation.conversationId + ")...");
+            }
+          });
+        }
+      }).start();
+    }
+    try {
+      Thread.sleep(2000);
+    } catch (Exception ex) {
+      ;
+    }
+    assertEquals(0, RequestStormSuppression.getInstance().getCacheSize());
+  }
+
+  public void testMultiThreadsWithExpiredRequest() throws Exception {
+    final String sessionId = "testUserA";
+    final String conversationId = "conv-111-thread-";
+    final String identifier = "{'data': {'conversation': 'conv-111fheifhie'}}";
+
+    AVIMOptions.getGlobalOptions().setTimeoutInSecs(3);
+    System.out.println("getGlobalOptions().setTimeoutInSecs=3");
+
+    final int [] operationCodes = new int[]{11, 23};
+    final CountDownLatch latch = new CountDownLatch(10);
+    for (int i = 0; i < 10;i++) {
+      final int current = i;
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          AVIMOperationQueue.Operation op1 = new AVIMOperationQueue.Operation();
+          op1.setIdentifier(identifier);
+          op1.sessionId = sessionId;
+          op1.conversationId = conversationId + Thread.currentThread().getId();
+          op1.operation = operationCodes[current % 2];
+          boolean needCache = RequestStormSuppression.getInstance().postpone(op1);
+          if (needCache) {
+            System.out.println("thread " + current + " postponed request after others...");
+          } else {
+            System.out.println("thread " + current + " postponed request firstly...");
+          }
+          try {
+            Thread.sleep(System.currentTimeMillis() % 1327);
+          } catch (Exception ex) {
+            ;
+          }
+          latch.countDown();
+        }
+      }).start();
+    }
+    latch.await();
+    assertEquals(2, RequestStormSuppression.getInstance().getCacheSize());
+    try {
+      Thread.sleep(4000);
+    } catch (Exception ex) {
+      ;
+    }
+    assertEquals(0, RequestStormSuppression.getInstance().getCacheSize());
     for (int i = 0; i < 10;i++) {
       final int current = i;
       new Thread(new Runnable() {

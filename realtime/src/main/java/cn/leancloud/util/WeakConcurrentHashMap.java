@@ -109,7 +109,7 @@ public class WeakConcurrentHashMap<K, V> extends ConcurrentHashMap<K, List<V>> {
       while (mapAlive) {
         cleanMap();
         try {
-          Thread.sleep(expiryInMillis / 5);
+          Thread.sleep(1000);
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
