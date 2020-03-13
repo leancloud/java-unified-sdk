@@ -30,15 +30,30 @@ public class ConversationSynchronizer {
     }
   }
 
-  public static void mergeConversationFromJsonObject(AVIMConversation conversation, JSONObject jsonObj) {
-    if (null == conversation || null == jsonObj) {
+  public static void mergeConversationFromJsonObject(AVIMConversation conversation, JSONObject postObj, JSONObject allAttrs) {
+    if (null == conversation || (null == postObj && null == allAttrs)) {
       return;
     }
-    // Notice: cannot update deleted attr.
-    for (Map.Entry<String, Object> entry : jsonObj.entrySet()) {
-      String key = entry.getKey();
-      conversation.instanceData.put(key, entry.getValue());
+    if (null == postObj) {
+      // all are deleted attributes.
+      for (Map.Entry<String, Object> entry: allAttrs.entrySet()) {
+        conversation.instanceData.remove(entry.getKey());
+      }
+    } else {
+      for (Map.Entry<String, Object> entry : postObj.entrySet()) {
+        String key = entry.getKey();
+        conversation.instanceData.put(key, entry.getValue());
+      }
+      if (null != allAttrs) {
+        for (Map.Entry<String, Object> entry : allAttrs.entrySet()) {
+          String key = entry.getKey();
+          if (!postObj.containsKey(key)) {
+            conversation.instanceData.remove(key);
+          }
+        }
+      }
     }
+
     conversation.latestConversationFetch = System.currentTimeMillis();
   }
 }

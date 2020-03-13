@@ -877,10 +877,16 @@ public class AVConversationHolder {
     AVIMClient client = AVIMClient.getInstance(session.getSelfPeerId());
     final AVIMConversation conversation = client.getConversation(this.conversationId);
     Messages.JsonObjectMessage attrMsg = convCommand.getAttrModified();
-    if (null != attrMsg && null != attrMsg.getData() && attrMsg.getData().trim().length() > 0) {
-      JSONObject operand = JSON.parseObject(attrMsg.getData());
-      ConversationSynchronizer.mergeConversationFromJsonObject(conversation, operand);
+    Messages.JsonObjectMessage allAttrs = convCommand.getAttr();
+    JSONObject operand = null;
+    JSONObject allAttrObject = null;
+    if (null != allAttrs && !StringUtil.isEmpty(allAttrs.getData())) {
+      allAttrObject = JSON.parseObject(allAttrs.getData());
     }
+    if (null != attrMsg && !StringUtil.isEmpty(attrMsg.getData())) {
+      operand = JSON.parseObject(attrMsg.getData());
+    }
+    ConversationSynchronizer.mergeConversationFromJsonObject(conversation, operand, allAttrObject);
     ConversationSynchronizer.changeUpdatedTime(conversation, convCommand.getUdate());
   }
 
@@ -891,17 +897,23 @@ public class AVConversationHolder {
       final AVIMConversation conversation = parseConversation(client, convCommand);
       final String operator = convCommand.getInitBy();
       // change from attr to attrModified.
-      Messages.JsonObjectMessage attrMsg = convCommand.getAttrModified();
+      Messages.JsonObjectMessage attrModified = convCommand.getAttrModified();
+      Messages.JsonObjectMessage allAttrs = convCommand.getAttr();
       String updatedAt = convCommand.getUdate();
       ConversationSynchronizer.changeUpdatedTime(conversation, updatedAt);
       JSONObject operand = null;
-      if (null == attrMsg || null == attrMsg.getData() || attrMsg.getData().trim().length() < 1) {
+      JSONObject allAttrMap = null;
+      if (null != allAttrs && !StringUtil.isEmpty(allAttrs.getData())) {
+        allAttrMap = JSON.parseObject(allAttrs.getData());
+      }
+      if (null != attrModified && !StringUtil.isEmpty(attrModified.getData())) {
+        operand = JSON.parseObject(attrModified.getData());
+      }
+      if (null == operand && null == allAttrMap) {
         // attached data is empty
         conversation.setMustFetch();
       } else {
-        // diff data is pushed, but deleted attr is ignored.
-        operand = JSON.parseObject(attrMsg.getData());
-        ConversationSynchronizer.mergeConversationFromJsonObject(conversation, operand);
+        ConversationSynchronizer.mergeConversationFromJsonObject(conversation, operand, allAttrMap);
       }
       // Notice: SDK doesn't refresh conversation data automatically.
       handler.processEvent(Conversation.STATUS_ON_INFO_CHANGED, operator, operand, conversation);
