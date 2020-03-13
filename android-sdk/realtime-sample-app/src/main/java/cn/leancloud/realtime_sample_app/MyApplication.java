@@ -96,14 +96,15 @@ public class MyApplication extends Application {
     String channelId = "cn.leancloud.simpleapp";
     PushService.setDefaultChannelId(this, channelId);
 
-    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
-    Notification notification = notificationBuilder.setOngoing(true)
-        .setSmallIcon(R.mipmap.ic_launcher)
-        .setContentTitle("App is running in background")
-        .setPriority(NotificationManager.IMPORTANCE_MIN)
-        .setCategory(Notification.CATEGORY_SERVICE)
-        .build();
-    PushService.setForegroundMode(true, 101, notification);
+//    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
+//    Notification notification = notificationBuilder.setOngoing(true)
+//        .setSmallIcon(R.mipmap.ic_launcher)
+//        .setContentTitle("App is running in background")
+//        .setPriority(NotificationManager.IMPORTANCE_MIN)
+//        .setCategory(Notification.CATEGORY_SERVICE)
+//        .build();
+//    PushService.setForegroundMode(true, 101, notification);
+    PushService.setDefaultPushCallback(this, MainActivity.class);
   }
 
 }
