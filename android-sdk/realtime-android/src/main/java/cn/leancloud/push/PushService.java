@@ -99,7 +99,16 @@ public class PushService extends Service {
     new Thread(new Runnable() {
       @Override
       public void run() {
-        connectionManager.startConnection();
+        connectionManager.startConnection(new AVCallback() {
+          @Override
+          protected void internalDone0(Object o, AVException avException) {
+            if (null != avException) {
+              LOGGER.w("failed to start websocket connection, cause: " + avException.getMessage());
+            } else {
+              LOGGER.d("succeed to start websocket connection.");
+            }
+          }
+        });
       }
     }).start();
 
@@ -110,20 +119,20 @@ public class PushService extends Service {
       public void onMobile(Context context) {
         LOGGER.d("Connection resumed with Mobile...");
         connectionEstablished = true;
-        connectionManager.startConnection();
+        connectionManager.autoConnection();
       }
 
       @Override
       public void onWifi(Context context) {
         LOGGER.d("Connection resumed with Wifi...");
         connectionEstablished = true;
-        connectionManager.startConnection();
+        connectionManager.autoConnection();
       }
 
       public void onOtherConnected(Context context) {
         LOGGER.d("Connectivity resumed with Others");
         connectionEstablished = true;
-        connectionManager.startConnection();
+        connectionManager.autoConnection();
       }
 
       @Override

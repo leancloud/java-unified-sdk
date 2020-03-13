@@ -28,7 +28,7 @@ public class AVLiveQueryTest extends TestCase{
   protected void setUp() throws Exception {
     operationSucceed = false;
     AVConnectionManager manager = AVConnectionManager.getInstance();
-    manager.startConnection();
+    manager.autoConnection();
     Thread.sleep(6000);
   }
 

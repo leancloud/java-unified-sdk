@@ -45,10 +45,16 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private String currentRTMConnectionServer = null;
   private int retryConnectionCount = 0;
 
+  enum ConnectionPolicy {
+    Keep,
+    LetItGone,
+    ForceKeep
+  }
+
   private volatile boolean connectionEstablished = false;
   private volatile boolean connecting = false;
   private volatile AVCallback pendingCallback = null;
-  private volatile boolean sessionCommandFound = false;
+  private volatile ConnectionPolicy connectionPolicy = ConnectionPolicy.Keep;
 
   private Map<String, AVConnectionListener> connectionListeners = new ConcurrentHashMap<>(1);
   private Map<String, AVConnectionListener> defaultConnectionListeners = new HashMap<>(2);
@@ -63,7 +69,11 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private AVConnectionManager(boolean autoConnection) {
     subscribeDefaultConnectionListener(AVPushMessageListener.DEFAULT_ID, AVPushMessageListener.getInstance());
     if (autoConnection) {
-      startConnection();
+      startConnection(new AVCallback() {
+        @Override
+        protected void internalDone0(Object o, AVException avException) {
+        }
+      });
     }
   }
 
@@ -174,12 +184,14 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
   }
 
-  public void startConnection() {
+  public void autoConnection() {
     if (this.connectionEstablished) {
       LOGGER.d("connection is established...");
     } else if (this.connecting) {
       LOGGER.d("on starting connection, ignore.");
       return;
+    } else if (ConnectionPolicy.LetItGone == connectionPolicy) {
+      LOGGER.d("ignore auto establish connection for policy:ConnectionPolicy.LetItGone...");
     } else {
       LOGGER.d("start connection...");
       this.connecting = true;
@@ -277,8 +289,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   public void sendPacket(CommandPacket packet) {
     synchronized (webSocketClientWatcher) {
       if (null != this.webSocketClient) {
-        if (!sessionCommandFound) {
-          sessionCommandFound = SessionControlPacket.SESSION_COMMAND.equals(packet.getCmd());
+        boolean sessionCommandFound = SessionControlPacket.SESSION_COMMAND.equals(packet.getCmd());
+        if (sessionCommandFound) {
+          connectionPolicy = ConnectionPolicy.ForceKeep;
         }
         this.webSocketClient.send(packet);
       } else {
@@ -369,11 +382,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
       if (null != loggedinCommand && loggedinCommand.hasPushDisabled()) {
         boolean pushDisabled = loggedinCommand.getPushDisabled();
         if (pushDisabled) {
-          if (sessionCommandFound) {
-            LOGGER.i("ignore close instruction from server bcz session command found.");
-          } else {
-            LOGGER.i("close connection bcz of instruction from server.");
-            resetConnection();
+          LOGGER.i("received close connection instruction from server.");
+          if (ConnectionPolicy.ForceKeep != connectionPolicy) {
+            connectionPolicy = ConnectionPolicy.LetItGone;
           }
         }
       }

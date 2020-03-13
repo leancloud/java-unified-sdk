@@ -33,7 +33,7 @@ public class AVIMConversationTest extends TestCase {
     AVIMClient.setClientEventHandler(new DummyClientEventHandler());
     AVIMMessageManager.setConversationEventHandler(conversationEventHandler);
     AVConnectionManager manager = AVConnectionManager.getInstance();
-    manager.startConnection();
+    manager.autoConnection();
     try {
       Thread.sleep(1000);
     } catch (Exception ex) {

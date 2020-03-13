@@ -148,9 +148,6 @@ public class AVSession {
   }
 
   void reopen() {
-    if (Status.Closed == currentStatus) {
-      return;
-    }
     String rtmSessionToken = AVSessionCacheHelper.IMSessionTokenCache.getIMSessionToken(getSelfPeerId());
     if (!StringUtil.isEmpty(rtmSessionToken)) {
       openWithSessionToken(rtmSessionToken);

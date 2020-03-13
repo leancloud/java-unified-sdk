@@ -60,7 +60,7 @@ public class InteractiveTest extends TestCase {
   @Override
   protected void setUp() throws Exception {
     AVConnectionManager manager = AVConnectionManager.getInstance();
-    manager.startConnection();
+    manager.autoConnection();
     Thread.sleep(2000);
     firstStage = new CountDownLatch(1);
     secondStage = new CountDownLatch(1);

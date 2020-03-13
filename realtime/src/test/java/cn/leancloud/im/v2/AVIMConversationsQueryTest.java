@@ -26,7 +26,7 @@ public class AVIMConversationsQueryTest extends TestCase {
   protected void setUp() throws Exception {
     this.countDownLatch = new CountDownLatch(1);
     AVConnectionManager manager = AVConnectionManager.getInstance();
-    manager.startConnection();
+    manager.autoConnection();
     Thread.sleep(2000);
     opersationSucceed = false;
     final CountDownLatch latch = new CountDownLatch(1);

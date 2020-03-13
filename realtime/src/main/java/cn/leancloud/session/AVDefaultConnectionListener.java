@@ -325,8 +325,6 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
                     AVIMOperation.CONVERSATION_QUERY, bundle);
           }
         });
-//        InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
-//                AVIMOperation.CONVERSATION_QUERY, bundle);
       } else {
         LOGGER.w("not found requestKey: " + requestKey + ", op=" + op);
       }

@@ -35,7 +35,12 @@ public class AVConnectionManagerExTest extends TestCase {
     new Thread(new Runnable() {
       @Override
       public void run() {
-        manager.startConnection();
+        manager.startConnection(new AVCallback() {
+          @Override
+          protected void internalDone0(Object o, AVException avException) {
+
+          }
+        });
       }
     }).start();
     try {
@@ -63,7 +68,12 @@ public class AVConnectionManagerExTest extends TestCase {
     new Thread(new Runnable() {
       @Override
       public void run() {
-        manager.startConnection();
+        manager.startConnection(new AVCallback() {
+          @Override
+          protected void internalDone0(Object o, AVException avException) {
+
+          }
+        });
       }
     }).start();
     try {
@@ -71,8 +81,18 @@ public class AVConnectionManagerExTest extends TestCase {
     } catch (Exception ex) {
       ex.printStackTrace();
     }
-    manager.startConnection();
-    manager.startConnection();
+    manager.startConnection(new AVCallback() {
+      @Override
+      protected void internalDone0(Object o, AVException avException) {
+
+      }
+    });
+    manager.startConnection(new AVCallback() {
+      @Override
+      protected void internalDone0(Object o, AVException avException) {
+
+      }
+    });
     manager.startConnection(new AVCallback() {
       @Override
       protected void internalDone0(Object o, AVException avException) {
