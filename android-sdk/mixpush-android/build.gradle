@@ -1,11 +1,12 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.huawei.agconnect'
 
 android {
     compileSdkVersion 28
     buildToolsVersion "28.0.3"
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 17
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -55,7 +56,7 @@ android.libraryVariants.all { variant ->
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation project(':huawei-hmsagent')
+//    implementation project(':huawei-hmsagent')
     implementation project(':realtime-android')
     implementation project(':storage-android')
 
@@ -67,6 +68,8 @@ dependencies {
     implementation "org.ligboy.retrofit2:converter-fastjson-android:${rootProject.ext.converterVersion}"
 
     implementation 'com.meizu.flyme.internet:push-internal:3.6.2@aar'
+
+    implementation 'com.huawei.hms:push:4.0.2.300'
 
     implementation 'androidx.appcompat:appcompat:1.0.0'
     testImplementation 'junit:junit:4.12'

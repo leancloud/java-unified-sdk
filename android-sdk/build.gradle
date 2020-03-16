@@ -5,18 +5,12 @@ buildscript {
     repositories {
         google()
         jcenter()
-        def home = System.getenv("HOME")
-        maven {
-            url "$home/.m2/repository/"
-        }
-        def androidHome = System.getenv("ANDROID_HOME")
-        maven {
-            url "$androidHome/extras/android/m2repository/"
-        }
+        maven {url 'http://developer.huawei.com/repo/'}
+        mavenLocal()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.0'
-        
+        classpath 'com.huawei.agconnect:agcp:1.2.1.301'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -30,14 +24,8 @@ allprojects {
     repositories {
         google()
         jcenter()
-        def home = System.getenv("HOME")
-        maven {
-            url "$home/.m2/repository/"
-        }
-        def androidHome = System.getenv("ANDROID_HOME")
-        maven {
-            url "$androidHome/extras/android/m2repository/"
-        }
+        maven {url 'http://developer.huawei.com/repo/'}
+        mavenLocal()
     }
 }
 

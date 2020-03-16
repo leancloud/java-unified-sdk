@@ -6,6 +6,8 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 
+import com.huawei.hms.aaid.HmsInstanceId;
+
 import java.util.List;
 
 import cn.leancloud.callback.AVCallback;
@@ -239,6 +241,7 @@ public class AVMixPushManager {
           @Override
           public void onConnect(int rst) {
             LOGGER.d("[HMS] connect end:" + rst);
+            HmsInstanceId.getInstance(null).getToken("", "");
             com.huawei.android.hms.agent.HMSAgent.Push.getToken(
                 new com.huawei.android.hms.agent.push.handler.GetTokenHandler() {
                   @Override
