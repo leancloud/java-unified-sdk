@@ -30,6 +30,7 @@ public class AVSession {
   static final int OPERATION_UNKNOW = -1;
 
   private static final String ERROR_INVALID_SESSION_ID = "Null id in session id list.";
+  private static final String CREATE_CONV = "creat";
 
   /**
    * 用于 read 的多端同步
@@ -390,7 +391,7 @@ public class AVSession {
       public Signature computeSignature() throws SignatureFactory.SignatureException {
         SignatureFactory signatureFactory = AVIMOptions.getGlobalOptions().getSignatureFactory();
         if (signatureFactory != null) {
-          return signatureFactory.createSignature(selfId, members);
+          return signatureFactory.createConversationSignature(null, AVSession.this.selfId, members, CREATE_CONV);
         }
         return null;
       }
