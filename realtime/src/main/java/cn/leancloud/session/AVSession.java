@@ -30,7 +30,7 @@ public class AVSession {
   static final int OPERATION_UNKNOW = -1;
 
   private static final String ERROR_INVALID_SESSION_ID = "Null id in session id list.";
-  private static final String CREATE_CONV = "creat";
+  private static final String CREATE_CONV = "create";
 
   /**
    * 用于 read 的多端同步
