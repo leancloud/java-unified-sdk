@@ -6,7 +6,11 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 
+import com.huawei.agconnect.config.AGConnectServicesConfig;
+import com.huawei.hmf.tasks.OnCompleteListener;
+import com.huawei.hmf.tasks.Task;
 import com.huawei.hms.aaid.HmsInstanceId;
+import com.huawei.hms.push.HmsMessaging;
 
 import java.util.List;
 
@@ -34,7 +38,6 @@ public class AVMixPushManager {
    * 华为推送的 deviceProfile
    */
   static String hwDeviceProfile = "";
-  static Class hwPushReceiverClazz = AVHMSPushMessageReceiver.class;
 
   /**
    * 魅族推送的 deviceProfile
@@ -167,16 +170,7 @@ public class AVMixPushManager {
    * @param application 应用实例
    */
   public static void registerHMSPush(Application application) {
-    registerHMSPush(application, "", null);
-  }
-
-  /**
-   * 初始化方法，建议在 Application onCreate 里面调用
-   * @param application 应用实例
-   * @param customizedReceiver 自定义 receiver
-   */
-  public static void registerHMSPush(Application application, Class customizedReceiver) {
-    registerHMSPush(application, "", customizedReceiver);
+    registerHMSPush(application, "");
   }
 
   /**
@@ -185,22 +179,8 @@ public class AVMixPushManager {
    * @param profile 华为推送配置
    */
   public static void registerHMSPush(Application application, String profile) {
-    registerHMSPush(application, profile, null);
-  }
-
-  /**
-   * 初始化方法，建议在 Application onCreate 里面调用
-   * @param application 应用实例
-   * @param profile 华为推送配置
-   * @param customizedReceiver 自定义 receiver
-   */
-  public static void registerHMSPush(Application application, String profile, Class customizedReceiver) {
     if (null == application) {
       throw new IllegalArgumentException("[HMS] context cannot be null.");
-    }
-
-    if (null != customizedReceiver) {
-      hwPushReceiverClazz = customizedReceiver;
     }
 
     if (!isHuaweiPhone()) {
@@ -214,10 +194,6 @@ public class AVMixPushManager {
     }
 
     hwDeviceProfile = profile;
-    boolean hmsInitResult = com.huawei.android.hms.agent.HMSAgent.init(application);
-    if (!hmsInitResult) {
-      LOGGER.e("failed to init HMSAgent.");
-    }
 
     LOGGER.d("[HMS] start register HMS push");
   }
@@ -236,66 +212,37 @@ public class AVMixPushManager {
     if (null == activity) {
       throw new IllegalArgumentException("[HMS] activity cannot be null.");
     }
-    com.huawei.android.hms.agent.HMSAgent.connect(activity,
-        new com.huawei.android.hms.agent.common.handler.ConnectHandler() {
-          @Override
-          public void onConnect(int rst) {
-            LOGGER.d("[HMS] connect end:" + rst);
-            HmsInstanceId.getInstance(null).getToken("", "");
-            com.huawei.android.hms.agent.HMSAgent.Push.getToken(
-                new com.huawei.android.hms.agent.push.handler.GetTokenHandler() {
-                  @Override
-                  public void onResult(int rst) {
-                    LOGGER.d("[HMS] get token: end. returnCode=" + rst);
-                  }
-                }
-            );
-          }
-        });
+    try {
+      String appId = AGConnectServicesConfig.fromContext(activity).getString("client/app_id");
+      String token = HmsInstanceId.getInstance(activity).getToken(appId, HmsMessaging.DEFAULT_TOKEN_SCOPE);
+      AVHMSMessageService.updateAVInstallation(token);
+    } catch (Exception ex) {
+      LOGGER.w("failed to get hms token. cause: " + ex.getMessage());
+    }
   }
 
-  /**
-   * 打开/关闭透传消息
-   *  Turn on/off notification bar messages
-   * @param enable 打开/关闭（默认为打开）
-   *                Turn ON/off
-   */
-  public static void setHMSReceiveNormalMsg(final boolean enable) {
-    com.huawei.android.hms.agent.HMSAgent.Push.enableReceiveNormalMsg(enable,
-        new com.huawei.android.hms.agent.push.handler.EnableReceiveNormalMsgHandler() {
-          @Override
-          public void onResult(int rst) {
-            LOGGER.d("[HMS] enableReceiveNormalMsg(flag=" + enable + ") returnCode=" + rst);
-          }
-        });
-  }
-
-  /**
-   * 打开/关闭通知栏消息
-   *  Turn on/off notification bar messages
-   * @param enable 打开/关闭（默认为打开）
-   *                Turn ON/off
-   */
-  public static void setHMSReceiveNotifyMsg(final boolean enable) {
-    com.huawei.android.hms.agent.HMSAgent.Push.enableReceiveNotifyMsg(enable,
-        new com.huawei.android.hms.agent.push.handler.EnableReceiveNotifyMsgHandler() {
-          @Override
-          public void onResult(int rst) {
-            LOGGER.d("[HMS] enableReceiveNotifyMsg(flag=" + enable + ") returnCode=" + rst);
-          }
-        });
-  }
-
-  /**
-   * 请求push协议展示
-   *  Request Push Protocol Display
-   */
-  public static void showHMSAgreement() {
-    com.huawei.android.hms.agent.HMSAgent.Push.queryAgreement(
-        new com.huawei.android.hms.agent.push.handler.QueryAgreementHandler() {
+  public static void turnOnHMSPush(Context context, AVCallback<Void> callback) {
+    HmsMessaging.getInstance(context).turnOnPush().addOnCompleteListener(new OnCompleteListener<Void>() {
       @Override
-      public void onResult(int rst) {
-        LOGGER.d("[HMS] query agreement result: " + rst);
+      public void onComplete(Task<Void> task) {
+        if (task.isSuccessful()) {
+          callback.internalDone(null);
+        } else {
+          callback.internalDone(new AVException(task.getException()));
+        }
+      }
+    });
+  }
+
+  public static void turnOffHMSPush(Context context, AVCallback<Void> callback) {
+    HmsMessaging.getInstance(context).turnOffPush().addOnCompleteListener(new OnCompleteListener<Void>() {
+      @Override
+      public void onComplete(Task<Void> task) {
+        if (task.isSuccessful()) {
+          callback.internalDone(null);
+        } else {
+          callback.internalDone(new AVException(task.getException()));
+        }
       }
     });
   }
@@ -794,8 +741,7 @@ public class AVMixPushManager {
       result = AVManifestUtils.checkPermission(context, android.Manifest.permission.INTERNET)
           && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE)
           && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)
-          && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE)
-          && AVManifestUtils.checkReceiver(context, hwPushReceiverClazz);
+          && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE);
     } catch (Exception e) {
     }
     return result;
