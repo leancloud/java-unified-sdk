@@ -117,12 +117,12 @@ public class AVMixPushManager {
     }
 
     if (!isXiaomiPhone()) {
-      printErrorLog("register error, is not xiaomi phone!");
-      return;
+      printErrorLog("register error, current device is not a xiaomi phone!");
     }
 
     if (!checkXiaomiManifest(context)) {
-      printErrorLog("register error, mainifest is incomplete!");
+      printErrorLog("register error, mainifest is incomplete(receiver not found: "
+          + miPushReceiverClazz.getSimpleName() + ")!");
       return;
     }
 
@@ -130,7 +130,7 @@ public class AVMixPushManager {
 
     com.xiaomi.mipush.sdk.MiPushClient.registerPush(context, miAppId, miAppKey);
 
-    LOGGER.d("start register mi push");
+    LOGGER.d("finished to register mi push");
   }
 
   /**
@@ -215,6 +215,7 @@ public class AVMixPushManager {
     try {
       String appId = AGConnectServicesConfig.fromContext(activity).getString("client/app_id");
       String token = HmsInstanceId.getInstance(activity).getToken(appId, HmsMessaging.DEFAULT_TOKEN_SCOPE);
+      LOGGER.d("found HMS appId: " + appId + ", token: " + token);
       AVHMSMessageService.updateAVInstallation(token);
     } catch (Exception ex) {
       LOGGER.w("failed to get hms token. cause: " + ex.getMessage());
@@ -557,7 +558,7 @@ public class AVMixPushManager {
     if (!isSupportOppoPush(context)) {
       return false;
     }
-    com.coloros.mcssdk.PushManager.getInstance().register(context, appKey, appSecret, callback);
+    com.heytap.mcssdk.PushManager.getInstance().register(context, appKey, appSecret, callback);
     return true;
   }
 
@@ -568,21 +569,21 @@ public class AVMixPushManager {
    * @return
    */
   public static boolean isSupportOppoPush(Context context) {
-    return com.coloros.mcssdk.PushManager.isSupportPush(context);
+    return com.heytap.mcssdk.PushManager.isSupportPush(context);
   }
 
   /**
    * pause oppo push
    */
   public static void pauseOppoPush() {
-    com.coloros.mcssdk.PushManager.getInstance().pausePush();
+    com.heytap.mcssdk.PushManager.getInstance().pausePush();
   }
 
   /**
    * resume oppo push
    */
   public static void resumeOppoPush() {
-    com.coloros.mcssdk.PushManager.getInstance().resumePush();
+    com.heytap.mcssdk.PushManager.getInstance().resumePush();
   }
 
   /**
@@ -595,15 +596,8 @@ public class AVMixPushManager {
    */
   public static void setOppoPushTime(List<Integer> weekDays, int startHour, int startMinute,
                                      int endHour, int endMinute) {
-    com.coloros.mcssdk.PushManager.getInstance().setPushTime(weekDays, startHour, startMinute,
+    com.heytap.mcssdk.PushManager.getInstance().setPushTime(weekDays, startHour, startMinute,
         endHour, endMinute);
-  }
-
-  /**
-   * retrieve oppo push time.
-   */
-  public static void getOppoPushTime() {
-    com.coloros.mcssdk.PushManager.getInstance().getPushTime();
   }
 
   /**
@@ -611,7 +605,7 @@ public class AVMixPushManager {
    * @param aliases
    */
   public static void setOppoAliases(List<String> aliases) {
-    com.coloros.mcssdk.PushManager.getInstance().setAliases(aliases);
+    com.heytap.mcssdk.PushManager.getInstance().setAliases(aliases);
   }
 
   /**
@@ -619,14 +613,14 @@ public class AVMixPushManager {
    * @param alias
    */
   public static void unsetOppoAlias(String alias) {
-    com.coloros.mcssdk.PushManager.getInstance().unsetAlias(alias);
+    com.heytap.mcssdk.PushManager.getInstance().unsetAlias(alias);
   }
 
   /**
    * get oppo aliases.
    */
   public static void getOppoAliases() {
-    com.coloros.mcssdk.PushManager.getInstance().getAliases();
+    com.heytap.mcssdk.PushManager.getInstance().getAliases();
   }
 
   /**
@@ -634,7 +628,7 @@ public class AVMixPushManager {
    * @param account
    */
   public static void setOppoUserAccount(String account) {
-    com.coloros.mcssdk.PushManager.getInstance().setUserAccount(account);
+    com.heytap.mcssdk.PushManager.getInstance().setUserAccount(account);
   }
 
   /**
@@ -642,14 +636,14 @@ public class AVMixPushManager {
    * @param accounts
    */
   public static void unsetOppoUserAccouts(List<String> accounts) {
-    com.coloros.mcssdk.PushManager.getInstance().unsetUserAccounts(accounts);
+    com.heytap.mcssdk.PushManager.getInstance().unsetUserAccounts(accounts);
   }
 
   /**
    * get oppo push accounts.
    */
   public static void getOppoUserAccounts() {
-    com.coloros.mcssdk.PushManager.getInstance().getUserAccounts();
+    com.heytap.mcssdk.PushManager.getInstance().getUserAccounts();
   }
 
   /**
@@ -657,7 +651,7 @@ public class AVMixPushManager {
    * @param tags
    */
   public static void setOppoTags(List<String> tags) {
-    com.coloros.mcssdk.PushManager.getInstance().setTags(tags);
+    com.heytap.mcssdk.PushManager.getInstance().setTags(tags);
   }
 
   /**
@@ -665,28 +659,28 @@ public class AVMixPushManager {
    * @param tags
    */
   public static void unsetOppoTags(List<String> tags) {
-    com.coloros.mcssdk.PushManager.getInstance().unsetTags(tags);
+    com.heytap.mcssdk.PushManager.getInstance().unsetTags(tags);
   }
 
   /**
    * retrieve oppo push tags.
    */
   public static void getOppoTags() {
-    com.coloros.mcssdk.PushManager.getInstance().getTags();
+    com.heytap.mcssdk.PushManager.getInstance().getTags();
   }
 
   /**
    * get oppo push status
    */
   public static void getOppoPushStatus() {
-    com.coloros.mcssdk.PushManager.getInstance().getPushStatus();
+    com.heytap.mcssdk.PushManager.getInstance().getPushStatus();
   }
 
   /**
    * get oppo notification status.
    */
   public static void getOppoNotificationStatus() {
-    com.coloros.mcssdk.PushManager.getInstance().getNotificationStatus();
+    com.heytap.mcssdk.PushManager.getInstance().getNotificationStatus();
   }
 
   /**

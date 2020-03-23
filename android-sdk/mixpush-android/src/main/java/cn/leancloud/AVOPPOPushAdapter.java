@@ -9,7 +9,7 @@ import cn.leancloud.callback.SaveCallback;
  * OPPO推送暂时只支持通知栏消息的推送。消息下发到OS系统模块并由系统通知模块展示，在用户点击通知前，不启动应用。
  * 参考：https://open.oppomobile.com/wiki/doc#id=10196
  */
-public class AVOPPOPushAdapter extends com.coloros.mcssdk.callback.PushAdapter {
+public class AVOPPOPushAdapter extends com.heytap.mcssdk.callback.PushAdapter {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVOPPOPushAdapter.class);
   private static final String VENDOR_OPPO = "oppo";
 
@@ -43,7 +43,7 @@ public class AVOPPOPushAdapter extends com.coloros.mcssdk.callback.PushAdapter {
 
   @Override
   public void onRegister(int responseCode, String registerID) {
-    if (responseCode != com.coloros.mcssdk.mode.ErrorCode.SUCCESS) {
+    if (responseCode != com.heytap.mcssdk.mode.ErrorCode.SUCCESS) {
       LOGGER.e("failed to register device. errorCode: " + responseCode);
       return;
     }
