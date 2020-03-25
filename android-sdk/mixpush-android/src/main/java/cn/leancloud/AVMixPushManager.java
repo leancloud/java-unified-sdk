@@ -385,14 +385,15 @@ public class AVMixPushManager {
 
   /**
    * 初始化方法，建议在 Application onCreate 里面调用
-   * @param application
+   * @param application application
    */
   public static boolean registerVIVOPush(Application application) {
     return AVMixPushManager.registerVIVOPush(application, "");
   }
+
   /**
    * 初始化方法，建议在 Application onCreate 里面调用
-   * @param application
+   * @param application application
    */
   public static boolean registerVIVOPush(Application application, String profile) {
     vivoDeviceProfile = profile;
@@ -594,10 +595,10 @@ public class AVMixPushManager {
   /**
    * register Oppo Push.
    *
-   * @param context
-   * @param appKey
-   * @param appSecret
-   * @param callback
+   * @param context context
+   * @param appKey oppo application key
+   * @param appSecret oppo application secret
+   * @param callback callback
    * @return
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
@@ -608,6 +609,23 @@ public class AVMixPushManager {
     com.heytap.mcssdk.PushManager.getInstance().register(context, appKey, appSecret, callback);
     return true;
   }
+
+  /**
+   * register oppo push
+   * @param context context
+   * @param appKey oppo application key
+   * @param appSecret oppo application secret
+   * @param profile profile string.
+   * @param callback callback.
+   * @return
+   */
+  public static boolean registerOppoPush(Context context, String appKey, String appSecret,
+                                         String profile,
+                                         AVOPPOPushAdapter callback) {
+    oppoDeviceProfile = profile;
+    return registerOppoPush(context, appKey, appSecret, callback);
+  }
+
 
   /**
    * judgement if support oppo push or not.
