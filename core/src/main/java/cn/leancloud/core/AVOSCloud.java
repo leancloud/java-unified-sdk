@@ -29,6 +29,15 @@ public class AVOSCloud {
     return defaultRegion;
   }
 
+  public static void enablePrintAllHeaders4Debug(boolean flag) {
+    printAllHeaders = flag;
+    if (flag) {
+      System.out.println("======= WARNING: you are going to dump all details for a REST request," +
+              " it is very risky for security!!!" +
+              " please ONLY USE IN absolutely trusted environment!!!");
+      System.out.println("( •̀ᴗ•́ )و( •̀ᴗ•́ )و( •̀ᴗ•́ )و( •̀ᴗ•́ )و( •̀ᴗ•́ )و( •̀ᴗ•́ )و( •̀ᴗ•́ )و( •̀ᴗ•́ )و( •̀ᴗ•́ )و( •̀ᴗ•́ )و");
+    }
+  }
   public static void setLogLevel(AVLogger.Level level) {
     logLevel = level;
   }
@@ -38,6 +47,8 @@ public class AVOSCloud {
   public static boolean isDebugEnable() {
     return logLevel.intLevel() >= AVLogger.Level.DEBUG.intLevel();
   }
+
+
 
   public static void initialize(String appId, String appKey) {
     ObjectTypeAdapter adapter = new ObjectTypeAdapter();
@@ -170,4 +181,5 @@ public class AVOSCloud {
   private static String applicationId = "";
   private static String applicationKey = "";
   private static volatile AVLogger.Level logLevel = AVLogger.Level.INFO;
+  static boolean printAllHeaders = false;
 }
