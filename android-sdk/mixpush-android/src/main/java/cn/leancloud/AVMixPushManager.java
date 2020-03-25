@@ -167,6 +167,7 @@ public class AVMixPushManager {
 
   /**
    * 初始化方法，建议在 Application onCreate 里面调用
+   *
    * @param application 应用实例
    */
   public static void registerHMSPush(Application application) {
@@ -175,6 +176,7 @@ public class AVMixPushManager {
 
   /**
    * 初始化方法，建议在 Application onCreate 里面调用
+   *
    * @param application 应用实例
    * @param profile 华为推送配置
    */
@@ -207,6 +209,8 @@ public class AVMixPushManager {
    *  This method can be called repeatedly, and there is no need to do complex processing
    *  for only one call at a time
    *  Method is called asynchronously, and the result is invoked in the main thread callback
+   *
+   * @param activity activity
    */
   public static void connectHMS(Activity activity) {
     if (null == activity) {
@@ -222,6 +226,32 @@ public class AVMixPushManager {
     }
   }
 
+  /**
+   * 连接HMS SDK， 可能拉起界面(包括升级引导等)，建议在第一个界面进行连接。
+   * 此方法可以重复调用，没必要为了只调用一次做复杂处理
+   * 方法为异步调用，调用结果在主线程回调
+   * @param activity activity
+   * @param huaweiAppId huawei app id
+   */
+  public static void connectHMS(Activity activity, String huaweiAppId) {
+    if (null == activity) {
+      throw new IllegalArgumentException("[HMS] activity cannot be null.");
+    }
+    try {
+      String token = HmsInstanceId.getInstance(activity).getToken(huaweiAppId, HmsMessaging.DEFAULT_TOKEN_SCOPE);
+      LOGGER.d("found HMS appId: " + huaweiAppId + ", token: " + token);
+      AVHMSMessageService.updateAVInstallation(token);
+    } catch (Exception ex) {
+      LOGGER.w("failed to get hms token. cause: " + ex.getMessage());
+    }
+  }
+
+  /**
+   * 开启华为 HMS 推送
+   *
+   * @param context context
+   * @param callback callback function
+   */
   public static void turnOnHMSPush(Context context, AVCallback<Void> callback) {
     HmsMessaging.getInstance(context).turnOnPush().addOnCompleteListener(new OnCompleteListener<Void>() {
       @Override
@@ -235,6 +265,12 @@ public class AVMixPushManager {
     });
   }
 
+  /**
+   * 关闭华为 HMS 推送
+   *
+   * @param context context
+   * @param callback callback function
+   */
   public static void turnOffHMSPush(Context context, AVCallback<Void> callback) {
     HmsMessaging.getInstance(context).turnOffPush().addOnCompleteListener(new OnCompleteListener<Void>() {
       @Override
