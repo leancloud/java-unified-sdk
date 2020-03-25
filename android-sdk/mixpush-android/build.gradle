@@ -56,7 +56,6 @@ android.libraryVariants.all { variant ->
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-//    implementation project(':huawei-hmsagent')
     implementation project(':realtime-android')
     implementation project(':storage-android')
 
