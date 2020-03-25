@@ -31,7 +31,7 @@ public class AddRelationOperation extends BaseOperation {
         ((Collection)obj).add(this.value);
       }
     } else {
-      LOGGER.w("cannot apply AddOperation on non list attribute. targetValueType=" + obj.getClass().getSimpleName());
+      LOGGER.w("cannot apply AddRelationOperation on non list attribute. targetValueType=" + obj.getClass().getSimpleName());
     }
     return obj;
   }

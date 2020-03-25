@@ -2,6 +2,22 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.4.4 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- upgrade mixpush
+  - xiaomi: 3.6.9 -> 3.7.5
+  - huawei(HMS): 2.6.3.306 -> 4.0.2.300
+  - oppo: 1.0.1 -> 2.0.2
+  - vivo: 2.3.4 -> 2.9.0.0
+
+
 ## 6.4.3 release
 
 #### Break changes
@@ -12,7 +28,6 @@ Following is change logs for recently release versions, you can refer to [releas
 
 #### Optimization and fixed bugs
 - fixed: can't create conversation with signature.
-
 
 ## 6.4.2 release
 

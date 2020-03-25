@@ -6,6 +6,12 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 
+import com.huawei.agconnect.config.AGConnectServicesConfig;
+import com.huawei.hmf.tasks.OnCompleteListener;
+import com.huawei.hmf.tasks.Task;
+import com.huawei.hms.aaid.HmsInstanceId;
+import com.huawei.hms.push.HmsMessaging;
+
 import java.util.List;
 
 import cn.leancloud.callback.AVCallback;
@@ -32,7 +38,6 @@ public class AVMixPushManager {
    * 华为推送的 deviceProfile
    */
   static String hwDeviceProfile = "";
-  static Class hwPushReceiverClazz = AVHMSPushMessageReceiver.class;
 
   /**
    * 魅族推送的 deviceProfile
@@ -112,12 +117,12 @@ public class AVMixPushManager {
     }
 
     if (!isXiaomiPhone()) {
-      printErrorLog("register error, is not xiaomi phone!");
-      return;
+      printErrorLog("register error, current device is not a xiaomi phone!");
     }
 
     if (!checkXiaomiManifest(context)) {
-      printErrorLog("register error, mainifest is incomplete!");
+      printErrorLog("register error, mainifest is incomplete(receiver not found: "
+          + miPushReceiverClazz.getSimpleName() + ")!");
       return;
     }
 
@@ -125,7 +130,7 @@ public class AVMixPushManager {
 
     com.xiaomi.mipush.sdk.MiPushClient.registerPush(context, miAppId, miAppKey);
 
-    LOGGER.d("start register mi push");
+    LOGGER.d("finished to register mi push");
   }
 
   /**
@@ -165,16 +170,7 @@ public class AVMixPushManager {
    * @param application 应用实例
    */
   public static void registerHMSPush(Application application) {
-    registerHMSPush(application, "", null);
-  }
-
-  /**
-   * 初始化方法，建议在 Application onCreate 里面调用
-   * @param application 应用实例
-   * @param customizedReceiver 自定义 receiver
-   */
-  public static void registerHMSPush(Application application, Class customizedReceiver) {
-    registerHMSPush(application, "", customizedReceiver);
+    registerHMSPush(application, "");
   }
 
   /**
@@ -183,22 +179,8 @@ public class AVMixPushManager {
    * @param profile 华为推送配置
    */
   public static void registerHMSPush(Application application, String profile) {
-    registerHMSPush(application, profile, null);
-  }
-
-  /**
-   * 初始化方法，建议在 Application onCreate 里面调用
-   * @param application 应用实例
-   * @param profile 华为推送配置
-   * @param customizedReceiver 自定义 receiver
-   */
-  public static void registerHMSPush(Application application, String profile, Class customizedReceiver) {
     if (null == application) {
       throw new IllegalArgumentException("[HMS] context cannot be null.");
-    }
-
-    if (null != customizedReceiver) {
-      hwPushReceiverClazz = customizedReceiver;
     }
 
     if (!isHuaweiPhone()) {
@@ -212,10 +194,6 @@ public class AVMixPushManager {
     }
 
     hwDeviceProfile = profile;
-    boolean hmsInitResult = com.huawei.android.hms.agent.HMSAgent.init(application);
-    if (!hmsInitResult) {
-      LOGGER.e("failed to init HMSAgent.");
-    }
 
     LOGGER.d("[HMS] start register HMS push");
   }
@@ -234,65 +212,38 @@ public class AVMixPushManager {
     if (null == activity) {
       throw new IllegalArgumentException("[HMS] activity cannot be null.");
     }
-    com.huawei.android.hms.agent.HMSAgent.connect(activity,
-        new com.huawei.android.hms.agent.common.handler.ConnectHandler() {
-          @Override
-          public void onConnect(int rst) {
-            LOGGER.d("[HMS] connect end:" + rst);
-            com.huawei.android.hms.agent.HMSAgent.Push.getToken(
-                new com.huawei.android.hms.agent.push.handler.GetTokenHandler() {
-                  @Override
-                  public void onResult(int rst) {
-                    LOGGER.d("[HMS] get token: end. returnCode=" + rst);
-                  }
-                }
-            );
-          }
-        });
+    try {
+      String appId = AGConnectServicesConfig.fromContext(activity).getString("client/app_id");
+      String token = HmsInstanceId.getInstance(activity).getToken(appId, HmsMessaging.DEFAULT_TOKEN_SCOPE);
+      LOGGER.d("found HMS appId: " + appId + ", token: " + token);
+      AVHMSMessageService.updateAVInstallation(token);
+    } catch (Exception ex) {
+      LOGGER.w("failed to get hms token. cause: " + ex.getMessage());
+    }
   }
 
-  /**
-   * 打开/关闭透传消息
-   *  Turn on/off notification bar messages
-   * @param enable 打开/关闭（默认为打开）
-   *                Turn ON/off
-   */
-  public static void setHMSReceiveNormalMsg(final boolean enable) {
-    com.huawei.android.hms.agent.HMSAgent.Push.enableReceiveNormalMsg(enable,
-        new com.huawei.android.hms.agent.push.handler.EnableReceiveNormalMsgHandler() {
-          @Override
-          public void onResult(int rst) {
-            LOGGER.d("[HMS] enableReceiveNormalMsg(flag=" + enable + ") returnCode=" + rst);
-          }
-        });
-  }
-
-  /**
-   * 打开/关闭通知栏消息
-   *  Turn on/off notification bar messages
-   * @param enable 打开/关闭（默认为打开）
-   *                Turn ON/off
-   */
-  public static void setHMSReceiveNotifyMsg(final boolean enable) {
-    com.huawei.android.hms.agent.HMSAgent.Push.enableReceiveNotifyMsg(enable,
-        new com.huawei.android.hms.agent.push.handler.EnableReceiveNotifyMsgHandler() {
-          @Override
-          public void onResult(int rst) {
-            LOGGER.d("[HMS] enableReceiveNotifyMsg(flag=" + enable + ") returnCode=" + rst);
-          }
-        });
-  }
-
-  /**
-   * 请求push协议展示
-   *  Request Push Protocol Display
-   */
-  public static void showHMSAgreement() {
-    com.huawei.android.hms.agent.HMSAgent.Push.queryAgreement(
-        new com.huawei.android.hms.agent.push.handler.QueryAgreementHandler() {
+  public static void turnOnHMSPush(Context context, AVCallback<Void> callback) {
+    HmsMessaging.getInstance(context).turnOnPush().addOnCompleteListener(new OnCompleteListener<Void>() {
       @Override
-      public void onResult(int rst) {
-        LOGGER.d("[HMS] query agreement result: " + rst);
+      public void onComplete(Task<Void> task) {
+        if (task.isSuccessful()) {
+          callback.internalDone(null);
+        } else {
+          callback.internalDone(new AVException(task.getException()));
+        }
+      }
+    });
+  }
+
+  public static void turnOffHMSPush(Context context, AVCallback<Void> callback) {
+    HmsMessaging.getInstance(context).turnOffPush().addOnCompleteListener(new OnCompleteListener<Void>() {
+      @Override
+      public void onComplete(Task<Void> task) {
+        if (task.isSuccessful()) {
+          callback.internalDone(null);
+        } else {
+          callback.internalDone(new AVException(task.getException()));
+        }
       }
     });
   }
@@ -607,7 +558,7 @@ public class AVMixPushManager {
     if (!isSupportOppoPush(context)) {
       return false;
     }
-    com.coloros.mcssdk.PushManager.getInstance().register(context, appKey, appSecret, callback);
+    com.heytap.mcssdk.PushManager.getInstance().register(context, appKey, appSecret, callback);
     return true;
   }
 
@@ -618,21 +569,21 @@ public class AVMixPushManager {
    * @return
    */
   public static boolean isSupportOppoPush(Context context) {
-    return com.coloros.mcssdk.PushManager.isSupportPush(context);
+    return com.heytap.mcssdk.PushManager.isSupportPush(context);
   }
 
   /**
    * pause oppo push
    */
   public static void pauseOppoPush() {
-    com.coloros.mcssdk.PushManager.getInstance().pausePush();
+    com.heytap.mcssdk.PushManager.getInstance().pausePush();
   }
 
   /**
    * resume oppo push
    */
   public static void resumeOppoPush() {
-    com.coloros.mcssdk.PushManager.getInstance().resumePush();
+    com.heytap.mcssdk.PushManager.getInstance().resumePush();
   }
 
   /**
@@ -645,15 +596,8 @@ public class AVMixPushManager {
    */
   public static void setOppoPushTime(List<Integer> weekDays, int startHour, int startMinute,
                                      int endHour, int endMinute) {
-    com.coloros.mcssdk.PushManager.getInstance().setPushTime(weekDays, startHour, startMinute,
+    com.heytap.mcssdk.PushManager.getInstance().setPushTime(weekDays, startHour, startMinute,
         endHour, endMinute);
-  }
-
-  /**
-   * retrieve oppo push time.
-   */
-  public static void getOppoPushTime() {
-    com.coloros.mcssdk.PushManager.getInstance().getPushTime();
   }
 
   /**
@@ -661,7 +605,7 @@ public class AVMixPushManager {
    * @param aliases
    */
   public static void setOppoAliases(List<String> aliases) {
-    com.coloros.mcssdk.PushManager.getInstance().setAliases(aliases);
+    com.heytap.mcssdk.PushManager.getInstance().setAliases(aliases);
   }
 
   /**
@@ -669,14 +613,14 @@ public class AVMixPushManager {
    * @param alias
    */
   public static void unsetOppoAlias(String alias) {
-    com.coloros.mcssdk.PushManager.getInstance().unsetAlias(alias);
+    com.heytap.mcssdk.PushManager.getInstance().unsetAlias(alias);
   }
 
   /**
    * get oppo aliases.
    */
   public static void getOppoAliases() {
-    com.coloros.mcssdk.PushManager.getInstance().getAliases();
+    com.heytap.mcssdk.PushManager.getInstance().getAliases();
   }
 
   /**
@@ -684,7 +628,7 @@ public class AVMixPushManager {
    * @param account
    */
   public static void setOppoUserAccount(String account) {
-    com.coloros.mcssdk.PushManager.getInstance().setUserAccount(account);
+    com.heytap.mcssdk.PushManager.getInstance().setUserAccount(account);
   }
 
   /**
@@ -692,14 +636,14 @@ public class AVMixPushManager {
    * @param accounts
    */
   public static void unsetOppoUserAccouts(List<String> accounts) {
-    com.coloros.mcssdk.PushManager.getInstance().unsetUserAccounts(accounts);
+    com.heytap.mcssdk.PushManager.getInstance().unsetUserAccounts(accounts);
   }
 
   /**
    * get oppo push accounts.
    */
   public static void getOppoUserAccounts() {
-    com.coloros.mcssdk.PushManager.getInstance().getUserAccounts();
+    com.heytap.mcssdk.PushManager.getInstance().getUserAccounts();
   }
 
   /**
@@ -707,7 +651,7 @@ public class AVMixPushManager {
    * @param tags
    */
   public static void setOppoTags(List<String> tags) {
-    com.coloros.mcssdk.PushManager.getInstance().setTags(tags);
+    com.heytap.mcssdk.PushManager.getInstance().setTags(tags);
   }
 
   /**
@@ -715,28 +659,28 @@ public class AVMixPushManager {
    * @param tags
    */
   public static void unsetOppoTags(List<String> tags) {
-    com.coloros.mcssdk.PushManager.getInstance().unsetTags(tags);
+    com.heytap.mcssdk.PushManager.getInstance().unsetTags(tags);
   }
 
   /**
    * retrieve oppo push tags.
    */
   public static void getOppoTags() {
-    com.coloros.mcssdk.PushManager.getInstance().getTags();
+    com.heytap.mcssdk.PushManager.getInstance().getTags();
   }
 
   /**
    * get oppo push status
    */
   public static void getOppoPushStatus() {
-    com.coloros.mcssdk.PushManager.getInstance().getPushStatus();
+    com.heytap.mcssdk.PushManager.getInstance().getPushStatus();
   }
 
   /**
    * get oppo notification status.
    */
   public static void getOppoNotificationStatus() {
-    com.coloros.mcssdk.PushManager.getInstance().getNotificationStatus();
+    com.heytap.mcssdk.PushManager.getInstance().getNotificationStatus();
   }
 
   /**
@@ -791,8 +735,7 @@ public class AVMixPushManager {
       result = AVManifestUtils.checkPermission(context, android.Manifest.permission.INTERNET)
           && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE)
           && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)
-          && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE)
-          && AVManifestUtils.checkReceiver(context, hwPushReceiverClazz);
+          && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE);
     } catch (Exception e) {
     }
     return result;

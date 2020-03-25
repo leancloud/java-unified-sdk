@@ -36,6 +36,39 @@ public class AVInstallationTest extends TestCase {
     assertTrue(install.getInstallationId().equals(currentInstall.getInstallationId()));
   }
 
+  public void testAddUnique() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    testSucceed = false;
+    AVInstallation install = new AVInstallation();
+    install.addUnique("channels", "User-001");
+    install.addUnique("channels", "User-001");
+    install.addUnique("channels", "User-002");
+    install.saveInBackground().subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
   public void testCreateInstallationFromOldVersionCache() {
     String json = "{ \"@type\":\"com.avos.avoscloud.AVInstallation\",\"objectId\":\"0qYaOiU08hqm8bgpDk4CrTXXBs1NPtSs\",\"updatedAt\":null,\"createdAt\":\"2018-12-28T03:16:19.239Z\",\"className\":\"_Installation\",\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"deviceType\":\"android\",\"timeZone\":\"Asia/Shanghai\",\"installationId\":\"fd6605e9a1679d355457ad5c37fc99b3\"}}";
     AVInstallation installation = (AVInstallation) AVObject.parseAVObject(json);

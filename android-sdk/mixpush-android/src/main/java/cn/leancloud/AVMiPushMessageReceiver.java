@@ -5,6 +5,8 @@ import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.xiaomi.mipush.sdk.ErrorCode;
+import com.xiaomi.mipush.sdk.MiPushClient;
 
 import java.util.List;
 
@@ -128,8 +130,41 @@ public class AVMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
     }
   }
 
+  @Override
+  public void onCommandResult(Context context, com.xiaomi.mipush.sdk.MiPushCommandMessage message) {
+    super.onCommandResult(context, message);
+    String command = message.getCommand();
+    List<String> arguments = message.getCommandArguments();
+    String cmdArg1 = ((arguments != null && arguments.size() > 0) ? arguments.get(0) : null);
+    String cmdArg2 = (arguments != null && arguments.size() > 1) ? arguments.get(1) : null;
+    if (MiPushClient.COMMAND_REGISTER.equals(command)) {
+      if (message.getResultCode() == ErrorCode.SUCCESS) {
+        updateAVInstallation(cmdArg1);
+      }
+    } else if (MiPushClient.COMMAND_SET_ALIAS.equals(command)) {
+      ;
+    } else if (MiPushClient.COMMAND_UNSET_ALIAS.equals(command)) {
+      ;
+    } else if (MiPushClient.COMMAND_SUBSCRIBE_TOPIC.equals(command)) {
+      ;
+    } else if (MiPushClient.COMMAND_UNSUBSCRIBE_TOPIC.equals(command)) {
+      ;
+    } else if (MiPushClient.COMMAND_SET_ACCEPT_TIME.equals(command)) {
+      ;
+    } else {
+      ;
+    }
+  }
+
   /**
    * 通知栏消息到达事件
+   * 对于通知栏消息，小米推送 SDK 会根据消息中设置的信息弹出通知栏通知，通知消息到达时会调用 PushMessageReceiver
+   * 子类的 onNotificationMessageArrived 方法，用户点击之后再传给 PushMessageReceiver 子类的
+   * onNotificationMessageClicked 方法。
+   * 对于应用在前台时不弹出通知的通知消息，小米推送 SDK 会将消息通过广播方式传给 AndroidManifest 中注册的
+   * PushMessageReceiver 的子类的 onNotificationMessageArrived 方法（在 MIUI 上，如果没有收到
+   * onNotificationMessageArrived 回调，是因为使用的 MIUI 版本还不支持该特性，需要升级到 MIUI7 之后。
+   * 非 MIUI 手机都可以收到这个回调）。
    * @param context
    * @param miPushMessage
    */
@@ -146,6 +181,8 @@ public class AVMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
 
   /**
    * 透传消息
+   * 透传消息到达手机端后，小米推送 SDK 会将消息通过广播方式传给 AndroidManifest 中注册的 PushMessageReceiver
+   * 的子类的 onReceivePassThroughMessage
    * @param context
    * @param miPushMessage
    */
