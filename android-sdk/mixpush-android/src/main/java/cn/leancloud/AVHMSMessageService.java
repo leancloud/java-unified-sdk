@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import com.alibaba.fastjson.JSON;
 import com.huawei.hms.push.HmsMessageService;
 import com.huawei.hms.push.RemoteMessage;
 
@@ -26,10 +27,19 @@ public class AVHMSMessageService extends HmsMessageService {
    */
   public void onMessageReceived(RemoteMessage remoteMessage) {
     try {
-      LOGGER.d("received passthrough message: " + remoteMessage.toString());
-      String message = remoteMessage.getData();
       AndroidNotificationManager androidNotificationManager = AndroidNotificationManager.getInstance();
-      androidNotificationManager.processMixPushMessage(message);
+      String message = remoteMessage.getData();
+      if (!StringUtil.isEmpty(message)) {
+        LOGGER.d("received passthrough(data) message: " + message);
+        androidNotificationManager.processMixPushMessage(message);
+      } else if (null != remoteMessage.getNotification()) {
+        RemoteMessage.Notification notification = remoteMessage.getNotification();
+        String notifyString = JSON.toJSONString(notification);
+        LOGGER.d("received passthrough(notification) message: " + notifyString);
+        androidNotificationManager.processMixPushMessage(notifyString);
+      } else {
+        LOGGER.e("unknown passthrough message: " + remoteMessage.toString());
+      }
     } catch (Exception ex) {
       LOGGER.e("failed to process PushMessage.", ex);
     }

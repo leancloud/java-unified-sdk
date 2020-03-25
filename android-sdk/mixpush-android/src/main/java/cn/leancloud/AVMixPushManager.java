@@ -10,7 +10,9 @@ import com.huawei.agconnect.config.AGConnectServicesConfig;
 import com.huawei.hmf.tasks.OnCompleteListener;
 import com.huawei.hmf.tasks.Task;
 import com.huawei.hms.aaid.HmsInstanceId;
+import com.huawei.hms.push.HmsMessageService;
 import com.huawei.hms.push.HmsMessaging;
+import com.huawei.hms.support.api.push.service.HmsMsgService;
 
 import java.util.List;
 
@@ -38,6 +40,7 @@ public class AVMixPushManager {
    * 华为推送的 deviceProfile
    */
   static String hwDeviceProfile = "";
+  static Class hwMessageServiceClazz = AVHMSMessageService.class;
 
   /**
    * 魅族推送的 deviceProfile
@@ -181,6 +184,10 @@ public class AVMixPushManager {
    * @param profile 华为推送配置
    */
   public static void registerHMSPush(Application application, String profile) {
+    registerHMSPush(application, profile, null);
+  }
+
+  public static void registerHMSPush(Application application, String profile, Class customMessageServiceClazz) {
     if (null == application) {
       throw new IllegalArgumentException("[HMS] context cannot be null.");
     }
@@ -188,6 +195,10 @@ public class AVMixPushManager {
     if (!isHuaweiPhone()) {
       printErrorLog("[HMS] register error, is not huawei phone!");
       return;
+    }
+
+    if (null != customMessageServiceClazz) {
+      hwMessageServiceClazz = customMessageServiceClazz;
     }
 
     if (!checkHuaweiManifest(application)) {
@@ -771,8 +782,11 @@ public class AVMixPushManager {
       result = AVManifestUtils.checkPermission(context, android.Manifest.permission.INTERNET)
           && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE)
           && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)
-          && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE);
+          && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE)
+          && AVManifestUtils.checkService(context, HmsMsgService.class)
+          && AVManifestUtils.checkService(context, hwMessageServiceClazz);
     } catch (Exception e) {
+      LOGGER.d(e.getMessage());
     }
     return result;
   }
@@ -786,6 +800,7 @@ public class AVMixPushManager {
           && AVManifestUtils.checkPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
           && AVManifestUtils.checkReceiver(context, flymePushReceiverClazz);
     } catch (Exception e) {
+      LOGGER.d(e.getMessage());
     }
     return result;
   }
