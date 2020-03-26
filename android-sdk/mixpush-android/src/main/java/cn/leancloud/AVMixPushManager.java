@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
+import android.os.Looper;
 
 import com.huawei.agconnect.config.AGConnectServicesConfig;
 import com.huawei.hmf.tasks.OnCompleteListener;
@@ -211,9 +212,6 @@ public class AVMixPushManager {
   }
 
   /**
-   * 连接HMS SDK， 可能拉起界面(包括升级引导等)，建议在第一个界面进行连接。
-   * 此方法可以重复调用，没必要为了只调用一次做复杂处理
-   * 方法为异步调用，调用结果在主线程回调
    *  Connecting to the HMS SDK may pull up the activity (including upgrade guard, etc.), and it is
    *  recommended that you connect in the first activity.
    *  This method can be called repeatedly, and there is no need to do complex processing
@@ -226,20 +224,17 @@ public class AVMixPushManager {
     if (null == activity) {
       throw new IllegalArgumentException("[HMS] activity cannot be null.");
     }
-    try {
-      String appId = AGConnectServicesConfig.fromContext(activity).getString("client/app_id");
-      String token = HmsInstanceId.getInstance(activity).getToken(appId, HmsMessaging.DEFAULT_TOKEN_SCOPE);
-      LOGGER.d("found HMS appId: " + appId + ", token: " + token);
-      AVHMSMessageService.updateAVInstallation(token);
-    } catch (Exception ex) {
-      LOGGER.w("failed to get hms token. cause: " + ex.getMessage());
-    }
+    String appId = AGConnectServicesConfig.fromContext(activity).getString("client/app_id");
+    connectHMS(activity, appId);
   }
 
   /**
-   * 连接HMS SDK， 可能拉起界面(包括升级引导等)，建议在第一个界面进行连接。
-   * 此方法可以重复调用，没必要为了只调用一次做复杂处理
-   * 方法为异步调用，调用结果在主线程回调
+   *  Connecting to the HMS SDK may pull up the activity (including upgrade guard, etc.), and it is
+   *  recommended that you connect in the first activity.
+   *  This method can be called repeatedly, and there is no need to do complex processing
+   *  for only one call at a time
+   *  Method is called asynchronously, and the result is invoked in the main thread callback
+   *
    * @param activity activity
    * @param huaweiAppId huawei app id
    */
@@ -247,13 +242,29 @@ public class AVMixPushManager {
     if (null == activity) {
       throw new IllegalArgumentException("[HMS] activity cannot be null.");
     }
-    try {
-      String token = HmsInstanceId.getInstance(activity).getToken(huaweiAppId, HmsMessaging.DEFAULT_TOKEN_SCOPE);
-      LOGGER.d("found HMS appId: " + huaweiAppId + ", token: " + token);
-      AVHMSMessageService.updateAVInstallation(token);
-    } catch (Exception ex) {
-      LOGGER.w("failed to get hms token. cause: " + ex.getMessage());
+    if (Looper.getMainLooper() == Looper.myLooper()) {
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            String token = HmsInstanceId.getInstance(activity).getToken(huaweiAppId, HmsMessaging.DEFAULT_TOKEN_SCOPE);
+            LOGGER.d("found HMS appId: " + huaweiAppId + ", token: " + token);
+            AVHMSMessageService.updateAVInstallation(token);
+          } catch (Exception ex) {
+            LOGGER.w("failed to get hms token. cause: " + ex.getMessage());
+          }
+        }
+      }).start();
+    } else {
+      try {
+        String token = HmsInstanceId.getInstance(activity).getToken(huaweiAppId, HmsMessaging.DEFAULT_TOKEN_SCOPE);
+        LOGGER.d("found HMS appId: " + huaweiAppId + ", token: " + token);
+        AVHMSMessageService.updateAVInstallation(token);
+      } catch (Exception ex) {
+        LOGGER.w("failed to get hms token. cause: " + ex.getMessage());
+      }
     }
+
   }
 
   /**
