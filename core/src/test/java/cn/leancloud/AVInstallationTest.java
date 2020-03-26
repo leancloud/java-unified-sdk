@@ -39,7 +39,7 @@ public class AVInstallationTest extends TestCase {
   public void testAddUnique() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     testSucceed = false;
-    AVInstallation install = new AVInstallation();
+    final AVInstallation install = new AVInstallation();
     install.addUnique("channels", "User-001");
     install.addUnique("channels", "User-001");
     install.addUnique("channels", "User-002");
@@ -51,8 +51,64 @@ public class AVInstallationTest extends TestCase {
 
       @Override
       public void onNext(AVObject avObject) {
-        testSucceed = true;
+        testSucceed = install.getList("channels").size() == 2;
         latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testUnsubscribe() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    testSucceed = false;
+    final AVInstallation install = new AVInstallation();
+    install.addUnique("channels", "User-001");
+    install.addUnique("channels", "User-001");
+    install.addUnique("channels", "User-002");
+    install.addUnique("channels", "User-001");
+    install.addUnique("channels", "User-002");
+    install.saveInBackground().subscribe(new Observer<AVObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVObject avObject) {
+        install.removeAll("channels", Arrays.asList("User-001"));
+        install.saveInBackground().subscribe(new Observer<AVObject>() {
+          @Override
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(AVObject avObject) {
+            testSucceed = install.getList("channels").size() == 1
+                    && install.getList("channels").get(0).equals("User-002");
+            latch.countDown();
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+          }
+        });
       }
 
       @Override

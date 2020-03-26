@@ -10,7 +10,6 @@ import com.huawei.agconnect.config.AGConnectServicesConfig;
 import com.huawei.hmf.tasks.OnCompleteListener;
 import com.huawei.hmf.tasks.Task;
 import com.huawei.hms.aaid.HmsInstanceId;
-import com.huawei.hms.push.HmsMessageService;
 import com.huawei.hms.push.HmsMessaging;
 import com.huawei.hms.support.api.push.service.HmsMsgService;
 
