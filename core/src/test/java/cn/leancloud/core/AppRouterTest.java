@@ -16,6 +16,14 @@ public class AppRouterTest extends TestCase {
     System.out.println("currentUser = " + currentUser);
   }
 
+  public void testAndroidRequestSign() {
+    System.out.println();
+    String sign = GeneralRequestSignature.requestSign("c7906aff685238709c47416140534f3e", 1585203244677l,
+            "ax-sig-1");
+    System.out.println(sign);
+    System.out.println("a0002d2a403f35f1fdff02bec956567e,1585203244677,ax-sig-1");
+  }
+
   public void testRequestSign() {
     System.out.println();
     String sign = GeneralRequestSignature.requestSign("4aaaa58afe61ac6b1ee49378fe8589e8", 1574842473675l,
