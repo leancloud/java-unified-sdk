@@ -53,8 +53,6 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
       handler = new Handler();
     }
 
-    ParserConfig.getGlobalInstance().autoTypeSupport = true;
-
     AppConfiguration.setLogAdapter(new DefaultLoggerAdapter());
     AppConfiguration.setGlobalNetworkingDetector(new AndroidNetworkingDetector(context));
     AppConfiguration.setMimeTypeDetector(new AndroidMimeTypeDetector());
