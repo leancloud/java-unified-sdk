@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -43,7 +44,7 @@ public class FileDemoActivity extends DemoBaseActivity {
     void onFileSelect(File file);
   }
 
-  public void testUploader() throws Exception {
+  public void testUploaderContentWithObserver() throws Exception {
     String contents = StringUtil.getRandomString(64);
     AVFile file = new AVFile("test", contents.getBytes());
     Observable<AVFile> result = file.saveInBackground();
@@ -57,11 +58,12 @@ public class FileDemoActivity extends DemoBaseActivity {
       public void onNext(AVFile avFile) {
         log("Thread:" + Thread.currentThread().getId());
         log("保存了一个File：" + avFile.getObjectId());
+        Toast.makeText(FileDemoActivity.this, "上传成功", Toast.LENGTH_SHORT).show();
       }
 
       @Override
       public void onError(Throwable e) {
-
+        Toast.makeText(FileDemoActivity.this, "上传失败", Toast.LENGTH_SHORT).show();
       }
 
       @Override
@@ -71,6 +73,58 @@ public class FileDemoActivity extends DemoBaseActivity {
     });
   }
 
+  public void testUploaderExternelUrlWithObserver() throws Exception {
+    AVFile file = new AVFile("test", "http://cms-bucket.ws.126.net/2020/0401/8666ec9dp00q83fid008oc000m801n8c.png");
+    Observable<AVFile> result = file.saveInBackground();
+    result.subscribe(new Observer<AVFile>() {
+      @Override
+      public void onSubscribe(Disposable d) {
+        ;
+      }
+
+      @Override
+      public void onNext(AVFile avFile) {
+        log("Thread:" + Thread.currentThread().getId());
+        log("保存了一个File：" + avFile.getObjectId());
+        Toast.makeText(FileDemoActivity.this, "上传成功", Toast.LENGTH_SHORT).show();
+      }
+
+      @Override
+      public void onError(Throwable e) {
+        Toast.makeText(FileDemoActivity.this, "上传失败", Toast.LENGTH_SHORT).show();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+  }
+
+  public void testUploaderContentWithCallback() throws Exception {
+    String contents = StringUtil.getRandomString(64);
+    AVFile file = new AVFile("test", contents.getBytes());
+    Observable<AVFile> result = file.saveInBackground();
+    result.subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback<AVFile>() {
+      @Override
+      public void done(AVException e) {
+        log("Thread:" + Thread.currentThread().getId());
+        Toast.makeText(FileDemoActivity.this, "上传成功：" + (null == e), Toast.LENGTH_SHORT).show();
+      }
+    }));
+  }
+
+  public void testUploaderExternelUrlWithCallback() throws Exception {
+    AVFile file = new AVFile("test", "http://cms-bucket.ws.126.net/2020/0401/8666ec9dp00q83fid008oc000m801n8c.png");
+    Observable<AVFile> result = file.saveInBackground();
+    result.subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback<AVFile>() {
+      @Override
+      public void done(AVException e) {
+        log("Thread:" + Thread.currentThread().getId());
+        Toast.makeText(FileDemoActivity.this, "上传成功：" + (null == e), Toast.LENGTH_SHORT).show();
+      }
+    }));
+  }
 
   private void selectFile(final SelectFileCallback callback) {
     runOnUiThread(new Runnable() {
@@ -325,7 +379,9 @@ public class FileDemoActivity extends DemoBaseActivity {
     query.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(new FindCallback<AVObject>() {
       @Override
       public void done(List<AVObject> list, AVException e) {
-        list.get(0).getAVFile("girl").getUrl();
+        if(null != list && list.size() > 0) {
+          list.get(0).getAVFile("girl").getUrl();
+        }
       }
     }));
   }
