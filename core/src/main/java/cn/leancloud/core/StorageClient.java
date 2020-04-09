@@ -52,8 +52,7 @@ public class StorageClient {
     return this.currentUser;
   }
 
-  // TODO: need to change observable thread in case of AVFile.saveInBackground.
-  private Observable wrapObservable(Observable observable) {
+  public Observable wrapObservable(Observable observable) {
     if (null == observable) {
       return null;
     }

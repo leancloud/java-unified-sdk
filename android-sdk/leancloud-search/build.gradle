@@ -56,12 +56,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(':storage-android')
-    implementation("cn.leancloud:storage-core:${rootProject.ext.sdkVersion}") {
-        exclude group: 'com.alibaba', module: 'fastjson'
-        exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
-    }
-    implementation "com.alibaba:fastjson:${rootProject.ext.fastjsonVersion}"
-    implementation "org.ligboy.retrofit2:converter-fastjson-android:${rootProject.ext.converterVersion}"
+    implementation("cn.leancloud:storage-core:${rootProject.ext.sdkVersion}")
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'

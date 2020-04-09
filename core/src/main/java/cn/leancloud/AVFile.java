@@ -7,6 +7,7 @@ import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.cache.FileCache;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.core.AppConfiguration;
+import cn.leancloud.core.StorageClient;
 import cn.leancloud.ops.ObjectFieldOperation;
 import cn.leancloud.ops.OperationBuilder;
 import cn.leancloud.core.PaasClient;
@@ -26,6 +27,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler;
 import io.reactivex.annotations.NonNull;
@@ -502,7 +504,8 @@ public final class AVFile extends AVObject {
         return directlyCreate(paramData);
       }
       logger.d("createToken params: " + paramData.toJSONString() + ", " + this);
-      return PaasClient.getStorageClient().newUploadToken(paramData)
+      StorageClient storageClient = PaasClient.getStorageClient();
+      Observable<AVFile> result = storageClient.newUploadToken(paramData)
               .map(new Function<FileUploadToken, AVFile>() {
                 public AVFile apply(@NonNull FileUploadToken fileUploadToken) throws Exception {
                   logger.d("[Thread:" + Thread.currentThread().getId() + "]" + fileUploadToken.toString() + ", " + AVFile.this);
@@ -535,6 +538,8 @@ public final class AVFile extends AVObject {
                   }
                 }
               });
+      result = storageClient.wrapObservable(result);
+      return result;
     } else {
       logger.d("file has been upload to cloud, ignore update request.");
       return Observable.just(this);

@@ -62,16 +62,7 @@ dependencies {
 
     implementation "io.reactivex.rxjava2:rxandroid:${rootProject.ext.rxandroidVersion}"
 
-//    implementation("cn.leancloud:storage-android:${rootProject.ext.sdkVersion}") {
-//        exclude group: 'com.alibaba', module: 'fastjson'
-//        exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
-//    }
-    implementation("cn.leancloud:storage-core:${rootProject.ext.sdkVersion}") {
-        exclude group: 'com.alibaba', module: 'fastjson'
-        exclude group: 'org.ligboy.retrofit2', module: 'converter-fastjson'
-    }
-    implementation("org.ligboy.retrofit2:converter-fastjson-android:${rootProject.ext.converterVersion}")
-    implementation "com.alibaba:fastjson:${rootProject.ext.fastjsonVersion}"
+    implementation("cn.leancloud:storage-core:${rootProject.ext.sdkVersion}")
 
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
