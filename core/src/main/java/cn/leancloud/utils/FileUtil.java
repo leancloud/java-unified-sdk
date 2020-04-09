@@ -46,11 +46,14 @@ public class FileUtil {
   public static String getFileMimeType(AVFile avFile) {
     String fileName = avFile.getName();
     String fileUrl = avFile.getUrl();
-    String mimeType = DEFAULTMIMETYPE;
+    String mimeType = null;
     if (!StringUtil.isEmpty(fileName)) {
       mimeType = getMimeTypeFromFilename(fileName);
     } else if (!StringUtil.isEmpty(fileUrl)) {
       mimeType = getMimeTypeFromUrl(fileUrl);
+    }
+    if (StringUtil.isEmpty(mimeType)) {
+      mimeType = DEFAULTMIMETYPE;
     }
     return mimeType;
   }
