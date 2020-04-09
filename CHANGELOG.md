@@ -2,6 +2,17 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.5.0 release
+
+#### Break changes
+- remove fastjson-android dependency from android sdk, all libraries use fastjson jvm version now.
+
+#### New features
+- support `_conversationAdded/Removed` hooks within engine-core.
+
+#### Optimization and fixed bugs
+- fixed bugs within AVFile uploading.
+
 ## 6.4.4 release
 
 #### Break changes
