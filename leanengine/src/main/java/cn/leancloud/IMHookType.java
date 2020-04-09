@@ -42,6 +42,14 @@ public enum IMHookType {
    */
   conversationRemove(true),
   /**
+   * 用户加入对话，在加入成功后调用。
+   */
+  conversationAdded(true),
+  /**
+   * 用户离开对话，在离开成功后调用。
+   */
+  conversationRemoved(true),
+  /**
    * 修改对话属性、设置或取消对话消息提醒，在实际修改之前调用
    */
   conversationUpdate(true);
@@ -73,6 +81,10 @@ public enum IMHookType {
         return conversationAdd;
       } else if ("conversationRemove".equals(hookName)) {
         return conversationRemove;
+      } else if ("conversationAdded".equals(hookName)) {
+        return conversationAdded;
+      } else if ("conversationRemoved".equals(hookName)) {
+        return conversationRemoved;
       } else if ("conversationUpdate".equals(hookName)) {
         return conversationUpdate;
       } else if ("clientOnline".equals(hookName)) {
