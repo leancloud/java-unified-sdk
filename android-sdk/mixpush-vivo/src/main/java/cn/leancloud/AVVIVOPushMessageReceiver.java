@@ -6,6 +6,7 @@ import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.callback.SaveCallback;
+import cn.leancloud.vivo.AVMixPushManager;
 
 public abstract class AVVIVOPushMessageReceiver extends com.vivo.push.sdk.OpenClientPushMessageReceiver {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVVIVOPushMessageReceiver.class);

@@ -6,6 +6,7 @@ import com.huawei.hms.push.RemoteMessage;
 
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
+import cn.leancloud.hms.AVMixPushManager;
 import cn.leancloud.push.AndroidNotificationManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -70,7 +71,7 @@ public class AVHMSMessageService extends HmsMessageService {
     LOGGER.w("failed to apply token. cause: " + exception.getMessage());
   }
 
-  static void updateAVInstallation(String hwToken) {
+  public static void updateAVInstallation(String hwToken) {
     if (StringUtil.isEmpty(hwToken)) {
       return;
     }

@@ -1,10 +1,7 @@
 package cn.leancloud;
 
 import java.lang.reflect.Method;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import cn.leancloud.ops.Utils;
 import com.alibaba.fastjson.JSON;
@@ -39,6 +36,20 @@ public class EngineHookHandlerInfo extends EngineHandlerInfo {
           (Map<String, Object>) Utils.getParsedObject(result, true);
       objectMapping.remove("__type");
       objectMapping.remove("className");
+
+      // deal with updates within hook function.
+      if (result instanceof AVObject) {
+        Set<String> keys = ((AVObject)result).operations.keySet();
+        for (String key : keys) {
+          Object value = ((AVObject)result).get(key);
+          if (null == value) {
+            objectMapping.remove(key);
+          } else {
+            objectMapping.put(key, Utils.getParsedObject(value));
+          }
+        }
+      }
+
       hookParams.putAll(objectMapping);
     }
     long ts = new Date().getTime();

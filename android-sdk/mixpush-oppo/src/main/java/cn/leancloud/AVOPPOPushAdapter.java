@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.convertor.ObserverBuilder;
+import cn.leancloud.oppo.AVMixPushManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.callback.SaveCallback;

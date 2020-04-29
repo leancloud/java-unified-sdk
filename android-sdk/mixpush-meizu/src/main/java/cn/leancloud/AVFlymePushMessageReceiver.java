@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
+import cn.leancloud.flyme.AVMixPushManager;
 import cn.leancloud.push.AndroidNotificationManager;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.utils.LogUtil;
