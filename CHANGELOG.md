@@ -2,6 +2,17 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.5.1 release
+
+#### Break changes
+- None
+
+#### New features
+- split mixpush by provider: hms, xiaomi, oppo, vivo, meizu.
+
+#### Optimization and fixed bugs
+- fixed bug: AVObject modification doesn't work within beforeXXX Hook.
+
 ## 6.5.0 release
 
 #### Break changes
