@@ -59,13 +59,9 @@ dependencies {
     implementation project(':realtime-android')
     implementation project(':storage-android')
 
-    implementation project(':mixpush-hms')
-    implementation project(':mixpush-meizu')
-    implementation project(':mixpush-oppo')
-    implementation project(':mixpush-vivo')
-    implementation project(':mixpush-xiaomi')
-
     implementation("cn.leancloud:realtime-core:${rootProject.ext.sdkVersion}")
+
+    implementation 'com.huawei.hms:push:4.0.2.300'
 
     implementation 'androidx.appcompat:appcompat:1.0.0'
     testImplementation 'junit:junit:4.12'

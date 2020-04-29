@@ -1,18 +1,8 @@
 package cn.leancloud;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.os.Build;
-import android.os.Looper;
-
-import com.huawei.agconnect.config.AGConnectServicesConfig;
-import com.huawei.hmf.tasks.OnCompleteListener;
-import com.huawei.hmf.tasks.Task;
-import com.huawei.hms.aaid.HmsInstanceId;
-import com.huawei.hms.push.HmsMessaging;
-import com.huawei.hms.support.api.push.service.HmsMsgService;
 
 import java.util.List;
 
@@ -28,30 +18,6 @@ import cn.leancloud.utils.StringUtil;
 public class AVMixPushManager {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVMixPushManager.class);
 
-  static final String MIXPUSH_PROFILE = "deviceProfile";
-
-  /**
-   * 小米推送的 deviceProfile
-   */
-  static String miDeviceProfile = "";
-  static Class miPushReceiverClazz = AVMiPushMessageReceiver.class;
-
-  /**
-   * 华为推送的 deviceProfile
-   */
-  static String hwDeviceProfile = "";
-  static Class hwMessageServiceClazz = AVHMSMessageService.class;
-
-  /**
-   * 魅族推送的 deviceProfile
-   */
-  static String flymeDeviceProfile = "";
-  static int flymeMStatusBarIcon = 0;
-  static Class flymePushReceiverClazz = AVFlymePushMessageReceiver.class;
-
-  static String vivoDeviceProfile = "";
-  static String oppoDeviceProfile = "";
-
   /**
    * 注册小米推送
    * 只有 appId、appKey 有效 且 MIUI 且 manifest 正确填写 才能注册
@@ -61,7 +27,7 @@ public class AVMixPushManager {
    * @param miAppKey 小米 appKey
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey) {
-    registerXiaomiPush(context, miAppId, miAppKey, "");
+    cn.leancloud.mi.AVMixPushManager.registerXiaomiPush(context, miAppId, miAppKey);
   }
 
   /**
@@ -75,7 +41,7 @@ public class AVMixPushManager {
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey,
                                         Class customizedReceiver) {
-    registerXiaomiPush(context, miAppId, miAppKey, "", customizedReceiver);
+    cn.leancloud.mi.AVMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, customizedReceiver);
   }
 
   /**
@@ -88,7 +54,7 @@ public class AVMixPushManager {
    * @param profile  小米推送配置
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey, String profile) {
-    registerXiaomiPush(context, miAppId, miAppKey, profile, null);
+    cn.leancloud.mi.AVMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, profile);
   }
 
   /**
@@ -103,37 +69,7 @@ public class AVMixPushManager {
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey, String profile,
                                         Class customizedReceiver) {
-    if (null == context) {
-      throw new IllegalArgumentException("context cannot be null.");
-    }
-
-    if (StringUtil.isEmpty(miAppId)) {
-      throw new IllegalArgumentException("miAppId cannot be null.");
-    }
-
-    if (StringUtil.isEmpty(miAppKey)) {
-      throw new IllegalArgumentException("miAppKey cannot be null.");
-    }
-
-    if (null != customizedReceiver) {
-      miPushReceiverClazz = customizedReceiver;
-    }
-
-    if (!isXiaomiPhone()) {
-      printErrorLog("register error, current device is not a xiaomi phone!");
-    }
-
-    if (!checkXiaomiManifest(context)) {
-      printErrorLog("register error, mainifest is incomplete(receiver not found: "
-          + miPushReceiverClazz.getSimpleName() + ")!");
-      return;
-    }
-
-    miDeviceProfile = profile;
-
-    com.xiaomi.mipush.sdk.MiPushClient.registerPush(context, miAppId, miAppKey);
-
-    LOGGER.d("finished to register mi push");
+    cn.leancloud.mi.AVMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, profile, customizedReceiver);
   }
 
   /**
@@ -148,7 +84,7 @@ public class AVMixPushManager {
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey,
                                         String profile, boolean isInternationalVendor) {
-    registerXiaomiPush(context, miAppId, miAppKey, profile, isInternationalVendor, null);
+    cn.leancloud.mi.AVMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, profile, isInternationalVendor);
   }
 
   /**
@@ -164,8 +100,8 @@ public class AVMixPushManager {
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey,
                                         String profile, boolean isInternationalVendor, Class customizedReceiver) {
-    AVMiPushMessageReceiver.setInternationalVendor(isInternationalVendor);
-    registerXiaomiPush(context, miAppId, miAppKey, profile, customizedReceiver);
+    cn.leancloud.mi.AVMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, profile,
+        isInternationalVendor, customizedReceiver);
   }
 
   /**
@@ -174,7 +110,7 @@ public class AVMixPushManager {
    * @param application 应用实例
    */
   public static void registerHMSPush(Application application) {
-    registerHMSPush(application, "");
+    cn.leancloud.hms.AVMixPushManager.registerHMSPush(application);
   }
 
   /**
@@ -184,31 +120,11 @@ public class AVMixPushManager {
    * @param profile 华为推送配置
    */
   public static void registerHMSPush(Application application, String profile) {
-    registerHMSPush(application, profile, null);
+    cn.leancloud.hms.AVMixPushManager.registerHMSPush(application, profile);
   }
 
   public static void registerHMSPush(Application application, String profile, Class customMessageServiceClazz) {
-    if (null == application) {
-      throw new IllegalArgumentException("[HMS] context cannot be null.");
-    }
-
-    if (!isHuaweiPhone()) {
-      printErrorLog("[HMS] register error, is not huawei phone!");
-      return;
-    }
-
-    if (null != customMessageServiceClazz) {
-      hwMessageServiceClazz = customMessageServiceClazz;
-    }
-
-    if (!checkHuaweiManifest(application)) {
-      printErrorLog("[HMS] register error, mainifest is incomplete!");
-      return;
-    }
-
-    hwDeviceProfile = profile;
-
-    LOGGER.d("[HMS] start register HMS push");
+    cn.leancloud.hms.AVMixPushManager.registerHMSPush(application, profile, customMessageServiceClazz);
   }
 
   /**
@@ -221,11 +137,7 @@ public class AVMixPushManager {
    * @param activity activity
    */
   public static void connectHMS(Activity activity) {
-    if (null == activity) {
-      throw new IllegalArgumentException("[HMS] activity cannot be null.");
-    }
-    String appId = AGConnectServicesConfig.fromContext(activity).getString("client/app_id");
-    connectHMS(activity, appId);
+    cn.leancloud.hms.AVMixPushManager.connectHMS(activity);
   }
 
   /**
@@ -239,32 +151,7 @@ public class AVMixPushManager {
    * @param huaweiAppId huawei app id
    */
   public static void connectHMS(Activity activity, String huaweiAppId) {
-    if (null == activity) {
-      throw new IllegalArgumentException("[HMS] activity cannot be null.");
-    }
-    if (Looper.getMainLooper() == Looper.myLooper()) {
-      new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            String token = HmsInstanceId.getInstance(activity).getToken(huaweiAppId, HmsMessaging.DEFAULT_TOKEN_SCOPE);
-            LOGGER.d("found HMS appId: " + huaweiAppId + ", token: " + token);
-            AVHMSMessageService.updateAVInstallation(token);
-          } catch (Exception ex) {
-            LOGGER.w("failed to get hms token. cause: " + ex.getMessage());
-          }
-        }
-      }).start();
-    } else {
-      try {
-        String token = HmsInstanceId.getInstance(activity).getToken(huaweiAppId, HmsMessaging.DEFAULT_TOKEN_SCOPE);
-        LOGGER.d("found HMS appId: " + huaweiAppId + ", token: " + token);
-        AVHMSMessageService.updateAVInstallation(token);
-      } catch (Exception ex) {
-        LOGGER.w("failed to get hms token. cause: " + ex.getMessage());
-      }
-    }
-
+    cn.leancloud.hms.AVMixPushManager.connectHMS(activity, huaweiAppId);
   }
 
   /**
@@ -274,16 +161,7 @@ public class AVMixPushManager {
    * @param callback callback function
    */
   public static void turnOnHMSPush(Context context, AVCallback<Void> callback) {
-    HmsMessaging.getInstance(context).turnOnPush().addOnCompleteListener(new OnCompleteListener<Void>() {
-      @Override
-      public void onComplete(Task<Void> task) {
-        if (task.isSuccessful()) {
-          callback.internalDone(null);
-        } else {
-          callback.internalDone(new AVException(task.getException()));
-        }
-      }
-    });
+    cn.leancloud.hms.AVMixPushManager.turnOnHMSPush(context, callback);
   }
 
   /**
@@ -293,16 +171,7 @@ public class AVMixPushManager {
    * @param callback callback function
    */
   public static void turnOffHMSPush(Context context, AVCallback<Void> callback) {
-    HmsMessaging.getInstance(context).turnOffPush().addOnCompleteListener(new OnCompleteListener<Void>() {
-      @Override
-      public void onComplete(Task<Void> task) {
-        if (task.isSuccessful()) {
-          callback.internalDone(null);
-        } else {
-          callback.internalDone(new AVException(task.getException()));
-        }
-      }
-    });
+    cn.leancloud.hms.AVMixPushManager.turnOffHMSPush(context, callback);
   }
 
   /**
@@ -316,7 +185,7 @@ public class AVMixPushManager {
    */
   public static boolean registerFlymePush(Context context, String flymeId, String flymeKey,
                                           String profile) {
-    return registerFlymePush(context, flymeId, flymeKey, profile, null);
+    return cn.leancloud.flyme.AVMixPushManager.registerFlymePush(context, flymeId, flymeKey, profile);
   }
 
   /**
@@ -331,27 +200,8 @@ public class AVMixPushManager {
    */
   public static boolean registerFlymePush(Context context, String flymeId, String flymeKey,
                                           String profile, Class customizedReceiver) {
-    if (null == context) {
-      printErrorLog("register error, context is null!");
-      return false;
-    }
-    boolean result = false;
-    if (!com.meizu.cloud.pushsdk.util.MzSystemUtils.isBrandMeizu(context)) {
-      printErrorLog("register error, is not flyme phone!");
-    } else {
-      if (null != customizedReceiver) {
-        flymePushReceiverClazz = customizedReceiver;
-      }
-      if (!checkFlymeManifest(context)) {
-        printErrorLog("register error, mainifest is incomplete!");
-      } else {
-        flymeDeviceProfile = profile;
-        com.meizu.cloud.pushsdk.PushManager.register(context, flymeId, flymeKey);
-        result = true;
-        LOGGER.d("start register flyme push");
-      }
-    }
-    return result;
+    return cn.leancloud.flyme.AVMixPushManager.registerFlymePush(context, flymeId, flymeKey,
+        profile, customizedReceiver);
   }
 
   /**
@@ -363,7 +213,7 @@ public class AVMixPushManager {
    *         false - register failed
    */
   public static boolean registerFlymePush(Context context, String flymeId, String flymeKey) {
-    return registerFlymePush(context, flymeId, flymeKey, "", null);
+    return cn.leancloud.flyme.AVMixPushManager.registerFlymePush(context, flymeId, flymeKey);
   }
 
   /**
@@ -377,7 +227,8 @@ public class AVMixPushManager {
    */
   public static boolean registerFlymePush(Context context, String flymeId, String flymeKey,
                                           Class customizedReceiver) {
-    return registerFlymePush(context, flymeId, flymeKey, "", customizedReceiver);
+    return cn.leancloud.flyme.AVMixPushManager.registerFlymePush(context, flymeId, flymeKey,
+        customizedReceiver);
   }
 
   /**
@@ -386,7 +237,7 @@ public class AVMixPushManager {
    * @param icon icon resource id.
    */
   public static void setFlymeMStatusbarIcon(int icon) {
-    flymeMStatusBarIcon = icon;
+    cn.leancloud.flyme.AVMixPushManager.setFlymeMStatusbarIcon(icon);
   }
 
   /**
@@ -398,7 +249,7 @@ public class AVMixPushManager {
    * @param application application
    */
   public static boolean registerVIVOPush(Application application) {
-    return AVMixPushManager.registerVIVOPush(application, "");
+    return cn.leancloud.vivo.AVMixPushManager.registerVIVOPush(application);
   }
 
   /**
@@ -406,50 +257,21 @@ public class AVMixPushManager {
    * @param application application
    */
   public static boolean registerVIVOPush(Application application, String profile) {
-    vivoDeviceProfile = profile;
-    com.vivo.push.PushClient client = com.vivo.push.PushClient.getInstance(application.getApplicationContext());
-    try {
-      client.checkManifest();
-      client.initialize();
-      return true;
-    } catch (com.vivo.push.util.VivoPushException ex) {
-      printErrorLog("register error, mainifest is incomplete! details=" + ex.getMessage());
-      return false;
-    }
+    return cn.leancloud.vivo.AVMixPushManager.registerVIVOPush(application, profile);
   }
 
   /**
    * turn off VIVO push.
    */
   public static void turnOffVIVOPush(final AVCallback<Boolean> callback) {
-    com.vivo.push.PushClient.getInstance(AVOSCloud.getContext()).turnOffPush(new com.vivo.push.IPushActionListener() {
-      public void onStateChanged(int state) {
-        if (null == callback) {
-          AVException exception = null;
-          if (0 != state) {
-            exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
-          }
-          callback.internalDone(null == exception, exception);
-        }
-      }
-    });
+    cn.leancloud.vivo.AVMixPushManager.turnOffVIVOPush(callback);
   }
 
   /**
    * turn on VIVO push.
    */
   public static void turnOnVIVOPush(final AVCallback<Boolean> callback) {
-    com.vivo.push.PushClient.getInstance(AVOSCloud.getContext()).turnOnPush(new com.vivo.push.IPushActionListener() {
-      public void onStateChanged(int state) {
-        if (null == callback) {
-          AVException exception = null;
-          if (0 != state) {
-            exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
-          }
-          callback.internalDone(null == exception, exception);
-        }
-      }
-    });
+    cn.leancloud.vivo.AVMixPushManager.turnOnVIVOPush(callback);
   }
 
   /**
@@ -459,11 +281,7 @@ public class AVMixPushManager {
    * @return
    */
   public static boolean isSupportVIVOPush(Context context) {
-    com.vivo.push.PushClient client = com.vivo.push.PushClient.getInstance(context);
-    if (null == client) {
-      return false;
-    }
-    return client.isSupport();
+    return cn.leancloud.vivo.AVMixPushManager.isSupportVIVOPush(context);
   }
 
   /**
@@ -474,23 +292,7 @@ public class AVMixPushManager {
    * @param callback
    */
   public static void bindVIVOAlias(Context context, String alias, final AVCallback<Boolean> callback) {
-    if (null == context) {
-      if (null != callback) {
-        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
-      }
-    } else {
-      com.vivo.push.PushClient.getInstance(context).bindAlias(alias, new com.vivo.push.IPushActionListener() {
-        public void onStateChanged(int state) {
-          if (null == callback) {
-            AVException exception = null;
-            if (0 != state) {
-              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
-            }
-            callback.internalDone(null == exception, exception);
-          }
-        }
-      });
-    }
+    cn.leancloud.vivo.AVMixPushManager.bindVIVOAlias(context, alias, callback);
   }
 
   /**
@@ -501,23 +303,7 @@ public class AVMixPushManager {
    * @param callback
    */
   public static void unbindVIVOAlias(Context context, String alias, final AVCallback<Boolean> callback) {
-    if (null == context) {
-      if (null != callback) {
-        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
-      }
-    } else {
-      com.vivo.push.PushClient.getInstance(context).unBindAlias(alias, new com.vivo.push.IPushActionListener() {
-        public void onStateChanged(int state) {
-          if (null == callback) {
-            AVException exception = null;
-            if (0 != state) {
-              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
-            }
-            callback.internalDone(null == exception, exception);
-          }
-        }
-      });
-    }
+    cn.leancloud.vivo.AVMixPushManager.unbindVIVOAlias(context, alias, callback);
   }
 
   /**
@@ -527,10 +313,7 @@ public class AVMixPushManager {
    * @return
    */
   public static String getVIVOAlias(Context context) {
-    if (null == context) {
-      return null;
-    }
-    return com.vivo.push.PushClient.getInstance(context).getAlias();
+    return cn.leancloud.vivo.AVMixPushManager.getVIVOAlias(context);
   }
 
   /**
@@ -541,23 +324,7 @@ public class AVMixPushManager {
    * @param callback
    */
   public static void setVIVOTopic(Context context, String topic, final AVCallback<Boolean> callback) {
-    if (null == context) {
-      if (null != callback) {
-        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
-      }
-    } else {
-      com.vivo.push.PushClient.getInstance(context).setTopic(topic, new com.vivo.push.IPushActionListener() {
-        public void onStateChanged(int state) {
-          if (null == callback) {
-            AVException exception = null;
-            if (0 != state) {
-              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
-            }
-            callback.internalDone(null == exception, exception);
-          }
-        }
-      });
-    }
+    cn.leancloud.vivo.AVMixPushManager.setVIVOTopic(context, topic, callback);
   }
 
   /**
@@ -567,23 +334,7 @@ public class AVMixPushManager {
    * @param callback
    */
   public static void delVIVOTopic(Context context, String alias, final AVCallback<Boolean> callback) {
-    if (null == context) {
-      if (null != callback) {
-        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
-      }
-    } else {
-      com.vivo.push.PushClient.getInstance(context).delTopic(alias, new com.vivo.push.IPushActionListener() {
-        public void onStateChanged(int state) {
-          if (null == callback) {
-            AVException exception = null;
-            if (0 != state) {
-              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
-            }
-            callback.internalDone(null == exception, exception);
-          }
-        }
-      });
-    }
+    cn.leancloud.vivo.AVMixPushManager.delVIVOTopic(context, alias, callback);
   }
 
   /**
@@ -592,10 +343,7 @@ public class AVMixPushManager {
    * @return
    */
   public static List<String> getVIVOTopics(Context context) {
-    if (null == context) {
-      return null;
-    }
-    return com.vivo.push.PushClient.getInstance(context).getTopics();
+    return cn.leancloud.vivo.AVMixPushManager.getVIVOTopics(context);
   }
 
   /**
@@ -613,11 +361,7 @@ public class AVMixPushManager {
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
                                          AVOPPOPushAdapter callback) {
-    if (!isSupportOppoPush(context)) {
-      return false;
-    }
-    com.heytap.mcssdk.PushManager.getInstance().register(context, appKey, appSecret, callback);
-    return true;
+    return cn.leancloud.oppo.AVMixPushManager.registerOppoPush(context, appKey, appSecret, callback);
   }
 
   /**
@@ -632,8 +376,7 @@ public class AVMixPushManager {
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
                                          String profile,
                                          AVOPPOPushAdapter callback) {
-    oppoDeviceProfile = profile;
-    return registerOppoPush(context, appKey, appSecret, callback);
+    return cn.leancloud.oppo.AVMixPushManager.registerOppoPush(context, appKey, appSecret, profile, callback);
   }
 
 
@@ -644,21 +387,21 @@ public class AVMixPushManager {
    * @return
    */
   public static boolean isSupportOppoPush(Context context) {
-    return com.heytap.mcssdk.PushManager.isSupportPush(context);
+    return cn.leancloud.oppo.AVMixPushManager.isSupportOppoPush(context);
   }
 
   /**
    * pause oppo push
    */
   public static void pauseOppoPush() {
-    com.heytap.mcssdk.PushManager.getInstance().pausePush();
+    cn.leancloud.oppo.AVMixPushManager.pauseOppoPush();
   }
 
   /**
    * resume oppo push
    */
   public static void resumeOppoPush() {
-    com.heytap.mcssdk.PushManager.getInstance().resumePush();
+    cn.leancloud.oppo.AVMixPushManager.resumeOppoPush();
   }
 
   /**
@@ -671,8 +414,7 @@ public class AVMixPushManager {
    */
   public static void setOppoPushTime(List<Integer> weekDays, int startHour, int startMinute,
                                      int endHour, int endMinute) {
-    com.heytap.mcssdk.PushManager.getInstance().setPushTime(weekDays, startHour, startMinute,
-        endHour, endMinute);
+    cn.leancloud.oppo.AVMixPushManager.setOppoPushTime(weekDays, startHour, startMinute, endHour, endMinute);
   }
 
   /**
@@ -680,7 +422,7 @@ public class AVMixPushManager {
    * @param aliases
    */
   public static void setOppoAliases(List<String> aliases) {
-    com.heytap.mcssdk.PushManager.getInstance().setAliases(aliases);
+    cn.leancloud.oppo.AVMixPushManager.setOppoAliases(aliases);
   }
 
   /**
@@ -688,14 +430,14 @@ public class AVMixPushManager {
    * @param alias
    */
   public static void unsetOppoAlias(String alias) {
-    com.heytap.mcssdk.PushManager.getInstance().unsetAlias(alias);
+    cn.leancloud.oppo.AVMixPushManager.unsetOppoAlias(alias);
   }
 
   /**
    * get oppo aliases.
    */
   public static void getOppoAliases() {
-    com.heytap.mcssdk.PushManager.getInstance().getAliases();
+    cn.leancloud.oppo.AVMixPushManager.getOppoAliases();
   }
 
   /**
@@ -703,7 +445,7 @@ public class AVMixPushManager {
    * @param account
    */
   public static void setOppoUserAccount(String account) {
-    com.heytap.mcssdk.PushManager.getInstance().setUserAccount(account);
+    cn.leancloud.oppo.AVMixPushManager.setOppoUserAccount(account);
   }
 
   /**
@@ -711,14 +453,14 @@ public class AVMixPushManager {
    * @param accounts
    */
   public static void unsetOppoUserAccouts(List<String> accounts) {
-    com.heytap.mcssdk.PushManager.getInstance().unsetUserAccounts(accounts);
+    cn.leancloud.oppo.AVMixPushManager.unsetOppoUserAccouts(accounts);
   }
 
   /**
    * get oppo push accounts.
    */
   public static void getOppoUserAccounts() {
-    com.heytap.mcssdk.PushManager.getInstance().getUserAccounts();
+    cn.leancloud.oppo.AVMixPushManager.getOppoUserAccounts();
   }
 
   /**
@@ -726,7 +468,7 @@ public class AVMixPushManager {
    * @param tags
    */
   public static void setOppoTags(List<String> tags) {
-    com.heytap.mcssdk.PushManager.getInstance().setTags(tags);
+    cn.leancloud.oppo.AVMixPushManager.setOppoTags(tags);
   }
 
   /**
@@ -734,28 +476,28 @@ public class AVMixPushManager {
    * @param tags
    */
   public static void unsetOppoTags(List<String> tags) {
-    com.heytap.mcssdk.PushManager.getInstance().unsetTags(tags);
+    cn.leancloud.oppo.AVMixPushManager.unsetOppoTags(tags);
   }
 
   /**
    * retrieve oppo push tags.
    */
   public static void getOppoTags() {
-    com.heytap.mcssdk.PushManager.getInstance().getTags();
+    cn.leancloud.oppo.AVMixPushManager.getOppoTags();
   }
 
   /**
    * get oppo push status
    */
   public static void getOppoPushStatus() {
-    com.heytap.mcssdk.PushManager.getInstance().getPushStatus();
+    cn.leancloud.oppo.AVMixPushManager.getOppoPushStatus();
   }
 
   /**
    * get oppo notification status.
    */
   public static void getOppoNotificationStatus() {
-    com.heytap.mcssdk.PushManager.getInstance().getNotificationStatus();
+    cn.leancloud.oppo.AVMixPushManager.getOppoNotificationStatus();
   }
 
   /**
@@ -778,59 +520,6 @@ public class AVMixPushManager {
         }
       }));
     }
-  }
-
-  private static boolean isHuaweiPhone() {
-    final String phoneBrand = Build.BRAND;
-    try {
-      return (phoneBrand.equalsIgnoreCase("huawei") || phoneBrand.equalsIgnoreCase("honor"));
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  private static boolean isXiaomiPhone() {
-    final String phoneManufacturer = Build.MANUFACTURER;
-    return !StringUtil.isEmpty(phoneManufacturer)
-        && phoneManufacturer.toLowerCase().contains("xiaomi");
-  }
-
-  private static boolean checkXiaomiManifest(Context context) {
-    try {
-      return AVManifestUtils.checkReceiver(context, miPushReceiverClazz);
-    } catch (Exception e) {
-      LOGGER.d(e.getMessage());
-    }
-    return false;
-  }
-
-  private static boolean checkHuaweiManifest(Context context) {
-    boolean result = false;
-    try {
-      result = AVManifestUtils.checkPermission(context, android.Manifest.permission.INTERNET)
-          && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE)
-          && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)
-          && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE)
-          && AVManifestUtils.checkService(context, HmsMsgService.class)
-          && AVManifestUtils.checkService(context, hwMessageServiceClazz);
-    } catch (Exception e) {
-      LOGGER.d(e.getMessage());
-    }
-    return result;
-  }
-
-  private static boolean checkFlymeManifest(Context context) {
-    boolean result = false;
-    try {
-      result = AVManifestUtils.checkPermission(context, android.Manifest.permission.INTERNET)
-          && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE)
-          && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE)
-          && AVManifestUtils.checkPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-          && AVManifestUtils.checkReceiver(context, flymePushReceiverClazz);
-    } catch (Exception e) {
-      LOGGER.d(e.getMessage());
-    }
-    return result;
   }
 
   private static void printErrorLog(String error) {

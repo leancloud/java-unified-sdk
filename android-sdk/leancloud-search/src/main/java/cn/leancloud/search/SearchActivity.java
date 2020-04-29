@@ -164,8 +164,6 @@ public class SearchActivity extends AppCompatActivity {
     /**
      * 您可以通过设定类似html font style来设定匹配高亮的风格
      *
-     * example:<font color='#E68A00'>
-     *
      * @param style
      */
     public static void setHighLightStyle(String style) {
