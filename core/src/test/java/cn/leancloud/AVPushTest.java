@@ -23,6 +23,48 @@ public class AVPushTest extends TestCase {
     push.send();
   }
 
+  public void testIOSEnvironment() throws Exception {
+    AVPush push = new AVPush();
+    Map<String, Object> pushData = new HashMap<>();
+    pushData.put("alert", "wmq2");
+    pushData.put("body", "LeanCloud 发送测试2");
+    push.setPushToIOS(true);
+    push.setPushToAndroid(false);
+    push.setData(pushData);
+    push.setFlowControl( 200);
+    push.setChannel("03fc00e69bea4da98a5fbadb2432a53f");
+    push.setiOSEnvironment(AVPush.iOSEnvironmentDev);
+
+    final CountDownLatch latch = new CountDownLatch(1);
+    testSucceed = false;
+
+    push.sendInBackground().subscribe(new Observer<JSONObject>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(JSONObject jsonObject) {
+        System.out.println("send succeed. " + jsonObject);
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
   public void testPushFlowControl() throws Exception {
     AVPush push = new AVPush();
     Map<String, Object> pushData = new HashMap<>();

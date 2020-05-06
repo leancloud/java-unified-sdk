@@ -20,6 +20,13 @@ public class AVPush {
   private static final Set<String> DEVICE_TYPES = new HashSet<String>();
 
   private static final String FlowControlTag = "flow_control";
+  private static final String APNsTeamIdTag = "apns_team_id";
+  private static final String APNsTopicTag = "topic";
+  private static final String iOSEnvironmentTag = "prod";
+  private static final String NotificationIdTag = "notification_id";
+  private static final String RequestIdTag = "req_id";
+  public static final String iOSEnvironmentDev = "dev";
+  public static final String iOSEnvironmentProd = "prod";
   private static final int FlowControlMinValue = 1000;
 
   static {
@@ -36,7 +43,13 @@ public class AVPush {
   private final Map<String, Object> pushData;
   private volatile AVObject notification;
   private Date pushDate = null;
-  private int flowControl = 0;// add since v6.1.2
+  private int flowControl = 0;          // add since v6.1.2
+
+  private String iOSEnvironment = null; // add since v6.5.2
+  private String APNsTopic = null;      // add since v6.5.2
+  private String APNsTeamId = null;     // add since v6.5.2
+  private String notificationId = null; // add since v6.5.2
+  private String requestId = null;      // add since v6.5.2
 
   /**
    * Creates a new push notification. The default channel is the empty string, also known as the
@@ -137,6 +150,57 @@ public class AVPush {
       flowControl = FlowControlMinValue;
     }
     this.flowControl = flowControl;
+  }
+
+  /**
+   * set iOS Environment(optinal, default is production environment).
+   * When using Token Authentication, this parameter determines which of environment(dev or prod)
+   * will become the push target.
+   * @param iOSEnvironment iOS environment, allowed values as following:
+   *                       AVPush.iOSEnvironmentDev("dev") - development environment
+   *                       AVPush.iOSEnvironmentProd("prod") - production environment
+   * @since 6.5.2
+   */
+  public void setiOSEnvironment(String iOSEnvironment) {
+    this.iOSEnvironment = iOSEnvironment;
+  }
+
+  /**
+   * set APNs Topic(optinal, only used by Token Authentication)
+   * @param APNsTopic apns topic
+   * @since 6.5.2
+   */
+  public void setAPNsTopic(String APNsTopic) {
+    this.APNsTopic = APNsTopic;
+  }
+
+  /**
+   * set APNs Team Id(optinal, only used by Token Authentication)
+   * @param APNsTeamId apns team id.
+   * @since 6.5.2
+   */
+  public void setAPNsTeamId(String APNsTeamId) {
+    this.APNsTeamId = APNsTeamId;
+  }
+
+  /**
+   * set notification id(optional).
+   * at now, notification id's max length is 16 characters, only letter and number is valid.
+   *
+   * @param notificationId customized notification id.
+   */
+  public void setNotificationId(String notificationId) {
+    this.notificationId = notificationId;
+  }
+
+  /**
+   * set customized request id(optional).
+   * at now, request id's max length is 16 characters, only letter and number is valid.
+   * when many requests with the same request id within 5 minutes, only one request works.
+   * @param requestId customized request id.
+   */
+  public void setRequestId(String requestId) {
+    this.requestId = requestId;
   }
 
   /**
@@ -378,6 +442,22 @@ public class AVPush {
 
     if (this.flowControl > 0) {
       map.put(FlowControlTag, this.flowControl);
+    }
+
+    if (!StringUtil.isEmpty(this.iOSEnvironment)) {
+      map.put(iOSEnvironmentTag, this.iOSEnvironment);
+    }
+
+    if (!StringUtil.isEmpty(this.APNsTopic)) {
+      map.put(APNsTopicTag, this.APNsTopic);
+    }
+
+    if (!StringUtil.isEmpty(this.APNsTeamId)) {
+      map.put(APNsTeamIdTag, this.APNsTeamId);
+    }
+
+    if (!StringUtil.isEmpty(this.notificationId)) {
+      map.put(NotificationIdTag, this.notificationId);
     }
 
     map.putAll(pushData);
