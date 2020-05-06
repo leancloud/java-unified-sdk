@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.5.2 release
+
+#### Break changes
+- None
+
+#### New features
+- feat: support iOS push options(environment, topic, team id, request id, notification id)
+
+#### Optimization and fixed bugs
+- None
+
+
 ## 6.5.1 release
 
 #### Break changes
