@@ -26,6 +26,10 @@ public enum IMHookType {
    */
   messageSent(false),
   /**
+   * 修改消息请求到达云端，云端正式修改消息之前
+   */
+  messageUpdate(true),
+  /**
    * 创建对话，在签名校验（如果开启）之后，实际创建之前
    */
   conversationStart(true),
@@ -73,6 +77,8 @@ public enum IMHookType {
         return receiversOffline;
       } else if ("messageSent".equals(hookName)) {
         return messageSent;
+      } else if ("messageUpdate".equals(hookName)) {
+        return messageUpdate;
       } else if ("conversationStart".equals(hookName)) {
         return conversationStart;
       } else if ("conversationStarted".equals(hookName)) {
