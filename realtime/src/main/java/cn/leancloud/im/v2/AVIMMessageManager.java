@@ -189,25 +189,33 @@ public class AVIMMessageManager {
   protected static AVIMMessage parseTypedMessage(AVIMMessage message) {
     int messageType = getMessageType(message.getContent());
     if (messageType != 0) {
+      AVIMTypedMessage typedMessage = null;
       Class<? extends AVIMTypedMessage> clazz = messageTypesRepository.get(messageType);
       if (clazz != null) {
         try {
-          AVIMMessage typedMessage = clazz.newInstance();
-          typedMessage.setConversationId(message.getConversationId());
-          typedMessage.setFrom(message.getFrom());
-          typedMessage.setDeliveredAt(message.getDeliveredAt());
-          typedMessage.setTimestamp(message.getTimestamp());
-          typedMessage.setContent(message.getContent());
-          typedMessage.setMessageId(message.getMessageId());
-          typedMessage.setMessageStatus(message.getMessageStatus());
-          typedMessage.setMessageIOType(message.getMessageIOType());
-          typedMessage.uniqueToken = message.uniqueToken;
-          typedMessage.currentClient = message.currentClient;
-          typedMessage.mentionAll = message.mentionAll;
-          typedMessage.mentionList = message.mentionList;
-          message = typedMessage;
+          typedMessage = clazz.newInstance();
         } catch (Exception e) {
+          LOGGER.e("failed to create instance for TypedMessage: " + clazz.getCanonicalName()
+                  + ", cause: " + e.getMessage());
         }
+      } else {
+        LOGGER.d("unknown message type: " + messageType);
+        typedMessage = new AVIMTypedMessage(messageType);
+      }
+      if (null != typedMessage) {
+        typedMessage.setConversationId(message.getConversationId());
+        typedMessage.setFrom(message.getFrom());
+        typedMessage.setDeliveredAt(message.getDeliveredAt());
+        typedMessage.setTimestamp(message.getTimestamp());
+        typedMessage.setContent(message.getContent());
+        typedMessage.setMessageId(message.getMessageId());
+        typedMessage.setMessageStatus(message.getMessageStatus());
+        typedMessage.setMessageIOType(message.getMessageIOType());
+        typedMessage.uniqueToken = message.uniqueToken;
+        typedMessage.currentClient = message.currentClient;
+        typedMessage.mentionAll = message.mentionAll;
+        typedMessage.mentionList = message.mentionList;
+        message = typedMessage;
       }
     }
     return message;

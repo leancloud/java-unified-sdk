@@ -28,9 +28,18 @@ public class AVIMTypedMessage extends AVIMMessage{
     initMessageType();
   }
 
+  public AVIMTypedMessage(int messageType) {
+    super();
+    initMessageType(messageType);
+  }
+
   private void initMessageType() {
     AVIMMessageType type = this.getClass().getAnnotation(AVIMMessageType.class);
-    messageType = type.type();
+    initMessageType(type.type());
+  }
+
+  private void initMessageType(int messageType) {
+    this.messageType = messageType;
   }
 
   public int getMessageType() {
