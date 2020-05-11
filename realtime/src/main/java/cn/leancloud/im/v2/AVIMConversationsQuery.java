@@ -20,8 +20,6 @@ import io.reactivex.functions.Function;
 
 import java.util.*;
 
-import static cn.leancloud.AVQuery.CachePolicy.NETWORK_ONLY;
-
 public class AVIMConversationsQuery {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVIMConversationsQuery.class);
 
@@ -526,7 +524,10 @@ public class AVIMConversationsQuery {
     final Map<String, String> queryParams = conditions.assembleParameters();
     // always fetch from network while lastMessage is necessary.
     if (conditions.isWithLastMessagesRefreshed()) {
-      this.policy = NETWORK_ONLY;
+      if (AVQuery.CachePolicy.CACHE_ELSE_NETWORK == this.policy
+              || AVQuery.CachePolicy.CACHE_THEN_NETWORK == this.policy) {
+        this.policy = AVQuery.CachePolicy.NETWORK_ELSE_CACHE;
+      }
     }
     findWithCondition(queryParams, callback);
   }
