@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.5.4 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- bugfixed: session auto open error due to lack of appid
+
+
 ## 6.5.3 release
 
 #### Break changes
