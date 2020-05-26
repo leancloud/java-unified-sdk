@@ -41,6 +41,17 @@ public class WindTalker {
     }
   }
 
+  public CommandPacket assembleSessionOpenPacket(String clientId, String tag, String sessionToken, long lastNotifyTime,
+                                                 long lastPatchTime, boolean reConnect, Integer requestId) {
+    SessionControlPacket scp = SessionControlPacket.genSessionCommand(
+            clientId, null, SessionControlPacket.SessionControlOp.OPEN,
+            null, lastNotifyTime, lastPatchTime, requestId);
+    scp.setSessionToken(sessionToken);
+    scp.setReconnectionRequest(reConnect);
+    scp.setAppId(AVOSCloud.getApplicationId());
+    return scp;
+  }
+
   public CommandPacket assembleSessionOpenPacket(String clientId, String tag, Signature signature, long lastNotifyTime,
                                                  long lastPatchTime, boolean reConnect, int requestId) {
     SessionControlPacket scp = SessionControlPacket.genSessionCommand(

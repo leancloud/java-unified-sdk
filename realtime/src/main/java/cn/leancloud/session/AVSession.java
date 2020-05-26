@@ -3,6 +3,7 @@ package cn.leancloud.session;
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.command.*;
+import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.*;
 import cn.leancloud.im.v2.AVIMClient;
@@ -210,11 +211,14 @@ public class AVSession {
   };
 
   private void openWithSessionToken(String rtmSessionToken) {
-    SessionControlPacket scp = SessionControlPacket.genSessionCommand(
-            this.getSelfPeerId(), null, SessionControlPacket.SessionControlOp.OPEN,
-            null, this.getLastNotifyTime(), this.getLastPatchTime(), null);
-    scp.setSessionToken(rtmSessionToken);
-    scp.setReconnectionRequest(true);
+//    SessionControlPacket scp = SessionControlPacket.genSessionCommand(
+//            this.getSelfPeerId(), null, SessionControlPacket.SessionControlOp.OPEN,
+//            null, this.getLastNotifyTime(), this.getLastPatchTime(), null);
+//    scp.setSessionToken(rtmSessionToken);
+//    scp.setReconnectionRequest(true);
+//    scp.setAppId(AVOSCloud.getApplicationId());
+    CommandPacket scp = WindTalker.getInstance().assembleSessionOpenPacket(this.getSelfPeerId(), this.tag, rtmSessionToken,
+            this.getLastNotifyTime(), this.getLastPatchTime(), true, null);
     AVConnectionManager.getInstance().sendPacket(scp);
   }
 

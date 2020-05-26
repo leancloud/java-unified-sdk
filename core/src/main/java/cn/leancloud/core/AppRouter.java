@@ -263,7 +263,8 @@ public class AppRouter {
 
   private Observable<RTMConnectionServerResponse> fetchRTMServerFromRemote(final String routerHost, final String appId,
                                                                            final String installationId, int secure) {
-    LOGGER.d("fetchRTMServerFromRemote. router=" + routerHost + ", appId=" + appId);
+    LOGGER.d("fetchRTMServerFromRemote. router=" + routerHost + ", appId=" + appId
+            + ", installationId=" + installationId);
     Retrofit tmpRetrofit = retrofit.newBuilder().baseUrl(routerHost).build();
     AppRouterService tmpService = tmpRetrofit.create(AppRouterService.class);
     Observable<RTMConnectionServerResponse> result = tmpService.getRTMConnectionServer(appId, installationId, secure);
