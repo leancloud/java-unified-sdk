@@ -53,7 +53,7 @@ public class AVStandardWebSocketClientTest extends TestCase {
   }
 
   public void testConnect() throws Exception {
-    String wsUrl = "wss://rtm51.leancloud.cn";
+    String wsUrl = "wss://cn-n1-core-k8s-cell-12.leancloud.cn";
     SSLContext sslContext = SSLContext.getDefault();
     SSLSocketFactory sf = sslContext.getSocketFactory();
     AVStandardWebSocketClient client = new AVStandardWebSocketClient(URI.create(wsUrl),

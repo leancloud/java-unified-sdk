@@ -2,6 +2,23 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.5.5 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- upgrade dependencies to latest version so far:
+  - fastjson: `1.2.68` -> `1.2.70`
+  - okhttp: `4.1.1` -> `4.7.2`
+  - retrofit: `2.6.1` -> `2.9.0`
+  - rxjava2: `2.2.13` -> `2.2.19`
+  - java-websocket: `1.4.0` -> `1.5.1`
+
+
 ## 6.5.4 release
 
 #### Break changes

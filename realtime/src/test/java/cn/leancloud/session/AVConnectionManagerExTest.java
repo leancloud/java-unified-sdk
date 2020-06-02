@@ -27,6 +27,7 @@ public class AVConnectionManagerExTest extends TestCase {
   @Override
   protected void tearDown() throws Exception {
     this.countDownLatch = null;
+    AVIMOptions.getGlobalOptions().setRtmServer("");
   }
 
   public void testConnectionRetry() throws Exception {
