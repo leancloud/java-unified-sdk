@@ -52,7 +52,6 @@
     <okhttp.version>4.7.2</okhttp.version>
     <retrofit.version>2.9.0</retrofit.version>
     <rxjava2.version>2.2.19</rxjava2.version>
-    <fastjson.version>1.2.70</fastjson.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -86,7 +85,7 @@
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
-      <version>${fastjson.version}</version>
+      <version>1.2.70</version>
     </dependency>
     <dependency>
       <groupId>org.ligboy.retrofit2</groupId>
