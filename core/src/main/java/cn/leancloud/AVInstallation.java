@@ -70,6 +70,7 @@ public final class AVInstallation extends AVObject {
     if (null == installationFile) {
       needWriteback = false;
     } else {
+      LOGGER.d("installation cache file path: " + installationFile.getAbsolutePath());
       if (!installationFile.exists()) {
         String cacheBase = AppConfiguration.getImportantFileDir();
         File oldInstallationFile = new File(cacheBase, INSTALLATION);
@@ -99,6 +100,8 @@ public final class AVInstallation extends AVObject {
               currentInstallation.setInstallationId(json);
             }
           }
+        } else {
+          LOGGER.d("installation cache file is empty, create new instance.");
         }
       } else {
         String installationId = genInstallationId();
