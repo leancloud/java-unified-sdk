@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.network.NetworkingDetector;
 import cn.leancloud.ops.*;
@@ -1468,9 +1469,14 @@ public class AVObject {
    * @return json string.
    */
   public String toJSONString() {
-    return JSON.toJSONString(this, ObjectValueFilter.instance,
-          SerializerFeature.WriteClassName,
-          SerializerFeature.DisableCircularReferenceDetect);
+    if (AVOSCloud.isEnableCircularReferenceDetect()) {
+      return JSON.toJSONString(this, ObjectValueFilter.instance,
+              SerializerFeature.WriteClassName);
+    } else {
+      return JSON.toJSONString(this, ObjectValueFilter.instance,
+              SerializerFeature.WriteClassName,
+              SerializerFeature.DisableCircularReferenceDetect);
+    }
   }
 
   /**

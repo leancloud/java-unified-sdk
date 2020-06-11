@@ -104,9 +104,7 @@ public final class AVInstallation extends AVObject {
       currentInstallation = new AVInstallation();
     }
     if (needWriteback) {
-      String jsonString = JSON.toJSONString(currentInstallation, ObjectValueFilter.instance,
-              SerializerFeature.WriteClassName,
-              SerializerFeature.DisableCircularReferenceDetect);
+      String jsonString = currentInstallation.toJSONString();
       PersistenceUtil.sharedInstance().saveContentToFile(jsonString, installationFile);
     }
     return currentInstallation;

@@ -2,6 +2,7 @@ package cn.leancloud;
 
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.codec.MD5;
+import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.network.NetworkingDetector;
 import cn.leancloud.ops.BaseOperation;
@@ -177,9 +178,14 @@ public class ArchivedRequests {
     content.put(ATTR_METHOD, isDelete ? METHOD_DELETE : METHOD_SAVE);
     content.put(ATTR_INTERNAL_ID, object.internalId());
     content.put(ATTR_OBJECT, object.toJSONString());
-    content.put(ATTR_OPERATION, JSON.toJSONString(object.operations.values(), ObjectValueFilter.instance,
-            /*SerializerFeature.WriteClassName, */SerializerFeature.QuoteFieldNames,
-            SerializerFeature.DisableCircularReferenceDetect));
+    if (AVOSCloud.isEnableCircularReferenceDetect()) {
+      content.put(ATTR_OPERATION, JSON.toJSONString(object.operations.values(), ObjectValueFilter.instance,
+              /*SerializerFeature.WriteClassName, */SerializerFeature.QuoteFieldNames));
+    } else {
+      content.put(ATTR_OPERATION, JSON.toJSONString(object.operations.values(), ObjectValueFilter.instance,
+              /*SerializerFeature.WriteClassName, */SerializerFeature.QuoteFieldNames,
+              SerializerFeature.DisableCircularReferenceDetect));
+    }
 
     return JSON.toJSONString(content);
   }

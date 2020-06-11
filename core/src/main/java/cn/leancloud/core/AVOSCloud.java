@@ -48,7 +48,13 @@ public class AVOSCloud {
     return logLevel.intLevel() >= AVLogger.Level.DEBUG.intLevel();
   }
 
+  public static void setCircularReferenceDetectEnable(boolean enable) {
+    enableCircularReferenceDetect = enable;
+  }
 
+  public static boolean isEnableCircularReferenceDetect() {
+    return enableCircularReferenceDetect;
+  }
 
   public static void initialize(String appId, String appKey) {
     ObjectTypeAdapter adapter = new ObjectTypeAdapter();
@@ -182,4 +188,5 @@ public class AVOSCloud {
   private static String applicationKey = "";
   private static volatile AVLogger.Level logLevel = AVLogger.Level.INFO;
   static boolean printAllHeaders = false;
+  private static boolean enableCircularReferenceDetect = false;
 }
