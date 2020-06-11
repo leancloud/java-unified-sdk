@@ -7,6 +7,7 @@ import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.io.File;
@@ -26,6 +27,7 @@ public final class AVInstallation extends AVObject {
   public static final String REGISTRATION_ID = "registrationId";
   public static final String VENDOR = "vendor";
   private static String DEFAULT_DEVICETYPE = "android";
+
   private static volatile AVInstallation currentInstallation;
 
   public AVInstallation() {
@@ -98,6 +100,20 @@ public final class AVInstallation extends AVObject {
             }
           }
         }
+      } else {
+        String installationId = genInstallationId();
+        String json = String.format("{ \"_version\":\"5\",\"className\":\"_Installation\",\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"deviceType\":\"android\",\"installationId\":\"%s\",\"timeZone\":\"Asia/Shanghai\"}}",
+                installationId);
+        PersistenceUtil.sharedInstance().saveContentToFile(json, installationFile);
+        LOGGER.d("create-ahead installation with json: " + json);
+        try {
+          currentInstallation = (AVInstallation) AVObject.parseAVObject(json);
+          currentInstallation.totallyOverwrite = true;
+          needWriteback = false;
+        } catch (Exception ex) {
+          LOGGER.w("failed to parse create-ahead installation string.", ex);
+          needWriteback = true;
+        }
       }
     }
     if (null == currentInstallation) {
@@ -137,10 +153,14 @@ public final class AVInstallation extends AVObject {
     this.put(TIMEZONE, timezone());
     File installationFile = getCacheFile();
     if (null != installationFile) {
-      String jsonString = JSON.toJSONString(this, ObjectValueFilter.instance,
-              SerializerFeature.WriteClassName,
-              SerializerFeature.DisableCircularReferenceDetect);
-      PersistenceUtil.sharedInstance().saveContentToFile(jsonString, installationFile);
+      try {
+        String jsonString = JSON.toJSONString(this, ObjectValueFilter.instance,
+                SerializerFeature.WriteClassName, SerializerFeature.WriteMapNullValue,
+                SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero);
+        PersistenceUtil.sharedInstance().saveContentToFile(jsonString, installationFile);
+      } catch (Exception ex) {
+        LOGGER.w("failed to serialize JSONString. cause: " + ex.getMessage());
+      }
     }
   }
 
