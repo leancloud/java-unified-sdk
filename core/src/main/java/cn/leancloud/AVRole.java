@@ -1,10 +1,9 @@
 package cn.leancloud;
 
 import cn.leancloud.annotation.AVClassName;
-import com.alibaba.fastjson.annotation.JSONType;
 
 @AVClassName("_Role")
-@JSONType(ignores = {"name", "query", "roles"})
+//@JSONType(ignores = {"name", "query", "roles"})
 public class AVRole extends AVObject {
   public final static String CLASS_NAME = "_Role";
   private static final String ATTR_NAME = "name";

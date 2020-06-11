@@ -6,9 +6,8 @@ import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -160,7 +159,7 @@ public abstract class AVNotificationManager {
       try {
         JSONObject object = JSON.parseObject(message);
         return object.containsKey("silent")? object.getBooleanValue("silent"): false;
-      } catch (JSONException e) {
+      } catch (Exception e) {
         LOGGER.e("failed to parse JSON.", e);
       }
     }
@@ -172,7 +171,7 @@ public abstract class AVNotificationManager {
     try {
       JSONObject object = JSON.parseObject(msg);
       result = object.getString("_expiration_time");
-    } catch (JSONException e) {
+    } catch (Exception e) {
       // LogUtil.avlog.i(e);
       // 不应该当做一个Error发出来，既然expire仅仅是一个option的数据
       // Log.e(LOGTAG, "Get expiration date error.", e);

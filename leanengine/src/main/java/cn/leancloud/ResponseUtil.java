@@ -3,10 +3,9 @@ package cn.leancloud;
 
 import cn.leancloud.ops.Utils;
 import cn.leancloud.types.AVGeoPoint;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONArray;
+import cn.leancloud.json.JSONObject;
 
 import java.util.Collection;
 import java.util.Date;
@@ -21,7 +20,7 @@ public class ResponseUtil {
     if (result instanceof JSONObject) {
       removeType((JSONObject) result);
     } else if (result instanceof JSONArray) {
-      for (Object o : (JSONArray) result) {
+      for (Object o : ((JSONArray) result).toArray()) {
         if (o instanceof JSONObject) {
           removeType((JSONObject) o);
         }
@@ -63,12 +62,10 @@ public class ResponseUtil {
     }
   }
   static String jsonStringFromMapWithNull(Object map) {
-    return JSON.toJSONString(map, SerializerFeature.WriteMapNullValue,
-            SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero);
+    return JSON.toJSONString(map);
   }
 
   static String jsonStringFromObjectWithNull(Object map) {
-    return JSON.toJSONString(map, SerializerFeature.WriteMapNullValue,
-            SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero);
+    return JSON.toJSONString(map);
   }
 }

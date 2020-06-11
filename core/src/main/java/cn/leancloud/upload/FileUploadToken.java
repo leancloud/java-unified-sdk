@@ -1,14 +1,13 @@
 package cn.leancloud.upload;
 
 import cn.leancloud.utils.AVUtils;
-import com.alibaba.fastjson.annotation.JSONField;
 
 public class FileUploadToken {
   private String bucket = null;
 
   private String objectId = null;
 
-  @JSONField(name = "upload_url")
+  //@JSONField(name = "upload_url")
   private String uploadUrl = null;
 
   private String provider = null;

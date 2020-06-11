@@ -6,8 +6,6 @@ import cn.leancloud.codec.MD5;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.io.File;
 import java.util.TimeZone;

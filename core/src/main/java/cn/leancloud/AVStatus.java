@@ -6,9 +6,8 @@ import cn.leancloud.ops.Utils;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.ErrorUtils;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONType;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
 
@@ -26,7 +25,7 @@ import java.util.*;
  *
  */
 @AVClassName("_Status")
-@JSONType(ignores = {"ACL", "updatedAt"})
+//@JSONType(ignores = {"ACL", "updatedAt"})
 public class AVStatus extends AVObject {
   public final static String CLASS_NAME = "_Status";
 

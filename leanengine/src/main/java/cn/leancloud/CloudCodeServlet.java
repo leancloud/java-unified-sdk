@@ -11,9 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
 
 import cn.leancloud.EndpointParser.EndpointInfo;
 
@@ -62,7 +61,7 @@ public class CloudCodeServlet extends HttpServlet {
         Object returnValue = LeanEngine.getHandler(internalEndpoint.getInternalEndpoint())
             .execute(req, internalEndpoint.isRPCcall());
         if (internalEndpoint.isNeedResponse()) {
-          String respJSONStr = JSON.toJSONString(returnValue, SerializerFeature.WriteMapNullValue);
+          String respJSONStr = JSON.toJSONString(returnValue);
           resp.setContentType(LeanEngine.JSON_CONTENT_TYPE);
           resp.getWriter().write(respJSONStr);
           LOGGER.d("resp json string: " + respJSONStr);

@@ -1,6 +1,7 @@
 package cn.leancloud.core;
 
 import cn.leancloud.*;
+import cn.leancloud.json.ObjectTypeAdapter;
 import cn.leancloud.ops.BaseOperation;
 import cn.leancloud.ops.BaseOperationAdapter;
 import cn.leancloud.types.AVDate;

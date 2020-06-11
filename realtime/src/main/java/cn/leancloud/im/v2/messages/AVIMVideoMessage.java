@@ -3,7 +3,7 @@ package cn.leancloud.im.v2.messages;
 import cn.leancloud.AVFile;
 import cn.leancloud.im.v2.annotation.AVIMMessageType;
 import cn.leancloud.utils.AVUtils;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;

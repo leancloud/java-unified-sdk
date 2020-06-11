@@ -3,7 +3,7 @@ package cn.leancloud.command;
 import cn.leancloud.Messages;
 import cn.leancloud.im.Signature;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
+import cn.leancloud.json.JSON;
 
 import java.util.List;
 import java.util.Map;

@@ -20,9 +20,9 @@ import cn.leancloud.query.QueryConditions;
 import cn.leancloud.query.QueryOperation;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONArray;
+import cn.leancloud.json.JSONObject;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

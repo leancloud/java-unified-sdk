@@ -1,6 +1,6 @@
 package cn.leancloud.service;
 
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observable;
 import retrofit2.http.Body;
 import retrofit2.http.POST;

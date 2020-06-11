@@ -10,7 +10,7 @@ import cn.leancloud.service.RTMConnectionServerResponse;
 import cn.leancloud.utils.LogUtil;
 
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
+import cn.leancloud.json.JSON;
 import io.reactivex.Observable;
 
 import io.reactivex.functions.Function;

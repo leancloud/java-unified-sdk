@@ -1,13 +1,12 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.json.ObjectValueFilter;
 import cn.leancloud.ops.AddOperation;
 import cn.leancloud.ops.BaseOperation;
 import cn.leancloud.ops.BitAndOperation;
 import cn.leancloud.ops.SetOperation;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -20,7 +19,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static com.alibaba.fastjson.parser.Feature.IgnoreAutoType;
 import static com.alibaba.fastjson.parser.Feature.IgnoreNotMatch;
 
 public class ArchivedRequestsTest extends TestCase {

@@ -3,15 +3,14 @@ package cn.leancloud;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
+import cn.leancloud.json.ObjectValueFilter;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import junit.framework.TestCase;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;

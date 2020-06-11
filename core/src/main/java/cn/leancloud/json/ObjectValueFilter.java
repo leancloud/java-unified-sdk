@@ -1,4 +1,4 @@
-package cn.leancloud;
+package cn.leancloud.json;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

@@ -2,9 +2,7 @@ package cn.leancloud.im.v2;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
-import cn.leancloud.AVQuery;
 import cn.leancloud.AVUser;
-import cn.leancloud.callback.GenericObjectCallback;
 import cn.leancloud.im.AVIMOptions;
 import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.im.OperationTube;
@@ -13,10 +11,9 @@ import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
 import cn.leancloud.query.QueryConditions;
 import cn.leancloud.service.RealtimeClient;
 import cn.leancloud.session.AVSession;
-import cn.leancloud.session.AVSessionManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 

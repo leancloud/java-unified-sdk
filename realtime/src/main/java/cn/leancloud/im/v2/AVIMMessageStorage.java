@@ -5,10 +5,9 @@ import cn.leancloud.codec.Base64;
 import cn.leancloud.im.DatabaseDelegate;
 import cn.leancloud.im.DatabaseDelegateFactory;
 import cn.leancloud.im.InternalConfiguration;
-import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
+import cn.leancloud.json.JSON;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;

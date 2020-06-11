@@ -2,32 +2,21 @@ package cn.leancloud;
 
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.codec.MD5;
-import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.network.NetworkingDetector;
 import cn.leancloud.ops.BaseOperation;
-import cn.leancloud.ops.BaseOperationAdapter;
-import cn.leancloud.ops.ObjectFieldOperation;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-import com.alibaba.fastjson.parser.Feature;
-import com.alibaba.fastjson.serializer.SerializeConfig;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.TypeReference;
+
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.operators.observable.ObservableError;
 
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static com.alibaba.fastjson.parser.Feature.IgnoreAutoType;
-import static com.alibaba.fastjson.parser.Feature.IgnoreNotMatch;
-import static com.alibaba.fastjson.parser.Feature.SupportAutoType;
 
 public class ArchivedRequests {
   private static final AVLogger logger = LogUtil.getLogger(ArchivedRequests.class);
@@ -178,14 +167,7 @@ public class ArchivedRequests {
     content.put(ATTR_METHOD, isDelete ? METHOD_DELETE : METHOD_SAVE);
     content.put(ATTR_INTERNAL_ID, object.internalId());
     content.put(ATTR_OBJECT, object.toJSONString());
-    if (AVOSCloud.isEnableCircularReferenceDetect()) {
-      content.put(ATTR_OPERATION, JSON.toJSONString(object.operations.values(), ObjectValueFilter.instance,
-              /*SerializerFeature.WriteClassName, */SerializerFeature.QuoteFieldNames));
-    } else {
-      content.put(ATTR_OPERATION, JSON.toJSONString(object.operations.values(), ObjectValueFilter.instance,
-              /*SerializerFeature.WriteClassName, */SerializerFeature.QuoteFieldNames,
-              SerializerFeature.DisableCircularReferenceDetect));
-    }
+    content.put(ATTR_OPERATION, JSON.toJSONString(object.operations.values()));
 
     return JSON.toJSONString(content);
   }
@@ -234,8 +216,7 @@ public class ArchivedRequests {
       resultObj.setUuid(internalId);
     }
     if (!StringUtil.isEmpty(operationJSON)) {
-      List<BaseOperation> ops = JSON.parseObject(operationJSON,
-              new TypeReference<List<BaseOperation>>() {}, IgnoreNotMatch);
+      List<BaseOperation> ops = JSON.parseObject(operationJSON, new TypeReference<List<BaseOperation>>() {});
       for (BaseOperation op: ops) {
         resultObj.addNewOperation(op);
       }

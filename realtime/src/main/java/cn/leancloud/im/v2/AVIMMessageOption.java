@@ -1,12 +1,11 @@
 package cn.leancloud.im.v2;
 
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.annotation.JSONType;
+import cn.leancloud.json.JSON;
 
 import java.util.Map;
 
-@JSONType
+//@JSONType
 public class AVIMMessageOption {
 
   /**

@@ -23,21 +23,19 @@ import java.util.concurrent.Callable;
 import cn.leancloud.upload.*;
 import cn.leancloud.utils.FileUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.annotation.JSONType;
+//import com.alibaba.fastjson.JSONObject;
+//import com.alibaba.fastjson.annotation.JSONField;
+//import com.alibaba.fastjson.annotation.JSONType;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import sun.util.resources.sr.CalendarData_sr_Latn_BA;
 
 @AVClassName("_File")
-@JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
+//@JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public final class AVFile extends AVObject {
   public static final String CLASS_NAME = "_File";
 
@@ -61,10 +59,10 @@ public final class AVFile extends AVObject {
     FileUploader.setUploadHeader(key, value);
   }
 
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   private String localPath = ""; // local file used by AVFile(name, file) constructor.
 
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   private String cachePath = ""; // file cache path
 
   /**
@@ -487,7 +485,7 @@ public final class AVFile extends AVObject {
             .map(new Function<AVObject, AVFile>() {
               @Override
               public AVFile apply(AVObject avObject) throws Exception {
-                AVFile.this.serverData.putAll(parameters);
+                AVFile.this.serverData.putAll(parameters.getInnerMap());
                 AVFile.this.mergeRawData(avObject, true);
                 AVFile.this.onSaveSuccess();
                 return AVFile.this;
@@ -568,7 +566,7 @@ public final class AVFile extends AVObject {
    * Get data in blocking mode.
    * @return data bytes.
    */
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   public byte[] getData() {
     String filePath = "";
     if(!StringUtil.isEmpty(localPath)) {
@@ -617,7 +615,7 @@ public final class AVFile extends AVObject {
    * @return data stream.
    * @throws Exception for file not found or io problem.
    */
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   public InputStream getDataStream() throws Exception {
     String filePath = "";
     if(!StringUtil.isEmpty(localPath)) {

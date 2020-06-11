@@ -3,8 +3,7 @@ package cn.leancloud.session;
 import cn.leancloud.cache.SystemSetting;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import cn.leancloud.json.JSON;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -141,9 +140,7 @@ public class PersistentQueue<E> implements Queue<E> {
   private void storeMessageQueue() {
     // 异步序列化，保证效率
     String queueString =
-            JSON.toJSONString(messages, SerializerFeature.SkipTransientField,
-                    SerializerFeature.WriteClassName, SerializerFeature.QuoteFieldNames,
-                    SerializerFeature.WriteNullNumberAsZero, SerializerFeature.WriteNullBooleanAsFalse);
+            JSON.toJSONString(messages);
     AppConfiguration.getDefaultSetting().saveString(MESSAGE_ZONE, queueKey, queueString);
   }
 

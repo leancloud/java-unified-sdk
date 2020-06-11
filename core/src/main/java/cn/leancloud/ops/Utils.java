@@ -3,6 +3,7 @@ package cn.leancloud.ops;
 import java.util.*;
 
 import cn.leancloud.*;
+import cn.leancloud.json.ObjectTypeAdapter;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.utils.StringUtil;
 

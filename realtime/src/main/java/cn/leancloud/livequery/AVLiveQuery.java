@@ -12,9 +12,9 @@ import cn.leancloud.service.RealtimeClient;
 import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONArray;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -84,7 +84,7 @@ public class AVLiveQuery {
           ArrayList<String> updateKeyList = new ArrayList<String>();
           if (jsonObject.containsKey(UPDATE_KEYS)) {
             JSONArray jsonArray = jsonObject.getJSONArray(UPDATE_KEYS);
-            for (Object item : jsonArray) {
+            for (Object item : jsonArray.toArray()) {
               updateKeyList.add((String)item);
             }
           }

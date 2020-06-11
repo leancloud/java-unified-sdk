@@ -11,9 +11,13 @@ import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+//import com.alibaba.fastjson.JSON;
+//import com.alibaba.fastjson.JSONArray;
+//import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
+import cn.leancloud.json.JSONArray;
+
 import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.annotation.JSONType;
 
@@ -32,7 +36,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-@JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
+//@JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVObject {
   public static final String KEY_CREATED_AT = "createdAt";
   public static final String KEY_UPDATED_AT = "updatedAt";
@@ -57,7 +61,7 @@ public class AVObject {
   protected AVACL acl = null;
   private String uuid = null;
 
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   private volatile boolean fetchWhenSave = false;
   protected volatile boolean totallyOverwrite = false;
 
@@ -496,7 +500,7 @@ public class AVObject {
    * Flag to indicate data is available or not.
    * @return available flag.
    */
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   public boolean isDataAvailable() {
     return !StringUtil.isEmpty(this.objectId) && !this.serverData.isEmpty();
   }
@@ -1042,7 +1046,7 @@ public class AVObject {
                 JSONObject oneResult = batchResults.getJSONObject(i);
                 AVObject originObject = (AVObject) it.next();
                 if (oneResult.containsKey("success")) {
-                  AVUtils.mergeConcurrentMap(originObject.serverData, oneResult.getJSONObject("success"));
+                  AVUtils.mergeConcurrentMap(originObject.serverData, oneResult.getJSONObject("success").getInnerMap());
                   originObject.onSaveSuccess();
                 } else if (oneResult.containsKey("error")) {
                   originObject.onSaveFailure();
@@ -1377,7 +1381,7 @@ public class AVObject {
    * Get request endpoint.
    * @return endpoint.
    */
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   public String getRequestRawEndpoint() {
     if (StringUtil.isEmpty(getObjectId())) {
       return "/1.1/classes/" + this.getClassName();
@@ -1390,7 +1394,7 @@ public class AVObject {
    * Get request method.
    * @return http method.
    */
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   public String getRequestMethod() {
     if (StringUtil.isEmpty(getObjectId())) {
       return "POST";
@@ -1469,14 +1473,7 @@ public class AVObject {
    * @return json string.
    */
   public String toJSONString() {
-    if (AVOSCloud.isEnableCircularReferenceDetect()) {
-      return JSON.toJSONString(this, ObjectValueFilter.instance,
-              SerializerFeature.WriteClassName);
-    } else {
-      return JSON.toJSONString(this, ObjectValueFilter.instance,
-              SerializerFeature.WriteClassName,
-              SerializerFeature.DisableCircularReferenceDetect);
-    }
+    return JSON.toJSONString(this);
   }
 
   /**
@@ -1503,7 +1500,7 @@ public class AVObject {
 
     objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.ops.[A-Za-z]+Op\",", "");
 
-    return JSON.parseObject(objectString, AVObject.class, Feature.SupportAutoType);
+    return JSON.parseObject(objectString, AVObject.class);
   }
 
   /**

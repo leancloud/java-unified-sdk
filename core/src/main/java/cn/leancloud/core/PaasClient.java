@@ -8,7 +8,6 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.fastjson.*;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import cn.leancloud.core.AppConfiguration.SchedulerCreator;
 
 import java.util.concurrent.TimeUnit;
 

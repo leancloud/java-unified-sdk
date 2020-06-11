@@ -1,8 +1,8 @@
 package cn.leancloud.utils;
 
 import cn.leancloud.AVException;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
 import retrofit2.HttpException;
 import retrofit2.Response;
 

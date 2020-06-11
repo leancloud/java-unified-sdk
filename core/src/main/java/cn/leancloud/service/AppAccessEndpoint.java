@@ -2,27 +2,27 @@ package cn.leancloud.service;
 
 import cn.leancloud.core.AVOSService;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.annotation.JSONType;
+//import com.alibaba.fastjson.annotation.JSONField;
+//import com.alibaba.fastjson.annotation.JSONType;
 
-@JSONType
+//@JSONType
 public class AppAccessEndpoint {
-  @JSONField(name = "ttl")
+  //@JSONField(name = "ttl")
   private long ttl;
 
-  @JSONField(name = "stats_server")
+  //@JSONField(name = "stats_server")
   private String statServer;
 
-  @JSONField(name = "push_server")
+  //@JSONField(name = "push_server")
   private String pushServer;
 
-  @JSONField(name = "rtm_router_server")
+  //@JSONField(name = "rtm_router_server")
   private String rtmRouterServer;
 
-  @JSONField(name = "api_server")
+  //@JSONField(name = "api_server")
   private String apiServer;
 
-  @JSONField(name = "engine_server")
+  //@JSONField(name = "engine_server")
   private String engineServer;
 
   public long getTtl() {

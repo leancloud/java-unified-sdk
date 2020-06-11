@@ -1,11 +1,9 @@
 package cn.leancloud.im;
 
-import com.alibaba.fastjson.annotation.JSONType;
-
 import java.util.Collections;
 import java.util.List;
 
-@JSONType(ignores = {"expired"})
+//@JSONType(ignores = {"expired"})
 public class Signature {
 
   private String signature;

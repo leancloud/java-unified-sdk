@@ -6,8 +6,8 @@ import cn.leancloud.im.v2.annotation.AVIMMessageType;
 import cn.leancloud.im.v2.messages.*;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
 
 import java.lang.annotation.IncompleteAnnotationException;
 import java.lang.reflect.Method;

@@ -1,8 +1,8 @@
 package cn.leancloud.service;
 
-import com.alibaba.fastjson.annotation.JSONType;
+//import com.alibaba.fastjson.annotation.JSONType;
 
-@JSONType
+//@JSONType
 public class RTMConnectionServerResponse {
   private String groupId;
   private String server;

@@ -1,5 +1,6 @@
-package cn.leancloud;
+package cn.leancloud.json;
 
+import cn.leancloud.*;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.utils.LogUtil;
@@ -17,7 +18,6 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,9 +52,9 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
     writer.write(',');
     writer.writeFieldName(KEY_SERVERDATA, false);
     if (AVOSCloud.isEnableCircularReferenceDetect()) {
-      writer.write(JSON.toJSONString(avObject.serverData, ObjectValueFilter.instance, SerializerFeature.WriteClassName));
+      writer.write(JSON.toJSONString(avObject.getServerData(), ObjectValueFilter.instance, SerializerFeature.WriteClassName));
     } else {
-      writer.write(JSON.toJSONString(avObject.serverData, ObjectValueFilter.instance, SerializerFeature.WriteClassName,
+      writer.write(JSON.toJSONString(avObject.getServerData(), ObjectValueFilter.instance, SerializerFeature.WriteClassName,
               SerializerFeature.DisableCircularReferenceDetect));
     }
 
@@ -123,13 +123,13 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
       Object v = entry.getValue();
       if (v instanceof String || v instanceof Number || v instanceof Boolean || v instanceof Byte || v instanceof Character) {
         // primitive type
-        obj.serverData.put(k, v);
+        obj.getServerData().put(k, v);
       } else if (v instanceof Map || v instanceof JSONObject) {
-        obj.serverData.put(k, Utils.getObjectFrom(v));
+        obj.getServerData().put(k, Utils.getObjectFrom(v));
       } else if (v instanceof Collection) {
-        obj.serverData.put(k, Utils.getObjectFrom(v));
+        obj.getServerData().put(k, Utils.getObjectFrom(v));
       } else if (null != v) {
-        obj.serverData.put(k, v);
+        obj.getServerData().put(k, v);
       }
     }
     return (T) obj;

@@ -5,8 +5,8 @@ import cn.leancloud.callback.ProgressCallback;
 import cn.leancloud.codec.SHA1;
 import cn.leancloud.AVFile;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
 import okhttp3.*;
 
 import java.util.Map;
@@ -132,8 +132,8 @@ public class QCloudUploader extends HttpClientUploader {
   private static JSONObject parseSliceUploadResponse(String resp) {
     if (!StringUtil.isEmpty(resp)) {
       try {
-        com.alibaba.fastjson.JSONObject object = JSON.parseObject(resp);
-        com.alibaba.fastjson.JSONObject data = object.getJSONObject("data");
+        JSONObject object = JSON.parseObject(resp);
+        JSONObject data = object.getJSONObject("data");
         return data;
       } catch (Exception e) {
         ;

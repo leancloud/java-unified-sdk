@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSON;
+import cn.leancloud.json.JSON;
 
 public class EngineFunctionHandlerInfo extends EngineHandlerInfo {
 

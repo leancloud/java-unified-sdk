@@ -1,17 +1,9 @@
 package cn.leancloud.im.v2.messages;
 
-import cn.leancloud.AVException;
 import cn.leancloud.AVFile;
-import cn.leancloud.callback.SaveCallback;
-import cn.leancloud.core.PaasClient;
 import cn.leancloud.im.v2.annotation.AVIMMessageType;
 import cn.leancloud.utils.AVUtils;
-import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import cn.leancloud.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;

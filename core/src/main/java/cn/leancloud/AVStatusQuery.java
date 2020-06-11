@@ -4,7 +4,7 @@ import cn.leancloud.core.PaasClient;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.utils.ErrorUtils;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
 

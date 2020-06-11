@@ -4,7 +4,7 @@ import cn.leancloud.core.*;
 import cn.leancloud.im.Signature;
 import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
 import cn.leancloud.utils.ErrorUtils;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.functions.Consumer;

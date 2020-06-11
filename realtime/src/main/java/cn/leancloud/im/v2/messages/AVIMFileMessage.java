@@ -13,8 +13,8 @@ import cn.leancloud.im.v2.annotation.AVIMMessageField;
 import cn.leancloud.im.v2.annotation.AVIMMessageType;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
@@ -279,7 +279,7 @@ public class AVIMFileMessage extends AVIMTypedMessage {
         @Override
         public void onResponse(@NotNull Call call, @NotNull Response rawResponse) throws IOException {
           String content = rawResponse.body().string();
-          com.alibaba.fastjson.JSONObject response = JSON.parseObject(content);
+          JSONObject response = JSON.parseObject(content);
           parseAdditionalMetaData(meta, response);
 
           callback.internalDone(null);

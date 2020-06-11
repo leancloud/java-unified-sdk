@@ -1,9 +1,11 @@
 package cn.leancloud;
 
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+//import com.alibaba.fastjson.JSON;
+//import com.alibaba.fastjson.JSONObject;
+
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -144,8 +146,7 @@ public class AVACL {
    * @return json object.
    */
   public JSONObject toJSONObject() {
-    String jsonStr = JSON.toJSONString(this.permissionsById, SerializerFeature.WriteMapNullValue,
-            SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero);
+    String jsonStr = JSON.toJSONString(this.permissionsById);
     return JSON.parseObject(jsonStr);
   }
 

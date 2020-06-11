@@ -7,8 +7,7 @@ import cn.leancloud.im.AVIMOptions;
 import cn.leancloud.im.Signature;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import cn.leancloud.json.JSON;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -75,7 +74,7 @@ public class AVSessionCacheHelper {
       signatureMap.put(clientId, signature);
       SystemSetting setting = AppConfiguration.getDefaultSetting();
       setting.saveString(SESSION_SIGNATURE_KEY, SESSION_KEY,
-              JSON.toJSONString(signatureMap, SerializerFeature.WriteClassName));
+              JSON.toJSONString(signatureMap));
     }
 
     public static Signature getSessionSignature(String clientId) {

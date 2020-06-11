@@ -6,14 +6,13 @@ import cn.leancloud.callback.AVCallback;
 import cn.leancloud.callback.FollowersAndFolloweesCallback;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
+import cn.leancloud.json.ObjectTypeAdapter;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.ErrorUtils;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.annotation.JSONType;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
@@ -26,7 +25,7 @@ import java.util.*;
 // TODO: need transfer Anonymous User/Common User
 
 @AVClassName("_User")
-@JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
+//@JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVUser extends AVObject {
   public static final String ATTR_USERNAME = "username";
   private static final String ATTR_PASSWORD = "password";
@@ -82,7 +81,7 @@ public class AVUser extends AVObject {
    * get user email.
    * @return user email.
    */
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   public String getEmail() {
     return (String) get(ATTR_EMAIL);
   }
@@ -101,7 +100,7 @@ public class AVUser extends AVObject {
    *
    * @return user name
    */
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   public String getUsername() {
     return (String) get(ATTR_USERNAME);
   }
@@ -119,7 +118,7 @@ public class AVUser extends AVObject {
    * get user password.
    * @return user password.
    */
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   public String getPassword() {
     return (String) get(ATTR_PASSWORD);
   }
@@ -138,7 +137,7 @@ public class AVUser extends AVObject {
    *
    * @return user mobilephone number.
    */
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   public String getMobilePhoneNumber() {
     return (String) get(ATTR_MOBILEPHONE);
   }
@@ -157,7 +156,7 @@ public class AVUser extends AVObject {
    *
    * @return flag to indicate user's mobilephone is verified or not
    */
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   public boolean isMobilePhoneVerified() {
     return getBoolean(ATTR_MOBILEPHONE_VERIFIED);
   }
@@ -168,7 +167,7 @@ public class AVUser extends AVObject {
    *
    * @return user session token, null if not login.
    */
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   public String getSessionToken() {
     return (String)get(ATTR_SESSION_TOKEN);
   }
@@ -185,7 +184,7 @@ public class AVUser extends AVObject {
    * whether user is authenticated or not.
    * @return flag to indicate user is authenticated or not.
    */
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   public boolean isAuthenticated() {
     // TODO: need to support thirdparty login.
     String sessionToken = getSessionToken();
@@ -729,7 +728,7 @@ public class AVUser extends AVObject {
     enableAutomatic = true;
   }
 
-  @JSONField(serialize = false)
+  //@JSONField(serialize = false)
   public static boolean isEnableAutomatic() {
     return enableAutomatic;
   }
@@ -874,7 +873,7 @@ public class AVUser extends AVObject {
    * @return observable instance.
    */
   public Observable<JSONObject> followInBackground(String userObjectId) {
-    return this.followInBackground(userObjectId, new JSONObject());
+    return this.followInBackground(userObjectId, new HashMap<String, Object>());
   }
 
   public Observable<JSONObject> followInBackground(String userObjectId, Map<String, Object> attributes) {

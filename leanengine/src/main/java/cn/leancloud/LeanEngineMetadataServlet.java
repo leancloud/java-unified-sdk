@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 
 
 @WebServlet(name = "LeanEngineMetadataServlet",

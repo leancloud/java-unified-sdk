@@ -2,12 +2,8 @@ package cn.leancloud.cache;
 
 import cn.leancloud.codec.MD5;
 import cn.leancloud.core.AppConfiguration;
-import cn.leancloud.utils.StringUtil;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 public class FileCache extends LocalStorage{
   private static final int MAX_FILE_BUF_SIZE = 4 * 1024 * 1024;

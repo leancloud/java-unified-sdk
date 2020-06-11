@@ -3,7 +3,6 @@ package cn.leancloud.session;
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.command.*;
-import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.*;
 import cn.leancloud.im.v2.AVIMClient;

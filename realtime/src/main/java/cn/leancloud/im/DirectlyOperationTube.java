@@ -2,24 +2,19 @@ package cn.leancloud.im;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
-import cn.leancloud.Messages;
 import cn.leancloud.callback.AVCallback;
 import cn.leancloud.codec.MD5;
-import cn.leancloud.command.LiveQueryLoginPacket;
 import cn.leancloud.im.v2.*;
 import cn.leancloud.im.v2.callback.*;
 import cn.leancloud.livequery.AVLiveQuerySubscribeCallback;
 import cn.leancloud.livequery.LiveQueryOperationDelegate;
-import cn.leancloud.push.AVNotificationManager;
-import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.session.AVConversationHolder;
 import cn.leancloud.session.AVSession;
 import cn.leancloud.session.AVSessionManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
+import cn.leancloud.json.JSON;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

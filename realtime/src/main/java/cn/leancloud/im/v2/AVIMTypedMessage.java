@@ -3,8 +3,8 @@ package cn.leancloud.im.v2;
 import cn.leancloud.im.v2.annotation.AVIMMessageField;
 import cn.leancloud.im.v2.annotation.AVIMMessageType;
 import cn.leancloud.util.FieldAttribute;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

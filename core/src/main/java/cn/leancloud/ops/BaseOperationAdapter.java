@@ -1,7 +1,7 @@
 package cn.leancloud.ops;
 
 import cn.leancloud.AVObject;
-import cn.leancloud.ObjectValueFilter;
+import cn.leancloud.json.ObjectValueFilter;
 import cn.leancloud.core.AVOSCloud;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

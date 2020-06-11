@@ -1,6 +1,6 @@
 package cn.leancloud;
 
-import com.alibaba.fastjson.JSON;
+import cn.leancloud.json.JSON;
 
 import java.util.Map;
 

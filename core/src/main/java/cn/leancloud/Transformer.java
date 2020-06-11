@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.annotation.AVClassName;
+import cn.leancloud.json.ObjectTypeAdapter;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import com.alibaba.fastjson.parser.ParserConfig;

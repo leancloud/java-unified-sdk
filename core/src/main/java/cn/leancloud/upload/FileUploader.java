@@ -6,7 +6,7 @@ import cn.leancloud.callback.ProgressCallback;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 
 import java.util.*;
 

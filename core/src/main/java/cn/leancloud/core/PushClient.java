@@ -2,12 +2,11 @@ package cn.leancloud.core;
 
 import cn.leancloud.service.PushService;
 import cn.leancloud.utils.ErrorUtils;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
 
 import java.util.Map;
 

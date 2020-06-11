@@ -6,7 +6,7 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.codec.Base64;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
+import cn.leancloud.json.JSON;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;

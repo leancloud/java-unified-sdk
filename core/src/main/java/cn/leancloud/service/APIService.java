@@ -1,6 +1,8 @@
 package cn.leancloud.service;
 
 import cn.leancloud.*;
+import cn.leancloud.json.JSONArray;
+import cn.leancloud.json.JSONObject;
 import cn.leancloud.query.AVQueryResult;
 import cn.leancloud.search.AVSearchResponse;
 import cn.leancloud.sms.AVCaptchaDigest;
@@ -15,7 +17,7 @@ import retrofit2.http.*;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.*;
+//import com.alibaba.fastjson.*;
 
 public interface APIService {
   /**
