@@ -2,13 +2,13 @@
   <parent>
     <groupId>cn.leancloud</groupId>
     <artifactId>leancloud-sdk</artifactId>
-    <version>6.4.5-SNAPSHOT</version>
+    <version>6.4.5</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.leancloud</groupId>
   <artifactId>realtime-core</artifactId>
   <packaging>jar</packaging>
-  <version>6.4.5-SNAPSHOT</version>
+  <version>6.4.5</version>
   <name>realtime core library</name>
   <url>http://maven.apache.org</url>
 
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>cn.leancloud</groupId>
       <artifactId>storage-core</artifactId>
-      <version>6.4.5-SNAPSHOT</version>
+      <version>6.4.5</version>
     </dependency>
     <dependency>
       <groupId>com.google.protobuf</groupId>
