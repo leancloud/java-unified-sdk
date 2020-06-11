@@ -137,9 +137,7 @@ public final class AVInstallation extends AVObject {
     this.put(TIMEZONE, timezone());
     File installationFile = getCacheFile();
     if (null != installationFile) {
-      String jsonString = JSON.toJSONString(this, ObjectValueFilter.instance,
-              SerializerFeature.WriteClassName,
-              SerializerFeature.DisableCircularReferenceDetect);
+      String jsonString = toJSONString();
       PersistenceUtil.sharedInstance().saveContentToFile(jsonString, installationFile);
     }
   }
@@ -175,9 +173,7 @@ public final class AVInstallation extends AVObject {
   void updateCurrentInstallationCache() {
     if (currentInstallation == this) {
       File installationFile = getCacheFile();
-      String jsonString = JSON.toJSONString(currentInstallation, ObjectValueFilter.instance,
-              SerializerFeature.WriteClassName,
-              SerializerFeature.DisableCircularReferenceDetect);
+      String jsonString = currentInstallation.toJSONString();
       PersistenceUtil.sharedInstance().saveContentToFile(jsonString, installationFile);
     }
   }

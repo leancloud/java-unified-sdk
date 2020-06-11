@@ -1447,6 +1447,7 @@ public class AVObject {
    * @param <T> result type.
    * @return query instance.
    */
+
   public static <T extends AVObject> AVQuery<T> getQuery(Class<T> clazz) {
     return new AVQuery<T>(Transformer.getSubClassName(clazz), clazz);
   }
