@@ -1,6 +1,5 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.types.AVNull;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;

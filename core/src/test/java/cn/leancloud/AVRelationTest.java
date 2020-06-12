@@ -1,6 +1,5 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;

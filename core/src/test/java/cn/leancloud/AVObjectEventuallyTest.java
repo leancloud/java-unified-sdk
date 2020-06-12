@@ -1,6 +1,5 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
 import junit.framework.Test;
 import junit.framework.TestCase;

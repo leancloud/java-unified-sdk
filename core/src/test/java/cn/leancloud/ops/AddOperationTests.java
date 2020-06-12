@@ -3,16 +3,13 @@ package cn.leancloud.ops;
 import cn.leancloud.AVObject;
 import cn.leancloud.Configure;
 import cn.leancloud.annotation.AVClassName;
-import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
-import cn.leancloud.core.PaasClient;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 

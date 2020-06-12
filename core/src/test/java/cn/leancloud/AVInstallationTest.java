@@ -4,8 +4,7 @@ import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.json.ObjectValueFilter;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import cn.leancloud.json.JSON;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.TestCase;
@@ -130,9 +129,7 @@ public class AVInstallationTest extends TestCase {
     assertTrue(installation.getInstallationId().equals("fd6605e9a1679d355457ad5c37fc99b3"));
     assertTrue(installation.getObjectId().equals("0qYaOiU08hqm8bgpDk4CrTXXBs1NPtSs"));
 
-    String newJsonString = JSON.toJSONString(installation, ObjectValueFilter.instance,
-            SerializerFeature.WriteClassName,
-            SerializerFeature.DisableCircularReferenceDetect);
+    String newJsonString = JSON.toJSONString(installation);
     AVInstallation tmp = (AVInstallation) AVObject.parseAVObject(newJsonString);
     assertTrue(tmp.getInstallationId().equals("fd6605e9a1679d355457ad5c37fc99b3"));
     assertTrue(tmp.getObjectId().equals("0qYaOiU08hqm8bgpDk4CrTXXBs1NPtSs"));

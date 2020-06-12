@@ -4,7 +4,7 @@ import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;

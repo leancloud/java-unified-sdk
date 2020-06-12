@@ -1,6 +1,6 @@
 package cn.leancloud;
 
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.TestCase;

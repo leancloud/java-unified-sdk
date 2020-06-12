@@ -1,9 +1,7 @@
 package cn.leancloud.query;
 
 import cn.leancloud.AVObject;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import cn.leancloud.json.JSON;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -11,7 +9,6 @@ import junit.framework.TestSuite;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
-import java.util.HashMap;
 
 public class AVQueryResultTest extends TestCase {
   public AVQueryResultTest(String testname) {

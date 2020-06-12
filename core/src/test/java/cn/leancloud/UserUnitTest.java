@@ -4,7 +4,6 @@ import cn.leancloud.callback.LogInCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.callback.SignUpCallback;
 import cn.leancloud.convertor.ObserverBuilder;
-import cn.leancloud.core.AVOSCloud;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

@@ -1,10 +1,8 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
+
 import cn.leancloud.core.AppConfiguration;
-import cn.leancloud.core.PaasClient;
 import cn.leancloud.types.AVNull;
-import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;

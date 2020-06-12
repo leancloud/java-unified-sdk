@@ -2,8 +2,6 @@ package cn.leancloud;
 
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AVOSService;
-import cn.leancloud.core.AppConfiguration;
-import cn.leancloud.logging.DummyLoggerFactory;
 import cn.leancloud.utils.StringUtil;
 
 public class Configure {

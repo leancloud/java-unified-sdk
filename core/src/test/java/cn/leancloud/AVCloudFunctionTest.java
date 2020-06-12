@@ -1,6 +1,5 @@
 package cn.leancloud;
 
-import com.alibaba.fastjson.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;

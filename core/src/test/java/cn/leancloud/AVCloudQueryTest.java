@@ -1,7 +1,6 @@
 package cn.leancloud;
 
 import cn.leancloud.annotation.AVClassName;
-import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.query.AVCloudQueryResult;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;

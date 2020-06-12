@@ -5,7 +5,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 
 public class GenericParameterTest extends TestCase {
   final static class __<T> {

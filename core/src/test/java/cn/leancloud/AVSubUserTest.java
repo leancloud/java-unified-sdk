@@ -1,8 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.json.ObjectValueFilter;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import cn.leancloud.json.JSON;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
@@ -73,15 +72,11 @@ public class AVSubUserTest extends TestCase {
       }
 
       public void onNext(AVUser avUser) {
-        System.out.println("onNext. result=" + JSON.toJSONString(avUser, ObjectValueFilter.instance,
-                SerializerFeature.WriteClassName,
-                SerializerFeature.DisableCircularReferenceDetect));
+        System.out.println("onNext. result=" + JSON.toJSONString(avUser));
         operationSucceed = avUser instanceof SubUser;
 
         AVUser currentUser = AVUser.getCurrentUser();
-        System.out.println("currentUser. result=" + JSON.toJSONString(currentUser, ObjectValueFilter.instance,
-                SerializerFeature.WriteClassName,
-                SerializerFeature.DisableCircularReferenceDetect));
+        System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
         System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
         operationSucceed = operationSucceed & (currentUser instanceof SubUser);

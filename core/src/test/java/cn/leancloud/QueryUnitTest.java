@@ -4,7 +4,6 @@ import cn.leancloud.callback.CountCallback;
 import cn.leancloud.callback.DeleteCallback;
 import cn.leancloud.callback.FindCallback;
 import cn.leancloud.convertor.ObserverBuilder;
-import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.query.AVQueryResult;
 import junit.framework.Assert;
 import junit.framework.Test;

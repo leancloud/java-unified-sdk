@@ -3,7 +3,6 @@ package cn.leancloud;
 import cn.leancloud.callback.FindCallback;
 import cn.leancloud.callback.GetCallback;
 import cn.leancloud.convertor.ObserverBuilder;
-import cn.leancloud.core.AVOSCloud;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;

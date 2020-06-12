@@ -1,13 +1,11 @@
 package cn.leancloud;
 
-import cn.leancloud.json.ObjectValueFilter;
 import cn.leancloud.ops.AddOperation;
 import cn.leancloud.ops.BaseOperation;
 import cn.leancloud.ops.BitAndOperation;
 import cn.leancloud.ops.SetOperation;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.TypeReference;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
@@ -18,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-
-import static com.alibaba.fastjson.parser.Feature.IgnoreNotMatch;
 
 public class ArchivedRequestsTest extends TestCase {
   private boolean testSucceed = false;
@@ -52,20 +48,19 @@ public class ArchivedRequestsTest extends TestCase {
     ops.add(addOp);
     BitAndOperation bitAndOp = new BitAndOperation("score", 0x002);
     ops.add(bitAndOp);
-    String opString = JSON.toJSONString(ops, ObjectValueFilter.instance, /*SerializerFeature.WriteClassName, */SerializerFeature.QuoteFieldNames,
-            SerializerFeature.DisableCircularReferenceDetect);
+    String opString = JSON.toJSONString(ops);
 
     System.out.println(opString);
 
     List<BaseOperation> parsedOps = JSON.parseObject(opString,
-            new TypeReference<List<BaseOperation>>() {}, IgnoreNotMatch);
+            new TypeReference<List<BaseOperation>>() {});
     assertEquals(ops.size(), parsedOps.size());
   }
 
   public void testOperationSerialize2() {
     String opString = "[{\"field\":\"name\",\"final\":true,\"operation\":\"Set\", \"value\":\"Mike\"},{\"field\":\"age\",\"final\":true,\"operation\":\"Set\",\"value\":12}]";
     List<BaseOperation> parsedOps = JSON.parseObject(opString,
-            new TypeReference<List<BaseOperation>>() {}, IgnoreNotMatch);
+            new TypeReference<List<BaseOperation>>() {});
     assertEquals(2, parsedOps.size());
   }
 

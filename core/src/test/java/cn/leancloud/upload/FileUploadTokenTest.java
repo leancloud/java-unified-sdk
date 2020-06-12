@@ -1,6 +1,6 @@
 package cn.leancloud.upload;
 
-import com.alibaba.fastjson.JSON;
+import cn.leancloud.json.JSON;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

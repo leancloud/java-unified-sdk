@@ -1,9 +1,8 @@
 package cn.leancloud;
 
 import cn.leancloud.annotation.AVClassName;
-import com.alibaba.fastjson.annotation.JSONType;
 
-@JSONType(ignores = {"blackListRelation"})
+//@JSONType(ignores = {"blackListRelation"})
 @AVClassName("SubUser")
 public class SubUser extends AVUser {
   public AVObject getArmor() {

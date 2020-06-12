@@ -1,6 +1,5 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
@@ -10,9 +9,7 @@ import junit.framework.TestSuite;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.CyclicBarrier;
 
 public class ObjectUnitTest extends TestCase {
   private CountDownLatch latch = null;

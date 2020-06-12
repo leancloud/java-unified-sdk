@@ -1,9 +1,7 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.utils.LogUtil;
-import com.alibaba.fastjson.JSON;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
