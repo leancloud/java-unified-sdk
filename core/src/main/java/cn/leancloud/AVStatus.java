@@ -25,7 +25,6 @@ import java.util.*;
  *
  */
 @AVClassName("_Status")
-//@JSONType(ignores = {"ACL", "updatedAt"})
 public class AVStatus extends AVObject {
   public final static String CLASS_NAME = "_Status";
 

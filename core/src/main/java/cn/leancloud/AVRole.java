@@ -3,7 +3,6 @@ package cn.leancloud;
 import cn.leancloud.annotation.AVClassName;
 
 @AVClassName("_Role")
-//@JSONType(ignores = {"name", "query", "roles"})
 public class AVRole extends AVObject {
   public final static String CLASS_NAME = "_Role";
   private static final String ATTR_NAME = "name";
@@ -14,9 +13,11 @@ public class AVRole extends AVObject {
 
   public AVRole() {
     super(CLASS_NAME);
+    totallyOverwrite = true;
   }
   public AVRole(String name) {
     super(CLASS_NAME);
+    totallyOverwrite = true;
     put(ATTR_NAME, name);
   }
   public AVRole(String name, AVACL acl) {

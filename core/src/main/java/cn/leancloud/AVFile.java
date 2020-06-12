@@ -32,7 +32,6 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 @AVClassName("_File")
-//@JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public final class AVFile extends AVObject {
   public static final String CLASS_NAME = "_File";
 

@@ -5,10 +5,7 @@ import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class AVACL {
   private static final String PUBLIC_KEY = "*";
@@ -16,9 +13,12 @@ public class AVACL {
   private static final String KEY_READ_PERMISSION = "read";
   private static final String KEY_WRITE_PERMISSION = "write";
 
-  private static class Permissions extends HashMap<String, Boolean> {
+  public static class Permissions extends HashMap<String, Boolean> {
+    public Permissions() {
+      super();
+    }
 
-    Permissions(boolean read, boolean write) {
+    public Permissions(boolean read, boolean write) {
       super();
       if (read) {
         put(KEY_READ_PERMISSION, read);
@@ -28,7 +28,7 @@ public class AVACL {
       }
     }
 
-    Permissions(HashMap<String, Object> map) {
+    public Permissions(HashMap<String, Object> map) {
       super();
       if (null == map) {
         return;
@@ -47,7 +47,7 @@ public class AVACL {
       }
     }
 
-    Permissions(Permissions permissions) {
+    public Permissions(Permissions permissions) {
       super();
       if (null == permissions) {
         return;
@@ -61,11 +61,17 @@ public class AVACL {
     }
 
     boolean getReadPermission() {
-      return get(KEY_READ_PERMISSION);
+      if (containsKey(KEY_READ_PERMISSION)) {
+        return get(KEY_READ_PERMISSION);
+      }
+      return false;
     }
 
     boolean getWritePermission() {
-      return get(KEY_WRITE_PERMISSION);
+      if (containsKey(KEY_WRITE_PERMISSION)) {
+        return get(KEY_WRITE_PERMISSION);
+      }
+      return false;
     }
   }
 

@@ -1,6 +1,5 @@
 package cn.leancloud.types;
 
-//@JSONType
 public final class AVNull {
   private static final AVNull INSTANCE = new AVNull();
 

@@ -1,7 +1,9 @@
 package cn.leancloud.json;
 
 import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.types.AVDate;
 import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson.serializer.SerializeFilter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.lang.reflect.Type;
@@ -43,12 +45,19 @@ public class JSON {
   }
 
   public static String toJSONString(Object object) {
+    if (object != null && object instanceof AVDate) {
+      SerializeFilter[] filters = {DateNameFilter.instance, LeanPropertyFilter.instance};
+      return com.alibaba.fastjson.JSON.toJSONString(object, filters,
+              SerializerFeature.WriteClassName, SerializerFeature.QuoteFieldNames, SerializerFeature.WriteMapNullValue,
+              SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero);
+    }
+    SerializeFilter[] filters = {ObjectValueFilter.instance, LeanPropertyFilter.instance};
     if (AVOSCloud.isEnableCircularReferenceDetect()) {
-      return com.alibaba.fastjson.JSON.toJSONString(object, ObjectValueFilter.instance,
+      return com.alibaba.fastjson.JSON.toJSONString(object, filters,
               SerializerFeature.WriteClassName, SerializerFeature.QuoteFieldNames, SerializerFeature.WriteMapNullValue,
               SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero);
     } else {
-      return com.alibaba.fastjson.JSON.toJSONString(object, ObjectValueFilter.instance,
+      return com.alibaba.fastjson.JSON.toJSONString(object, filters,
               SerializerFeature.WriteClassName, SerializerFeature.QuoteFieldNames, SerializerFeature.WriteMapNullValue,
               SerializerFeature.WriteNullBooleanAsFalse, SerializerFeature.WriteNullNumberAsZero,
               SerializerFeature.DisableCircularReferenceDetect);

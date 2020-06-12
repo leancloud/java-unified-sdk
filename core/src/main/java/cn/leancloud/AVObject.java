@@ -1,6 +1,5 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.network.NetworkingDetector;
 import cn.leancloud.ops.*;
@@ -27,7 +26,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
-//@JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVObject {
   public static final String KEY_CREATED_AT = "createdAt";
   public static final String KEY_UPDATED_AT = "updatedAt";
@@ -52,7 +50,6 @@ public class AVObject {
   protected AVACL acl = null;
   private String uuid = null;
 
-  //@JSONField(serialize = false)
   private volatile boolean fetchWhenSave = false;
   protected volatile boolean totallyOverwrite = false;
 

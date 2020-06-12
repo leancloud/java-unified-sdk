@@ -9,13 +9,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-//@JSONType
 public class AVDate {
   public static final String DEFAULT_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
   private static final ThreadLocal<SimpleDateFormat> THREAD_LOCAL_DATE_FORMAT =
           new ThreadLocal<SimpleDateFormat>();
 
-  //@JSONField(name = "__type")
   private String type = "Date";
 
   private String iso = "";
@@ -66,7 +64,7 @@ public class AVDate {
     this.iso = iso;
   }
 
-  public String jsonString() {
+  public String toJSONString() {
     return JSON.toJSONString(this);
   }
 }

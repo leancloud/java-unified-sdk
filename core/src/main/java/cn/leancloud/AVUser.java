@@ -25,7 +25,6 @@ import java.util.*;
 // TODO: need transfer Anonymous User/Common User
 
 @AVClassName("_User")
-//@JSONType(deserializer = ObjectTypeAdapter.class, serializer = ObjectTypeAdapter.class)
 public class AVUser extends AVObject {
   public static final String ATTR_USERNAME = "username";
   private static final String ATTR_PASSWORD = "password";

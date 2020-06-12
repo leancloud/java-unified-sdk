@@ -90,6 +90,7 @@ public class AVRoleTest extends TestCase {
 
       @Override
       public void onError(Throwable throwable) {
+        throwable.printStackTrace();
         latch.countDown();
       }
 

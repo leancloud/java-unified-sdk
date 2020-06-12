@@ -27,23 +27,24 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
   private static final String DEFAULT_VERSION = "5";
   public static final String KEY_SERVERDATA = "serverData";
 
+
   public void write(JSONSerializer serializer, Object object, Object fieldName, Type fieldType,
                     int features) throws IOException {
     this.write(serializer, object, fieldName, fieldType);
   }
 
   public void write(JSONSerializer serializer, Object object, Object fieldName, Type fieldType) throws IOException {
+    System.out.println("Adapter write. object=" + object.getClass().getSimpleName() + ", field=" + fieldName);
+
     AVObject avObject = (AVObject)object;
     SerializeWriter writer = serializer.getWriter();
     writer.write('{');
 
     // for 1.1.70.android fastjson, we dont use writer.writeFieldValue(seperator, field, value) method.
-    writer.write(' ');
 
 //    writer.writeFieldName("@type", false);
 //    writer.writeString(avObject.getClass().getName());
 //    writer.write(',');
-
     writer.writeFieldName(KEY_VERSION, false);
     writer.writeString(DEFAULT_VERSION);
     writer.write(',');
@@ -51,10 +52,19 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
     writer.writeString(avObject.getClassName());
     writer.write(',');
     writer.writeFieldName(KEY_SERVERDATA, false);
+
+    Map<String, Object> serverData = avObject.getServerData();
+    if (object instanceof AVRole) {
+      AVACL acl = ((AVRole)object).getACL();
+      if (null != acl) {
+        serverData.put(AVObject.KEY_ACL, acl);
+      }
+    }
+
     if (AVOSCloud.isEnableCircularReferenceDetect()) {
-      writer.write(JSON.toJSONString(avObject.getServerData(), ObjectValueFilter.instance, SerializerFeature.WriteClassName));
+      writer.write(JSON.toJSONString(serverData, ObjectValueFilter.instance, SerializerFeature.WriteClassName));
     } else {
-      writer.write(JSON.toJSONString(avObject.getServerData(), ObjectValueFilter.instance, SerializerFeature.WriteClassName,
+      writer.write(JSON.toJSONString(serverData, ObjectValueFilter.instance, SerializerFeature.WriteClassName,
               SerializerFeature.DisableCircularReferenceDetect));
     }
 
@@ -71,6 +81,8 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
    * @since 1.8+
    */
   public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
+    System.out.println("Adapter deserialze. object=" + type.toString() + ", field=" + fieldName);
+
     if (!AVObject.class.isAssignableFrom((Class) type)) {
       return (T) parser.parseObject();
     }

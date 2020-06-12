@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.annotation.AVClassName;
+import cn.leancloud.json.ConverterUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
@@ -45,7 +46,7 @@ public class Transformer {
     subClassesMAP.put(className, clazz);
     subClassesReverseMAP.put(clazz, className);
     // register object serializer/deserializer.
-    cn.leancloud.json.Utils.registerClass(clazz);
+    ConverterUtils.registerClass(clazz);
   }
 
   public static <T extends AVObject> T transform(AVObject rawObj, String className) {

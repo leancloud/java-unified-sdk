@@ -1,6 +1,7 @@
 package cn.leancloud.core;
 
 import cn.leancloud.*;
+import cn.leancloud.json.ConverterUtils;
 import cn.leancloud.types.AVDate;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observable;
@@ -53,7 +54,7 @@ public class AVOSCloud {
   }
 
   public static void initialize(String appId, String appKey) {
-    cn.leancloud.json.Utils.initialize();
+    ConverterUtils.initialize();
 
     AVObject.registerSubclass(AVStatus.class);
     AVObject.registerSubclass(AVUser.class);

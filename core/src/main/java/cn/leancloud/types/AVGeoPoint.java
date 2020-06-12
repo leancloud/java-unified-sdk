@@ -2,7 +2,6 @@ package cn.leancloud.types;
 
 import cn.leancloud.utils.AVUtils;
 
-//@JSONType
 public class AVGeoPoint {
   static double ONE_KM_TO_MILES = 1.609344;
   private double latitude;
