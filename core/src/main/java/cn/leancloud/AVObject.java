@@ -27,7 +27,6 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -772,7 +771,7 @@ public class AVObject {
     return result;
   }
 
-  protected Observable<List<AVObject>> getCascadingSaveObjects() {
+  protected Observable<List<AVObject>> generateCascadingSaveObjects() {
     List<AVObject> result = new ArrayList<>();
     for (ObjectFieldOperation ofo: operations.values()) {
       List<AVObject> operationValues = extractCascadingObjects(ofo.getValue());
@@ -932,7 +931,7 @@ public class AVObject {
       return Observable.error(new AVException(AVException.CIRCLE_REFERENCE, "Found a circular dependency when saving."));
     }
 
-    Observable<List<AVObject>> needSaveFirstly = getCascadingSaveObjects();
+    Observable<List<AVObject>> needSaveFirstly = generateCascadingSaveObjects();
     return needSaveFirstly.flatMap(new Function<List<AVObject>, Observable<? extends AVObject>>() {
       @Override
       public Observable<? extends AVObject> apply(List<AVObject> objects) throws Exception {
