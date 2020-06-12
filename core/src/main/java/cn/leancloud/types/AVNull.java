@@ -1,8 +1,6 @@
 package cn.leancloud.types;
 
-import com.alibaba.fastjson.annotation.JSONType;
-
-@JSONType
+//@JSONType
 public final class AVNull {
   private static final AVNull INSTANCE = new AVNull();
 

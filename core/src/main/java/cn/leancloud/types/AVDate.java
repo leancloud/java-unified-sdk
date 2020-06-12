@@ -3,10 +3,7 @@ package cn.leancloud.types;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
-//import com.alibaba.fastjson.annotation.JSONField;
-//import com.alibaba.fastjson.annotation.JSONType;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

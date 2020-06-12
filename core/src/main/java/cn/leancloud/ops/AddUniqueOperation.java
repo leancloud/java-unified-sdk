@@ -1,6 +1,6 @@
 package cn.leancloud.ops;
 
-import com.alibaba.fastjson.JSONArray;
+import cn.leancloud.json.JSONArray;
 
 import java.util.List;
 

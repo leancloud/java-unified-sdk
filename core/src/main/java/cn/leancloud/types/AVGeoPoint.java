@@ -1,9 +1,8 @@
 package cn.leancloud.types;
 
 import cn.leancloud.utils.AVUtils;
-import com.alibaba.fastjson.annotation.JSONType;
 
-@JSONType
+//@JSONType
 public class AVGeoPoint {
   static double ONE_KM_TO_MILES = 1.609344;
   private double latitude;

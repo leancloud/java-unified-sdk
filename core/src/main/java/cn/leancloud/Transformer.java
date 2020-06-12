@@ -1,11 +1,8 @@
 package cn.leancloud;
 
 import cn.leancloud.annotation.AVClassName;
-import cn.leancloud.json.ObjectTypeAdapter;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.parser.ParserConfig;
-import com.alibaba.fastjson.serializer.SerializeConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,8 +45,7 @@ public class Transformer {
     subClassesMAP.put(className, clazz);
     subClassesReverseMAP.put(clazz, className);
     // register object serializer/deserializer.
-    ParserConfig.getGlobalInstance().putDeserializer(clazz, new ObjectTypeAdapter());
-    SerializeConfig.getGlobalInstance().put(clazz, new ObjectTypeAdapter());
+    cn.leancloud.json.Utils.registerClass(clazz);
   }
 
   public static <T extends AVObject> T transform(AVObject rawObj, String className) {

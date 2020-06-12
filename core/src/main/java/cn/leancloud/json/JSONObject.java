@@ -1,5 +1,6 @@
 package cn.leancloud.json;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -9,7 +10,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-public class JSONObject {
+public class JSONObject implements Map<String, Object>, Cloneable, Serializable {
   private com.alibaba.fastjson.JSONObject fastObject;
   public JSONObject(com.alibaba.fastjson.JSONObject object) {
     this.fastObject = object;
@@ -138,12 +139,27 @@ public class JSONObject {
     return this.fastObject.put(key, value);
   }
 
+  public JSONObject fluentPut(String key, Object value) {
+    this.fastObject.fluentPut(key, value);
+    return this;
+  }
+
   public void putAll(Map<? extends String, ? extends Object> m) {
     fastObject.putAll(m);
   }
 
+  public JSONObject fluentPutAll(Map<? extends String, ? extends Object> m) {
+    this.fastObject.fluentPutAll(m);
+    return this;
+  }
+
   public void clear() {
     fastObject.clear();
+  }
+
+  public JSONObject fluentClear() {
+    fastObject.fluentClear();
+    return this;
   }
 
   public Object remove(Object key) {
@@ -159,6 +175,11 @@ public class JSONObject {
   }
   public Set<Map.Entry<String, Object>> entrySet() {
     return this.fastObject.entrySet();
+  }
+
+  @Override
+  public Object clone() {
+    return new JSONObject((com.alibaba.fastjson.JSONObject)fastObject.clone());
   }
 
   public Map<String, Object> getInnerMap() {
@@ -184,6 +205,7 @@ public class JSONObject {
     }
     return fastObject.equals(((JSONObject)obj).fastObject);
   }
+
   public String toJSONString() {
     return this.fastObject.toJSONString();
   }

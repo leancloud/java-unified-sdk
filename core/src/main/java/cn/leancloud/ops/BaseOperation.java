@@ -5,13 +5,12 @@ import cn.leancloud.codec.Base64;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.annotation.JSONType;
+import cn.leancloud.json.JSONArray;
+import cn.leancloud.json.JSONObject;
 
 import java.util.*;
 
-@JSONType(deserializer = BaseOperationAdapter.class, serializer = BaseOperationAdapter.class)
+//@JSONType(deserializer = BaseOperationAdapter.class, serializer = BaseOperationAdapter.class)
 public abstract class BaseOperation implements ObjectFieldOperation {
   static final AVLogger LOGGER = LogUtil.getLogger(BaseOperation.class);
   static final String KEY_OP = "__op";
@@ -45,6 +44,9 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     return this.value;
   }
   public boolean isFinal() {return this.isFinal;}
+  public void setFinal(boolean isFinal) {
+    this.isFinal = isFinal;
+  }
 
   public boolean checkCircleReference(Map<AVObject, Boolean> markMap) {
     if (null == markMap) {

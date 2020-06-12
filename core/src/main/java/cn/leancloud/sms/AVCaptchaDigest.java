@@ -1,12 +1,10 @@
 package cn.leancloud.sms;
 
-import com.alibaba.fastjson.annotation.JSONField;
-
 public class AVCaptchaDigest {
-  @JSONField(name = "captcha_token")
+  //@JSONField(name = "captcha_token")
   private String captchaToken;
 
-  @JSONField(name = "captcha_url")
+  //@JSONField(name = "captcha_url")
   private String captchaUrl;
 
   public String getCaptchaToken() {

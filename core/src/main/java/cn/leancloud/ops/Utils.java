@@ -8,7 +8,7 @@ import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.utils.StringUtil;
 
 import cn.leancloud.codec.Base64;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 
 public class Utils {
   private static final String typeTag = "__type";

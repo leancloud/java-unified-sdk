@@ -1,10 +1,10 @@
-package cn.leancloud.ops;
+package cn.leancloud.json;
 
 import cn.leancloud.AVObject;
-import cn.leancloud.json.ObjectValueFilter;
 import cn.leancloud.core.AVOSCloud;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
+import cn.leancloud.ops.*;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.JSONToken;
 import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
@@ -33,26 +33,22 @@ public class BaseOperationAdapter implements ObjectSerializer, ObjectDeserialize
     writer.write('{');
     writer.writeFieldValue(' ', ATTR_OP, op.getOperation());
     writer.writeFieldValue(' ', ATTR_FIELD, op.getField());
-    writer.writeFieldValue(',', ATTR_FINAL, op.isFinal);
+    writer.writeFieldValue(',', ATTR_FINAL, op.isFinal());
     if (AVOSCloud.isEnableCircularReferenceDetect()) {
       writer.writeFieldValue(',', ATTR_OBJECT,
-              JSON.toJSONString(op.getValue(), ObjectValueFilter.instance,
-                      SerializerFeature.WriteClassName));
+              JSON.toJSONString(op.getValue()));
     } else {
       writer.writeFieldValue(',', ATTR_OBJECT,
-              JSON.toJSONString(op.getValue(), ObjectValueFilter.instance,
-                      SerializerFeature.WriteClassName, SerializerFeature.DisableCircularReferenceDetect));
+              JSON.toJSONString(op.getValue()));
     }
 
     if (object instanceof CompoundOperation) {
       if (AVOSCloud.isEnableCircularReferenceDetect()) {
         writer.writeFieldValue(',', ATTR_SUBOPS,
-                JSON.toJSONString(((CompoundOperation)op).getSubOperations(), ObjectValueFilter.instance,
-                        SerializerFeature.WriteClassName));
+                JSON.toJSONString(((CompoundOperation)op).getSubOperations()));
       } else {
         writer.writeFieldValue(',', ATTR_SUBOPS,
-                JSON.toJSONString(((CompoundOperation)op).getSubOperations(), ObjectValueFilter.instance,
-                        SerializerFeature.WriteClassName, SerializerFeature.DisableCircularReferenceDetect));
+                JSON.toJSONString(((CompoundOperation)op).getSubOperations()));
       }
     }
     writer.write('}');
@@ -94,7 +90,7 @@ public class BaseOperationAdapter implements ObjectSerializer, ObjectDeserialize
       Object parsedObj = getParsedObject(obj);
 
       ObjectFieldOperation result = OperationBuilder.gBuilder.create(opType, field, parsedObj);
-      ((BaseOperation)result).isFinal = isFinal;
+      ((BaseOperation)result).setFinal(isFinal);
 
       if (jsonObject.containsKey(ATTR_SUBOPS) && result instanceof CompoundOperation) {
         List<JSONObject> subOps = jsonObject.getObject(ATTR_SUBOPS, List.class);
@@ -109,7 +105,7 @@ public class BaseOperationAdapter implements ObjectSerializer, ObjectDeserialize
   }
 
   public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
-    JSONObject jsonObject = parser.parseObject();
+    JSONObject jsonObject = null;//parser.parseObject();
     return parseJSONObject(jsonObject);
   }
 

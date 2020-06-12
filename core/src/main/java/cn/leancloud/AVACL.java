@@ -1,8 +1,6 @@
 package cn.leancloud;
 
 import cn.leancloud.utils.StringUtil;
-//import com.alibaba.fastjson.JSON;
-//import com.alibaba.fastjson.JSONObject;
 
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;

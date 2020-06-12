@@ -2,8 +2,6 @@ package cn.leancloud.service;
 
 import cn.leancloud.core.AVOSService;
 import cn.leancloud.utils.StringUtil;
-//import com.alibaba.fastjson.annotation.JSONField;
-//import com.alibaba.fastjson.annotation.JSONType;
 
 //@JSONType
 public class AppAccessEndpoint {

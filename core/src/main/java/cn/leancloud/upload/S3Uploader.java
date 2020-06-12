@@ -4,11 +4,9 @@ import cn.leancloud.AVException;
 import cn.leancloud.callback.ProgressCallback;
 import cn.leancloud.AVFile;
 import cn.leancloud.utils.FileUtil;
-import cn.leancloud.utils.StringUtil;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 

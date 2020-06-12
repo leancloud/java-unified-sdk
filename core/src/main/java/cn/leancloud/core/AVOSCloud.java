@@ -1,13 +1,8 @@
 package cn.leancloud.core;
 
 import cn.leancloud.*;
-import cn.leancloud.json.ObjectTypeAdapter;
-import cn.leancloud.ops.BaseOperation;
-import cn.leancloud.ops.BaseOperationAdapter;
 import cn.leancloud.types.AVDate;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.parser.ParserConfig;
-import com.alibaba.fastjson.serializer.SerializeConfig;
 import io.reactivex.Observable;
 
 /**
@@ -58,22 +53,7 @@ public class AVOSCloud {
   }
 
   public static void initialize(String appId, String appKey) {
-    ObjectTypeAdapter adapter = new ObjectTypeAdapter();
-    ParserConfig.getGlobalInstance().putDeserializer(AVObject.class, adapter);
-    ParserConfig.getGlobalInstance().putDeserializer(AVUser.class, adapter);
-    ParserConfig.getGlobalInstance().putDeserializer(AVFile.class, adapter);
-    ParserConfig.getGlobalInstance().putDeserializer(AVStatus.class, adapter);
-    ParserConfig.getGlobalInstance().putDeserializer(AVInstallation.class, adapter);
-
-    SerializeConfig.getGlobalInstance().put(AVObject.class, adapter);
-    SerializeConfig.getGlobalInstance().put(AVUser.class, adapter);
-    SerializeConfig.getGlobalInstance().put(AVFile.class, adapter);
-    SerializeConfig.getGlobalInstance().put(AVStatus.class, adapter);
-    SerializeConfig.getGlobalInstance().put(AVInstallation.class, adapter);
-
-    BaseOperationAdapter opAdapter = new BaseOperationAdapter();
-    ParserConfig.getGlobalInstance().putDeserializer(BaseOperation.class, opAdapter);
-    SerializeConfig.getGlobalInstance().put(BaseOperation.class, opAdapter);
+    cn.leancloud.json.Utils.initialize();
 
     AVObject.registerSubclass(AVStatus.class);
     AVObject.registerSubclass(AVUser.class);

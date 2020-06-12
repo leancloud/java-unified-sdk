@@ -1,9 +1,7 @@
 package cn.leancloud.sms;
 
-import com.alibaba.fastjson.annotation.JSONField;
-
 public class AVCaptchaValidateResult {
-  @JSONField(name= "validate_token")
+  //@JSONField(name= "validate_token")
   private String token;
 
   public String getToken() {

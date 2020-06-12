@@ -2,7 +2,6 @@ package cn.leancloud.query;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class QueryOperation {
   public static final String EQUAL_OP = "__eq";

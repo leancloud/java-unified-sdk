@@ -1,13 +1,15 @@
 package cn.leancloud.json;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.*;
 
-public class JSONArray {
+public class JSONArray implements List<Object>, Cloneable, Serializable {
   private com.alibaba.fastjson.JSONArray fastArray;
+
   public JSONArray(com.alibaba.fastjson.JSONArray array) {
     this.fastArray = array;
   }
@@ -269,7 +271,7 @@ public class JSONArray {
   }
 
   public Object clone() {
-    return new JSONArray(fastArray);
+    return new JSONArray((com.alibaba.fastjson.JSONArray)fastArray.clone());
   }
 
   public boolean equals(Object obj) {
