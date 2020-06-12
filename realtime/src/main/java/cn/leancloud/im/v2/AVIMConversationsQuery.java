@@ -657,7 +657,7 @@ public class AVIMConversationsQuery {
       return;
     }
 
-    final String queryParamsString = JSON.toJSONString(queryParams, ObjectValueFilter.instance);
+    final String queryParamsString = JSON.toJSONString(queryParams);
     final AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
       @Override
       public void done(Map<String, Object> result, AVIMException e) {

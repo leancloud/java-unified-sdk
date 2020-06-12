@@ -9,13 +9,12 @@ import cn.leancloud.im.v2.messages.AVIMRecalledMessage;
 import cn.leancloud.im.v2.messages.AVIMTextMessage;
 import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
 import junit.framework.TestCase;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class AVIMConversationTest extends TestCase {
   private CountDownLatch countDownLatch = null;

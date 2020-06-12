@@ -67,7 +67,7 @@ public class AVIMTypedMessage extends AVIMMessage{
 
   @Override
   public final void setContent(String content) {
-    Map<String, Object> contentMap = JSONObject.parseObject(content, Map.class);
+    Map<String, Object> contentMap = JSON.parseObject(content, Map.class);
     if (!fieldCache.containsKey(this.getClass())) {
       computeFieldAttribute(this.getClass());
     }

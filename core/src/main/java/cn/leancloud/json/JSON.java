@@ -1,14 +1,11 @@
 package cn.leancloud.json;
 
 import cn.leancloud.core.AVOSCloud;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.lang.reflect.Type;
 import java.util.List;
-
-import static com.alibaba.fastjson.parser.Feature.IgnoreNotMatch;
 
 public class JSON {
   public static <T> T parseObject(String text, Class<T> clazz) {
@@ -16,7 +13,7 @@ public class JSON {
   }
 
   public static <T> T parseObject(String text, TypeReference<T> type) {
-    return com.alibaba.fastjson.JSON.parseObject(text, type.getType(), IgnoreNotMatch);
+    return com.alibaba.fastjson.JSON.parseObject(text, type.getType(), Feature.IgnoreNotMatch);
   }
 
   public static JSONObject parseObject(String text) {
@@ -25,7 +22,8 @@ public class JSON {
   }
 
   public static JSONArray parseArray(String text) {
-    return com.alibaba.fastjson.JSON.parseArray(text);
+    com.alibaba.fastjson.JSONArray result = com.alibaba.fastjson.JSON.parseArray(text);
+    return new JSONArray(result);
   }
 
   public static <T> List<T> parseArray(String text, Class<T> clazz) {
@@ -38,6 +36,10 @@ public class JSON {
 
   public static Object parse(String text) {
     return com.alibaba.fastjson.JSON.parse(text);
+  }
+
+  public static <T> T toJavaObject(JSONObject json, Class<T> clazz) {
+    return com.alibaba.fastjson.JSON.toJavaObject(json.getRawObject(), clazz);
   }
 
   public static String toJSONString(Object object) {

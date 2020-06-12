@@ -1,7 +1,6 @@
 package cn.leancloud.im;
 
 import cn.leancloud.im.v2.AVIMConversation;
-import cn.leancloud.im.v2.AVIMMessage;
 import cn.leancloud.im.v2.AVIMMessageStorage;
 
 import java.util.List;

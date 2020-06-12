@@ -7,7 +7,7 @@ import cn.leancloud.im.AVIMOptions;
 import cn.leancloud.im.v2.callback.*;
 import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.utils.StringUtil;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 import junit.framework.TestCase;
 
 import java.util.*;

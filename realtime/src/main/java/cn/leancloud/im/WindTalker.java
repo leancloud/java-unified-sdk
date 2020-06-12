@@ -7,7 +7,6 @@ import cn.leancloud.command.LiveQueryLoginPacket;
 import cn.leancloud.command.PushAckPacket;
 import cn.leancloud.command.SessionControlPacket;
 import cn.leancloud.core.AVOSCloud;
-import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.utils.LogUtil;
 import com.google.protobuf.InvalidProtocolBufferException;
 

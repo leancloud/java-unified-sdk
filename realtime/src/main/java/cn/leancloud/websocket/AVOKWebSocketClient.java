@@ -7,7 +7,6 @@ import okhttp3.*;
 import okio.ByteString;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;

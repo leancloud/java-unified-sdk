@@ -1,6 +1,5 @@
 package cn.leancloud.im.v2.messages;
 
-
 import cn.leancloud.AVException;
 import cn.leancloud.AVFile;
 import cn.leancloud.AVLogger;

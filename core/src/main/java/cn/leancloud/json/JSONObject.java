@@ -24,6 +24,10 @@ public class JSONObject implements Map<String, Object>, Cloneable, Serializable 
     this.fastObject = new com.alibaba.fastjson.JSONObject();
   }
 
+  protected com.alibaba.fastjson.JSONObject getRawObject() {
+    return this.fastObject;
+  }
+
   public int size() {
     return this.fastObject.size();
   }
