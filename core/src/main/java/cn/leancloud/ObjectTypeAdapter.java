@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -50,8 +51,12 @@ public class ObjectTypeAdapter implements ObjectSerializer, ObjectDeserializer{
     writer.writeString(avObject.getClassName());
     writer.write(',');
     writer.writeFieldName(KEY_SERVERDATA, false);
-    writer.write(JSON.toJSONString(avObject.serverData, ObjectValueFilter.instance, SerializerFeature.WriteClassName,
-            SerializerFeature.DisableCircularReferenceDetect));
+    if (AVOSCloud.isEnableCircularReferenceDetect()) {
+      writer.write(JSON.toJSONString(avObject.serverData, ObjectValueFilter.instance, SerializerFeature.WriteClassName));
+    } else {
+      writer.write(JSON.toJSONString(avObject.serverData, ObjectValueFilter.instance, SerializerFeature.WriteClassName,
+              SerializerFeature.DisableCircularReferenceDetect));
+    }
 
     writer.write('}');
   }

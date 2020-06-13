@@ -2,6 +2,7 @@ package cn.leancloud.ops;
 
 import cn.leancloud.AVObject;
 import cn.leancloud.ObjectValueFilter;
+import cn.leancloud.core.AVOSCloud;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
@@ -33,13 +34,26 @@ public class BaseOperationAdapter implements ObjectSerializer, ObjectDeserialize
     writer.writeFieldValue(' ', ATTR_OP, op.getOperation());
     writer.writeFieldValue(' ', ATTR_FIELD, op.getField());
     writer.writeFieldValue(',', ATTR_FINAL, op.isFinal);
-    writer.writeFieldValue(',', ATTR_OBJECT,
-            JSON.toJSONString(op.getValue(), ObjectValueFilter.instance,
-                    SerializerFeature.WriteClassName, SerializerFeature.DisableCircularReferenceDetect));
-    if (object instanceof CompoundOperation) {
-      writer.writeFieldValue(',', ATTR_SUBOPS,
-              JSON.toJSONString(((CompoundOperation)op).getSubOperations(), ObjectValueFilter.instance,
+    if (AVOSCloud.isEnableCircularReferenceDetect()) {
+      writer.writeFieldValue(',', ATTR_OBJECT,
+              JSON.toJSONString(op.getValue(), ObjectValueFilter.instance,
+                      SerializerFeature.WriteClassName));
+    } else {
+      writer.writeFieldValue(',', ATTR_OBJECT,
+              JSON.toJSONString(op.getValue(), ObjectValueFilter.instance,
                       SerializerFeature.WriteClassName, SerializerFeature.DisableCircularReferenceDetect));
+    }
+
+    if (object instanceof CompoundOperation) {
+      if (AVOSCloud.isEnableCircularReferenceDetect()) {
+        writer.writeFieldValue(',', ATTR_SUBOPS,
+                JSON.toJSONString(((CompoundOperation)op).getSubOperations(), ObjectValueFilter.instance,
+                        SerializerFeature.WriteClassName));
+      } else {
+        writer.writeFieldValue(',', ATTR_SUBOPS,
+                JSON.toJSONString(((CompoundOperation)op).getSubOperations(), ObjectValueFilter.instance,
+                        SerializerFeature.WriteClassName, SerializerFeature.DisableCircularReferenceDetect));
+      }
     }
     writer.write('}');
   }

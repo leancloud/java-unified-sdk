@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.network.NetworkingDetector;
 import cn.leancloud.ops.*;
@@ -26,7 +27,6 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -771,7 +771,7 @@ public class AVObject {
     return result;
   }
 
-  protected Observable<List<AVObject>> getCascadingSaveObjects() {
+  protected Observable<List<AVObject>> generateCascadingSaveObjects() {
     List<AVObject> result = new ArrayList<>();
     for (ObjectFieldOperation ofo: operations.values()) {
       List<AVObject> operationValues = extractCascadingObjects(ofo.getValue());
@@ -931,7 +931,7 @@ public class AVObject {
       return Observable.error(new AVException(AVException.CIRCLE_REFERENCE, "Found a circular dependency when saving."));
     }
 
-    Observable<List<AVObject>> needSaveFirstly = getCascadingSaveObjects();
+    Observable<List<AVObject>> needSaveFirstly = generateCascadingSaveObjects();
     return needSaveFirstly.flatMap(new Function<List<AVObject>, Observable<? extends AVObject>>() {
       @Override
       public Observable<? extends AVObject> apply(List<AVObject> objects) throws Exception {
@@ -1447,6 +1447,7 @@ public class AVObject {
    * @param <T> result type.
    * @return query instance.
    */
+
   public static <T extends AVObject> AVQuery<T> getQuery(Class<T> clazz) {
     return new AVQuery<T>(Transformer.getSubClassName(clazz), clazz);
   }
@@ -1467,9 +1468,14 @@ public class AVObject {
    * @return json string.
    */
   public String toJSONString() {
-    return JSON.toJSONString(this, ObjectValueFilter.instance,
-          SerializerFeature.WriteClassName,
-          SerializerFeature.DisableCircularReferenceDetect);
+    if (AVOSCloud.isEnableCircularReferenceDetect()) {
+      return JSON.toJSONString(this, ObjectValueFilter.instance,
+              SerializerFeature.WriteClassName);
+    } else {
+      return JSON.toJSONString(this, ObjectValueFilter.instance,
+              SerializerFeature.WriteClassName,
+              SerializerFeature.DisableCircularReferenceDetect);
+    }
   }
 
   /**

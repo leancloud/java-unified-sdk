@@ -28,7 +28,7 @@ public final class AVInstallation extends AVObject {
   private static String DEFAULT_DEVICETYPE = "android";
   private static volatile AVInstallation currentInstallation;
 
-  public AVInstallation() {
+  AVInstallation() {
     super(CLASS_NAME);
     this.totallyOverwrite = true;
     initialize();
@@ -63,21 +63,23 @@ public final class AVInstallation extends AVObject {
   }
 
   protected static AVInstallation createInstanceFromLocal(String fileName) {
-    boolean needWriteback = true;
     File installationFile = getCacheFile();
-    if (null == installationFile) {
-      needWriteback = false;
-    } else {
+
+    String newInstallationId = genInstallationId();
+
+    if (null != installationFile) {
+      LOGGER.d("installation cache file path: " + installationFile.getAbsolutePath());
       if (!installationFile.exists()) {
         String cacheBase = AppConfiguration.getImportantFileDir();
         File oldInstallationFile = new File(cacheBase, INSTALLATION);
-        if (oldInstallationFile.exists() && !installationFile.exists()) {
+        if (oldInstallationFile.exists()) {
           boolean tmp = oldInstallationFile.renameTo(installationFile);
           if (!tmp) {
             LOGGER.w("failed to rename installation cache file.");
           }
         }
       }
+
       if (installationFile.exists()) {
         String json = PersistenceUtil.sharedInstance().readContentFromFile(installationFile);
         if (!StringUtil.isEmpty(json)) {
@@ -85,29 +87,36 @@ public final class AVInstallation extends AVObject {
             try {
               currentInstallation = (AVInstallation) AVObject.parseAVObject(json);
               currentInstallation.totallyOverwrite = true;
-              needWriteback = false;
             } catch (Exception ex) {
               LOGGER.w("failed to parse local installation data.", ex);
-              needWriteback = true;
             }
           } else {
             if (json.length() == UUID_LEN) {
               // old sdk version.
-              currentInstallation = new AVInstallation();
-              currentInstallation.setInstallationId(json);
+              newInstallationId = json;
             }
           }
+        } else {
+          LOGGER.d("installation cache file is empty, create new instance.");
         }
       }
     }
     if (null == currentInstallation) {
-      currentInstallation = new AVInstallation();
-    }
-    if (needWriteback) {
-      String jsonString = JSON.toJSONString(currentInstallation, ObjectValueFilter.instance,
-              SerializerFeature.WriteClassName,
-              SerializerFeature.DisableCircularReferenceDetect);
-      PersistenceUtil.sharedInstance().saveContentToFile(jsonString, installationFile);
+      String json = String.format("{ \"_version\":\"5\",\"className\":\"_Installation\"," +
+                      "\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\"," +
+                      "\"deviceType\":\"android\",\"installationId\":\"%s\"," +
+                      "\"timeZone\":\"%s\"}}",
+              newInstallationId, timezone());
+      PersistenceUtil.sharedInstance().saveContentToFile(json, installationFile);
+      LOGGER.d("create-ahead installation with json: " + json);
+      try {
+        currentInstallation = (AVInstallation) AVObject.parseAVObject(json);
+        currentInstallation.totallyOverwrite = true;
+      } catch (Exception ex) {
+        LOGGER.w("failed to parse create-ahead installation string.", ex);
+        currentInstallation = new AVInstallation();
+        currentInstallation.setInstallationId(newInstallationId);
+      }
     }
     return currentInstallation;
   }
@@ -135,13 +144,6 @@ public final class AVInstallation extends AVObject {
     }
     this.put(DEVICETYPETAG, deviceType());
     this.put(TIMEZONE, timezone());
-    File installationFile = getCacheFile();
-    if (null != installationFile) {
-      String jsonString = JSON.toJSONString(this, ObjectValueFilter.instance,
-              SerializerFeature.WriteClassName,
-              SerializerFeature.DisableCircularReferenceDetect);
-      PersistenceUtil.sharedInstance().saveContentToFile(jsonString, installationFile);
-    }
   }
 
   private static String genInstallationId() {
@@ -175,9 +177,7 @@ public final class AVInstallation extends AVObject {
   void updateCurrentInstallationCache() {
     if (currentInstallation == this) {
       File installationFile = getCacheFile();
-      String jsonString = JSON.toJSONString(currentInstallation, ObjectValueFilter.instance,
-              SerializerFeature.WriteClassName,
-              SerializerFeature.DisableCircularReferenceDetect);
+      String jsonString = currentInstallation.toJSONString();
       PersistenceUtil.sharedInstance().saveContentToFile(jsonString, installationFile);
     }
   }
