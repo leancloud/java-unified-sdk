@@ -6,34 +6,31 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ConverterUtils {
-  static Gson gson = null;
+  static Gson gson = new GsonBuilder().serializeNulls()
+          .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE)
+//          .registerTypeAdapterFactory(new TypeAdapterFactory() {
+//            @Override
+//            public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
+//              Class<? super T> clazz = typeToken.getRawType();
+//              if (clazz == AVObject.class || clazz == AVUser.class || clazz == AVFile.class
+//                      || clazz == AVRole.class || clazz == AVStatus.class || clazz == AVInstallation.class) {
+//                return new ObjectTypeAdapter();
+//              } else if (!StringUtil.isEmpty(Transformer.getSubClassName(clazz))) {
+//                return new ObjectTypeAdapter();
+//              }
+//              return null;
+//            }
+//          })
+          .create();
 
   public static void initialize() {
-    ObjectTypeAdapter adapter = new ObjectTypeAdapter();
-    gson = new GsonBuilder().serializeNulls()
-            .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE)
-            .registerTypeAdapterFactory(new TypeAdapterFactory() {
-              @Override
-              public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-                Class<? super T> clazz = typeToken.getRawType();
-                if (clazz == AVObject.class || clazz == AVUser.class || clazz == AVFile.class
-                        || clazz == AVRole.class || clazz == AVStatus.class || clazz == AVInstallation.class) {
-                  return null;
-                } else if (!StringUtil.isEmpty(Transformer.getSubClassName(clazz))) {
-                  return null;
-                }
-                return null;
-              }
-            })
-            .create();
-
-
 
 //    ParserConfig.getGlobalInstance().putDeserializer(AVObject.class, adapter);
 //    ParserConfig.getGlobalInstance().putDeserializer(AVUser.class, adapter);
@@ -58,11 +55,6 @@ public class ConverterUtils {
     return gson;
   }
 
-  public static <T extends AVObject> void registerClass(Class<T> clazz) {
-//    ParserConfig.getGlobalInstance().putDeserializer(clazz, new ObjectTypeAdapter());
-//    SerializeConfig.getGlobalInstance().put(clazz, new ObjectTypeAdapter());
-  }
-
   public static String toJsonString(Map<String, Object> map) {
     if (null == map) {
       return null;
@@ -75,6 +67,18 @@ public class ConverterUtils {
       return null;
     }
     return gson.toJsonTree(object);
+  }
+
+  public static Object parseObject(String jsonString) {
+    return gson.fromJson(jsonString, Object.class);
+  }
+
+  public static <T> T parseObject(String jsonString, Class<T> clazz) {
+    return gson.fromJson(jsonString, clazz);
+  }
+
+  public static <T> T parseObject(String jsonString, Type typeOfT) {
+    return gson.fromJson(jsonString, typeOfT);
   }
 
   public static <T> T toJavaObject(JsonElement element, Class<T> clazz) {

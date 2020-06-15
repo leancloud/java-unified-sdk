@@ -1,6 +1,5 @@
 package cn.leancloud.network;
 
-import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.utils.StringUtil;
 import okhttp3.*;

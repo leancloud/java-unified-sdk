@@ -9,6 +9,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import oracle.jrockit.jfr.StringConstantPool;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -17,13 +18,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ObjectTypeAdapter extends TypeAdapter<AVObject>/*implements ObjectSerializer, ObjectDeserializer*/{
+public class ObjectTypeAdapter<T extends AVObject> extends TypeAdapter<AVObject>/*implements ObjectSerializer, ObjectDeserializer*/{
   private static AVLogger LOGGER = LogUtil.getLogger(ObjectTypeAdapter.class);
   public static final String KEY_VERSION = "_version";
   private static final String DEFAULT_VERSION = "5";
   public static final String KEY_SERVERDATA = "serverData";
 
   public void write(JsonWriter writer, AVObject object) throws IOException {
+    System.out.println("ObjectTypeAdapter write...");
     if (null == object) {
       writer.nullValue();
     } else {
@@ -114,14 +116,20 @@ public class ObjectTypeAdapter extends TypeAdapter<AVObject>/*implements ObjectS
   }
   @Override
   public AVObject read(JsonReader reader) throws IOException {
+    System.out.println("ObjectTypeAdapter read...");
     if (reader.peek() == JsonToken.NULL) {
       reader.nextNull();
       return null;
     } else {
       reader.beginObject();
-      String serverData = reader.nextString();
+      String classField = reader.nextName();
+      String className = reader.nextString();
+      String version = reader.nextName();
+      int versionVal = reader.nextInt();
+      String serverData = reader.nextName();
+      String serverValue = reader.nextString();
       reader.endObject();
-      Map<String, Object> serverMap = ConverterUtils.getGsonInstance().fromJson(serverData, new HashMap<String, Object>(){}.getClass());
+      Map<String, Object> serverMap = ConverterUtils.getGsonInstance().fromJson(serverValue, new HashMap<String, Object>(){}.getClass());
       return generateObject(serverMap);
     }
   }

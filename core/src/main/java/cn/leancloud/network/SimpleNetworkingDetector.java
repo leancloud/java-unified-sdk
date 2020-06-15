@@ -1,7 +1,5 @@
 package cn.leancloud.network;
 
-//import jdk.nashorn.internal.runtime.regexp.RegExp;
-
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;

@@ -45,8 +45,6 @@ public class Transformer {
     checkClassName(className);
     subClassesMAP.put(className, clazz);
     subClassesReverseMAP.put(clazz, className);
-    // register object serializer/deserializer.
-    ConverterUtils.registerClass(clazz);
   }
 
   public static <T extends AVObject> T transform(AVObject rawObj, String className) {

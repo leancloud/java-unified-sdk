@@ -220,7 +220,8 @@ public class StorageClient {
 
   public Observable<? extends AVObject> createObject(final String className, JSONObject data, boolean fetchFlag,
                                                      JSONObject where) {
-    Observable<AVObject> object = wrapObservable(apiService.createObject(className, data.getRawObject(), fetchFlag, where.getRawObject()));
+    Observable<AVObject> object = wrapObservable(apiService.createObject(className, data.getRawObject(), fetchFlag,
+            null == where? null:where.getRawObject()));
     if (null == object) {
       return null;
     }

@@ -46,7 +46,7 @@ public class AVObject {
 
   protected transient String objectId = "";
   protected ConcurrentMap<String, Object> serverData = new ConcurrentHashMap<String, Object>();
-  protected ConcurrentMap<String, ObjectFieldOperation> operations = new ConcurrentHashMap<String, ObjectFieldOperation>();
+  protected transient ConcurrentMap<String, ObjectFieldOperation> operations = new ConcurrentHashMap<String, ObjectFieldOperation>();
   protected transient AVACL acl = null;
   private transient String uuid = null;
 
