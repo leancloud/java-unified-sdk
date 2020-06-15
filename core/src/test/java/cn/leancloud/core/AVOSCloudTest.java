@@ -33,6 +33,7 @@ public class AVOSCloudTest extends TestCase {
       @Override
       public void onNext(AVDate avDate) {
         testSucceed = true;
+        System.out.println(avDate.toJSONString());
         latch.countDown();
       }
 

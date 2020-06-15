@@ -1,8 +1,10 @@
 package cn.leancloud.json;
 
 import cn.leancloud.AVACL;
+import cn.leancloud.AVObject;
 import cn.leancloud.AVRole;
 import cn.leancloud.Configure;
+import cn.leancloud.ops.AddOperation;
 import cn.leancloud.types.AVDate;
 import junit.framework.TestCase;
 
@@ -11,9 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class AVRoleSerializerTest extends TestCase {
-  static {
-    ConverterUtils.initialize();
-  }
+
   public AVRoleSerializerTest(String name) {
     super(name);
     Configure.initializeRuntime();
@@ -60,5 +60,33 @@ public class AVRoleSerializerTest extends TestCase {
     AVDate other = JSON.parseObject(dateJson, AVDate.class);
     System.out.println("deserializedObject: " + other.toJSONString());
     assertEquals(other.getIso().equals(date.getIso()), true);
+  }
+
+  public void testAVObjectSerializer() {
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 18);
+    object.put("grade", 9);
+    String objectString = object.toJSONString();
+    System.out.println("objectJSONString is: " + objectString);
+  }
+
+  public void testAVObjectDeserialize() {
+    String text = "{\"@type\":\"cn.leancloud.AVObject\",\"className\":\"Student\",\"version\":5,\"serverData\":{\"address\":\"Beijing City\",\"@type\":\"java.util.HashMap\",\"age\":5}}";
+    AVObject object = ConverterUtils.parseObject(text, AVObject.class);
+    System.out.println(object.toJSONString());
+  }
+
+  public void testAVUserSerializer() {
+
+  }
+
+  public void testSubClassSerializer() {
+    ;
+  }
+
+  public void testBaseOperatorSerializer() {
+    AddOperation op = new AddOperation("age", 5);
+    System.out.println("Operator jsonString is: " + ConverterUtils.getGsonInstance().toJson(op));
   }
 }

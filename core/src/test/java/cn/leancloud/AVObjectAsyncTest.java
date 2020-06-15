@@ -81,6 +81,7 @@ public class AVObjectAsyncTest extends TestCase {
           }
 
           public void onError(Throwable throwable) {
+            throwable.printStackTrace();
             latch.countDown();
           }
 
@@ -91,7 +92,8 @@ public class AVObjectAsyncTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-
+        throwable.printStackTrace();
+        latch.countDown();
       }
 
       public void onComplete() {
