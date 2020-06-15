@@ -18,14 +18,18 @@ public class JSONObject implements Map<String, Object>, Cloneable, Serializable 
 
   public JSONObject(Map<String, Object> map) {
     this.gsonObject = new com.google.gson.JsonObject();
-    // TODO: add entry to gsonObject.
+    if (null != map) {
+      for (Map.Entry<String, Object> entry : map.entrySet()) {
+        gsonObject.add(entry.getKey(), ConverterUtils.toJsonElement(entry.getValue()));
+      }
+    }
   }
 
   public JSONObject() {
     this.gsonObject = new com.google.gson.JsonObject();
   }
 
-  protected com.google.gson.JsonObject getRawObject() {
+  public com.google.gson.JsonObject getRawObject() {
     return this.gsonObject;
   }
 
@@ -241,26 +245,25 @@ public class JSONObject implements Map<String, Object>, Cloneable, Serializable 
     return element.getAsString();
   }
   public Date getDate(String key) {
-    return null;
+    Object val = getObject(key, Object.class);
+    return ConverterUtils.castToDate(val);
   }
 
   public java.sql.Date getSqlDate(String key) {
-    return null;
+    throw new UnsupportedOperationException("getSqlDate is not supported.");
   }
   public Timestamp getTimestamp(String key) {
-    return null;
+    throw new UnsupportedOperationException("getTimestamp is not supported.");
   }
 
   public Object put(String key, Object value) {
-    //TODO
-    com.google.gson.JsonElement element = null;
+    com.google.gson.JsonElement element = ConverterUtils.toJsonElement(value);
     this.gsonObject.add(key, element);
     return value;
   }
 
   public JSONObject fluentPut(String key, Object value) {
-    // TODO
-    com.google.gson.JsonElement ele = null;
+    com.google.gson.JsonElement ele = ConverterUtils.toJsonElement(value);
     this.gsonObject.add(key, ele);
     return this;
   }

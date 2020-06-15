@@ -80,7 +80,6 @@ public class AVUser extends AVObject {
    * get user email.
    * @return user email.
    */
-  //@JSONField(serialize = false)
   public String getEmail() {
     return (String) get(ATTR_EMAIL);
   }
@@ -99,7 +98,6 @@ public class AVUser extends AVObject {
    *
    * @return user name
    */
-  //@JSONField(serialize = false)
   public String getUsername() {
     return (String) get(ATTR_USERNAME);
   }
@@ -117,7 +115,6 @@ public class AVUser extends AVObject {
    * get user password.
    * @return user password.
    */
-  //@JSONField(serialize = false)
   public String getPassword() {
     return (String) get(ATTR_PASSWORD);
   }
@@ -136,7 +133,6 @@ public class AVUser extends AVObject {
    *
    * @return user mobilephone number.
    */
-  //@JSONField(serialize = false)
   public String getMobilePhoneNumber() {
     return (String) get(ATTR_MOBILEPHONE);
   }
@@ -155,7 +151,6 @@ public class AVUser extends AVObject {
    *
    * @return flag to indicate user's mobilephone is verified or not
    */
-  //@JSONField(serialize = false)
   public boolean isMobilePhoneVerified() {
     return getBoolean(ATTR_MOBILEPHONE_VERIFIED);
   }
@@ -166,7 +161,6 @@ public class AVUser extends AVObject {
    *
    * @return user session token, null if not login.
    */
-  //@JSONField(serialize = false)
   public String getSessionToken() {
     return (String)get(ATTR_SESSION_TOKEN);
   }
@@ -183,7 +177,6 @@ public class AVUser extends AVObject {
    * whether user is authenticated or not.
    * @return flag to indicate user is authenticated or not.
    */
-  //@JSONField(serialize = false)
   public boolean isAuthenticated() {
     // TODO: need to support thirdparty login.
     String sessionToken = getSessionToken();

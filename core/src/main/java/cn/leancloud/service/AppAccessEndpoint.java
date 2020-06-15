@@ -2,25 +2,25 @@ package cn.leancloud.service;
 
 import cn.leancloud.core.AVOSService;
 import cn.leancloud.utils.StringUtil;
+import com.google.gson.annotations.SerializedName;
 
-//@JSONType
 public class AppAccessEndpoint {
-  //@JSONField(name = "ttl")
+  @SerializedName("ttl")
   private long ttl;
 
-  //@JSONField(name = "stats_server")
+  @SerializedName("stats_server")
   private String statServer;
 
-  //@JSONField(name = "push_server")
+  @SerializedName("push_server")
   private String pushServer;
 
-  //@JSONField(name = "rtm_router_server")
+  @SerializedName("rtm_router_server")
   private String rtmRouterServer;
 
-  //@JSONField(name = "api_server")
+  @SerializedName("api_server")
   private String apiServer;
 
-  //@JSONField(name = "engine_server")
+  @SerializedName("engine_server")
   private String engineServer;
 
   public long getTtl() {

@@ -1,6 +1,5 @@
 package cn.leancloud.service;
 
-//@JSONType
 public class RTMConnectionServerResponse {
   private String groupId;
   private String server;

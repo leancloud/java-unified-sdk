@@ -10,12 +10,38 @@ import java.util.*;
 public class JSONArray implements List<Object>, Cloneable, Serializable {
   private com.google.gson.JsonArray gsonArray;
 
+  static class InnerIterator implements Iterator<Object> {
+    private Iterator<com.google.gson.JsonElement> gsonIterator = null;
+    public InnerIterator(Iterator<com.google.gson.JsonElement> jsonIterator) {
+      gsonIterator = jsonIterator;
+    }
+
+    public boolean hasNext() {
+      return gsonIterator.hasNext();
+    }
+
+    public Object next() {
+      com.google.gson.JsonElement elem = gsonIterator.next();
+      if (null == elem) {
+        return null;
+      }
+      return ConverterUtils.toJavaObject(elem);
+    }
+
+    @Override
+    public void remove() {
+      throw new UnsupportedOperationException("remove");
+    }
+  }
+
   public JSONArray(com.google.gson.JsonArray array) {
     this.gsonArray = array;
   }
   public JSONArray(List<Object> list) {
     this.gsonArray = new com.google.gson.JsonArray(list.size());
-    // TODO: add objects to gsonArray.
+    for (Object obj: list) {
+      gsonArray.add(ConverterUtils.toJsonElement(obj));
+    }
   }
 
   public JSONArray() {
@@ -30,163 +56,212 @@ public class JSONArray implements List<Object>, Cloneable, Serializable {
     return size() <= 0;
   }
   public boolean contains(Object o) {
-    // TODO: convert object to element.
-    com.google.gson.JsonElement elem = null;
+    com.google.gson.JsonElement elem = ConverterUtils.toJsonElement(o);
     return gsonArray.contains(elem);
   }
 
   public Iterator<Object> iterator() {
-    return null;//gsonArray.iterator();
+    return new InnerIterator(gsonArray.iterator());
   }
 
   public Object[] toArray() {
-    return null; // return gsonArray.toArray();
+    List<Object> list = new ArrayList<>(size());
+    Iterator<Object> it = iterator();
+    while (it.hasNext()) {
+      list.add(it.next());
+    }
+    return list.toArray();
   }
 
   public <T> T[] toArray(T[] a) {
-    return null;//gsonArray.toArray(a);
+    List<Object> list = new ArrayList<>(size());
+    Iterator<Object> it = iterator();
+    while (it.hasNext()) {
+      list.add(it.next());
+    }
+    return list.toArray(a);
   }
 
-  public boolean add(Object e) {
-    return false;//gsonArray.add(e);
+  public boolean add(Object obj) {
+    gsonArray.add(ConverterUtils.toJsonElement(obj));
+    return true;
   }
 
   public JSONArray fluentAdd(Object e) {
-    //gsonArray.fluentAdd(e);
+    add(e);
     return this;
   }
 
   public boolean remove(Object o) {
-    return false;//gsonArray.remove(o);
+    return gsonArray.remove(ConverterUtils.toJsonElement(o));
   }
 
   public JSONArray fluentRemove(Object o) {
-    //gsonArray.fluentRemove(o);
+    remove(o);
     return this;
   }
 
-  public boolean containsAll(Collection<?> c) {
-    return false;//gsonArray.containsAll(c);
+  public boolean containsAll(Collection<? extends Object> c) {
+    for (Object o: c) {
+      if (!gsonArray.contains(ConverterUtils.toJsonElement(o))) {
+        return false;
+      }
+    }
+    return true;
   }
 
   public boolean addAll(Collection<? extends Object> c) {
-    return false;//gsonArray.addAll(c);
+    for (Object o : c) {
+      gsonArray.add(ConverterUtils.toJsonElement(o));
+    }
+    return true;
   }
 
   public JSONArray fluentAddAll(Collection<? extends Object> c) {
-    //gsonArray.fluentAddAll(c);
+    addAll(c);
     return this;
   }
 
   public boolean addAll(int index, Collection<? extends Object> c) {
-    return false;//gsonArray.addAll(index, c);
+    throw new UnsupportedOperationException("addAll with specified index.");
   }
 
   public JSONArray fluentAddAll(int index, Collection<? extends Object> c) {
-    //gsonArray.fluentAddAll(index, c);
+    addAll(index, c);
     return this;
   }
 
-  public boolean removeAll(Collection<?> c) {
-    return false;//gsonArray.removeAll(c);
+  public boolean removeAll(Collection<? extends Object> c) {
+    for (Object o : c) {
+      gsonArray.remove(ConverterUtils.toJsonElement(o));
+    }
+    return true;
   }
 
   public JSONArray fluentRemoveAll(Collection<?> c) {
-    //gsonArray.fluentRemoveAll(c);
+    removeAll(c);
     return this;
   }
 
   public boolean retainAll(Collection<?> c) {
-    return false;//gsonArray.retainAll(c);
+    return false;
   }
 
   public JSONArray fluentRetainAll(Collection<?> c) {
-    //gsonArray.fluentRetainAll(c);
+    retainAll(c);
     return this;
   }
 
   public void clear() {
-    //gsonArray.clear();
+    int total = size();
+    while (total >= 1) {
+      gsonArray.remove(total -1);
+      total--;
+    }
   }
 
   public JSONArray fluentClear() {
-    //gsonArray.fluentClear();
+    clear();
     return this;
   }
 
   public Object set(int index, Object element) {
-    return null;//gsonArray.set(index, element);
+    gsonArray.set(index, ConverterUtils.toJsonElement(element));
+    return element;
   }
 
   public JSONArray fluentSet(int index, Object element) {
-    //gsonArray.fluentSet(index, element);
+    set(index, element);
     return this;
   }
 
   public void add(int index, Object element) {
-    //gsonArray.add(index, element);
+    com.google.gson.JsonElement elem = gsonArray.get(index);
+    if (elem.isJsonArray()) {
+      ((com.google.gson.JsonArray)elem).add(ConverterUtils.toJsonElement(element));
+    }
   }
 
   public JSONArray fluentAdd(int index, Object element) {
-    //gsonArray.fluentAdd(index, element);
+    add(index, element);
     return this;
   }
 
   public Object remove(int index) {
-    return null;//gsonArray.remove(index);
+    return gsonArray.remove(index);
   }
 
   public JSONArray fluentRemove(int index) {
-    //gsonArray.fluentRemove(index);
+    remove(index);
     return this;
   }
 
   public int indexOf(Object o) {
-    return -1;//gsonArray.indexOf(o);
+    com.google.gson.JsonElement elem = ConverterUtils.toJsonElement(o);
+    for (int i = 0;i < size();i ++) {
+      if (elem.equals(gsonArray.get(i))) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   public int lastIndexOf(Object o) {
-    return -1;//gsonArray.lastIndexOf(o);
+    com.google.gson.JsonElement elem = ConverterUtils.toJsonElement(o);
+    for (int i = size() - 1;i >= 0;i --) {
+      if (elem.equals(gsonArray.get(i))) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   public ListIterator<Object> listIterator() {
-    return null;//return gsonArray.listIterator();
+    throw new UnsupportedOperationException("remove");
   }
 
   public ListIterator<Object> listIterator(int index) {
-    return null;//gsonArray.listIterator(index);
+    throw new UnsupportedOperationException("remove");
   }
 
   public List<Object> subList(int fromIndex, int toIndex) {
-    return null;//gsonArray.subList(fromIndex, toIndex);
+    List<Object> result = new ArrayList<>();
+    for (int i = fromIndex; i >= 0 && i < size() && i < toIndex; i++) {
+      result.add(ConverterUtils.toJavaObject(gsonArray.get(i)));
+    }
+    return result;
   }
 
   public Object get(int index) {
-    return null;//gsonArray.get(index);
+    return ConverterUtils.toJavaObject(getElement(index));
   }
 
   public JSONObject getJSONObject(int index) {
-    com.google.gson.JsonObject result = null;//gsonArray.getJSONObject(index);
-    if (null == result) {
+    com.google.gson.JsonElement result = getElement(index);
+    if (null == result || !result.isJsonObject()) {
       return null;
     }
-    return new JSONObject(result);
+    return new JSONObject(result.getAsJsonObject());
   }
 
   public JSONArray getJSONArray(int index) {
-    com.google.gson.JsonArray result = null;//gsonArray.getJSONArray(index);
-    if (null == result) {
+    com.google.gson.JsonElement result = getElement(index);
+    if (null == result || !result.isJsonArray()) {
       return null;
     }
-    return new JSONArray(result);
+    return new JSONArray(result.getAsJsonArray());
   }
 
   public <T> T getObject(int index, Class<T> clazz) {
-    return null;//gsonArray.getObject(index, clazz);
+    com.google.gson.JsonElement result = getElement(index);
+    if (null == result) {
+      return null;
+    }
+    return ConverterUtils.toJavaObject(result, clazz);
   }
 
   public <T> T getObject(int index, Type type) {
-    return null;//gsonArray.getObject(index, type);
+    return getObject(index, type);
   }
 
   private com.google.gson.JsonElement getElement(int index) {
@@ -305,23 +380,28 @@ public class JSONArray implements List<Object>, Cloneable, Serializable {
   }
 
   public Date getDate(int index) {
-    return null;//gsonArray.getDate(index);
+    Object val = get(index);
+    return ConverterUtils.castToDate(val);
   }
 
   public java.sql.Date getSqlDate(int index) {
-    return null;//gsonArray.getSqlDate(index);
+    throw new UnsupportedOperationException("getSqlDate is not supported.");
   }
 
   public Timestamp getTimestamp(int index) {
-    return null;//gsonArray.getTimestamp(index);
+    throw new UnsupportedOperationException("getTimestamp is not supported.");
   }
 
   public <T> List<T> toJavaList(Class<T> clazz) {
-    return null;//gsonArray.toJavaList(clazz);
+    List<T> result = new ArrayList<>(size());
+    for ( int i = 0;i < size(); i++) {
+      result.add(getObject(i, clazz));
+    }
+    return result;
   }
 
   public Object clone() {
-    return new JSONArray((com.google.gson.JsonArray) gsonArray.deepCopy());
+    return new JSONArray(gsonArray.deepCopy());
   }
 
   public boolean equals(Object obj) {
@@ -335,7 +415,7 @@ public class JSONArray implements List<Object>, Cloneable, Serializable {
       return false;
     }
 
-    return gsonArray.equals(obj);
+    return gsonArray.equals(((JSONArray) obj).gsonArray);
   }
 
   public int hashCode() {

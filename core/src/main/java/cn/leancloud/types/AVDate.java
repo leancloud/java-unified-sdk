@@ -3,6 +3,7 @@ package cn.leancloud.types;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
+import com.google.gson.annotations.SerializedName;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,7 +15,7 @@ public class AVDate {
   private static final ThreadLocal<SimpleDateFormat> THREAD_LOCAL_DATE_FORMAT =
           new ThreadLocal<SimpleDateFormat>();
 
-  //@SerializedName("__type")
+  @SerializedName("__type")
   private String type = "Date";
 
   private String iso = "";

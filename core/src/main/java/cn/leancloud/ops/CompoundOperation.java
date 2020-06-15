@@ -1,11 +1,14 @@
 package cn.leancloud.ops;
 
 import cn.leancloud.AVObject;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
 
 public class CompoundOperation extends BaseOperation {
+  @SerializedName("subOps")
   private List<ObjectFieldOperation> operations = new LinkedList<ObjectFieldOperation>();
+
   public CompoundOperation(String field) {
     super("Compound", field, null, false);
   }

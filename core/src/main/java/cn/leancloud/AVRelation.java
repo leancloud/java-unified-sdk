@@ -11,7 +11,7 @@ public class AVRelation<T extends AVObject> {
   private String key;
 
   //@JSONField(serialize=false)
-  private AVObject parent;
+  private transient AVObject parent;
 
   private String targetClass;
 

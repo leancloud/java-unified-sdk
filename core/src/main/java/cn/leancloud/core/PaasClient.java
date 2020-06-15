@@ -1,5 +1,6 @@
 package cn.leancloud.core;
 
+import cn.leancloud.json.ConverterUtils;
 import cn.leancloud.network.DNSDetoxicant;
 import cn.leancloud.service.APIService;
 import cn.leancloud.service.PushService;
@@ -48,7 +49,7 @@ public class PaasClient {
                   OkHttpClient okHttpClient = getGlobalOkHttpClient();
                   Retrofit retrofit = new Retrofit.Builder()
                           .baseUrl(apiHost)
-                          .addConverterFactory(GsonConverterFactory.create())
+                          .addConverterFactory(GsonConverterFactory.create(ConverterUtils.getGsonInstance()))
                           .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                           .client(okHttpClient)
                           .build();
@@ -66,7 +67,7 @@ public class PaasClient {
       String apiHost = appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.API).blockingFirst();// donot block current thread.
       Retrofit retrofit = new Retrofit.Builder()
               .baseUrl(apiHost)
-              .addConverterFactory(GsonConverterFactory.create())
+              .addConverterFactory(GsonConverterFactory.create(ConverterUtils.getGsonInstance()))
               .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
               .client(okHttpClient)
               .build();
@@ -83,7 +84,7 @@ public class PaasClient {
       String apiHost = appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.PUSH).blockingFirst();// donot block current thread.
       Retrofit retrofit = new Retrofit.Builder()
               .baseUrl(apiHost)
-              .addConverterFactory(GsonConverterFactory.create())
+              .addConverterFactory(GsonConverterFactory.create(ConverterUtils.getGsonInstance()))
               .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
               .client(okHttpClient)
               .build();

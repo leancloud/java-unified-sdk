@@ -6,6 +6,7 @@ import cn.leancloud.codec.MD5;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.query.AVQueryResult;
 import cn.leancloud.utils.LogUtil;
+import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -37,6 +38,9 @@ public class QueryResultCache extends LocalStorage {
 
   public String cacheResult(String key, String content) {
     LOGGER.d("save cache. key=" + key + ", value=" + content);
+    if (StringUtil.isEmpty(key) || null == content) {
+      return null;
+    }
     try {
       return super.saveData(key, content.getBytes("UTF-8"));
     } catch (Exception ex) {

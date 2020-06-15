@@ -55,11 +55,9 @@ public final class AVFile extends AVObject {
     FileUploader.setUploadHeader(key, value);
   }
 
-  //@JSONField(serialize = false)
-  private String localPath = ""; // local file used by AVFile(name, file) constructor.
+  private transient String localPath = ""; // local file used by AVFile(name, file) constructor.
 
-  //@JSONField(serialize = false)
-  private String cachePath = ""; // file cache path
+  private transient String cachePath = ""; // file cache path
 
   /**
    * default constructor.
