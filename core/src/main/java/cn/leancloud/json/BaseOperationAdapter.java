@@ -2,16 +2,7 @@ package cn.leancloud.json;
 
 import cn.leancloud.AVObject;
 import cn.leancloud.core.AVOSCloud;
-import cn.leancloud.json.JSON;
-import cn.leancloud.json.JSONObject;
 import cn.leancloud.ops.*;
-import com.alibaba.fastjson.parser.DefaultJSONParser;
-import com.alibaba.fastjson.parser.JSONToken;
-import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
-import com.alibaba.fastjson.serializer.JSONSerializer;
-import com.alibaba.fastjson.serializer.ObjectSerializer;
-import com.alibaba.fastjson.serializer.SerializeWriter;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -19,40 +10,40 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class BaseOperationAdapter implements ObjectSerializer, ObjectDeserializer {
+public class BaseOperationAdapter /*implements ObjectSerializer, ObjectDeserializer*/ {
   private static final String ATTR_OP = "operation";
   private static final String ATTR_FIELD = "field";
   private static final String ATTR_FINAL = "final";
   private static final String ATTR_OBJECT = "value";
   private static final String ATTR_SUBOPS = "subOps";
 
-  public void write(JSONSerializer serializer, Object object, Object fieldName, Type fieldType,
-                    int features) throws IOException {
-    BaseOperation op = (BaseOperation)object;
-    SerializeWriter writer = serializer.getWriter();
-    writer.write('{');
-    writer.writeFieldValue(' ', ATTR_OP, op.getOperation());
-    writer.writeFieldValue(' ', ATTR_FIELD, op.getField());
-    writer.writeFieldValue(',', ATTR_FINAL, op.isFinal());
-    if (AVOSCloud.isEnableCircularReferenceDetect()) {
-      writer.writeFieldValue(',', ATTR_OBJECT,
-              JSON.toJSONString(op.getValue()));
-    } else {
-      writer.writeFieldValue(',', ATTR_OBJECT,
-              JSON.toJSONString(op.getValue()));
-    }
-
-    if (object instanceof CompoundOperation) {
-      if (AVOSCloud.isEnableCircularReferenceDetect()) {
-        writer.writeFieldValue(',', ATTR_SUBOPS,
-                JSON.toJSONString(((CompoundOperation)op).getSubOperations()));
-      } else {
-        writer.writeFieldValue(',', ATTR_SUBOPS,
-                JSON.toJSONString(((CompoundOperation)op).getSubOperations()));
-      }
-    }
-    writer.write('}');
-  }
+//  public void write(JSONSerializer serializer, Object object, Object fieldName, Type fieldType,
+//                    int features) throws IOException {
+//    BaseOperation op = (BaseOperation)object;
+//    SerializeWriter writer = serializer.getWriter();
+//    writer.write('{');
+//    writer.writeFieldValue(' ', ATTR_OP, op.getOperation());
+//    writer.writeFieldValue(' ', ATTR_FIELD, op.getField());
+//    writer.writeFieldValue(',', ATTR_FINAL, op.isFinal());
+//    if (AVOSCloud.isEnableCircularReferenceDetect()) {
+//      writer.writeFieldValue(',', ATTR_OBJECT,
+//              JSON.toJSONString(op.getValue()));
+//    } else {
+//      writer.writeFieldValue(',', ATTR_OBJECT,
+//              JSON.toJSONString(op.getValue()));
+//    }
+//
+//    if (object instanceof CompoundOperation) {
+//      if (AVOSCloud.isEnableCircularReferenceDetect()) {
+//        writer.writeFieldValue(',', ATTR_SUBOPS,
+//                JSON.toJSONString(((CompoundOperation)op).getSubOperations()));
+//      } else {
+//        writer.writeFieldValue(',', ATTR_SUBOPS,
+//                JSON.toJSONString(((CompoundOperation)op).getSubOperations()));
+//      }
+//    }
+//    writer.write('}');
+//  }
 
   private Object getParsedObject(Object obj) {
     if (obj instanceof JSONObject) {
@@ -104,12 +95,12 @@ public class BaseOperationAdapter implements ObjectSerializer, ObjectDeserialize
     return (T) new NullOperation("Null", null);
   }
 
-  public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
-    JSONObject jsonObject = null;//parser.parseObject();
-    return parseJSONObject(jsonObject);
-  }
-
-  public int getFastMatchToken() {
-    return JSONToken.LBRACKET;
-  }
+//  public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
+//    JSONObject jsonObject = null;//parser.parseObject();
+//    return parseJSONObject(jsonObject);
+//  }
+//
+//  public int getFastMatchToken() {
+//    return JSONToken.LBRACKET;
+//  }
 }

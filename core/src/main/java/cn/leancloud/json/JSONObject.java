@@ -11,206 +11,328 @@ import java.util.Map;
 import java.util.Set;
 
 public class JSONObject implements Map<String, Object>, Cloneable, Serializable {
-  private com.alibaba.fastjson.JSONObject fastObject;
-  public JSONObject(com.alibaba.fastjson.JSONObject object) {
-    this.fastObject = object;
+  private com.google.gson.JsonObject gsonObject;
+  public JSONObject(com.google.gson.JsonObject object) {
+    this.gsonObject = object;
   }
 
   public JSONObject(Map<String, Object> map) {
-    this.fastObject = new com.alibaba.fastjson.JSONObject(map);
+    this.gsonObject = new com.google.gson.JsonObject();
+    // TODO: add entry to gsonObject.
   }
 
   public JSONObject() {
-    this.fastObject = new com.alibaba.fastjson.JSONObject();
+    this.gsonObject = new com.google.gson.JsonObject();
   }
 
-  protected com.alibaba.fastjson.JSONObject getRawObject() {
-    return this.fastObject;
+  protected com.google.gson.JsonObject getRawObject() {
+    return this.gsonObject;
   }
 
   public int size() {
-    return this.fastObject.size();
+    return this.gsonObject.size();
   }
 
   public boolean isEmpty() {
-    return this.fastObject.isEmpty();
+    return this.gsonObject.size() <= 0;
   }
 
   public boolean containsKey(Object key) {
-    return this.fastObject.containsKey(key);
+    return this.gsonObject.has((String)key);
   }
 
   public boolean containsValue(Object value) {
-    return this.fastObject.containsValue(value);
+    return false;//this.gsonObject.containsValue(value);
   }
 
   public Object get(Object key) {
-    return this.fastObject.get(key);
+    com.google.gson.JsonElement element = this.gsonObject.get((String)key);
+    return null;
   }
+
   public JSONObject getJSONObject(String key) {
-    return new JSONObject(this.fastObject.getJSONObject(key));
+    if (!gsonObject.has(key)) {
+      return null;
+    }
+    com.google.gson.JsonElement element = gsonObject.get(key);
+    if (!element.isJsonObject()) {
+      return null;
+    }
+    return new JSONObject(element.getAsJsonObject());
   }
 
   public JSONArray getJSONArray(String key) {
-    return new JSONArray(this.fastObject.getJSONArray(key));
+    if (!gsonObject.has(key)) {
+      return null;
+    }
+    com.google.gson.JsonElement element = gsonObject.get(key);
+    if (!element.isJsonArray()) {
+      return null;
+    }
+    return new JSONArray(element.getAsJsonArray());
   }
 
   public <T> T getObject(String key, Class<T> clazz) {
-    return this.fastObject.getObject(key, clazz);
+    if (!gsonObject.has(key)) {
+      return null;
+    }
+    com.google.gson.JsonElement element = this.gsonObject.get(key);
+    if (element.isJsonNull()) {
+      return null;
+    }
+    return null;//this.gsonObject.getObject(key, clazz);
   }
 
+  /**
+   * get object value with specified key.
+   * @param key
+   * @param type
+   * @param <T>
+   * @return
+   *
+   * @since 1.8
+   */
   public <T> T getObject(String key, Type type) {
-    return fastObject.getObject(key, type);
+    try {
+      return (T) getObject(key, Class.forName(type.getTypeName()));
+    } catch (ClassNotFoundException ex) {
+      return null;
+    }
   }
 
   public <T> T getObject(String key, TypeReference typeReference) {
-    return fastObject.getObject(key, null == typeReference? null : typeReference.getType());
+    return getObject(key, null == typeReference? null : typeReference.getType());
   }
 
   public Boolean getBoolean(String key) {
-    return fastObject.getBoolean(key);
+    if (!gsonObject.has(key)) {
+      return false;
+    }
+    com.google.gson.JsonElement element = gsonObject.get(key);
+    if (!element.isJsonPrimitive()) {
+      return false;
+    }
+    return element.getAsBoolean();
   }
 
   public byte[] getBytes(String key) {
-    return fastObject.getBytes(key);
+    String ret = getString(key);
+    if (null == ret) {
+      return null;
+    }
+    return ret.getBytes();
   }
 
   public boolean getBooleanValue(String key) {
-    return fastObject.getBooleanValue(key);
+    return getBoolean(key).booleanValue();
   }
 
   public Byte getByte(String key) {
-    return fastObject.getByte(key);
+    if (!gsonObject.has(key)) {
+      return 0;
+    }
+    com.google.gson.JsonElement element = gsonObject.get(key);
+    if (!element.isJsonPrimitive()) {
+      return 0;
+    }
+    return element.getAsByte();
   }
 
   public byte getByteValue(String key) {
-    return fastObject.getByteValue(key);
+    return getByte(key).byteValue();
   }
 
   public Short getShort(String key) {
-    return fastObject.getShort(key);
+    if (!gsonObject.has(key)) {
+      return 0;
+    }
+    com.google.gson.JsonElement element = gsonObject.get(key);
+    if (!element.isJsonPrimitive()) {
+      return 0;
+    }
+    return element.getAsShort();
   }
-  public Short getShortValue(String key) {
-    return fastObject.getShortValue(key);
+  public short getShortValue(String key) {
+    return getShort(key).shortValue();
   }
 
   public Integer getInteger(String key) {
-    return fastObject.getInteger(key);
+    if (!gsonObject.has(key)) {
+      return 0;
+    }
+    com.google.gson.JsonElement element = gsonObject.get(key);
+    if (!element.isJsonPrimitive()) {
+      return 0;
+    }
+    return element.getAsInt();
   }
 
   public int getIntValue(String key) {
-    return fastObject.getIntValue(key);
+    return getInteger(key).intValue();
   }
 
   public Long getLong(String key) {
-    return fastObject.getLong(key);
+    if (!gsonObject.has(key)) {
+      return 0l;
+    }
+    com.google.gson.JsonElement element = gsonObject.get(key);
+    if (!element.isJsonPrimitive()) {
+      return 0l;
+    }
+    return element.getAsLong();
   }
   public long getLongValue(String key) {
-    return fastObject.getLongValue(key);
+    return getLong(key).longValue();
   }
   public Float getFloat(String key) {
-    return fastObject.getFloat(key);
+    if (!gsonObject.has(key)) {
+      return 0f;
+    }
+    com.google.gson.JsonElement element = gsonObject.get(key);
+    if (!element.isJsonPrimitive()) {
+      return 0f;
+    }
+    return element.getAsFloat();
   }
-  public Float getFloatValue(String key) {
-    return fastObject.getFloatValue(key);
+  public float getFloatValue(String key) {
+    return getFloat(key).floatValue();
   }
   public Double getDouble(String key) {
-    return fastObject.getDouble(key);
+    if (!gsonObject.has(key)) {
+      return 0d;
+    }
+    com.google.gson.JsonElement element = gsonObject.get(key);
+    if (!element.isJsonPrimitive()) {
+      return 0d;
+    }
+    return element.getAsDouble();
   }
-  public Double getDoubleValue(String key) {
-    return fastObject.getDoubleValue(key);
+  public double getDoubleValue(String key) {
+    return getDouble(key).doubleValue();
   }
   public BigDecimal getBigDecimal(String key) {
-    return fastObject.getBigDecimal(key);
+    if (!gsonObject.has(key)) {
+      return BigDecimal.ZERO;
+    }
+    com.google.gson.JsonElement element = gsonObject.get(key);
+    if (!element.isJsonPrimitive()) {
+      return BigDecimal.ZERO;
+    }
+    return element.getAsBigDecimal();
   }
   public BigInteger getBigInteger(String key) {
-    return fastObject.getBigInteger(key);
+    if (!gsonObject.has(key)) {
+      return BigInteger.ZERO;
+    }
+    com.google.gson.JsonElement element = gsonObject.get(key);
+    if (!element.isJsonPrimitive()) {
+      return BigInteger.ZERO;
+    }
+    return element.getAsBigInteger();
   }
   public String getString(String key) {
-    return fastObject.getString(key);
+    if (!gsonObject.has(key)) {
+      return null;
+    }
+    com.google.gson.JsonElement element = gsonObject.get(key);
+    if (!element.isJsonPrimitive()) {
+      return null;
+    }
+    return element.getAsString();
   }
   public Date getDate(String key) {
-    return fastObject.getDate(key);
+    return null;
   }
 
   public java.sql.Date getSqlDate(String key) {
-    return fastObject.getSqlDate(key);
+    return null;
   }
   public Timestamp getTimestamp(String key) {
-    return fastObject.getTimestamp(key);
+    return null;
   }
+
   public Object put(String key, Object value) {
-    return this.fastObject.put(key, value);
+    //TODO
+    com.google.gson.JsonElement element = null;
+    this.gsonObject.add(key, element);
+    return value;
   }
 
   public JSONObject fluentPut(String key, Object value) {
-    this.fastObject.fluentPut(key, value);
+    // TODO
+    com.google.gson.JsonElement ele = null;
+    this.gsonObject.add(key, ele);
     return this;
   }
 
   public void putAll(Map<? extends String, ? extends Object> m) {
-    fastObject.putAll(m);
+    for(Map.Entry<? extends String, ? extends Object> entry: m.entrySet()) {
+      put(entry.getKey(), entry.getValue());
+    }
   }
 
   public JSONObject fluentPutAll(Map<? extends String, ? extends Object> m) {
-    this.fastObject.fluentPutAll(m);
+    putAll(m);
     return this;
   }
 
   public void clear() {
-    fastObject.clear();
+    for (String key : gsonObject.keySet()) {
+      remove(key);
+    }
   }
 
   public JSONObject fluentClear() {
-    fastObject.fluentClear();
+    clear();
     return this;
   }
 
   public Object remove(Object key) {
-    return fastObject.remove(key);
+    return gsonObject.remove((String)key);
   }
 
   public Set<String> keySet() {
-    return fastObject.keySet();
+    return gsonObject.keySet();
   }
 
   public Collection<Object> values() {
-    return fastObject.values();
+    return null;//gsonObject.values();
   }
   public Set<Map.Entry<String, Object>> entrySet() {
-    return this.fastObject.entrySet();
+    Set<Map.Entry<String, com.google.gson.JsonElement>> objects = this.gsonObject.entrySet();
+    return null;
   }
 
   @Override
   public Object clone() {
-    return new JSONObject((com.alibaba.fastjson.JSONObject)fastObject.clone());
+    return new JSONObject((com.google.gson.JsonObject) gsonObject.deepCopy());
   }
 
   public Map<String, Object> getInnerMap() {
-    return fastObject.getInnerMap();
+    return null;//gsonObject.getInnerMap();
   }
 
   public <T> T toJavaObject(Class<T> clazz) {
-    return fastObject.toJavaObject(clazz);
+    return null;//gsonObject.toJavaObject(clazz);
   }
 
   public int hashCode() {
-    return fastObject.hashCode();
+    return gsonObject.hashCode();
   }
   public boolean equals(Object obj) {
     if (null == obj) {
       return false;
     }
-    if (!(obj instanceof JSONObject)) {
-      return false;
-    }
     if (this == obj) {
       return true;
     }
-    return fastObject.equals(((JSONObject)obj).fastObject);
+    if (!(obj instanceof JSONObject)) {
+      return false;
+    }
+    return gsonObject.equals(((JSONObject)obj).gsonObject);
   }
 
   public String toJSONString() {
-    return this.fastObject.toJSONString();
+    return this.gsonObject.toString();
   }
 }

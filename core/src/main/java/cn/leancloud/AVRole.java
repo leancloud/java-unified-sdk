@@ -9,8 +9,6 @@ public class AVRole extends AVObject {
   private static final String RELATION_ROLE_NAME = "roles";
   private static final String RELATION_USER_NAME = "users";
 
-  private String name;
-
   public AVRole() {
     super(CLASS_NAME);
     totallyOverwrite = true;

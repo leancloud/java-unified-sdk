@@ -6,13 +6,10 @@ import cn.leancloud.json.JSON;
 import java.util.List;
 
 public class AVQueryResult {
-  //@JSONField(name="results")
   private List<AVObject> results = null;
 
-  //@JSONField(name="count")
   private int count = 0;
 
-  //@JSONField(name="className")
   private String className = "";
 
   public List<AVObject> getResults() {

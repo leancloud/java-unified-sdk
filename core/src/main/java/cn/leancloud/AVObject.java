@@ -42,13 +42,13 @@ public class AVObject {
   protected static final int UUID_LEN = UUID.randomUUID().toString().length();
 
   protected String className;
-  protected String endpointClassName = null;
+  protected transient String endpointClassName = null;
 
-  protected String objectId = "";
+  protected transient String objectId = "";
   protected ConcurrentMap<String, Object> serverData = new ConcurrentHashMap<String, Object>();
   protected ConcurrentMap<String, ObjectFieldOperation> operations = new ConcurrentHashMap<String, ObjectFieldOperation>();
-  protected AVACL acl = null;
-  private String uuid = null;
+  protected transient AVACL acl = null;
+  private transient String uuid = null;
 
   private volatile boolean fetchWhenSave = false;
   protected volatile boolean totallyOverwrite = false;

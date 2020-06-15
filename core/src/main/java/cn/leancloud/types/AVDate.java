@@ -14,6 +14,7 @@ public class AVDate {
   private static final ThreadLocal<SimpleDateFormat> THREAD_LOCAL_DATE_FORMAT =
           new ThreadLocal<SimpleDateFormat>();
 
+  //@SerializedName("__type")
   private String type = "Date";
 
   private String iso = "";

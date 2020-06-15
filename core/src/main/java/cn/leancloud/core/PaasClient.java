@@ -6,7 +6,7 @@ import cn.leancloud.service.PushService;
 import io.reactivex.functions.Consumer;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
-import retrofit2.converter.fastjson.*;
+import retrofit2.converter.gson.*;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.util.concurrent.TimeUnit;
@@ -48,7 +48,7 @@ public class PaasClient {
                   OkHttpClient okHttpClient = getGlobalOkHttpClient();
                   Retrofit retrofit = new Retrofit.Builder()
                           .baseUrl(apiHost)
-                          .addConverterFactory(FastJsonConverterFactory.create())
+                          .addConverterFactory(GsonConverterFactory.create())
                           .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                           .client(okHttpClient)
                           .build();
@@ -66,7 +66,7 @@ public class PaasClient {
       String apiHost = appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.API).blockingFirst();// donot block current thread.
       Retrofit retrofit = new Retrofit.Builder()
               .baseUrl(apiHost)
-              .addConverterFactory(FastJsonConverterFactory.create())
+              .addConverterFactory(GsonConverterFactory.create())
               .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
               .client(okHttpClient)
               .build();
@@ -83,7 +83,7 @@ public class PaasClient {
       String apiHost = appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.PUSH).blockingFirst();// donot block current thread.
       Retrofit retrofit = new Retrofit.Builder()
               .baseUrl(apiHost)
-              .addConverterFactory(FastJsonConverterFactory.create())
+              .addConverterFactory(GsonConverterFactory.create())
               .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
               .client(okHttpClient)
               .build();

@@ -7,7 +7,7 @@ import cn.leancloud.AVException;
 import cn.leancloud.AVObject;
 import cn.leancloud.query.AVCloudQueryResult;
 import cn.leancloud.types.AVNull;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
