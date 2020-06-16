@@ -24,7 +24,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSON;
+import cn.leancloud.json.JSON;
 
 import java.util.LinkedList;
 import java.util.List;

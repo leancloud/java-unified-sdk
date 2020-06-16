@@ -3,8 +3,6 @@ package cn.leancloud;
 import android.content.Context;
 import android.os.Handler;
 
-import com.alibaba.fastjson.parser.ParserConfig;
-
 import java.lang.reflect.Method;
 
 import cn.leancloud.cache.AndroidSystemSetting;

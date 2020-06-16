@@ -36,6 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.leancloud.*;
+import cn.leancloud.json.JSONObject;
 
 /**
  * Created by fengjunwen on 2018/3/22.
@@ -377,7 +378,7 @@ public class DemoBaseActivity extends ListActivity {
   }
 
   protected String prettyJSON(AVObject object) {
-    com.alibaba.fastjson.JSONObject jsonObject = object.toJSONObject();
+    JSONObject jsonObject = object.toJSONObject();
     try {
       return jsonObject.toString();
     } catch (Exception e) {

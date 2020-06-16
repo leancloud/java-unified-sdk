@@ -1,6 +1,5 @@
 package cn.leancloud.im.v2.audio;
 
-import android.hardware.Camera;
 import android.media.MediaRecorder;
 
 import java.io.File;

@@ -6,7 +6,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 
-import com.alibaba.fastjson.JSON;
+import cn.leancloud.json.JSON;
 
 import java.io.File;
 import java.util.HashSet;

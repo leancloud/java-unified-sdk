@@ -1,13 +1,9 @@
 package cn.leancloud.demo.leancloud_search_sample;
 
 import androidx.appcompat.app.AppCompatActivity;
-import cn.leancloud.AVObject;
 import cn.leancloud.search.AVSearchQuery;
 import cn.leancloud.search.SearchActivity;
 import cn.leancloud.utils.StringUtil;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,9 +11,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.alibaba.fastjson.JSON;
+import cn.leancloud.json.JSON;
 
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
   private static final String TAG = MainActivity.class.getSimpleName();

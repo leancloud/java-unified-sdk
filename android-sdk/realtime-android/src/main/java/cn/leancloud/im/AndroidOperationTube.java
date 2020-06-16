@@ -13,13 +13,11 @@ import java.util.Map;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.alibaba.fastjson.JSON;
-
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVOSCloud;
 import cn.leancloud.callback.AVCallback;
-import cn.leancloud.codec.MD5;
+import cn.leancloud.codec.MDFive;
 import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.im.v2.AVIMClient.AVIMClientStatus;
 import cn.leancloud.im.v2.AVIMException;
@@ -33,6 +31,7 @@ import cn.leancloud.im.v2.callback.AVIMCommonJsonCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationCallback;
 import cn.leancloud.im.v2.callback.AVIMMessagesQueryCallback;
 import cn.leancloud.im.v2.callback.AVIMOnlineClientsCallback;
+import cn.leancloud.json.JSON;
 import cn.leancloud.livequery.AVLiveQuery;
 import cn.leancloud.livequery.AVLiveQuerySubscribeCallback;
 import cn.leancloud.push.PushService;
@@ -221,7 +220,7 @@ public class AndroidOperationTube implements OperationTube {
     int requestId = WindTalker.getNextIMRequestId();
     RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
     AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
-    session.queryConversations(JSON.parseObject(queryString, Map.class), requestId, MD5.computeMD5(queryString));
+    session.queryConversations(JSON.parseObject(queryString, Map.class), requestId, MDFive.computeMD5(queryString));
     return true;
   }
 

@@ -7,8 +7,6 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.alibaba.fastjson.JSON;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +18,7 @@ import java.util.Set;
 import cn.leancloud.AVLogger;
 import cn.leancloud.codec.Base64Decoder;
 import cn.leancloud.im.DatabaseDelegate;
+import cn.leancloud.json.JSON;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 

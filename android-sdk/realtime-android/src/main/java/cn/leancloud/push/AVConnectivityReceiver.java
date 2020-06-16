@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import androidx.annotation.RequiresPermission;
 import androidx.core.app.ActivityCompat;
 
 import cn.leancloud.utils.LogUtil;

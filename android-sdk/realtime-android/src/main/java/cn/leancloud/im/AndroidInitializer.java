@@ -5,7 +5,6 @@ import android.os.Build;
 
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVOSCloud;
-import cn.leancloud.Messages;
 import cn.leancloud.internal.ThreadModel.MainThreadChecker;
 import cn.leancloud.internal.ThreadModel.ThreadShuttle;
 import cn.leancloud.livequery.AVLiveQueryEventHandler;

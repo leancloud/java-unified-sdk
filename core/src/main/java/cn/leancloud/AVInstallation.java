@@ -26,7 +26,7 @@ public final class AVInstallation extends AVObject {
   private static String DEFAULT_DEVICETYPE = "android";
   private static volatile AVInstallation currentInstallation;
 
-  AVInstallation() {
+  public AVInstallation() {
     super(CLASS_NAME);
     this.totallyOverwrite = true;
     initialize();

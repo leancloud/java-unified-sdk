@@ -2,14 +2,13 @@ package cn.leancloud.sample.testcase;
 
 import android.content.Intent;
 
-import com.alibaba.fastjson.JSON;
+import cn.leancloud.json.JSON;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVObject;
 import cn.leancloud.AVParcelableObject;
 import cn.leancloud.AVQuery;
 import cn.leancloud.sample.DemoBaseActivity;
-import cn.leancloud.sample.Student;
 
 /**
  * Created by fengjunwen on 2018/6/27.

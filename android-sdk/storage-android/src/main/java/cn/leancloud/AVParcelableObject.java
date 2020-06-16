@@ -2,8 +2,6 @@ package cn.leancloud;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import cn.leancloud.utils.LogUtil;
 

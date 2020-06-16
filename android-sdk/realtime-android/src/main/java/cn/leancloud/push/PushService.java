@@ -21,7 +21,7 @@ import android.os.Message;
 import android.os.SystemClock;
 import androidx.core.app.ActivityCompat;
 
-import com.alibaba.fastjson.JSON;
+import cn.leancloud.json.JSON;
 
 import java.util.Arrays;
 import java.util.HashMap;
