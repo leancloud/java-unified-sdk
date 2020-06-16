@@ -87,13 +87,22 @@ public class JSONObject implements Map<String, Object>, Cloneable, Serializable 
     return this.gsonObject.has((String)key);
   }
 
-  public boolean containsValue(Object value) {
-    return false;//this.gsonObject.containsValue(value);
+  public boolean containsValue(Object v) {
+    Collection<Object> values = values();
+    if (null == values) {
+      return false;
+    }
+    for (Object obj: values) {
+      if (obj.equals(v)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public Object get(Object key) {
     com.google.gson.JsonElement element = this.gsonObject.get((String)key);
-    return null;
+    return ConverterUtils.toJavaObject(element);
   }
 
   public JSONObject getJSONObject(String key) {

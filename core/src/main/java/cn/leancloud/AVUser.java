@@ -6,7 +6,7 @@ import cn.leancloud.callback.AVCallback;
 import cn.leancloud.callback.FollowersAndFolloweesCallback;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
-import cn.leancloud.json.ObjectTypeAdapter;
+import cn.leancloud.json.ObjectDeserializer;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.ErrorUtils;
@@ -769,7 +769,7 @@ public class AVUser extends AVObject {
       synchronized (AVUser.class) {
         String jsonString = PersistenceUtil.sharedInstance().readContentFromFile(currentUserArchivePath);
         if (!StringUtil.isEmpty(jsonString)) {
-          if (jsonString.indexOf("@type") >= 0 || jsonString.indexOf(ObjectTypeAdapter.KEY_VERSION) >= 0) {
+          if (jsonString.indexOf("@type") >= 0 || jsonString.indexOf(ObjectDeserializer.KEY_VERSION) >= 0) {
             // new version.
             try {
               user = (AVUser) AVObject.parseAVObject(jsonString);;

@@ -3,7 +3,7 @@ package cn.leancloud.ops;
 import java.util.*;
 
 import cn.leancloud.*;
-import cn.leancloud.json.ObjectTypeAdapter;
+import cn.leancloud.json.ObjectDeserializer;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.utils.StringUtil;
 
@@ -215,12 +215,13 @@ public class Utils {
 
   public static Object getObjectFrom(Map<String, Object> map) {
     Object type = map.get("__type");
-    if (type == null || !(type instanceof String)) {
-      if(map.containsKey(ObjectTypeAdapter.KEY_VERSION) && map.containsKey(ObjectTypeAdapter.KEY_SERVERDATA)) {
+    if (null == type || !(type instanceof String)) {
+      if(map.containsKey(AVObject.KEY_CLASSNAME) && map.containsKey(ObjectDeserializer.KEY_SERVERDATA)) {
         // support new version jsonString of AVObject.
-        String className = (String) map.get(AVObject.KEY_CLASSNAME);
+        String className = map.containsKey(AVObject.KEY_CLASSNAME)?
+                (String) map.get(AVObject.KEY_CLASSNAME) : (String) map.get("@type");
         AVObject avObject = Transformer.objectFromClassName(className);
-        Map<String, Object> serverData = (Map) map.get(ObjectTypeAdapter.KEY_SERVERDATA);
+        Map<String, Object> serverData = (Map) map.get(ObjectDeserializer.KEY_SERVERDATA);
         Map<String, Object> decodedValues = new HashMap<>();
         for(Map.Entry<String, Object> entry: serverData.entrySet()) {
           String k = entry.getKey();
@@ -238,16 +239,46 @@ public class Utils {
         }
         avObject.resetServerData(decodedValues);
         return avObject;
-      } else {
-        Map<String, Object> newMap = new HashMap<String, Object>(map.size());
-
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-          final String key = entry.getKey();
-          Object o = entry.getValue();
-          newMap.put(key, getObjectFrom(o));
+      } else if (map.containsKey("@type") && map.get("@type") instanceof String) {
+        String classType = (String) map.get("@type");
+        if (null != classType && classType.startsWith("cn.leancloud.")) {
+          try {
+            AVObject avObject = (AVObject) Class.forName(classType).newInstance();
+            map.remove("@type");
+            Map<String, Object> decodedValues = new HashMap<>();
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+              String k = entry.getKey();
+              Object v = entry.getValue();
+              if (v instanceof String || v instanceof Number || v instanceof Boolean || v instanceof Byte || v instanceof Character) {
+                // primitive type
+                decodedValues.put(k, v);
+              } else if (v instanceof Map || v instanceof JSONObject) {
+                decodedValues.put(k, Utils.getObjectFrom(v));
+              } else if (v instanceof Collection) {
+                decodedValues.put(k, Utils.getObjectFrom(v));
+              } else if (null != v) {
+                decodedValues.put(k, v);
+              }
+            }
+            avObject.resetServerData(decodedValues);
+            return avObject;
+          } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+          } catch (IllegalAccessException e) {
+            e.printStackTrace();
+          } catch (InstantiationException e) {
+            e.printStackTrace();
+          }
         }
-        return newMap;
       }
+      Map<String, Object> newMap = new HashMap<String, Object>(map.size());
+
+      for (Map.Entry<String, Object> entry : map.entrySet()) {
+        final String key = entry.getKey();
+        Object o = entry.getValue();
+        newMap.put(key, getObjectFrom(o));
+      }
+      return newMap;
     }
     map.remove("__type");
     if (type.equals("Pointer") || type.equals("Object")) {

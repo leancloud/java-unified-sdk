@@ -28,27 +28,6 @@ public class ConverterUtils {
           .create();
 
   public static void initialize() {
-//    ClassPool pool = ClassPool.getDefault();
-//    pool.importPackage("com.google.gson.stream");
-//    pool.importPackage("java.io");
-//    pool.importPackage("java.util");
-//    pool.importPackage("java.lang");
-//    pool.importPackage("com.google.gson.internal");
-//
-//    CtClass cc = pool.get("com.google.gson.internal.bind.ObjectTypeAdapter");
-//
-//    CtMethod method = cc.getDeclaredMethod("read");
-//
-//    method.insertAt(78,   "if (true){\n"
-//            + "	  Double tmp = Double.valueOf(in.nextDouble());\n"
-//            + "   if (tmp.longValue() == tmp.doubleValue()) {\n"
-//            + "       return Long.valueOf( tmp.longValue());\n"
-//            + "   } else {\n"
-//            + "       return tmp;\n"
-//            + "   }\n"
-//            + "}");
-//
-//    cc.writeFile();
   }
 
   public static Gson getGsonInstance() {

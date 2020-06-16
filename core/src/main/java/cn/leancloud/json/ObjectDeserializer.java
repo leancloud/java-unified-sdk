@@ -10,11 +10,9 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class ObjectDeserializer implements JsonDeserializer<AVObject> {
   public static final String KEY_VERSION = "_version";
-  private static final String DEFAULT_VERSION = "5";
   public static final String KEY_SERVERDATA = "serverData";
 
   private AVObject generateObject(Map<String, Object> objectMap, String className) {
@@ -64,6 +62,7 @@ public class ObjectDeserializer implements JsonDeserializer<AVObject> {
     } else {
       obj = new AVObject();
     }
+    serverJson.remove("@type");
     for (Map.Entry<String, Object> entry: serverJson.entrySet()) {
       String k = entry.getKey();
       Object v = entry.getValue();
