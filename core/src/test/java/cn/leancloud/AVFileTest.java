@@ -99,6 +99,8 @@ public class AVFileTest extends TestCase {
           }
 
           public void onError(Throwable throwable) {
+            System.out.println("[Thread:" + Thread.currentThread().getId() +"] failed to delete file.");
+            throwable.printStackTrace();
             latch.countDown();
           }
 
@@ -109,6 +111,8 @@ public class AVFileTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
+        System.out.println("[Thread:" + Thread.currentThread().getId() + "] failed to upload file.");
+        throwable.printStackTrace();
         latch.countDown();
       }
 

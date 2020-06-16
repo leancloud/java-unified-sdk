@@ -1,6 +1,8 @@
 package cn.leancloud.json;
 
 import cn.leancloud.AVObject;
+import cn.leancloud.service.AppAccessEndpoint;
+import cn.leancloud.sms.AVCaptchaDigest;
 import com.google.gson.reflect.TypeToken;
 import junit.framework.TestCase;
 
@@ -66,5 +68,26 @@ public class GsonCommonTest extends TestCase {
     Type ResponseList = new TypeToken<ArrayList<Map<String, Object>>>() {}.getType();
     responses = ConverterUtils.getGsonInstance().fromJson(draft, ResponseList);
     System.out.println(responses.toString());
+  }
+
+  public void testAppAccessEndpoint() {
+    String text = "{\"ttl\":3600,\"stats_server\":\"https://stats_server\", \"push_server\": \"https://push_server\"," +
+            " \"rtm_router_server\": \"https://rtm_router_server\", \"api_server\": \"https://api_server\"," +
+            " \"engine_server\": \"https://engine_server\"}";
+    AppAccessEndpoint endpoint = JSON.parseObject(text, AppAccessEndpoint.class);
+    System.out.println(JSON.toJSONString(endpoint));
+    assertTrue(endpoint.getTtl() == 3600);
+    assertTrue(endpoint.getApiServer().endsWith("api_server"));
+    assertTrue(endpoint.getEngineServer().endsWith("engine_server"));
+    assertTrue(endpoint.getPushServer().endsWith("push_server"));
+    assertTrue(endpoint.getRtmRouterServer().endsWith("rtm_router_server"));
+    assertTrue(endpoint.getStatsServer().endsWith("stats_server"));
+  }
+
+  public void testAVCaptchaDigest() {
+    String text = "{\"captcha_token\":\"fhaeifhepfewifh\", \"captcha_url\": \"https://captcha_url\"}";
+    AVCaptchaDigest digest = JSON.parseObject(text, AVCaptchaDigest.class);
+    System.out.println(JSON.toJSONString(digest));
+    assertTrue(digest.getCaptchaUrl().startsWith("https"));
   }
 }
