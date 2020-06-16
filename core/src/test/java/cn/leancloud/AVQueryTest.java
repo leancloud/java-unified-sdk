@@ -299,7 +299,7 @@ public class AVQueryTest extends TestCase {
 
   public void testFirstQueryUnderCallbackWithEmptyResult() throws Exception {
     AVQuery query = new AVQuery("Student");
-    query.whereGreaterThan("age", 119);
+    query.whereLessThan("age", -119);
     query.orderByDescending(AVObject.KEY_CREATED_AT);
     query.getFirstInBackground().subscribe(ObserverBuilder.buildSingleObserver(new GetCallback() {
       @Override

@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.5.7 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- upgrade fastjson lib to 1.2.71;
+- always initialize current Installation instance through local cache file.
+
 ## 6.5.6 release
 
 #### Break changes

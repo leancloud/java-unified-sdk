@@ -27,10 +27,11 @@ public class AVInstallationTest extends TestCase {
   }
 
   public void testCreateInstallation() {
-    AVInstallation install = new AVInstallation();
-    assertTrue(install.getInstallationId().length() > 0);
     AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
     assertTrue(currentInstall != null);
+
+    AVInstallation install = new AVInstallation();
+    assertTrue(install.getInstallationId().length() > 0);
     assertTrue(install.getInstallationId().equals(currentInstall.getInstallationId()));
   }
 
