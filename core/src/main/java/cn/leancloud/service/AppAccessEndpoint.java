@@ -2,25 +2,18 @@ package cn.leancloud.service;
 
 import cn.leancloud.core.AVOSService;
 import cn.leancloud.utils.StringUtil;
-import com.google.gson.annotations.SerializedName;
 
 public class AppAccessEndpoint {
-  @SerializedName("ttl")
   private long ttl;
 
-  @SerializedName("stats_server")
-  private String statServer;
+  private String statsServer;
 
-  @SerializedName("push_server")
   private String pushServer;
 
-  @SerializedName("rtm_router_server")
   private String rtmRouterServer;
 
-  @SerializedName("api_server")
   private String apiServer;
 
-  @SerializedName("engine_server")
   private String engineServer;
 
   public long getTtl() {
@@ -31,12 +24,12 @@ public class AppAccessEndpoint {
     this.ttl = ttl;
   }
 
-  public String getStatServer() {
-    return statServer;
+  public String getStatsServer() {
+    return statsServer;
   }
 
-  public void setStatServer(String statServer) {
-    this.statServer = statServer;
+  public void setStatsServer(String statsServer) {
+    this.statsServer = statsServer;
   }
 
   public String getPushServer() {
@@ -87,7 +80,7 @@ public class AppAccessEndpoint {
         result = getRtmRouterServer();
         break;
       case STATS:
-        result = getStatServer();
+        result = getStatsServer();
         break;
     }
     return result;
@@ -113,7 +106,7 @@ public class AppAccessEndpoint {
         this.setRtmRouterServer(host);
         break;
       case STATS:
-        this.setStatServer(host);
+        this.setStatsServer(host);
         break;
     }
   }

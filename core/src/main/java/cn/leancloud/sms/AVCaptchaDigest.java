@@ -1,10 +1,8 @@
 package cn.leancloud.sms;
 
 public class AVCaptchaDigest {
-  //@JSONField(name = "captcha_token")
   private String captchaToken;
 
-  //@JSONField(name = "captcha_url")
   private String captchaUrl;
 
   public String getCaptchaToken() {

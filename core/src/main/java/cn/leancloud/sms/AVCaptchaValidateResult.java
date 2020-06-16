@@ -1,14 +1,21 @@
 package cn.leancloud.sms;
 
 public class AVCaptchaValidateResult {
-  //@JSONField(name= "validate_token")
-  private String token;
+  private String validateToken;
 
-  public String getToken() {
-    return token;
+  public String getValidateToken() {
+    return validateToken;
   }
 
-  public void setToken(String token) {
-    this.token = token;
+  public void setValidateToken(String validateToken) {
+    this.validateToken = validateToken;
+  }
+
+  public String getToken() {
+    return getValidateToken();
+  }
+
+  public void setToken(String validateToken) {
+    setValidateToken(validateToken);
   }
 }

@@ -3,8 +3,6 @@ package cn.leancloud.service;
 import cn.leancloud.*;
 import cn.leancloud.json.JSONArray;
 import cn.leancloud.json.JSONObject;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import cn.leancloud.query.AVQueryResult;
 import cn.leancloud.search.AVSearchResponse;
 import cn.leancloud.sms.AVCaptchaDigest;
@@ -41,33 +39,33 @@ public interface APIService {
                                    @Query("include") String includeKeys);
 
   @POST("/1.1/classes/{className}")
-  Observable<AVObject> createObject(@Path("className") String className, @Body JsonObject object,
+  Observable<AVObject> createObject(@Path("className") String className, @Body JSONObject object,
                                     @Query("fetchWhenSave") boolean fetchFlag,
-                                    @Query("where") JsonObject where);
+                                    @Query("where") JSONObject where);
 
   @PUT("/1.1/classes/{className}/{objectId}")
   Observable<AVObject> updateObject(@Path("className") String className, @Path("objectId") String objectId,
-                                    @Body JsonObject object, @Query("fetchWhenSave") boolean fetchFlag,
-                                    @Query("where") JsonObject where);
+                                    @Body JSONObject object, @Query("fetchWhenSave") boolean fetchFlag,
+                                    @Query("where") JSONObject where);
 
   @DELETE("/1.1/classes/{className}/{objectId}")
   Observable<AVNull> deleteObject(@Path("className") String className, @Path("objectId") String objectId);
 
   @POST("/1.1/batch")
-  Observable<JSONArray> batchCreate(@Body JsonObject param);
+  Observable<JSONArray> batchCreate(@Body JSONObject param);
 
   /**
    * AVInstalltion methods.
    */
 
   @POST("/1.1/{endpointClass}")
-  Observable<AVObject> saveWholeObject(@Path("endpointClass") String endpointClass, @Body JsonObject object,
+  Observable<AVObject> saveWholeObject(@Path("endpointClass") String endpointClass, @Body JSONObject object,
                                        @Query("fetchWhenSave") boolean fetchFlag,
-                                       @Query("where") JsonObject where);
+                                       @Query("where") JSONObject where);
   @PUT("/1.1/{endpointClass}/{objectId}")
   Observable<AVObject> saveWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
-                                       @Body JsonObject object, @Query("fetchWhenSave") boolean fetchFlag,
-                                       @Query("where") JsonObject where);
+                                       @Body JSONObject object, @Query("fetchWhenSave") boolean fetchFlag,
+                                       @Query("where") JSONObject where);
   @GET("/1.1/{endpointClass}/{objectId}")
   Observable<AVObject> getWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
                                       @Query("include") String includeKeys);
@@ -89,7 +87,7 @@ public interface APIService {
    * otherwise, `__internalId` will become a common field of target instance.
    */
   @POST("/1.1/batch/save")
-  Observable<JSONObject> batchUpdate(@Body JsonObject param);
+  Observable<JSONObject> batchUpdate(@Body JSONObject param);
 
   /**
    * Cloud Functions
@@ -105,10 +103,10 @@ public interface APIService {
    */
 
   @POST("/1.1/fileTokens")
-  Observable<FileUploadToken> createUploadToken(@Body JsonObject fileData);
+  Observable<FileUploadToken> createUploadToken(@Body JSONObject fileData);
 
   @POST("/1.1/fileCallback")
-  Call<AVNull> fileCallback(@Body JsonObject result);
+  Call<AVNull> fileCallback(@Body JSONObject result);
 
   @GET("/1.1/files/{objectId}")
   Observable<AVFile> fetchFile(@Path("objectId") String objectId);
@@ -120,27 +118,27 @@ public interface APIService {
    * Role Operations.
    */
   @POST("/1.1/roles")
-  Observable<AVRole> createRole(@Body JsonObject object);
+  Observable<AVRole> createRole(@Body JSONObject object);
 
   /**
    * User Operations.
    */
 
   @POST("/1.1/users")
-  Observable<AVUser> signup(@Body JsonObject object);
+  Observable<AVUser> signup(@Body JSONObject object);
   @POST("/1.1/users")
-  Observable<AVUser> signup(@Body JsonObject object, @Query("failOnNotExist") boolean failOnNotExist);
+  Observable<AVUser> signup(@Body JSONObject object, @Query("failOnNotExist") boolean failOnNotExist);
   @GET("/1.1/users")
   Observable<AVQueryResult> queryUsers(@QueryMap Map<String, String> query);
 
   @POST("/1.1/usersByMobilePhone")
-  Observable<AVUser> signupByMobilePhone(@Body JsonObject object);
+  Observable<AVUser> signupByMobilePhone(@Body JSONObject object);
 
   @POST("/1.1/login")
-  Observable<AVUser> login(@Body JsonObject object);
+  Observable<AVUser> login(@Body JSONObject object);
 
   @PUT("/1.1/users/{objectId}/updatePassword")
-  Observable<AVUser> updatePassword(@Path("objectId") String objectId, @Body JsonObject object);
+  Observable<AVUser> updatePassword(@Path("objectId") String objectId, @Body JSONObject object);
 
   @PUT("/1.1/resetPasswordBySmsCode/{smsCode}")
   Observable<AVNull> resetPasswordBySmsCode(@Path("smsCode") String smsCode, @Body Map<String, String> param);
@@ -183,7 +181,7 @@ public interface APIService {
   Observable<JSONObject> getFollowees(@Path("userId") String userId);
 
   @GET("/1.1/users/{userId}/followersAndFollowees")
-  Observable<JsonObject> getFollowersAndFollowees(@Path("userId") String userId);
+  Observable<JSONObject> getFollowersAndFollowees(@Path("userId") String userId);
 
   /**
    * Status API

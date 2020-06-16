@@ -19,17 +19,6 @@ import java.util.*;
 public class JSONArray implements List<Object>, Cloneable, Serializable {
   private com.google.gson.JsonArray gsonArray;
 
-  static class ObjectAdapter extends TypeAdapter<JSONArray> {
-    public void write(JsonWriter writer, JSONArray object) throws IOException {
-      TypeAdapters.JSON_ELEMENT.write(writer, object.gsonArray);
-    }
-
-    public JSONArray read(JsonReader reader) throws IOException {
-      JsonElement jsonObject = TypeAdapters.JSON_ELEMENT.read(reader);
-      return new JSONArray((JsonArray) jsonObject);
-    }
-  }
-
   static class InnerIterator implements Iterator<Object> {
     private Iterator<com.google.gson.JsonElement> gsonIterator = null;
     public InnerIterator(Iterator<com.google.gson.JsonElement> jsonIterator) {

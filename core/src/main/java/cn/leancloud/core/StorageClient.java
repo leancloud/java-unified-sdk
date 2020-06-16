@@ -18,9 +18,6 @@ import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONArray;
 import cn.leancloud.json.JSONObject;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Scheduler;
@@ -221,18 +218,14 @@ public class StorageClient {
     return wrapObservable(apiService.deleteObject(className, objectId));
   }
 
-  private JsonObject getJsonObject(JSONObject data) {
-    return null == data? null:data.getRawObject();
-  }
-
-  private JsonArray getJsonArray(JSONArray array) {
-    return null;
-  }
+//  private JsonObject getJsonObject(JSONObject data) {
+//    return null == data? null:data.getRawObject();
+//  }
 
   public Observable<? extends AVObject> createObject(final String className, JSONObject data, boolean fetchFlag,
                                                      JSONObject where) {
-    Observable<AVObject> object = wrapObservable(apiService.createObject(className, getJsonObject(data), fetchFlag,
-            getJsonObject(where)));
+    Observable<AVObject> object = wrapObservable(apiService.createObject(className, data, fetchFlag,
+            where));
     if (null == object) {
       return null;
     }
@@ -246,8 +239,8 @@ public class StorageClient {
 
   public Observable<? extends AVObject> saveObject(final String className, String objectId, JSONObject data,
                                                    boolean fetchFlag, JSONObject where) {
-    Observable<AVObject> object = wrapObservable(apiService.updateObject(className, objectId, getJsonObject(data),
-            fetchFlag, getJsonObject(where)));
+    Observable<AVObject> object = wrapObservable(apiService.updateObject(className, objectId, data,
+            fetchFlag, where));
     if (null == object) {
       return null;
     }
@@ -264,10 +257,10 @@ public class StorageClient {
                                                             JSONObject object, boolean fetchFlag, JSONObject where) {
     Observable<AVObject> result = null;
     if (StringUtil.isEmpty(objectId)) {
-      result = wrapObservable(apiService.saveWholeObject(endpointClass, getJsonObject(object), fetchFlag, getJsonObject(where)));
+      result = wrapObservable(apiService.saveWholeObject(endpointClass, object, fetchFlag, where));
     } else {
-      result = wrapObservable(apiService.saveWholeObject(endpointClass, objectId, getJsonObject(object), fetchFlag,
-              getJsonObject(where)));
+      result = wrapObservable(apiService.saveWholeObject(endpointClass, objectId, object, fetchFlag,
+              where));
     }
 
     if (null == result) {
@@ -303,11 +296,11 @@ public class StorageClient {
   }
 
   public Observable<FileUploadToken> newUploadToken(JSONObject fileData) {
-    return wrapObservableInBackground(apiService.createUploadToken(getJsonObject(fileData)));
+    return wrapObservableInBackground(apiService.createUploadToken(fileData));
   }
 
   public void fileCallback(JSONObject result) throws IOException {
-    apiService.fileCallback(getJsonObject(result)).execute();
+    apiService.fileCallback(result).execute();
     return;
   }
 
@@ -316,25 +309,25 @@ public class StorageClient {
     // [{"success":{"updatedAt":"2018-03-30T06:21:08.052Z","objectId":"5abd026d9f54540038791715"}},
     //  {"success":{"updatedAt":"2018-03-30T06:21:08.092Z","objectId":"5abd026d9f54540038791715"}},
     //  {"success":{"updatedAt":"2018-03-30T06:21:08.106Z","objectId":"5abd026d9f54540038791715"}}]
-    Observable<JSONArray> result = wrapObservable(apiService.batchCreate(getJsonObject(parameter)));
+    Observable<JSONArray> result = wrapObservable(apiService.batchCreate(parameter));
     return result;
   }
 
   public Observable<JSONObject> batchUpdate(JSONObject parameter) {
     // response is:
     // {"5abd026d9f54540038791715":{"updatedAt":"2018-03-30T06:21:46.084Z","objectId":"5abd026d9f54540038791715"}}
-    Observable<JSONObject> result = wrapObservable(apiService.batchUpdate(getJsonObject(parameter)));
+    Observable<JSONObject> result = wrapObservable(apiService.batchUpdate(parameter));
     return result;
   }
 
   public Observable<AVUser> signUp(JSONObject data) {
-    return wrapObservable(apiService.signup(getJsonObject(data)));
+    return wrapObservable(apiService.signup(data));
   }
   public Observable<AVUser> signUpWithFlag(JSONObject data, boolean failOnNotExist) {
-    return wrapObservable(apiService.signup(getJsonObject(data), failOnNotExist));
+    return wrapObservable(apiService.signup(data, failOnNotExist));
   }
   public <T extends AVUser> Observable<T> signUpOrLoginByMobilephone(final JSONObject data, final Class<T> clazz) {
-    return wrapObservable(apiService.signupByMobilePhone(getJsonObject(data))).map(new Function<AVUser, T>() {
+    return wrapObservable(apiService.signupByMobilePhone(data)).map(new Function<AVUser, T>() {
       @Override
       public T apply(AVUser avUser) throws Exception {
         T rst = Transformer.transform(avUser, clazz);
@@ -360,7 +353,7 @@ public class StorageClient {
     }
   }
   public <T extends AVUser> Observable<T> logIn(final JSONObject data, final Class<T> clazz) {
-    Observable<AVUser> object = wrapObservable(apiService.login(getJsonObject(data)));
+    Observable<AVUser> object = wrapObservable(apiService.login(data));
     if (null == object) {
       return null;
     }
@@ -477,7 +470,7 @@ public class StorageClient {
     JSONObject param = new JSONObject();
     param.put("old_password", oldPass);
     param.put("new_password", newPass);
-    return wrapObservable(apiService.updatePassword(user.getObjectId(), getJsonObject(param)).map(new Function<AVUser, AVNull>() {
+    return wrapObservable(apiService.updatePassword(user.getObjectId(), param).map(new Function<AVUser, AVNull>() {
       public AVNull apply(AVUser var1) throws Exception {
         if (null != var1) {
           user.internalChangeSessionToken(var1.getSessionToken());

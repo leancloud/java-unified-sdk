@@ -1,13 +1,7 @@
 package cn.leancloud.json;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.TypeAdapter;
-import com.google.gson.internal.bind.TypeAdapters;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -17,17 +11,6 @@ import java.util.*;
 
 public class JSONObject implements Map<String, Object>, Cloneable, Serializable {
   private com.google.gson.JsonObject gsonObject;
-
-  static class ObjectAdapter extends TypeAdapter<JSONObject> {
-    public void write(JsonWriter writer, JSONObject object) throws IOException {
-      TypeAdapters.JSON_ELEMENT.write(writer, object.gsonObject);
-    }
-
-    public JSONObject read(JsonReader reader) throws IOException {
-      JsonElement jsonObject = TypeAdapters.JSON_ELEMENT.read(reader);
-      return new JSONObject((JsonObject) jsonObject);
-    }
-  }
 
   public JSONObject(com.google.gson.JsonObject object) {
     this.gsonObject = object;

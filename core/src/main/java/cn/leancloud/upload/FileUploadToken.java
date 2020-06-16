@@ -7,7 +7,6 @@ public class FileUploadToken {
 
   private String objectId = null;
 
-  //@JSONField(name = "upload_url")
   private String uploadUrl = null;
 
   private String provider = null;

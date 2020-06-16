@@ -16,7 +16,7 @@ public class EnvFirstAppRouter extends AppRouter {
     if (!StringUtil.isEmpty(apiServer)) {
       AppAccessEndpoint accessEndpoint = new AppAccessEndpoint();
       accessEndpoint.setTtl(36000);
-      accessEndpoint.setStatServer(apiServer);
+      accessEndpoint.setStatsServer(apiServer);
       accessEndpoint.setRtmRouterServer(apiServer);
       accessEndpoint.setPushServer(apiServer);
       if (isLocalEngineCall) {

@@ -1,7 +1,12 @@
 package cn.leancloud.json;
 
 import cn.leancloud.*;
+import cn.leancloud.gson.*;
 import cn.leancloud.ops.BaseOperation;
+import cn.leancloud.service.AppAccessEndpoint;
+import cn.leancloud.sms.AVCaptchaDigest;
+import cn.leancloud.sms.AVCaptchaValidateResult;
+import cn.leancloud.upload.FileUploadToken;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
@@ -22,8 +27,18 @@ public class ConverterUtils {
           .registerTypeAdapter(AVStatus.class, new ObjectDeserializer())
           .registerTypeAdapter(BaseOperation.class, new BaseOperationAdapter())
           .registerTypeAdapter(AVInstallation.class, new ObjectDeserializer())
-          .registerTypeAdapter(JSONObject.class, new JSONObject.ObjectAdapter())
-          .registerTypeAdapter(JSONArray.class, new JSONArray.ObjectAdapter())
+          .registerTypeAdapter(JSONObject.class, new JSONObjectAdapter())
+          .registerTypeAdapter(JSONArray.class, new JSONArrayAdapter())
+          .registerTypeAdapter(FileUploadToken.class, new FileUploadTokenAdapter())
+          .registerTypeAdapter(AppAccessEndpoint.class,
+                  new GeneralObjectAdapter<>(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES,
+                          TypeToken.get(AppAccessEndpoint.class)))
+          .registerTypeAdapter(AVCaptchaDigest.class,
+                  new GeneralObjectAdapter<>(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES,
+                          TypeToken.get(AVCaptchaDigest.class)))
+          .registerTypeAdapter(AVCaptchaValidateResult.class,
+                  new GeneralObjectAdapter<>(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES,
+                          TypeToken.get(AVCaptchaValidateResult.class)))
           .registerTypeAdapter(new TypeToken<Map<String, Object>>(){}.getType(),  new MapDeserializerDoubleAsIntFix())
           .create();
 

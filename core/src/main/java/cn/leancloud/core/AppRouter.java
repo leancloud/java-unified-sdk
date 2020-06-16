@@ -137,7 +137,7 @@ public class AppRouter {
     result.setEngineServer(String.format(DEFAULT_SERVER_HOST_FORMAT, appIdPrefix, DEFAULT_SERVER_ENGINE, lastHost));
     result.setPushServer(String.format(DEFAULT_SERVER_HOST_FORMAT, appIdPrefix, DEFAULT_SERVER_PUSH, lastHost));
     result.setRtmRouterServer(String.format(DEFAULT_SERVER_HOST_FORMAT, appIdPrefix, DEFAULT_SERVER_RTM_ROUTER, lastHost));
-    result.setStatServer(String.format(DEFAULT_SERVER_HOST_FORMAT, appIdPrefix, DEFAULT_SERVER_STAT, lastHost));
+    result.setStatsServer(String.format(DEFAULT_SERVER_HOST_FORMAT, appIdPrefix, DEFAULT_SERVER_STAT, lastHost));
     result.setTtl(36000 + System.currentTimeMillis() / 1000);
     return result;
   }
@@ -161,7 +161,7 @@ public class AppRouter {
             result = appAccessEndpoint.getRtmRouterServer();
             break;
           case STATS:
-            result = appAccessEndpoint.getStatServer();
+            result = appAccessEndpoint.getStatsServer();
             break;
           default:
             break;
@@ -230,7 +230,7 @@ public class AppRouter {
         result = this.defaultEndpoint.getRtmRouterServer();
         break;
       case STATS:
-        result = this.defaultEndpoint.getStatServer();
+        result = this.defaultEndpoint.getStatsServer();
         break;
       default:
         break;

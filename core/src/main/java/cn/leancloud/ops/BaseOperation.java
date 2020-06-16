@@ -7,7 +7,6 @@ import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSONArray;
 import cn.leancloud.json.JSONObject;
-import com.google.gson.annotations.SerializedName;
 
 import java.util.*;
 
@@ -23,13 +22,9 @@ public abstract class BaseOperation implements ObjectFieldOperation {
   public static final String KEY_PATH = "path";
   public static final String KEY_HTTP_METHOD = "method";
 
-  @SerializedName("operation")
   protected String op = null;
-  @SerializedName("field")
   protected String field = null;
-  @SerializedName("value")
   protected Object value = null;
-  @SerializedName("final")
   protected boolean isFinal = false;
 
   public BaseOperation() {
