@@ -15,6 +15,9 @@ import java.util.*;
 public class ConverterUtils {
   static Gson gson = new GsonBuilder().serializeNulls()
           .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE)
+          .registerTypeAdapter(AVObject.class, new ObjectDeserializer())
+          .registerTypeAdapter(JSONObject.class, new JSONObject.ObjectAdapter())
+          .registerTypeAdapter(JSONArray.class, new JSONArray.ObjectAdapter())
 //          .registerTypeAdapterFactory(new TypeAdapterFactory() {
 //            @Override
 //            public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
@@ -65,6 +68,12 @@ public class ConverterUtils {
   public static JsonElement toJsonElement(Object object) {
     if (null == object) {
       return null;
+    }
+    if (object instanceof JSONObject) {
+      return ((JSONObject) object).getRawObject();
+    }
+    if (object instanceof JSONArray) {
+      return ((JSONArray) object).getRawObject();
     }
     return gson.toJsonTree(object);
   }

@@ -1,7 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.cache.PersistenceUtil;
-import cn.leancloud.codec.MD5;
+import cn.leancloud.codec.MDFive;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.network.NetworkingDetector;
 import cn.leancloud.ops.BaseOperation;
@@ -228,7 +228,7 @@ public class ArchivedRequests {
     if (StringUtil.isEmpty(object.getObjectId())) {
       return object.internalId();
     } else {
-      return MD5.computeMD5(object.getRequestRawEndpoint());
+      return MDFive.computeMD5(object.getRequestRawEndpoint());
     }
   }
 }

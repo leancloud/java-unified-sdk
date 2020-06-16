@@ -1,6 +1,6 @@
 package cn.leancloud.cache;
 
-import cn.leancloud.codec.MD5;
+import cn.leancloud.codec.MDFive;
 import cn.leancloud.core.AppConfiguration;
 
 import java.io.File;
@@ -26,7 +26,7 @@ public class FileCache extends LocalStorage{
 
   public File getCacheFile(String url) {
     try {
-      String urlMd5 = MD5.computeMD5(url.getBytes("UTF-8"));
+      String urlMd5 = MDFive.computeMD5(url.getBytes("UTF-8"));
       return super.getCacheFile(urlMd5);
     } catch (Exception ex) {
       return null;

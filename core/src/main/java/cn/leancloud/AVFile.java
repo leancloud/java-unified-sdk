@@ -2,7 +2,7 @@ package cn.leancloud;
 
 import cn.leancloud.annotation.AVClassName;
 import cn.leancloud.callback.ProgressCallback;
-import cn.leancloud.codec.MD5;
+import cn.leancloud.codec.MDFive;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.cache.FileCache;
 import cn.leancloud.cache.PersistenceUtil;
@@ -82,7 +82,7 @@ public final class AVFile extends AVObject {
     }
     internalPut(KEY_FILE_NAME, name);
     addMetaData(FILE_NAME_KEY, name);
-    String md5 = MD5.computeMD5(data);
+    String md5 = MDFive.computeMD5(data);
     localPath = FileCache.getIntance().saveData(md5, data);
     addMetaData(FILE_SUM_KEY, md5);
     addMetaData(FILE_LENGTH_KEY, data.length);
@@ -103,7 +103,7 @@ public final class AVFile extends AVObject {
     }
     internalPut(KEY_FILE_NAME, name);
     addMetaData(FILE_NAME_KEY, name);
-    String md5 = MD5.computeFileMD5(localFile);
+    String md5 = MDFive.computeFileMD5(localFile);
     localPath = localFile.getAbsolutePath();
     addMetaData(FILE_SUM_KEY, md5);
     addMetaData(FILE_LENGTH_KEY, localFile.length());

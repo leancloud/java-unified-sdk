@@ -4,7 +4,7 @@ import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVQuery;
 import cn.leancloud.AVUser;
-import cn.leancloud.codec.MD5;
+import cn.leancloud.codec.MDFive;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.ops.Utils;
@@ -264,7 +264,7 @@ public class AVLiveQuery {
       if (StringUtil.isEmpty(subscribeId)) {
         String packageName = AppConfiguration.getApplicationPackageName();
         String additionalStr = UUID.randomUUID().toString();
-        subscribeId = MD5.computeMD5(packageName + additionalStr);
+        subscribeId = MDFive.computeMD5(packageName + additionalStr);
         AppConfiguration.getDefaultSetting().saveString(SP_LIVEQUERY_KEY, SP_SUBSCRIBE_ID, subscribeId);
       }
     }

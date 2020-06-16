@@ -2,7 +2,7 @@ package cn.leancloud;
 
 import cn.leancloud.annotation.AVClassName;
 import cn.leancloud.cache.PersistenceUtil;
-import cn.leancloud.codec.MD5;
+import cn.leancloud.codec.MDFive;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -142,7 +142,7 @@ public final class AVInstallation extends AVObject {
     // app的包名
     String packageName = AppConfiguration.getApplicationPackageName();
     String additionalStr = UUID.randomUUID().toString();
-    return MD5.computeMD5(packageName + additionalStr);
+    return MDFive.computeMD5(packageName + additionalStr);
   }
 
   public String getInstallationId() {

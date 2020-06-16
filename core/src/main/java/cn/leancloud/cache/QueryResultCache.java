@@ -2,7 +2,7 @@ package cn.leancloud.cache;
 
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVObject;
-import cn.leancloud.codec.MD5;
+import cn.leancloud.codec.MDFive;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.query.AVQueryResult;
 import cn.leancloud.utils.LogUtil;
@@ -59,7 +59,7 @@ public class QueryResultCache extends LocalStorage {
       sb.append(entry.getValue());
       sb.append("&");
     }
-    return MD5.computeMD5(sb.toString());
+    return MDFive.computeMD5(sb.toString());
   }
 
   public static String generateCachedKey(String className, Map<String, Object> params) {
@@ -72,7 +72,7 @@ public class QueryResultCache extends LocalStorage {
       sb.append(entry.getValue().toString());
       sb.append("&");
     }
-    return MD5.computeMD5(sb.toString());
+    return MDFive.computeMD5(sb.toString());
   }
 
   public boolean hasCachedResult(String className, Map<String, String> query, long maxAgeInMilliseconds) {

@@ -41,4 +41,16 @@ public class GsonCommonTest extends TestCase {
     map.put("serverData", data);
     System.out.println(ConverterUtils.toJsonString(map));
   }
+
+  public void testJSONObjectSerialize() {
+    JSONObject object = new JSONObject();
+    object.put("className", "Student");
+    object.put("version", 5);
+    String objectString = ConverterUtils.getGsonInstance().toJson(object);
+    System.out.println("object jsonString: " + objectString);
+    JSONObject other = ConverterUtils.getGsonInstance().fromJson(objectString, JSONObject.class);
+
+    assertEquals(object.getInteger("version"), other.getInteger("version"));
+    assertEquals(object.getString("className"), other.getString("className"));
+  }
 }

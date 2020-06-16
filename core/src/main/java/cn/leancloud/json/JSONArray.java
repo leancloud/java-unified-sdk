@@ -1,5 +1,14 @@
 package cn.leancloud.json;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.TypeAdapter;
+import com.google.gson.internal.bind.TypeAdapters;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -9,6 +18,17 @@ import java.util.*;
 
 public class JSONArray implements List<Object>, Cloneable, Serializable {
   private com.google.gson.JsonArray gsonArray;
+
+  static class ObjectAdapter extends TypeAdapter<JSONArray> {
+    public void write(JsonWriter writer, JSONArray object) throws IOException {
+      TypeAdapters.JSON_ELEMENT.write(writer, object.gsonArray);
+    }
+
+    public JSONArray read(JsonReader reader) throws IOException {
+      JsonElement jsonObject = TypeAdapters.JSON_ELEMENT.read(reader);
+      return new JSONArray((JsonArray) jsonObject);
+    }
+  }
 
   static class InnerIterator implements Iterator<Object> {
     private Iterator<com.google.gson.JsonElement> gsonIterator = null;
@@ -48,6 +68,9 @@ public class JSONArray implements List<Object>, Cloneable, Serializable {
     this.gsonArray = new com.google.gson.JsonArray();
   }
 
+  public JsonArray getRawObject() {
+    return gsonArray;
+  }
   public int size() {
     return gsonArray.size();
   }

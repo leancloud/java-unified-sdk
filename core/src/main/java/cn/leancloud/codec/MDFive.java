@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class MD5 {
+public class MDFive {
   private static final int MAX_FILE_BUF_SIZE = 1024*1024*2;
 
   public static String computeMD5(String data) {
@@ -47,7 +47,7 @@ public class MD5 {
           md5.update(buf, 0, len);
         }
         byte[] md5bytes = md5.digest();
-        result = MD5.hexEncodeBytes(md5bytes);
+        result = MDFive.hexEncodeBytes(md5bytes);
         is.close();
       }
       return result;
@@ -71,12 +71,12 @@ public class MD5 {
     return hexString.toString();
   }
 
-  public static MD5 getInstance() {
-    return new MD5();
+  public static MDFive getInstance() {
+    return new MDFive();
   }
 
   private MessageDigest mdInstance = null;
-  private MD5() {
+  private MDFive() {
     try {
       mdInstance = MessageDigest.getInstance("MD5");
     } catch (NoSuchAlgorithmException ex) {

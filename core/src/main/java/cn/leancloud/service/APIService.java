@@ -1,6 +1,8 @@
 package cn.leancloud.service;
 
 import cn.leancloud.*;
+import cn.leancloud.json.JSONArray;
+import cn.leancloud.json.JSONObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import cn.leancloud.query.AVQueryResult;
@@ -52,7 +54,7 @@ public interface APIService {
   Observable<AVNull> deleteObject(@Path("className") String className, @Path("objectId") String objectId);
 
   @POST("/1.1/batch")
-  Observable<JsonArray> batchCreate(@Body JsonObject param);
+  Observable<JSONArray> batchCreate(@Body JsonObject param);
 
   /**
    * AVInstalltion methods.
@@ -87,7 +89,7 @@ public interface APIService {
    * otherwise, `__internalId` will become a common field of target instance.
    */
   @POST("/1.1/batch/save")
-  Observable<JsonObject> batchUpdate(@Body JsonObject param);
+  Observable<JSONObject> batchUpdate(@Body JsonObject param);
 
   /**
    * Cloud Functions
@@ -168,17 +170,17 @@ public interface APIService {
   Observable<AVNull> verifyMobilePhone(@Path("verifyCode") String verifyCode);
 
   @POST("/1.1/users/{followee}/friendship/{follower}")
-  Observable<JsonObject> followUser(@Path("followee") String followee, @Path("follower") String follower,
+  Observable<JSONObject> followUser(@Path("followee") String followee, @Path("follower") String follower,
                                     @Body Map<String, Object> param);
 
   @DELETE("/1.1/users/{followee}/friendship/{follower}")
-  Observable<JsonObject> unfollowUser(@Path("followee") String followee, @Path("follower") String follower);
+  Observable<JSONObject> unfollowUser(@Path("followee") String followee, @Path("follower") String follower);
 
   @GET("/1.1/users/{userId}/followers")
-  Observable<JsonObject> getFollowers(@Path("userId") String userId);
+  Observable<JSONObject> getFollowers(@Path("userId") String userId);
 
   @GET("/1.1/users/{userId}/followees")
-  Observable<JsonObject> getFollowees(@Path("userId") String userId);
+  Observable<JSONObject> getFollowees(@Path("userId") String userId);
 
   @GET("/1.1/users/{userId}/followersAndFollowees")
   Observable<JsonObject> getFollowersAndFollowees(@Path("userId") String userId);
@@ -205,7 +207,7 @@ public interface APIService {
   Observable<AVQueryResult> queryInbox(@QueryMap Map<String, String> query);
 
   @GET("/1.1/subscribe/statuses/count")
-  Observable<JsonObject> getInboxCount(@QueryMap Map<String, String> query);
+  Observable<JSONObject> getInboxCount(@QueryMap Map<String, String> query);
 
   @POST("/1.1/subscribe/statuses/resetUnreadCount")
   Observable<AVNull> resetInboxUnreadCount();

@@ -1,6 +1,6 @@
 package cn.leancloud.core;
 
-import cn.leancloud.codec.MD5;
+import cn.leancloud.codec.MDFive;
 import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.StringUtil;
 
@@ -15,7 +15,7 @@ public class GeneralRequestSignature implements RequestSignature {
   public static String requestSign(String key, long ts, String suffix) {
     StringBuilder builder = new StringBuilder();
     StringBuilder result = new StringBuilder();
-    result.append(MD5.computeMD5(builder.append(ts).append(key).toString()).toLowerCase());
+    result.append(MDFive.computeMD5(builder.append(ts).append(key).toString()).toLowerCase());
     result.append(',').append(ts);
     if (null != suffix) {
       result.append(',').append(suffix);
