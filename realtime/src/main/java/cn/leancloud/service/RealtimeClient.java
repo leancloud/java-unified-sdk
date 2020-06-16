@@ -13,7 +13,7 @@ import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.fastjson.FastJsonConverterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +47,7 @@ public class RealtimeClient {
               public void accept(String apiHost) throws Exception {
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(apiHost)
-                        .addConverterFactory(FastJsonConverterFactory.create())
+                        .addConverterFactory(GsonConverterFactory.create())
                         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                         .client(httpClient)
                         .build();
