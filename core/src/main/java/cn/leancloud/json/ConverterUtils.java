@@ -1,9 +1,8 @@
 package cn.leancloud.json;
 
 import cn.leancloud.*;
-import cn.leancloud.utils.StringUtil;
+import cn.leancloud.ops.BaseOperation;
 import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -16,42 +15,17 @@ public class ConverterUtils {
   static Gson gson = new GsonBuilder().serializeNulls()
           .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE)
           .registerTypeAdapter(AVObject.class, new ObjectDeserializer())
+          .registerTypeAdapter(AVUser.class, new ObjectDeserializer())
+          .registerTypeAdapter(AVFile.class, new ObjectDeserializer())
+          .registerTypeAdapter(AVRole.class, new ObjectDeserializer())
+          .registerTypeAdapter(AVStatus.class, new ObjectDeserializer())
+          .registerTypeAdapter(BaseOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(AVInstallation.class, new ObjectDeserializer())
           .registerTypeAdapter(JSONObject.class, new JSONObject.ObjectAdapter())
           .registerTypeAdapter(JSONArray.class, new JSONArray.ObjectAdapter())
-//          .registerTypeAdapterFactory(new TypeAdapterFactory() {
-//            @Override
-//            public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-//              Class<? super T> clazz = typeToken.getRawType();
-//              if (clazz == AVObject.class || clazz == AVUser.class || clazz == AVFile.class
-//                      || clazz == AVRole.class || clazz == AVStatus.class || clazz == AVInstallation.class) {
-//                return new ObjectTypeAdapter();
-//              } else if (!StringUtil.isEmpty(Transformer.getSubClassName(clazz))) {
-//                return new ObjectTypeAdapter();
-//              }
-//              return null;
-//            }
-//          })
           .create();
 
   public static void initialize() {
-
-//    ParserConfig.getGlobalInstance().putDeserializer(AVObject.class, adapter);
-//    ParserConfig.getGlobalInstance().putDeserializer(AVUser.class, adapter);
-//    ParserConfig.getGlobalInstance().putDeserializer(AVFile.class, adapter);
-//    ParserConfig.getGlobalInstance().putDeserializer(AVRole.class, adapter);
-//    ParserConfig.getGlobalInstance().putDeserializer(AVStatus.class, adapter);
-//    ParserConfig.getGlobalInstance().putDeserializer(AVInstallation.class, adapter);
-//
-//    SerializeConfig.getGlobalInstance().put(AVObject.class, adapter);
-//    SerializeConfig.getGlobalInstance().put(AVUser.class, adapter);
-//    SerializeConfig.getGlobalInstance().put(AVFile.class, adapter);
-//    SerializeConfig.getGlobalInstance().put(AVRole.class, adapter);
-//    SerializeConfig.getGlobalInstance().put(AVStatus.class, adapter);
-//    SerializeConfig.getGlobalInstance().put(AVInstallation.class, adapter);
-
-//    BaseOperationAdapter opAdapter = new BaseOperationAdapter();
-//    ParserConfig.getGlobalInstance().putDeserializer(BaseOperation.class, opAdapter);
-//    SerializeConfig.getGlobalInstance().put(BaseOperation.class, opAdapter);
   }
 
   public static Gson getGsonInstance() {

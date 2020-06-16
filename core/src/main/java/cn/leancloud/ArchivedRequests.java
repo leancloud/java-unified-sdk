@@ -216,7 +216,7 @@ public class ArchivedRequests {
       resultObj.setUuid(internalId);
     }
     if (!StringUtil.isEmpty(operationJSON)) {
-      List<BaseOperation> ops = JSON.parseObject(operationJSON, new TypeReference<List<BaseOperation>>() {});
+      List<BaseOperation> ops = JSON.parseArray(operationJSON, BaseOperation.class);
       for (BaseOperation op: ops) {
         resultObj.addNewOperation(op);
       }

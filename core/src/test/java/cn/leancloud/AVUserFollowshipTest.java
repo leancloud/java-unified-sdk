@@ -1,7 +1,6 @@
 package cn.leancloud;
 
 import cn.leancloud.callback.FollowersAndFolloweesCallback;
-import cn.leancloud.json.ObjectValueFilter;
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
@@ -75,11 +74,16 @@ public class AVUserFollowshipTest extends TestCase {
 
       public void onError(Throwable throwable) {
         if (loginOnFailed) {
-          AVUser tmp = AVUser.loginByEmail(email, DEFAULT_PASSWD).blockingFirst();
-          if (email.startsWith("jfeng")) {
-            JFENG_OBJECT_ID = tmp.getObjectId();
-          } else if (email.startsWith("dennis")) {
-            DENNIS_OBJECT_ID = tmp.getObjectId();
+          System.out.println("try to loginWithEmail. cause: " + throwable.getMessage());
+          try {
+            AVUser tmp = AVUser.loginByEmail(email, DEFAULT_PASSWD).blockingFirst();
+            if (email.startsWith("jfeng")) {
+              JFENG_OBJECT_ID = tmp.getObjectId();
+            } else if (email.startsWith("dennis")) {
+              DENNIS_OBJECT_ID = tmp.getObjectId();
+            }
+          } catch (Exception ex) {
+            System.out.println("failed to loginWithEmail. cause: " + ex.getMessage());
           }
         }
 
@@ -330,6 +334,9 @@ public class AVUserFollowshipTest extends TestCase {
           public void done(Map avObjects, AVException avException) {
             operationSucceed = (null != avObjects);
             System.out.println(JSON.toJSONString(avObjects));
+            if (null != avException) {
+              avException.printStackTrace();
+            }
             latch.countDown();
           }
 
@@ -337,6 +344,7 @@ public class AVUserFollowshipTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
+        System.out.println("failed to login. cause: " + throwable.getMessage());
         latch.countDown();
       }
 

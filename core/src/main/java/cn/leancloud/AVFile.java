@@ -547,6 +547,11 @@ public final class AVFile extends AVObject {
     return saveInBackground(false);
   }
 
+  @Override
+  public void save() {
+    this.saveInBackground().blockingSubscribe();
+  }
+
   /**
    * save to cloud backend.
    * @param keepFileName whether keep file name in url or not.

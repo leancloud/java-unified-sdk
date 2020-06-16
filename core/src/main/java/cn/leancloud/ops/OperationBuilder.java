@@ -20,8 +20,8 @@ public class OperationBuilder {
   private OperationBuilder() {
 
   }
-  public ObjectFieldOperation create(OperationType type, String field, Object value) {
-    ObjectFieldOperation operation = null;
+  public BaseOperation create(OperationType type, String field, Object value) {
+    BaseOperation operation = null;
     switch (type) {
       case Add:
         operation = new AddOperation(field, value);
@@ -57,7 +57,7 @@ public class OperationBuilder {
         operation = new BitOrOperation(field, value);
         break;
       case BitXor:
-        operation = new BitXorOperation(field, value);
+        operation = new BitXOROperation(field, value);
         break;
       case Compound:
         operation = new CompoundOperation(field);

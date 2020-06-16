@@ -31,8 +31,15 @@ import java.util.concurrent.TimeUnit;
 public class AppRouter {
   private static final AVLogger LOGGER = LogUtil.getLogger(AppRouter.class);
   private static final String APP_ROUTER_HOST = "https://app-router.com";
-  private static final AppRouter INSTANCE = new AppRouter();
+  private static AppRouter INSTANCE = null;
   public static AppRouter getInstance() {
+    if (null == INSTANCE) {
+      synchronized (AppRouter.class) {
+        if (null == INSTANCE) {
+          INSTANCE = new AppRouter();
+        }
+      }
+    }
     return INSTANCE;
   }
 
@@ -92,6 +99,19 @@ public class AppRouter {
   private AppAccessEndpoint customizedEndpoint = new AppAccessEndpoint();
 
   protected AppRouter() {
+    OkHttpClient httpClient = new OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .addInterceptor(new LoggingInterceptor())
+            .dns(new DNSDetoxicant())
+            .build();
+    retrofit = new Retrofit.Builder()
+            .baseUrl(APP_ROUTER_HOST)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .client(httpClient)
+            .build();
   }
 
   protected AppAccessEndpoint buildDefaultEndpoint(String appId) {
@@ -222,21 +242,6 @@ public class AppRouter {
   }
 
   public Observable<AppAccessEndpoint> fetchServerHostsInBackground(final String appId) {
-    if (null == retrofit) {
-      OkHttpClient httpClient = new OkHttpClient.Builder()
-              .connectTimeout(15, TimeUnit.SECONDS)
-              .readTimeout(10, TimeUnit.SECONDS)
-              .writeTimeout(10, TimeUnit.SECONDS)
-              .addInterceptor(new LoggingInterceptor())
-              .dns(new DNSDetoxicant())
-              .build();
-      retrofit = new Retrofit.Builder()
-              .baseUrl(APP_ROUTER_HOST)
-              .addConverterFactory(GsonConverterFactory.create())
-              .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-              .client(httpClient)
-              .build();
-    }
     AppRouterService service = retrofit.create(AppRouterService.class);
     Observable<AppAccessEndpoint> result = service.getRouter(appId);
     if (AppConfiguration.isAsynchronized()) {

@@ -32,6 +32,9 @@ public abstract class BaseOperation implements ObjectFieldOperation {
   @SerializedName("final")
   protected boolean isFinal = false;
 
+  public BaseOperation() {
+  }
+
   public BaseOperation(String op, String field, Object value, boolean isFinal) {
     this.op = op;
     this.field = field;
@@ -48,6 +51,17 @@ public abstract class BaseOperation implements ObjectFieldOperation {
   public Object getValue() {
     return this.value;
   }
+
+  public void setOp(String op) {
+    this.op = op;
+  }
+  public void setField(String field) {
+    this.field = field;
+  }
+  public void setValue(Object value) {
+    this.value = value;
+  }
+
   public boolean isFinal() {return this.isFinal;}
   public void setFinal(boolean isFinal) {
     this.isFinal = isFinal;

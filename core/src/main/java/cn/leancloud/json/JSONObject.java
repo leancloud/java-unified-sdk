@@ -13,10 +13,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class JSONObject implements Map<String, Object>, Cloneable, Serializable {
   private com.google.gson.JsonObject gsonObject;
@@ -42,6 +39,31 @@ public class JSONObject implements Map<String, Object>, Cloneable, Serializable 
       for (Map.Entry<String, Object> entry : map.entrySet()) {
         gsonObject.add(entry.getKey(), ConverterUtils.toJsonElement(entry.getValue()));
       }
+    }
+  }
+
+  static class InnerEntry implements Entry<String, Object> {
+    private String key;
+    private Object value;
+    InnerEntry(String key, JsonElement value) {
+      this.key = key;
+      this.value = ConverterUtils.toJavaObject(value);
+    }
+
+    @Override
+    public String getKey() {
+      return this.key;
+    }
+
+    @Override
+    public Object getValue() {
+      return this.value;
+    }
+
+    @Override
+    public Object setValue(Object value) {
+      this.value = value;
+      return value;
     }
   }
 
@@ -327,24 +349,37 @@ public class JSONObject implements Map<String, Object>, Cloneable, Serializable 
   }
 
   public Collection<Object> values() {
-    return null;//gsonObject.values();
+    List<Object> result = new ArrayList<>(size());
+    for (Map.Entry<String, Object> entry: entrySet()) {
+      result.add(entry.getValue());
+    }
+    return result;
   }
   public Set<Map.Entry<String, Object>> entrySet() {
     Set<Map.Entry<String, com.google.gson.JsonElement>> objects = this.gsonObject.entrySet();
-    return null;
+    Set<Map.Entry<String, Object>> result = new HashSet<>();
+    for (Map.Entry<String, JsonElement> entry: objects) {
+      result.add(new InnerEntry(entry.getKey(), entry.getValue()));
+    }
+    return result;
   }
 
   @Override
   public Object clone() {
-    return new JSONObject((com.google.gson.JsonObject) gsonObject.deepCopy());
+    return new JSONObject(gsonObject.deepCopy());
   }
 
   public Map<String, Object> getInnerMap() {
-    return null;//gsonObject.getInnerMap();
+    Map<String, Object> map = new HashMap<>(this.gsonObject.size());
+    Set<Map.Entry<String, com.google.gson.JsonElement>> objects = this.gsonObject.entrySet();
+    for (Map.Entry<String, JsonElement> entry: objects) {
+      map.put(entry.getKey(), ConverterUtils.toJavaObject(entry.getValue()));
+    }
+    return map;
   }
 
   public <T> T toJavaObject(Class<T> clazz) {
-    return null;//gsonObject.toJavaObject(clazz);
+    return ConverterUtils.toJavaObject(gsonObject, clazz);
   }
 
   public int hashCode() {

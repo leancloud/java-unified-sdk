@@ -51,7 +51,7 @@ public class AddOperation extends BaseOperation {
     } else if (other instanceof CompoundOperation) {
       return ((CompoundOperation) other).mergeWithPrevious(this);
     } else if (other instanceof AddRelationOperation || other instanceof RemoveRelationOperation
-            || other instanceof BitAndOperation || other instanceof BitOrOperation || other instanceof BitXorOperation
+            || other instanceof BitAndOperation || other instanceof BitOrOperation || other instanceof BitXOROperation
             || other instanceof IncrementOperation || other instanceof DecrementOperation) {
       reportIllegalOperations(this, other);
     }

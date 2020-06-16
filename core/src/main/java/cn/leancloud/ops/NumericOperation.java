@@ -28,7 +28,7 @@ public abstract class NumericOperation extends BaseOperation {
       result = subNumbers(init, (Number) this.value);
     } else if (this instanceof IncrementOperation) {
       result = addNumbers(init, (Number) this.value);
-    } else if (this instanceof BitXorOperation) {
+    } else if (this instanceof BitXOROperation) {
       result = calculateLongs(init, (Number)this.value, 'X');
     } else if (this instanceof BitAndOperation) {
       result = calculateLongs(init, (Number)this.value, 'A');

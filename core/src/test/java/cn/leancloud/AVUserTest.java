@@ -1,6 +1,5 @@
 package cn.leancloud;
 
-import cn.leancloud.json.ObjectValueFilter;
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
@@ -328,6 +327,7 @@ public class AVUserTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
+        throwable.printStackTrace();
         latch.countDown();
       }
 

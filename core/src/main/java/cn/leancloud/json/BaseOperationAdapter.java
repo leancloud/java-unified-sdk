@@ -1,49 +1,51 @@
 package cn.leancloud.json;
 
 import cn.leancloud.AVObject;
-import cn.leancloud.core.AVOSCloud;
-import cn.leancloud.ops.*;
+import cn.leancloud.ops.BaseOperation;
+import cn.leancloud.ops.CompoundOperation;
+import cn.leancloud.ops.ObjectFieldOperation;
+import cn.leancloud.ops.OperationBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.TypeAdapter;
+import com.google.gson.internal.bind.TypeAdapters;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class BaseOperationAdapter /*implements ObjectSerializer, ObjectDeserializer*/ {
+public class BaseOperationAdapter extends TypeAdapter<BaseOperation> {
   private static final String ATTR_OP = "operation";
   private static final String ATTR_FIELD = "field";
   private static final String ATTR_FINAL = "final";
   private static final String ATTR_OBJECT = "value";
   private static final String ATTR_SUBOPS = "subOps";
 
-//  public void write(JSONSerializer serializer, Object object, Object fieldName, Type fieldType,
-//                    int features) throws IOException {
-//    BaseOperation op = (BaseOperation)object;
-//    SerializeWriter writer = serializer.getWriter();
-//    writer.write('{');
-//    writer.writeFieldValue(' ', ATTR_OP, op.getOperation());
-//    writer.writeFieldValue(' ', ATTR_FIELD, op.getField());
-//    writer.writeFieldValue(',', ATTR_FINAL, op.isFinal());
-//    if (AVOSCloud.isEnableCircularReferenceDetect()) {
-//      writer.writeFieldValue(',', ATTR_OBJECT,
-//              JSON.toJSONString(op.getValue()));
-//    } else {
-//      writer.writeFieldValue(',', ATTR_OBJECT,
-//              JSON.toJSONString(op.getValue()));
-//    }
-//
-//    if (object instanceof CompoundOperation) {
-//      if (AVOSCloud.isEnableCircularReferenceDetect()) {
-//        writer.writeFieldValue(',', ATTR_SUBOPS,
-//                JSON.toJSONString(((CompoundOperation)op).getSubOperations()));
-//      } else {
-//        writer.writeFieldValue(',', ATTR_SUBOPS,
-//                JSON.toJSONString(((CompoundOperation)op).getSubOperations()));
-//      }
-//    }
-//    writer.write('}');
-//  }
+  public void write(JsonWriter writer, BaseOperation op) throws IOException {
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty(ATTR_OP, op.getOperation());
+    jsonObject.addProperty(ATTR_FIELD, op.getField());
+    jsonObject.addProperty(ATTR_FINAL, op.isFinal());
+    jsonObject.add(ATTR_OBJECT, ConverterUtils.toJsonElement(op.getValue()));
+    if (op instanceof CompoundOperation) {
+      List<ObjectFieldOperation> subOps = ((CompoundOperation)op).getSubOperations();
+      jsonObject.add(ATTR_SUBOPS, ConverterUtils.toJsonElement(subOps));
+    }
+    TypeAdapters.JSON_ELEMENT.write(writer, jsonObject);
+  }
+
+  public BaseOperation read(JsonReader reader) throws IOException {
+    JsonElement elem = TypeAdapters.JSON_ELEMENT.read(reader);
+    if (elem.isJsonObject()) {
+      JsonObject jsonObject = elem.getAsJsonObject();
+      return parseJSONObject(new JSONObject(jsonObject));
+    } else {
+      return null;
+    }
+  }
 
   private Object getParsedObject(Object obj) {
     if (obj instanceof JSONObject) {
@@ -80,11 +82,11 @@ public class BaseOperationAdapter /*implements ObjectSerializer, ObjectDeseriali
       Object obj = jsonObject.containsKey(ATTR_OBJECT) ? jsonObject.get(ATTR_OBJECT) : null;
       Object parsedObj = getParsedObject(obj);
 
-      ObjectFieldOperation result = OperationBuilder.gBuilder.create(opType, field, parsedObj);
-      ((BaseOperation)result).setFinal(isFinal);
+      BaseOperation result = OperationBuilder.gBuilder.create(opType, field, parsedObj);
+      result.setFinal(isFinal);
 
       if (jsonObject.containsKey(ATTR_SUBOPS) && result instanceof CompoundOperation) {
-        List<JSONObject> subOps = jsonObject.getObject(ATTR_SUBOPS, List.class);
+        List<JSONObject> subOps = jsonObject.getJSONArray(ATTR_SUBOPS).toJavaList(JSONObject.class);
         for (JSONObject o : subOps) {
           result.merge((BaseOperation)parseJSONObject(o));
         }
@@ -92,15 +94,7 @@ public class BaseOperationAdapter /*implements ObjectSerializer, ObjectDeseriali
 
       return (T) result;
     }
-    return (T) new NullOperation("Null", null);
+    return null;
   }
 
-//  public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
-//    JSONObject jsonObject = null;//parser.parseObject();
-//    return parseJSONObject(jsonObject);
-//  }
-//
-//  public int getFastMatchToken() {
-//    return JSONToken.LBRACKET;
-//  }
 }

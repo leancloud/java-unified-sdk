@@ -4,20 +4,20 @@ import cn.leancloud.*;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.utils.StringUtil;
 import com.google.gson.*;
+import com.google.gson.internal.LinkedTreeMap;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.TreeMap;
 
 public class ObjectDeserializer implements JsonDeserializer<AVObject> {
   public static final String KEY_VERSION = "_version";
   private static final String DEFAULT_VERSION = "5";
   public static final String KEY_SERVERDATA = "serverData";
 
-  private AVObject generateObject(Map<String, Object> objectMap) {
-    String className = "";
+  private AVObject generateObject(Map<String, Object> objectMap, String className) {
     Map<String, Object> serverJson = null;
     if (objectMap.containsKey(KEY_VERSION)) {
       // 5.x version
@@ -38,7 +38,7 @@ public class ObjectDeserializer implements JsonDeserializer<AVObject> {
       className = (String) objectMap.get(AVObject.KEY_CLASSNAME);
       objectMap.remove(AVObject.KEY_CLASSNAME);
       if (objectMap.containsKey(KEY_SERVERDATA)) {
-        ConcurrentHashMap<String, Object> serverData = (ConcurrentHashMap<String, Object>) objectMap.get(KEY_SERVERDATA);//
+        LinkedTreeMap<String, Object> serverData = (LinkedTreeMap<String, Object>) objectMap.get(KEY_SERVERDATA);//
         objectMap.remove(KEY_SERVERDATA);
         objectMap.putAll(serverData);
       }
@@ -59,7 +59,7 @@ public class ObjectDeserializer implements JsonDeserializer<AVObject> {
       obj = new AVStatus();
     } else if (className.endsWith(AVRole.class.getCanonicalName())) {
       obj = new AVRole();
-    } else if (!StringUtil.isEmpty(className)) {
+    } else if (!StringUtil.isEmpty(className) && className.indexOf(".") < 0) {
       obj = Transformer.objectFromClassName(className);
     } else {
       obj = new AVObject();
@@ -91,6 +91,6 @@ public class ObjectDeserializer implements JsonDeserializer<AVObject> {
       mapData.put(entry.getKey(), ConverterUtils.toJavaObject(entry.getValue()));
     }
 
-    return generateObject(mapData);
+    return generateObject(mapData, ((Class)type).getCanonicalName());
   }
 }
