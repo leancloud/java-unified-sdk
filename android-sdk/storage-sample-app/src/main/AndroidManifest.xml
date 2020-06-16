@@ -45,6 +45,7 @@
         <activity android:name=".testcase.QueryDemoActivity"/>
         <activity android:name=".testcase.UserAuthDataDemoActivity"/>
         <activity android:name=".testcase.UserDemoActivity"/>
+        <activity android:name=".testcase.SubclassDemoActivity"/>
         <activity android:name=".testcase.ObjectTransferDemoActivity"/>
         <activity android:name="ar.com.daidalos.afiledialog.FileChooserActivity"/>
         <activity android:theme="@style/AppTheme.NoActionBar"
