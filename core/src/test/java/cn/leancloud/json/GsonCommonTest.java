@@ -1,8 +1,11 @@
 package cn.leancloud.json;
 
 import cn.leancloud.AVObject;
+import com.google.gson.reflect.TypeToken;
 import junit.framework.TestCase;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,5 +55,16 @@ public class GsonCommonTest extends TestCase {
 
     assertEquals(object.getInteger("version"), other.getInteger("version"));
     assertEquals(object.getString("className"), other.getString("className"));
+  }
+
+  public void testDoubleAndLong() {
+    String draft = "[ {\"id\":4077395,\"field_id\":242566,\"body\":\"\"},\n" +
+            "  {\"id\":4077398,\"field_id\":242569,\"body\":[[273019,0],[273020,1],[273021,0]]},\n" +
+            "  {\"id\":4077399,\"field_id\":242570,\"body\":[[273022,0],[273023,1],[273024,0]]}\n" +
+            "]";
+    ArrayList<Map<String, Object>> responses;
+    Type ResponseList = new TypeToken<ArrayList<Map<String, Object>>>() {}.getType();
+    responses = ConverterUtils.getGsonInstance().fromJson(draft, ResponseList);
+    System.out.println(responses.toString());
   }
 }

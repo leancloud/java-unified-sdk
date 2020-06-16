@@ -80,40 +80,40 @@ public class AVCloudFunctionTest extends TestCase {
     final String name = "currentTime";
     final Map<String, Object> param = new HashMap<String, Object>();
     param.put("platform", "android");
-    Observable<HashMap<String, Object>> res = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.NETWORK_ONLY, 30000);
-    res.subscribe(new Observer<HashMap<String, Object>>() {
+    Observable<Map<String, Object>> res = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.NETWORK_ONLY, 30000);
+    res.subscribe(new Observer<Map<String, Object>>() {
       @Override
       public void onSubscribe(Disposable disposable) {
       }
 
       @Override
-      public void onNext(HashMap<String, Object> firstResult) {
+      public void onNext(Map<String, Object> firstResult) {
         System.out.println("第一次结果(NETWORK_ONLY) = " + firstResult);
         final long firstTs = (Long) firstResult.get("milliseconds");
-        Observable<HashMap<String, Object>> second = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.NETWORK_ELSE_CACHE, 30000);
-        second.subscribe(new Observer<HashMap<String, Object>>() {
+        Observable<Map<String, Object>> second = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.NETWORK_ELSE_CACHE, 30000);
+        second.subscribe(new Observer<Map<String, Object>>() {
           @Override
           public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(HashMap<String, Object> secondResult) {
+          public void onNext(Map<String, Object> secondResult) {
             System.out.println("第二次结果(NETWORK_ELSE_CACHE) = " + secondResult);
             final long secondTs = (Long) secondResult.get("milliseconds");
             if (secondTs <= firstTs) {
               System.out.println("the second timestamp is wrong. first-" + firstTs + ", second-" + secondTs);
               latch.countDown();
             } else {
-              Observable<HashMap<String, Object>> third = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
-              third.subscribe(new Observer<HashMap<String, Object>>() {
+              Observable<Map<String, Object>> third = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
+              third.subscribe(new Observer<Map<String, Object>>() {
                 @Override
                 public void onSubscribe(Disposable disposable) {
 
                 }
 
                 @Override
-                public void onNext(HashMap<String, Object> thirdResult) {
+                public void onNext(Map<String, Object> thirdResult) {
                   System.out.println("第三次结果(CACHE_ELSE_NETWORK) = " + thirdResult);
                   final long thirdTs = (Long) thirdResult.get("milliseconds");
                   if (secondTs != thirdTs) {
@@ -125,15 +125,15 @@ public class AVCloudFunctionTest extends TestCase {
                     } catch (Exception ex) {
                       ;
                     }
-                    Observable<HashMap<String, Object>> fourth = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
-                    fourth.subscribe(new Observer<HashMap<String, Object>>() {
+                    Observable<Map<String, Object>> fourth = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
+                    fourth.subscribe(new Observer<Map<String, Object>>() {
                       @Override
                       public void onSubscribe(Disposable disposable) {
 
                       }
 
                       @Override
-                      public void onNext(HashMap<String, Object> fourthResult) {
+                      public void onNext(Map<String, Object> fourthResult) {
                         System.out.println("第四次结果(CACHE_ELSE_NETWORK) = " + fourthResult);
                         final long fourthTs = (Long) fourthResult.get("milliseconds");
                         if (fourthTs <= thirdTs) {

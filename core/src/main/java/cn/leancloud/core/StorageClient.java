@@ -20,6 +20,7 @@ import cn.leancloud.json.JSONArray;
 import cn.leancloud.json.JSONObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Scheduler;
