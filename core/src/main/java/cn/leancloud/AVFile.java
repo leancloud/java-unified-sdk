@@ -512,7 +512,7 @@ public final class AVFile extends AVObject {
 
                   AVException exception = uploader.execute();
 
-                  JSONObject completeResult = new JSONObject();
+                  JSONObject completeResult = JSONObject.Builder.create(null);
                   completeResult.put("result", null == exception);
                   completeResult.put("token",fileUploadToken.getToken());
                   logger.d("file upload result: " + completeResult.toJSONString());

@@ -1,6 +1,7 @@
 package cn.leancloud.gson;
 
 import cn.leancloud.json.JSONObject;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.TypeAdapter;
@@ -12,11 +13,15 @@ import java.io.IOException;
 
 public class JSONObjectAdapter extends TypeAdapter<JSONObject> {
   public void write(JsonWriter writer, JSONObject object) throws IOException {
-    TypeAdapters.JSON_ELEMENT.write(writer, object.getRawObject());
+    if (!(object instanceof GsonObject)) {
+      writer.nullValue();
+    } else {
+      TypeAdapters.JSON_ELEMENT.write(writer, ((GsonObject) object).getRawObject());
+    }
   }
 
   public JSONObject read(JsonReader reader) throws IOException {
     JsonElement jsonObject = TypeAdapters.JSON_ELEMENT.read(reader);
-    return new JSONObject((JsonObject) jsonObject);
+    return new GsonObject((JsonObject) jsonObject);
   }
 }

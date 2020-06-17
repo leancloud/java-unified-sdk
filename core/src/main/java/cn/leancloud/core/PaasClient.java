@@ -1,13 +1,12 @@
 package cn.leancloud.core;
 
-import cn.leancloud.json.ConverterUtils;
+import cn.leancloud.gson.ConverterUtils;
 import cn.leancloud.network.DNSDetoxicant;
 import cn.leancloud.service.APIService;
 import cn.leancloud.service.PushService;
 import io.reactivex.functions.Consumer;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.*;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.util.concurrent.TimeUnit;
@@ -49,7 +48,7 @@ public class PaasClient {
                   OkHttpClient okHttpClient = getGlobalOkHttpClient();
                   Retrofit retrofit = new Retrofit.Builder()
                           .baseUrl(apiHost)
-                          .addConverterFactory(GsonConverterFactory.create(ConverterUtils.getGsonInstance()))
+                          .addConverterFactory(AppConfiguration.getRetrofitConverterFactory())
                           .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                           .client(okHttpClient)
                           .build();
@@ -67,7 +66,7 @@ public class PaasClient {
       String apiHost = appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.API).blockingFirst();// donot block current thread.
       Retrofit retrofit = new Retrofit.Builder()
               .baseUrl(apiHost)
-              .addConverterFactory(GsonConverterFactory.create(ConverterUtils.getGsonInstance()))
+              .addConverterFactory(AppConfiguration.getRetrofitConverterFactory())
               .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
               .client(okHttpClient)
               .build();
@@ -84,7 +83,7 @@ public class PaasClient {
       String apiHost = appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.PUSH).blockingFirst();// donot block current thread.
       Retrofit retrofit = new Retrofit.Builder()
               .baseUrl(apiHost)
-              .addConverterFactory(GsonConverterFactory.create(ConverterUtils.getGsonInstance()))
+              .addConverterFactory(AppConfiguration.getRetrofitConverterFactory())
               .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
               .client(okHttpClient)
               .build();

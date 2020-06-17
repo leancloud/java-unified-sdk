@@ -1,7 +1,6 @@
 package cn.leancloud;
 
 import cn.leancloud.annotation.AVClassName;
-import cn.leancloud.json.ConverterUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 

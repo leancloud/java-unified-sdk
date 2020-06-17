@@ -1,7 +1,9 @@
-package cn.leancloud.json;
+package cn.leancloud.gson;
 
 import cn.leancloud.*;
 import cn.leancloud.gson.*;
+import cn.leancloud.json.JSONArray;
+import cn.leancloud.json.JSONObject;
 import cn.leancloud.ops.BaseOperation;
 import cn.leancloud.service.AppAccessEndpoint;
 import cn.leancloud.sms.AVCaptchaDigest;
@@ -27,8 +29,9 @@ public class ConverterUtils {
           .registerTypeAdapter(AVStatus.class, new ObjectDeserializer())
           .registerTypeAdapter(BaseOperation.class, new BaseOperationAdapter())
           .registerTypeAdapter(AVInstallation.class, new ObjectDeserializer())
+          .registerTypeAdapter(GsonObject.class, new JSONObjectAdapter())
           .registerTypeAdapter(JSONObject.class, new JSONObjectAdapter())
-          .registerTypeAdapter(JSONArray.class, new JSONArrayAdapter())
+          .registerTypeAdapter(GsonArray.class, new JSONArrayAdapter())
           .registerTypeAdapter(FileUploadToken.class, new FileUploadTokenAdapter())
           .registerTypeAdapter(AppAccessEndpoint.class,
                   new GeneralObjectAdapter<>(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES,
@@ -60,11 +63,11 @@ public class ConverterUtils {
     if (null == object) {
       return null;
     }
-    if (object instanceof JSONObject) {
-      return ((JSONObject) object).getRawObject();
+    if (object instanceof GsonObject) {
+      return ((GsonObject) object).getRawObject();
     }
-    if (object instanceof JSONArray) {
-      return ((JSONArray) object).getRawObject();
+    if (object instanceof GsonArray) {
+      return ((GsonArray) object).getRawObject();
     }
     return gson.toJsonTree(object);
   }

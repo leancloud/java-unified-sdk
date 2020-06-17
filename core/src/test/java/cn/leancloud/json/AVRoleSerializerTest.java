@@ -4,6 +4,7 @@ import cn.leancloud.AVACL;
 import cn.leancloud.AVObject;
 import cn.leancloud.AVRole;
 import cn.leancloud.Configure;
+import cn.leancloud.gson.ConverterUtils;
 import cn.leancloud.ops.AddOperation;
 import cn.leancloud.types.AVDate;
 import junit.framework.TestCase;

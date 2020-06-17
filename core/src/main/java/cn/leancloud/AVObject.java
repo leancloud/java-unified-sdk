@@ -275,7 +275,7 @@ public class AVObject {
       return new AVDate((JSONObject) res).getDate();
     }
     if (res instanceof Map) {
-      JSONObject json = new JSONObject((Map) res);
+      JSONObject json = JSONObject.Builder.create((Map) res);
       return new AVDate(json).getDate();
     }
     return null;
@@ -359,10 +359,10 @@ public class AVObject {
       return (JSONArray) list;
     }
     if (list instanceof List<?>) {
-      return new JSONArray((List<Object>) list);
+      return JSONArray.Builder.create((List<Object>) list);
     }
     if (list instanceof Object[]) {
-      JSONArray array = new JSONArray();
+      JSONArray array = JSONArray.Builder.create(null);
       for (Object obj : (Object[]) list) {
         array.add(obj);
       }
@@ -705,7 +705,7 @@ public class AVObject {
       tmp.remove(KEY_CREATED_AT);
       tmp.remove(KEY_UPDATED_AT);
       tmp.remove(KEY_OBJECT_ID);
-      return new JSONObject(tmp);
+      return JSONObject.Builder.create(tmp);
     }
 
     Map<String, Object> params = new HashMap<String, Object>();
@@ -726,7 +726,7 @@ public class AVObject {
     }
 
     if (!needBatchMode()) {
-      return new JSONObject(params);
+      return JSONObject.Builder.create(params);
     }
 
     List<Map<String, Object>> finalParams = new ArrayList<Map<String, Object>>();
@@ -746,7 +746,7 @@ public class AVObject {
     Map<String, Object> finalResult = new HashMap<String, Object>(1);
     finalResult.put("requests", finalParams);
 
-    return new JSONObject(finalResult);
+    return JSONObject.Builder.create(finalResult);
   }
 
   protected List<AVObject> extractCascadingObjects(Object o) {
@@ -860,11 +860,11 @@ public class AVObject {
         });
       }
     } else {
-      JSONObject whereCondition = null;
+      Map<String, Object> whereCondition = null;
       if (null != option && null != option.matchQuery) {
-        Map<String, Object> whereOperationMap = option.matchQuery.conditions.compileWhereOperationMap();
-        whereCondition = new JSONObject(whereOperationMap);
+        whereCondition = option.matchQuery.conditions.compileWhereOperationMap();
       }
+      System.out.println("where condition: " + JSON.toJSONString(whereCondition));
       if (totallyOverwrite) {
         return PaasClient.getStorageClient().saveWholeObject(this.getClass(), endpointClassName, currentObjectId,
                 paramData, needFetch, whereCondition)
@@ -992,7 +992,7 @@ public class AVObject {
    */
   public static Observable<JSONArray> saveAllInBackground(final Collection<? extends AVObject> objects) {
     if (null == objects || objects.isEmpty()) {
-      JSONArray emptyResult = new JSONArray();
+      JSONArray emptyResult = JSONArray.Builder.create(null);
       return Observable.just(emptyResult);
     }
     for (AVObject o: objects) {
@@ -1011,17 +1011,17 @@ public class AVObject {
             file.save();
           }
         }
-        JSONArray requests = new JSONArray();
+        JSONArray requests = JSONArray.Builder.create(null);
         for (AVObject o : objects) {
           JSONObject requestBody = o.generateChangedParam();
-          JSONObject objectRequest = new JSONObject();
+          JSONObject objectRequest = JSONObject.Builder.create(null);
           objectRequest.put("method", o.getRequestMethod());
           objectRequest.put("path", o.getRequestRawEndpoint());
           objectRequest.put("body", requestBody);
           requests.add(objectRequest);
         }
 
-        JSONObject requestTotal = new JSONObject();
+        JSONObject requestTotal = JSONObject.Builder.create(null);
         requestTotal.put("requests", requests);
         return PaasClient.getStorageClient().batchSave(requestTotal).map(new Function<JSONArray, JSONArray>() {
           public JSONArray apply(JSONArray batchResults) throws Exception {
@@ -1453,7 +1453,7 @@ public class AVObject {
    * @return json object.
    */
   public JSONObject toJSONObject() {
-    return new JSONObject(this.serverData);
+    return JSONObject.Builder.create(this.serverData);
   }
 
   /**

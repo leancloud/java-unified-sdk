@@ -23,7 +23,7 @@ public class PushClient {
   }
 
   public Observable<JSONObject> sendPushRequest(Map<String, Object> param) {
-    return wrapObservable(service.sendPushRequest(new JSONObject(param)));
+    return wrapObservable(service.sendPushRequest(JSONObject.Builder.create(param)));
   }
 
   private Observable wrapObservable(Observable observable) {

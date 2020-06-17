@@ -1,6 +1,5 @@
 package cn.leancloud.gson;
 
-import cn.leancloud.json.ConverterUtils;
 import com.google.gson.*;
 import com.google.gson.internal.ConstructorConstructor;
 import com.google.gson.internal.Excluder;

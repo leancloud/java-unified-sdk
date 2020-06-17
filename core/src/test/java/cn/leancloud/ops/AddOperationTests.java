@@ -34,7 +34,7 @@ public class AddOperationTests extends TestCase {
     AddOperation op = (AddOperation) OperationBuilder.gBuilder.create(
             OperationBuilder.OperationType.Add, "classmate", s);
     Map<String, Object> result = op.encode();
-    System.out.println(new JSONObject(result).toJSONString());
+    System.out.println(JSONObject.Builder.create(result).toJSONString());
     Student a = new Student();
     a.setObjectId("StudentObjectId-a");
     List<Student> newS = new ArrayList<>();

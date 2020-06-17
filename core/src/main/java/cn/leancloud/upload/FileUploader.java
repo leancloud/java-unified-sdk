@@ -68,7 +68,7 @@ public class FileUploader extends HttpClientUploader {
   private void completeFileUpload(boolean success){
     if (!StringUtil.isEmpty(token)) {
       try {
-        JSONObject completeResult = new JSONObject();
+        JSONObject completeResult = JSONObject.Builder.create(null);
         completeResult.put("result",success);
         completeResult.put("token",this.token);
         PaasClient.getStorageClient().fileCallback (completeResult);

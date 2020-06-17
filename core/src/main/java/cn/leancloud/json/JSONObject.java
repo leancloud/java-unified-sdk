@@ -1,6 +1,6 @@
 package cn.leancloud.json;
 
-import com.google.gson.JsonElement;
+import cn.leancloud.core.AppConfiguration;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -9,388 +9,58 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.*;
 
-public class JSONObject implements Map<String, Object>, Cloneable, Serializable {
-  private com.google.gson.JsonObject gsonObject;
+public abstract class JSONObject implements Map<String, Object>, Cloneable, Serializable {
+  public static class Builder {
+    public static JSONObject create(Map<String, Object> param) {
+      return AppConfiguration.getJsonParser().toJSONObject(param);
+    }
+  }
+  public abstract JSONObject getJSONObject(String key);
 
-  public JSONObject(com.google.gson.JsonObject object) {
-    this.gsonObject = object;
-  }
+  public abstract JSONArray getJSONArray(String key);
 
-  public JSONObject(Map<String, Object> map) {
-    this.gsonObject = new com.google.gson.JsonObject();
-    if (null != map) {
-      for (Map.Entry<String, Object> entry : map.entrySet()) {
-        gsonObject.add(entry.getKey(), ConverterUtils.toJsonElement(entry.getValue()));
-      }
-    }
-  }
+  public abstract <T> T getObject(String key, Class<T> clazz);
+  public abstract <T> T getObject(String key, Type type);
 
-  static class InnerEntry implements Entry<String, Object> {
-    private String key;
-    private Object value;
-    InnerEntry(String key, JsonElement value) {
-      this.key = key;
-      this.value = ConverterUtils.toJavaObject(value);
-    }
+  public abstract <T> T getObject(String key, TypeReference typeReference);
+  public abstract Boolean getBoolean(String key);
 
-    @Override
-    public String getKey() {
-      return this.key;
-    }
+  public abstract byte[] getBytes(String key);
 
-    @Override
-    public Object getValue() {
-      return this.value;
-    }
+  public abstract boolean getBooleanValue(String key);
+  public abstract Byte getByte(String key);
+  public abstract byte getByteValue(String key);
 
-    @Override
-    public Object setValue(Object value) {
-      this.value = value;
-      return value;
-    }
-  }
+  public abstract Short getShort(String key);
+  public abstract short getShortValue(String key);
 
-  public JSONObject() {
-    this.gsonObject = new com.google.gson.JsonObject();
-  }
+  public abstract Integer getInteger(String key);
 
-  public com.google.gson.JsonObject getRawObject() {
-    return this.gsonObject;
-  }
+  public abstract int getIntValue(String key);
 
-  public int size() {
-    return this.gsonObject.size();
-  }
+  public abstract Long getLong(String key);
+  public abstract long getLongValue(String key);
+  public abstract Float getFloat(String key);
+  public abstract float getFloatValue(String key);
+  public abstract Double getDouble(String key);
+  public abstract double getDoubleValue(String key);
+  public abstract BigDecimal getBigDecimal(String key);
+  public abstract BigInteger getBigInteger(String key);
+  public abstract String getString(String key);
+  public abstract Date getDate(String key);
 
-  public boolean isEmpty() {
-    return this.gsonObject.size() <= 0;
-  }
+  public abstract java.sql.Date getSqlDate(String key);
+  public abstract Timestamp getTimestamp(String key);
 
-  public boolean containsKey(Object key) {
-    return this.gsonObject.has((String)key);
-  }
+  public abstract JSONObject fluentPut(String key, Object value);
 
-  public boolean containsValue(Object v) {
-    Collection<Object> values = values();
-    if (null == values) {
-      return false;
-    }
-    for (Object obj: values) {
-      if (obj.equals(v)) {
-        return true;
-      }
-    }
-    return false;
-  }
+  public abstract void putAll(Map<? extends String, ? extends Object> m);
 
-  public Object get(Object key) {
-    com.google.gson.JsonElement element = this.gsonObject.get((String)key);
-    return ConverterUtils.toJavaObject(element);
-  }
+  public abstract JSONObject fluentPutAll(Map<? extends String, ? extends Object> m);
+  public abstract JSONObject fluentClear();
+  public abstract Map<String, Object> getInnerMap();
 
-  public JSONObject getJSONObject(String key) {
-    if (!gsonObject.has(key)) {
-      return null;
-    }
-    com.google.gson.JsonElement element = gsonObject.get(key);
-    if (!element.isJsonObject()) {
-      return null;
-    }
-    return new JSONObject(element.getAsJsonObject());
-  }
+  public abstract <T> T toJavaObject(Class<T> clazz);
 
-  public JSONArray getJSONArray(String key) {
-    if (!gsonObject.has(key)) {
-      return null;
-    }
-    com.google.gson.JsonElement element = gsonObject.get(key);
-    if (!element.isJsonArray()) {
-      return null;
-    }
-    return new JSONArray(element.getAsJsonArray());
-  }
-
-  public <T> T getObject(String key, Class<T> clazz) {
-    if (!gsonObject.has(key)) {
-      return null;
-    }
-    com.google.gson.JsonElement element = this.gsonObject.get(key);
-    if (element.isJsonNull()) {
-      return null;
-    }
-    return null;//this.gsonObject.getObject(key, clazz);
-  }
-
-  /**
-   * get object value with specified key.
-   * @param key
-   * @param type
-   * @param <T>
-   * @return
-   *
-   * @since 1.8
-   */
-  public <T> T getObject(String key, Type type) {
-    try {
-      if (type instanceof Class) {
-        Class<T> clazz = (Class<T>)type;
-        return getObject(key, clazz);
-      }
-    } catch (Exception ex) {
-
-    }
-    return null;
-  }
-
-  public <T> T getObject(String key, TypeReference typeReference) {
-    return getObject(key, null == typeReference? null : typeReference.getType());
-  }
-
-  public Boolean getBoolean(String key) {
-    if (!gsonObject.has(key)) {
-      return false;
-    }
-    com.google.gson.JsonElement element = gsonObject.get(key);
-    if (!element.isJsonPrimitive()) {
-      return false;
-    }
-    return element.getAsBoolean();
-  }
-
-  public byte[] getBytes(String key) {
-    String ret = getString(key);
-    if (null == ret) {
-      return null;
-    }
-    return ret.getBytes();
-  }
-
-  public boolean getBooleanValue(String key) {
-    return getBoolean(key).booleanValue();
-  }
-
-  public Byte getByte(String key) {
-    if (!gsonObject.has(key)) {
-      return 0;
-    }
-    com.google.gson.JsonElement element = gsonObject.get(key);
-    if (!element.isJsonPrimitive()) {
-      return 0;
-    }
-    return element.getAsByte();
-  }
-
-  public byte getByteValue(String key) {
-    return getByte(key).byteValue();
-  }
-
-  public Short getShort(String key) {
-    if (!gsonObject.has(key)) {
-      return 0;
-    }
-    com.google.gson.JsonElement element = gsonObject.get(key);
-    if (!element.isJsonPrimitive()) {
-      return 0;
-    }
-    return element.getAsShort();
-  }
-  public short getShortValue(String key) {
-    return getShort(key).shortValue();
-  }
-
-  public Integer getInteger(String key) {
-    if (!gsonObject.has(key)) {
-      return 0;
-    }
-    com.google.gson.JsonElement element = gsonObject.get(key);
-    if (!element.isJsonPrimitive()) {
-      return 0;
-    }
-    return element.getAsInt();
-  }
-
-  public int getIntValue(String key) {
-    return getInteger(key).intValue();
-  }
-
-  public Long getLong(String key) {
-    if (!gsonObject.has(key)) {
-      return 0l;
-    }
-    com.google.gson.JsonElement element = gsonObject.get(key);
-    if (!element.isJsonPrimitive()) {
-      return 0l;
-    }
-    return element.getAsLong();
-  }
-  public long getLongValue(String key) {
-    return getLong(key).longValue();
-  }
-  public Float getFloat(String key) {
-    if (!gsonObject.has(key)) {
-      return 0f;
-    }
-    com.google.gson.JsonElement element = gsonObject.get(key);
-    if (!element.isJsonPrimitive()) {
-      return 0f;
-    }
-    return element.getAsFloat();
-  }
-  public float getFloatValue(String key) {
-    return getFloat(key).floatValue();
-  }
-  public Double getDouble(String key) {
-    if (!gsonObject.has(key)) {
-      return 0d;
-    }
-    com.google.gson.JsonElement element = gsonObject.get(key);
-    if (!element.isJsonPrimitive()) {
-      return 0d;
-    }
-    return element.getAsDouble();
-  }
-  public double getDoubleValue(String key) {
-    return getDouble(key).doubleValue();
-  }
-  public BigDecimal getBigDecimal(String key) {
-    if (!gsonObject.has(key)) {
-      return BigDecimal.ZERO;
-    }
-    com.google.gson.JsonElement element = gsonObject.get(key);
-    if (!element.isJsonPrimitive()) {
-      return BigDecimal.ZERO;
-    }
-    return element.getAsBigDecimal();
-  }
-  public BigInteger getBigInteger(String key) {
-    if (!gsonObject.has(key)) {
-      return BigInteger.ZERO;
-    }
-    com.google.gson.JsonElement element = gsonObject.get(key);
-    if (!element.isJsonPrimitive()) {
-      return BigInteger.ZERO;
-    }
-    return element.getAsBigInteger();
-  }
-  public String getString(String key) {
-    if (!gsonObject.has(key)) {
-      return null;
-    }
-    com.google.gson.JsonElement element = gsonObject.get(key);
-    if (!element.isJsonPrimitive()) {
-      return null;
-    }
-    return element.getAsString();
-  }
-  public Date getDate(String key) {
-    Object val = getObject(key, Object.class);
-    return ConverterUtils.castToDate(val);
-  }
-
-  public java.sql.Date getSqlDate(String key) {
-    throw new UnsupportedOperationException("getSqlDate is not supported.");
-  }
-  public Timestamp getTimestamp(String key) {
-    throw new UnsupportedOperationException("getTimestamp is not supported.");
-  }
-
-  public Object put(String key, Object value) {
-    if (value instanceof JSONObject) {
-      this.gsonObject.add(key, ((JSONObject) value).getRawObject());
-    } else {
-      com.google.gson.JsonElement element = ConverterUtils.toJsonElement(value);
-      this.gsonObject.add(key, element);
-    }
-    return value;
-  }
-
-  public JSONObject fluentPut(String key, Object value) {
-    com.google.gson.JsonElement ele = ConverterUtils.toJsonElement(value);
-    this.gsonObject.add(key, ele);
-    return this;
-  }
-
-  public void putAll(Map<? extends String, ? extends Object> m) {
-    for(Map.Entry<? extends String, ? extends Object> entry: m.entrySet()) {
-      put(entry.getKey(), entry.getValue());
-    }
-  }
-
-  public JSONObject fluentPutAll(Map<? extends String, ? extends Object> m) {
-    putAll(m);
-    return this;
-  }
-
-  public void clear() {
-    for (String key : gsonObject.keySet()) {
-      remove(key);
-    }
-  }
-
-  public JSONObject fluentClear() {
-    clear();
-    return this;
-  }
-
-  public Object remove(Object key) {
-    return gsonObject.remove((String)key);
-  }
-
-  public Set<String> keySet() {
-    return gsonObject.keySet();
-  }
-
-  public Collection<Object> values() {
-    List<Object> result = new ArrayList<>(size());
-    for (Map.Entry<String, Object> entry: entrySet()) {
-      result.add(entry.getValue());
-    }
-    return result;
-  }
-  public Set<Map.Entry<String, Object>> entrySet() {
-    Set<Map.Entry<String, com.google.gson.JsonElement>> objects = this.gsonObject.entrySet();
-    Set<Map.Entry<String, Object>> result = new HashSet<>();
-    for (Map.Entry<String, JsonElement> entry: objects) {
-      result.add(new InnerEntry(entry.getKey(), entry.getValue()));
-    }
-    return result;
-  }
-
-  @Override
-  public Object clone() {
-    return new JSONObject(gsonObject.deepCopy());
-  }
-
-  public Map<String, Object> getInnerMap() {
-    Map<String, Object> map = new HashMap<>(this.gsonObject.size());
-    Set<Map.Entry<String, com.google.gson.JsonElement>> objects = this.gsonObject.entrySet();
-    for (Map.Entry<String, JsonElement> entry: objects) {
-      map.put(entry.getKey(), ConverterUtils.toJavaObject(entry.getValue()));
-    }
-    return map;
-  }
-
-  public <T> T toJavaObject(Class<T> clazz) {
-    return ConverterUtils.toJavaObject(gsonObject, clazz);
-  }
-
-  public int hashCode() {
-    return gsonObject.hashCode();
-  }
-  public boolean equals(Object obj) {
-    if (null == obj) {
-      return false;
-    }
-    if (this == obj) {
-      return true;
-    }
-    if (!(obj instanceof JSONObject)) {
-      return false;
-    }
-    return gsonObject.equals(((JSONObject)obj).gsonObject);
-  }
-
-  public String toJSONString() {
-    return this.gsonObject.toString();
-  }
+  public abstract String toJSONString();
 }

@@ -1,6 +1,7 @@
-package cn.leancloud.json;
+package cn.leancloud.gson;
 
 import cn.leancloud.*;
+import cn.leancloud.json.JSONObject;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.utils.StringUtil;
 import com.google.gson.*;

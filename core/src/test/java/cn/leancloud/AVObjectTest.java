@@ -1115,7 +1115,6 @@ public class AVObjectTest extends TestCase {
     object.put("name", "Automatic Tester");
     object.put("age", 19);
     object.add("course", "Art");
-    JSONObject localtion = new JSONObject();
     object.put("location", new AVGeoPoint(34.6, 76.43));
     object.save();
   }

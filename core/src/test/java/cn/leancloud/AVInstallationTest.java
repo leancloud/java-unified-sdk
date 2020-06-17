@@ -3,7 +3,6 @@ package cn.leancloud;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.core.AppConfiguration;
-import cn.leancloud.json.ObjectValueFilter;
 import cn.leancloud.json.JSON;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;

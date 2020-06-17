@@ -1,6 +1,5 @@
 package cn.leancloud;
 
-import cn.leancloud.json.ObjectValueFilter;
 import cn.leancloud.json.JSON;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;

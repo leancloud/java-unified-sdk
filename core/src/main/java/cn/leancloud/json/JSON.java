@@ -1,48 +1,38 @@
 package cn.leancloud.json;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
-import java.util.ArrayList;
+import cn.leancloud.core.AppConfiguration;
 import java.util.List;
 
 public class JSON {
   public static <T> T parseObject(String text, Class<T> clazz) {
-    return ConverterUtils.parseObject(text, clazz);
+    return AppConfiguration.getJsonParser().parseObject(text, clazz);
   }
 
   public static <T> T parseObject(String text, TypeReference<T> type) {
-    return ConverterUtils.parseObject(text, type.getType());
+    return AppConfiguration.getJsonParser().parseObject(text, type);
   }
 
   public static JSONObject parseObject(String text) {
-    JsonObject jsonObject = ConverterUtils.parseObject(text, JsonObject.class);
-    return new JSONObject(jsonObject);
+    return AppConfiguration.getJsonParser().parseObject(text);
   }
 
   public static JSONArray parseArray(String text) {
-    JsonArray jsonArray = ConverterUtils.parseObject(text, JsonArray.class);
-    return new JSONArray(jsonArray);
+    return AppConfiguration.getJsonParser().parseArray(text);
   }
 
   public static <T> List<T> parseArray(String text, Class<T> clazz) {
-    JsonArray jsonArray = ConverterUtils.parseObject(text, JsonArray.class);
-    List<T> list = new ArrayList<>(jsonArray.size());
-    for (int i = 0;i < jsonArray.size(); i++) {
-      list.add(ConverterUtils.toJavaObject(jsonArray.get(i), clazz));
-    }
-    return list;
+    return AppConfiguration.getJsonParser().parseArray(text, clazz);
   }
 
   public static Object parse(String text) {
-    return ConverterUtils.parseObject(text);
+    return AppConfiguration.getJsonParser().parse(text);
   }
 
   public static <T> T toJavaObject(JSONObject json, Class<T> clazz) {
-    return ConverterUtils.toJavaObject(json.getRawObject(), clazz);
+    return AppConfiguration.getJsonParser().toJavaObject(json, clazz);
   }
 
   public static String toJSONString(Object object) {
-    return ConverterUtils.getGsonInstance().toJson(object);
+    return AppConfiguration.getJsonParser().toJSONString(object);
   }
 }

@@ -42,6 +42,6 @@ public class SetOperationTests extends TestCase {
     SetOperation op = (SetOperation) OperationBuilder.gBuilder.create(
             OperationBuilder.OperationType.Set, "friend", p);
     Map<String, Object> result = op.encode();
-    System.out.println(new JSONObject(result).toJSONString());
+    System.out.println(JSONObject.Builder.create(result).toJSONString());
   }
 }

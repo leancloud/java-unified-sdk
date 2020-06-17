@@ -18,7 +18,6 @@ import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -108,7 +107,7 @@ public class AppRouter {
             .build();
     retrofit = new Retrofit.Builder()
             .baseUrl(APP_ROUTER_HOST)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(AppConfiguration.getRetrofitConverterFactory())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(httpClient)
             .build();

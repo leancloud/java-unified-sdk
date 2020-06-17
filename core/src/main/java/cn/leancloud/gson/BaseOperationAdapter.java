@@ -1,7 +1,6 @@
 package cn.leancloud.gson;
 
 import cn.leancloud.AVObject;
-import cn.leancloud.json.ConverterUtils;
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
 import cn.leancloud.ops.BaseOperation;
@@ -44,7 +43,7 @@ public class BaseOperationAdapter extends TypeAdapter<BaseOperation> {
     JsonElement elem = TypeAdapters.JSON_ELEMENT.read(reader);
     if (elem.isJsonObject()) {
       JsonObject jsonObject = elem.getAsJsonObject();
-      return parseJSONObject(new JSONObject(jsonObject));
+      return parseJSONObject(new GsonObject(jsonObject));
     } else {
       return null;
     }

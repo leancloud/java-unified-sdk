@@ -159,10 +159,10 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
         // maybe a bug?
         result.put(AVStatus.ATTR_INBOX_TYPE, inboxType);
       }
-      String ownerString = new JSONObject(Utils.mapFromAVObject(this.owner, false)).toJSONString();
+      String ownerString = JSONObject.Builder.create(Utils.mapFromAVObject(this.owner, false)).toJSONString();
       result.put(AVStatus.ATTR_OWNER, ownerString);
     } else if (SourceType.OWNED != this.sourceType && null != this.source) {
-      String sourceString = new JSONObject(Utils.mapFromAVObject(this.source, false)).toJSONString();
+      String sourceString = JSONObject.Builder.create(Utils.mapFromAVObject(this.source, false)).toJSONString();
       result.put(AVStatus.ATTR_SOURCE, sourceString);
     }
     if (getPageSize() > 0) {

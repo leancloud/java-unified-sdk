@@ -1,6 +1,9 @@
 package cn.leancloud.core;
 
 import cn.leancloud.AVACL;
+import cn.leancloud.gson.GSONConverterFactory;
+import cn.leancloud.json.ConverterFactory;
+import cn.leancloud.json.JSONParser;
 import cn.leancloud.logging.InternalLoggerAdapter;
 import cn.leancloud.cache.InMemorySetting;
 import cn.leancloud.cache.LastModifyCache;
@@ -37,6 +40,10 @@ public class AppConfiguration {
 
   private static boolean enableLocalCache = true;
 
+  private static ConverterFactory converterFactory = new GSONConverterFactory();
+  private static retrofit2.Converter.Factory retrofitConverterFactory = converterFactory.generateRetrofitConverterFactory();
+  private static JSONParser jsonParser = converterFactory.createJSONParser();
+
   private static final String SDK_VERSION = "7.0.0-beta";
   private static final String DEFAULT_USER_AGENT = "LeanCloud-Java-SDK/" + SDK_VERSION;
 
@@ -50,7 +57,6 @@ public class AppConfiguration {
   public static void setLastModifyEnabled(boolean val) {
     LastModifyCache.getInstance().setLastModifyEnabled(val);
   }
-
   public static boolean isLastModifyEnabled() {
     return LastModifyCache.getInstance().isLastModifyEnabled();
   }
@@ -70,6 +76,23 @@ public class AppConfiguration {
   }
   public static String getUserAgent() {
     return DEFAULT_USER_AGENT;
+  }
+
+  public static void setConverterFactory(ConverterFactory cf) {
+    if (null == cf) {
+      return;
+    }
+    converterFactory = cf;
+    retrofitConverterFactory = converterFactory.generateRetrofitConverterFactory();
+    jsonParser = converterFactory.createJSONParser();
+  }
+
+  public static retrofit2.Converter.Factory getRetrofitConverterFactory() {
+    return retrofitConverterFactory;
+  }
+
+  public static JSONParser getJsonParser() {
+    return jsonParser;
   }
 
   public static void config(boolean asyncRequest, SchedulerCreator observerSchedulerCreator) {

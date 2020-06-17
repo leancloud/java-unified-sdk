@@ -6,7 +6,7 @@ import cn.leancloud.callback.AVCallback;
 import cn.leancloud.callback.FollowersAndFolloweesCallback;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
-import cn.leancloud.json.ObjectDeserializer;
+import cn.leancloud.gson.ObjectDeserializer;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.ErrorUtils;
@@ -300,7 +300,7 @@ public class AVUser extends AVObject {
       return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "clazz")));
     }
     Map<String, Object> params = createUserMap(null, null, null, mobilePhoneNumber, smsCode);
-    JSONObject data = new JSONObject(params);
+    JSONObject data = JSONObject.Builder.create(params);
     return PaasClient.getStorageClient().signUpOrLoginByMobilephone(data, clazz);
   }
 
@@ -333,7 +333,7 @@ public class AVUser extends AVObject {
    */
   public static <T extends AVUser> Observable<T> logIn(String username, String password, final Class<T> clazz) {
     Map<String, Object> params = createUserMap(username, password, null, null, null);
-    JSONObject data = new JSONObject(params);
+    JSONObject data = JSONObject.Builder.create(params);
     return PaasClient.getStorageClient().logIn(data, clazz);
   }
 
@@ -355,7 +355,7 @@ public class AVUser extends AVObject {
    */
   public static Observable<? extends AVUser> loginByEmail(String email, String password) {
     HashMap<String, Object> params = createUserMapAFAP(null, password, email, null, null);
-    return PaasClient.getStorageClient().logIn(new JSONObject(params), internalUserClazz());
+    return PaasClient.getStorageClient().logIn(JSONObject.Builder.create(params), internalUserClazz());
   }
 
   /**
@@ -368,7 +368,7 @@ public class AVUser extends AVObject {
    */
   public static <T extends AVUser> Observable<T> loginByMobilePhoneNumber(String mobile, String password, final Class<T> clazz) {
     Map<String, Object> params = createUserMap(null, password, null, mobile, null);
-    JSONObject data = new JSONObject(params);
+    JSONObject data = JSONObject.Builder.create(params);
     return PaasClient.getStorageClient().logIn(data, clazz);
   }
 
@@ -392,7 +392,7 @@ public class AVUser extends AVObject {
    */
   public static <T extends AVUser> Observable<T> loginBySMSCode(String mobile, String smsCode, Class<T> clazz) {
     Map<String, Object> params = createUserMap(null, null, null, mobile, smsCode);
-    JSONObject data = new JSONObject(params);
+    JSONObject data = JSONObject.Builder.create(params);
     return PaasClient.getStorageClient().logIn(data, clazz);
   }
 
@@ -493,7 +493,7 @@ public class AVUser extends AVObject {
     Map<String, Object> authMap = new HashMap<String, Object>();
     authMap.put(platform, authData);
     data.put(AUTHDATA_TAG, authMap);
-    JSONObject param = new JSONObject(data);
+    JSONObject param = JSONObject.Builder.create(data);
     return PaasClient.getStorageClient().signUp(param).map(new Function<AVUser, T>() {
       @Override
       public T apply(AVUser avUser) throws Exception {
@@ -554,7 +554,7 @@ public class AVUser extends AVObject {
     Map<String, Object> authMap = new HashMap<String, Object>();
     authMap.put(platform, authData);
     data.put(AUTHDATA_TAG, authMap);
-    JSONObject param = new JSONObject(data);
+    JSONObject param = JSONObject.Builder.create(data);
     return PaasClient.getStorageClient().signUpWithFlag(param, failOnNotExist).map(new Function<AVUser, AVUser>() {
       @Override
       public AVUser apply(AVUser avUser) throws Exception {

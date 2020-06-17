@@ -223,7 +223,7 @@ public class StorageClient {
 //  }
 
   public Observable<? extends AVObject> createObject(final String className, JSONObject data, boolean fetchFlag,
-                                                     JSONObject where) {
+                                                     Map<String, Object> where) {
     Observable<AVObject> object = wrapObservable(apiService.createObject(className, data, fetchFlag,
             where));
     if (null == object) {
@@ -238,7 +238,7 @@ public class StorageClient {
   }
 
   public Observable<? extends AVObject> saveObject(final String className, String objectId, JSONObject data,
-                                                   boolean fetchFlag, JSONObject where) {
+                                                   boolean fetchFlag, Map<String, Object> where) {
     Observable<AVObject> object = wrapObservable(apiService.updateObject(className, objectId, data,
             fetchFlag, where));
     if (null == object) {
@@ -254,7 +254,7 @@ public class StorageClient {
 
   public <E extends AVObject> Observable<E> saveWholeObject(final Class<E> clazz, final String endpointClass,
                                                             String objectId,
-                                                            JSONObject object, boolean fetchFlag, JSONObject where) {
+                                                            JSONObject object, boolean fetchFlag, Map<String, Object> where) {
     Observable<AVObject> result = null;
     if (StringUtil.isEmpty(objectId)) {
       result = wrapObservable(apiService.saveWholeObject(endpointClass, object, fetchFlag, where));
@@ -467,7 +467,7 @@ public class StorageClient {
     if (StringUtil.isEmpty(oldPass) || StringUtil.isEmpty(newPass)) {
       return Observable.error(new IllegalArgumentException("old password or new password is empty"));
     }
-    JSONObject param = new JSONObject();
+    JSONObject param = JSONObject.Builder.create(null);
     param.put("old_password", oldPass);
     param.put("new_password", newPass);
     return wrapObservable(apiService.updatePassword(user.getObjectId(), param).map(new Function<AVUser, AVNull>() {

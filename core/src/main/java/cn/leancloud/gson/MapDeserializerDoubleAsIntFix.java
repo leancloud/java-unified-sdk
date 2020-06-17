@@ -1,4 +1,4 @@
-package cn.leancloud.json;
+package cn.leancloud.gson;
 
 import com.google.gson.*;
 import com.google.gson.internal.LinkedTreeMap;

@@ -89,7 +89,7 @@ public class PaasClientTest extends TestCase {
 
   public void testCreateUploadToken() throws Exception {
 
-      JSONObject fileObject = new JSONObject();
+      JSONObject fileObject = JSONObject.Builder.create(null);
       StorageClient storageClient = PaasClient.getStorageClient();
       storageClient.newUploadToken(fileObject).subscribe(new Observer<FileUploadToken>() {
         public void onComplete() {

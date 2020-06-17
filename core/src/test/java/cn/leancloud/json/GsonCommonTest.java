@@ -1,6 +1,7 @@
 package cn.leancloud.json;
 
 import cn.leancloud.AVObject;
+import cn.leancloud.gson.ConverterUtils;
 import cn.leancloud.service.AppAccessEndpoint;
 import cn.leancloud.sms.AVCaptchaDigest;
 import com.google.gson.reflect.TypeToken;
@@ -48,7 +49,7 @@ public class GsonCommonTest extends TestCase {
   }
 
   public void testJSONObjectSerialize() {
-    JSONObject object = new JSONObject();
+    JSONObject object = JSONObject.Builder.create(null);
     object.put("className", "Student");
     object.put("version", 5);
     String objectString = ConverterUtils.getGsonInstance().toJson(object);
