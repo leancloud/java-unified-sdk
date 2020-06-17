@@ -25,7 +25,7 @@ public class LeanEngineHealthCheckServlet extends HttpServlet {
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       IOException {
     resp.setHeader("content-type", LeanEngine.JSON_CONTENT_TYPE);
-    JSONObject result = new JSONObject();
+    JSONObject result = JSONObject.Builder.create(null);
     result.put("runtime", System.getProperty("java.version"));
     result.put("version", EngineAppConfiguration.getUserAgent());
     resp.getWriter().write(result.toJSONString());

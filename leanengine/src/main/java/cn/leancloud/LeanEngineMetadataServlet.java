@@ -34,7 +34,7 @@ public class LeanEngineMetadataServlet extends HttpServlet {
       return;
     }
     resp.setContentType(LeanEngine.JSON_CONTENT_TYPE);
-    JSONObject result = new JSONObject();
+    JSONObject result = JSONObject.Builder.create(null);
     result.put("result", LeanEngine.getMetaData());
     resp.getWriter().write(result.toJSONString());
   }

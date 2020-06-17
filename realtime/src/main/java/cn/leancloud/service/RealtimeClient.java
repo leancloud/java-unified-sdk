@@ -76,7 +76,7 @@ public class RealtimeClient {
   }
 
   public Observable<Signature> createSignature(Map<String, Object> params) {
-    return wrapObservable(service.createSignature(new JSONObject(params)));
+    return wrapObservable(service.createSignature(JSONObject.Builder.create(params)));
   }
 
   public Observable<List<AVIMConversationMemberInfo>> queryMemberInfo(Map<String, String> query, String rtmSessionToken) {
@@ -96,9 +96,9 @@ public class RealtimeClient {
   }
 
   public Observable<JSONObject> subscribeLiveQuery(Map<String, Object> params) {
-    return wrapObservable(service.subscribe(new JSONObject(params)));
+    return wrapObservable(service.subscribe(JSONObject.Builder.create(params)));
   }
   public Observable<JSONObject> unsubscribeLiveQuery(Map<String, Object> params) {
-    return wrapObservable(service.unsubscribe(new JSONObject(params)));
+    return wrapObservable(service.unsubscribe(JSONObject.Builder.create(params)));
   }
 }

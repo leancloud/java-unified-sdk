@@ -1784,7 +1784,7 @@ public class AVIMConversation {
     if (attributeMap.isEmpty()) {
       return null;
     }
-    return new JSONObject(attributeMap);
+    return JSONObject.Builder.create(attributeMap);
   }
 
   /**

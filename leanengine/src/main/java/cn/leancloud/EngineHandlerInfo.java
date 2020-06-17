@@ -77,7 +77,7 @@ public abstract class EngineHandlerInfo {
   public abstract Object parseParams(String requestBody) throws InvalidParameterException;
 
   public Object wrapperResponse(Object returnValue, String requestBody, boolean rpcCall) {
-    JSONObject result = new JSONObject();
+    JSONObject result = JSONObject.Builder.create(null);
     result.put("result", Utils.getParsedObject(returnValue, true));
     if (!rpcCall) {
       return JSON.parse(ResponseUtil.filterResponse(result.toJSONString()));

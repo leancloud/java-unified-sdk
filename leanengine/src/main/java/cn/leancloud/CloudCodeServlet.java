@@ -75,7 +75,7 @@ public class CloudCodeServlet extends HttpServlet {
       } catch (Exception e) {
         if (internalEndpoint.isNeedResponse()) {
           resp.setContentType(LeanEngine.JSON_CONTENT_TYPE);
-          JSONObject result = new JSONObject();
+          JSONObject result = JSONObject.Builder.create(null);
           if (e.getCause() instanceof AVException) {
             AVException ave = (AVException) e.getCause();
             result.put("code", ave.getCode());

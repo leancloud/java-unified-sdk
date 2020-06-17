@@ -52,7 +52,7 @@ public class AVIMTypedMessage extends AVIMMessage{
 
   @Override
   public final String getContent() {
-    JSONObject json = new JSONObject();
+    JSONObject json = JSONObject.Builder.create(null);
     json.put("_lctype", this.getMessageType());
     if (!fieldCache.containsKey(this.getClass())) {
       computeFieldAttribute(this.getClass());
