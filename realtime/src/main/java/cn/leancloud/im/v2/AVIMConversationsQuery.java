@@ -6,7 +6,6 @@ import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.im.v2.callback.AVIMCommonJsonCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationQueryCallback;
-import cn.leancloud.json.ObjectValueFilter;
 import cn.leancloud.query.QueryOperation;
 import cn.leancloud.types.AVGeoPoint;
 import cn.leancloud.utils.LogUtil;
