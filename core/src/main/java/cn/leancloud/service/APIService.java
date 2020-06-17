@@ -41,18 +41,18 @@ public interface APIService {
   @POST("/1.1/classes/{className}")
   Observable<AVObject> createObject(@Path("className") String className, @Body JSONObject object,
                                     @Query("fetchWhenSave") boolean fetchFlag,
-                                    @Query("where") Map<String, Object> where);
+                                    @Query("where") JSONObject where);
 
   @PUT("/1.1/classes/{className}/{objectId}")
   Observable<AVObject> updateObject(@Path("className") String className, @Path("objectId") String objectId,
                                     @Body JSONObject object, @Query("fetchWhenSave") boolean fetchFlag,
-                                    @Query("where") Map<String, Object> where);
+                                    @Query("where") JSONObject where);
 
   @DELETE("/1.1/classes/{className}/{objectId}")
   Observable<AVNull> deleteObject(@Path("className") String className, @Path("objectId") String objectId);
 
   @POST("/1.1/batch")
-  Observable<JSONArray> batchCreate(@Body JSONObject param);
+  Observable<List<Map<String, Object>>> batchCreate(@Body JSONObject param);
 
   /**
    * AVInstalltion methods.
@@ -61,11 +61,11 @@ public interface APIService {
   @POST("/1.1/{endpointClass}")
   Observable<AVObject> saveWholeObject(@Path("endpointClass") String endpointClass, @Body JSONObject object,
                                        @Query("fetchWhenSave") boolean fetchFlag,
-                                       @Query("where") Map<String, Object> where);
+                                       @Query("where") JSONObject where);
   @PUT("/1.1/{endpointClass}/{objectId}")
   Observable<AVObject> saveWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
                                        @Body JSONObject object, @Query("fetchWhenSave") boolean fetchFlag,
-                                       @Query("where") Map<String, Object> where);
+                                       @Query("where") JSONObject where);
   @GET("/1.1/{endpointClass}/{objectId}")
   Observable<AVObject> getWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
                                       @Query("include") String includeKeys);

@@ -45,7 +45,8 @@ public class FileUnitTest extends TestCase {
     // retrieve file
     AVFile file = AVFile.withObjectIdInBackground(avFile.getObjectId()).blockingFirst();
     assertEquals(avFile.getUrl(), file.getUrl());
-    assertEquals(avFile.getMetaData(), file.getMetaData());
+    assertEquals(avFile.getMetaData().size(), file.getMetaData().size());
+    assertEquals(avFile.getMetaData().get("_checksum"), file.getMetaData().get("_checksum"));
 
     GetDataCallback cb = new GetDataCallback() {
       @Override

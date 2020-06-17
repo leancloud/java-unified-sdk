@@ -63,4 +63,9 @@ public abstract class JSONObject implements Map<String, Object>, Cloneable, Seri
   public abstract <T> T toJavaObject(Class<T> clazz);
 
   public abstract String toJSONString();
+
+  @Override
+  public String toString() {
+    return toJSONString();
+  }
 }

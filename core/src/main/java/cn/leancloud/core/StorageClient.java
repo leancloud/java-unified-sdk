@@ -223,7 +223,7 @@ public class StorageClient {
 //  }
 
   public Observable<? extends AVObject> createObject(final String className, JSONObject data, boolean fetchFlag,
-                                                     Map<String, Object> where) {
+                                                     JSONObject where) {
     Observable<AVObject> object = wrapObservable(apiService.createObject(className, data, fetchFlag,
             where));
     if (null == object) {
@@ -238,7 +238,7 @@ public class StorageClient {
   }
 
   public Observable<? extends AVObject> saveObject(final String className, String objectId, JSONObject data,
-                                                   boolean fetchFlag, Map<String, Object> where) {
+                                                   boolean fetchFlag, JSONObject where) {
     Observable<AVObject> object = wrapObservable(apiService.updateObject(className, objectId, data,
             fetchFlag, where));
     if (null == object) {
@@ -254,7 +254,7 @@ public class StorageClient {
 
   public <E extends AVObject> Observable<E> saveWholeObject(final Class<E> clazz, final String endpointClass,
                                                             String objectId,
-                                                            JSONObject object, boolean fetchFlag, Map<String, Object> where) {
+                                                            JSONObject object, boolean fetchFlag, JSONObject where) {
     Observable<AVObject> result = null;
     if (StringUtil.isEmpty(objectId)) {
       result = wrapObservable(apiService.saveWholeObject(endpointClass, object, fetchFlag, where));
@@ -304,12 +304,12 @@ public class StorageClient {
     return;
   }
 
-  public Observable<JSONArray> batchSave(JSONObject parameter) {
+  public Observable<List<Map<String, Object>>> batchSave(JSONObject parameter) {
     // resposne is:
     // [{"success":{"updatedAt":"2018-03-30T06:21:08.052Z","objectId":"5abd026d9f54540038791715"}},
     //  {"success":{"updatedAt":"2018-03-30T06:21:08.092Z","objectId":"5abd026d9f54540038791715"}},
     //  {"success":{"updatedAt":"2018-03-30T06:21:08.106Z","objectId":"5abd026d9f54540038791715"}}]
-    Observable<JSONArray> result = wrapObservable(apiService.batchCreate(parameter));
+    Observable<List<Map<String, Object>>> result = wrapObservable(apiService.batchCreate(parameter));
     return result;
   }
 

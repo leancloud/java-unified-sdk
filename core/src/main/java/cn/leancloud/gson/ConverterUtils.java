@@ -1,10 +1,8 @@
 package cn.leancloud.gson;
 
 import cn.leancloud.*;
-import cn.leancloud.gson.*;
-import cn.leancloud.json.JSONArray;
 import cn.leancloud.json.JSONObject;
-import cn.leancloud.ops.BaseOperation;
+import cn.leancloud.ops.*;
 import cn.leancloud.service.AppAccessEndpoint;
 import cn.leancloud.sms.AVCaptchaDigest;
 import cn.leancloud.sms.AVCaptchaValidateResult;
@@ -27,8 +25,22 @@ public class ConverterUtils {
           .registerTypeAdapter(AVFile.class, new ObjectDeserializer())
           .registerTypeAdapter(AVRole.class, new ObjectDeserializer())
           .registerTypeAdapter(AVStatus.class, new ObjectDeserializer())
-          .registerTypeAdapter(BaseOperation.class, new BaseOperationAdapter())
           .registerTypeAdapter(AVInstallation.class, new ObjectDeserializer())
+          .registerTypeAdapter(BaseOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(AddOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(AddRelationOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(AddUniqueOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(BitAndOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(BitOrOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(BitXOROperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(CompoundOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(DecrementOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(DeleteOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(IncrementOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(NumericOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(RemoveOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(RemoveRelationOperation.class, new BaseOperationAdapter())
+          .registerTypeAdapter(SetOperation.class, new BaseOperationAdapter())
           .registerTypeAdapter(GsonObject.class, new JSONObjectAdapter())
           .registerTypeAdapter(JSONObject.class, new JSONObjectAdapter())
           .registerTypeAdapter(GsonArray.class, new JSONArrayAdapter())

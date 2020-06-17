@@ -830,12 +830,12 @@ public class AVObject {
       logger.w("Caution: batch mode will ignore fetchWhenSave flag and matchQuery.");
       if (StringUtil.isEmpty(currentObjectId)) {
         logger.d("request payload: " + paramData.toJSONString());
-        return PaasClient.getStorageClient().batchSave(paramData).map(new Function<JSONArray, AVObject>() {
-          public AVObject apply(JSONArray object) throws Exception {
+        return PaasClient.getStorageClient().batchSave(paramData).map(new Function<List<Map<String, Object>>, AVObject>() {
+          public AVObject apply(List<Map<String, Object>> object) throws Exception {
             if (null != object && !object.isEmpty()) {
-              logger.d("batchSave result: " + object.toJSONString());
+              logger.d("batchSave result: " + object.toString());
 
-              Map<String, Object> lastResult = object.getObject(object.size() - 1, Map.class);
+              Map<String, Object> lastResult = object.get(object.size() - 1);
               if (null != lastResult) {
                 AVUtils.mergeConcurrentMap(serverData, lastResult);
                 AVObject.this.onSaveSuccess();
@@ -860,11 +860,11 @@ public class AVObject {
         });
       }
     } else {
-      Map<String, Object> whereCondition = null;
+      JSONObject whereCondition = null;
       if (null != option && null != option.matchQuery) {
-        whereCondition = option.matchQuery.conditions.compileWhereOperationMap();
+        Map<String, Object> whereConditionMap = option.matchQuery.conditions.compileWhereOperationMap();
+        whereCondition = JSONObject.Builder.create(whereConditionMap);
       }
-      System.out.println("where condition: " + JSON.toJSONString(whereCondition));
       if (totallyOverwrite) {
         return PaasClient.getStorageClient().saveWholeObject(this.getClass(), endpointClassName, currentObjectId,
                 paramData, needFetch, whereCondition)
@@ -1023,15 +1023,16 @@ public class AVObject {
 
         JSONObject requestTotal = JSONObject.Builder.create(null);
         requestTotal.put("requests", requests);
-        return PaasClient.getStorageClient().batchSave(requestTotal).map(new Function<JSONArray, JSONArray>() {
-          public JSONArray apply(JSONArray batchResults) throws Exception {
+        return PaasClient.getStorageClient().batchSave(requestTotal).map(new Function<List<Map<String, Object>>, JSONArray>() {
+          public JSONArray apply(List<Map<String, Object>> batchResults) throws Exception {
 
+            JSONArray result = JSONArray.Builder.create(null);
             if (null != batchResults && (objects.size() == batchResults.size())) {
-              logger.d("batchSave result: " + batchResults.toJSONString());
+              logger.d("batchSave result: " + batchResults.toString());
               Iterator it = objects.iterator();
 
               for (int i = 0; i < batchResults.size() && it.hasNext(); i++) {
-                JSONObject oneResult = batchResults.getJSONObject(i);
+                JSONObject oneResult = JSONObject.Builder.create(batchResults.get(i));
                 AVObject originObject = (AVObject) it.next();
                 if (oneResult.containsKey("success")) {
                   AVUtils.mergeConcurrentMap(originObject.serverData, oneResult.getJSONObject("success").getInnerMap());
@@ -1039,9 +1040,10 @@ public class AVObject {
                 } else if (oneResult.containsKey("error")) {
                   originObject.onSaveFailure();
                 }
+                result.add(oneResult);
               }
             }
-            return batchResults;
+            return result;
           }
         });
       }

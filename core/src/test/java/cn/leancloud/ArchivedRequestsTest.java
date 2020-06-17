@@ -139,6 +139,7 @@ public class ArchivedRequestsTest extends TestCase {
     object.add("friend", AVObject.createWithoutData("Student", "fakeObjectId"));
 
     String archivedJSON = ArchivedRequests.getArchiveContent(object, false);
+    System.out.println("archived jsonString: " + archivedJSON);
 
     AVObject tmp = ArchivedRequests.parseAVObject(archivedJSON);
     assertEquals(object.internalId(), tmp.internalId());

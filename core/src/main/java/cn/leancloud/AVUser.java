@@ -782,7 +782,12 @@ public class AVUser extends AVObject {
             try {
               T newUser = userClass.newInstance();
               Map<String, Object> rawData = JSON.parseObject(jsonString, Map.class);
-              newUser.resetServerData(rawData);
+              if (rawData.containsKey("serverData") || rawData.get("serverData") instanceof Map) {
+                newUser.resetServerData((Map<String, Object>)rawData.get("serverData"));
+              } else {
+                newUser.resetServerData(rawData);
+              }
+
               changeCurrentUser(newUser, true);
               user = newUser;
             } catch (Exception ex) {
