@@ -2,6 +2,7 @@ package cn.leancloud.ops;
 
 import cn.leancloud.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,25 +17,29 @@ public class AddUniqueOperation extends AddOperation {
   @Override
   public Object apply(Object obj) {
     Object result = super.apply(obj);
+    List<Object> listResult = null;
     if (null != result && (result instanceof List || result instanceof JSONArray)) {
       if (result instanceof List) {
         Object[] objects = ((List)result).toArray();
-        ((List)result).clear();
+        listResult = new ArrayList<>();
         for (Object o : objects) {
-          if (!((List)result).contains(o)) {
-            ((List)result).add(o);
+          if (listResult.contains(o)) {
+            continue;
           }
+          listResult.add(o);
         }
       } else {
         Object[] objects = ((JSONArray)result).toArray();
         ((JSONArray)result).clear();
+        listResult = new ArrayList<>();
         for (Object o : objects) {
-          if (!((JSONArray)result).contains(o)) {
-            ((JSONArray)result).add(o);
+          if (listResult.contains(o)) {
+            continue;
           }
+          listResult.add(o);
         }
       }
     }
-    return result;
+    return listResult;
   }
 }
