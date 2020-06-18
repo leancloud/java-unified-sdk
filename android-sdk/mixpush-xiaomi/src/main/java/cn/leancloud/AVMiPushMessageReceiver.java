@@ -3,8 +3,8 @@ package cn.leancloud;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
 import com.xiaomi.mipush.sdk.ErrorCode;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
@@ -84,7 +84,7 @@ public class AVMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
         }
       }
       if (null == jsonObject) {
-        jsonObject = new JSONObject();
+        jsonObject = JSONObject.Builder.create(null);
       }
 
       if (!StringUtil.isEmpty(title)) {
