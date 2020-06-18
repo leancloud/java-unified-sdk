@@ -28,7 +28,7 @@ public class GsonArray extends JSONArray {
       if (null == elem) {
         return null;
       }
-      return ConverterUtils.toJavaObject(elem);
+      return GsonWrapper.toJavaObject(elem);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class GsonArray extends JSONArray {
   public GsonArray(List<Object> list) {
     this.gsonArray = new com.google.gson.JsonArray(list.size());
     for (Object obj: list) {
-      gsonArray.add(ConverterUtils.toJsonElement(obj));
+      gsonArray.add(GsonWrapper.toJsonElement(obj));
     }
   }
 
@@ -62,7 +62,7 @@ public class GsonArray extends JSONArray {
     return size() <= 0;
   }
   public boolean contains(Object o) {
-    com.google.gson.JsonElement elem = ConverterUtils.toJsonElement(o);
+    com.google.gson.JsonElement elem = GsonWrapper.toJsonElement(o);
     return gsonArray.contains(elem);
   }
 
@@ -89,7 +89,7 @@ public class GsonArray extends JSONArray {
   }
 
   public boolean add(Object obj) {
-    gsonArray.add(ConverterUtils.toJsonElement(obj));
+    gsonArray.add(GsonWrapper.toJsonElement(obj));
     return true;
   }
 
@@ -99,7 +99,7 @@ public class GsonArray extends JSONArray {
   }
 
   public boolean remove(Object o) {
-    return gsonArray.remove(ConverterUtils.toJsonElement(o));
+    return gsonArray.remove(GsonWrapper.toJsonElement(o));
   }
 
   public JSONArray fluentRemove(Object o) {
@@ -109,7 +109,7 @@ public class GsonArray extends JSONArray {
 
   public boolean containsAll(Collection<? extends Object> c) {
     for (Object o: c) {
-      if (!gsonArray.contains(ConverterUtils.toJsonElement(o))) {
+      if (!gsonArray.contains(GsonWrapper.toJsonElement(o))) {
         return false;
       }
     }
@@ -118,7 +118,7 @@ public class GsonArray extends JSONArray {
 
   public boolean addAll(Collection<? extends Object> c) {
     for (Object o : c) {
-      gsonArray.add(ConverterUtils.toJsonElement(o));
+      gsonArray.add(GsonWrapper.toJsonElement(o));
     }
     return true;
   }
@@ -139,7 +139,7 @@ public class GsonArray extends JSONArray {
 
   public boolean removeAll(Collection<? extends Object> c) {
     for (Object o : c) {
-      gsonArray.remove(ConverterUtils.toJsonElement(o));
+      gsonArray.remove(GsonWrapper.toJsonElement(o));
     }
     return true;
   }
@@ -172,7 +172,7 @@ public class GsonArray extends JSONArray {
   }
 
   public Object set(int index, Object element) {
-    gsonArray.set(index, ConverterUtils.toJsonElement(element));
+    gsonArray.set(index, GsonWrapper.toJsonElement(element));
     return element;
   }
 
@@ -184,7 +184,7 @@ public class GsonArray extends JSONArray {
   public void add(int index, Object element) {
     com.google.gson.JsonElement elem = gsonArray.get(index);
     if (elem.isJsonArray()) {
-      ((com.google.gson.JsonArray)elem).add(ConverterUtils.toJsonElement(element));
+      ((com.google.gson.JsonArray)elem).add(GsonWrapper.toJsonElement(element));
     }
   }
 
@@ -203,7 +203,7 @@ public class GsonArray extends JSONArray {
   }
 
   public int indexOf(Object o) {
-    com.google.gson.JsonElement elem = ConverterUtils.toJsonElement(o);
+    com.google.gson.JsonElement elem = GsonWrapper.toJsonElement(o);
     for (int i = 0;i < size();i ++) {
       if (elem.equals(gsonArray.get(i))) {
         return i;
@@ -213,7 +213,7 @@ public class GsonArray extends JSONArray {
   }
 
   public int lastIndexOf(Object o) {
-    com.google.gson.JsonElement elem = ConverterUtils.toJsonElement(o);
+    com.google.gson.JsonElement elem = GsonWrapper.toJsonElement(o);
     for (int i = size() - 1;i >= 0;i --) {
       if (elem.equals(gsonArray.get(i))) {
         return i;
@@ -233,13 +233,13 @@ public class GsonArray extends JSONArray {
   public List<Object> subList(int fromIndex, int toIndex) {
     List<Object> result = new ArrayList<>();
     for (int i = fromIndex; i >= 0 && i < size() && i < toIndex; i++) {
-      result.add(ConverterUtils.toJavaObject(gsonArray.get(i)));
+      result.add(GsonWrapper.toJavaObject(gsonArray.get(i)));
     }
     return result;
   }
 
   public Object get(int index) {
-    return ConverterUtils.toJavaObject(getElement(index));
+    return GsonWrapper.toJavaObject(getElement(index));
   }
 
   public JSONObject getJSONObject(int index) {
@@ -263,7 +263,7 @@ public class GsonArray extends JSONArray {
     if (null == result) {
       return null;
     }
-    return ConverterUtils.toJavaObject(result, clazz);
+    return GsonWrapper.toJavaObject(result, clazz);
   }
 
   public <T> T getObject(int index, Type type) {
@@ -387,7 +387,7 @@ public class GsonArray extends JSONArray {
 
   public Date getDate(int index) {
     Object val = get(index);
-    return ConverterUtils.castToDate(val);
+    return GsonWrapper.castToDate(val);
   }
 
   public java.sql.Date getSqlDate(int index) {

@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class GSONConverterFactory implements ConverterFactory {
   public retrofit2.Converter.Factory generateRetrofitConverterFactory() {
-    return GsonConverterFactory.create(ConverterUtils.getGsonInstance());
+    return GsonConverterFactory.create(GsonWrapper.getGsonInstance());
   }
 
   public JSONParser createJSONParser() {

@@ -15,6 +15,7 @@ import java.util.Map;
 public class ObjectDeserializer implements JsonDeserializer<AVObject> {
   public static final String KEY_VERSION = "_version";
   public static final String KEY_SERVERDATA = "serverData";
+  private MapDeserializerDoubleAsIntFix mapDeserializer = new MapDeserializerDoubleAsIntFix();
 
   private AVObject generateObject(Map<String, Object> objectMap, String className) {
     Map<String, Object> serverJson = null;
@@ -85,11 +86,11 @@ public class ObjectDeserializer implements JsonDeserializer<AVObject> {
     if (null == elem || !elem.isJsonObject()) {
       return null;
     }
-    JsonObject json = elem.getAsJsonObject();
-    Map<String, Object> mapData = new HashMap<String, Object>();
-    for (Map.Entry<String, JsonElement> entry: json.entrySet()) {
-      mapData.put(entry.getKey(), ConverterUtils.toJavaObject(entry.getValue()));
-    }
+//    JsonObject json = elem.getAsJsonObject();
+    Map<String, Object> mapData = mapDeserializer.deserialize(elem, type, ctx);
+//    for (Map.Entry<String, JsonElement> entry: json.entrySet()) {
+//      mapData.put(entry.getKey(), GsonWrapper.toJavaObject(entry.getValue()));
+//    }
 
     return generateObject(mapData, ((Class)type).getCanonicalName());
   }

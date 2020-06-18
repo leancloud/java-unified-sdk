@@ -13,34 +13,34 @@ import java.util.Map;
 
 public class GSONParser implements JSONParser {
   public <T> T parseObject(String text, Class<T> clazz) {
-    return ConverterUtils.parseObject(text, clazz);
+    return GsonWrapper.parseObject(text, clazz);
   }
 
   public <T> T parseObject(String text, TypeReference<T> type) {
-    return ConverterUtils.parseObject(text, type.getType());
+    return GsonWrapper.parseObject(text, type.getType());
   }
 
   public JSONObject parseObject(String text) {
-    JsonObject jsonObject = ConverterUtils.parseObject(text, JsonObject.class);
+    JsonObject jsonObject = GsonWrapper.parseObject(text, JsonObject.class);
     return new GsonObject(jsonObject);
   }
 
   public JSONArray parseArray(String text) {
-    JsonArray jsonArray = ConverterUtils.parseObject(text, JsonArray.class);
+    JsonArray jsonArray = GsonWrapper.parseObject(text, JsonArray.class);
     return new GsonArray(jsonArray);
   }
 
   public <T> List<T> parseArray(String text, Class<T> clazz) {
-    JsonArray jsonArray = ConverterUtils.parseObject(text, JsonArray.class);
+    JsonArray jsonArray = GsonWrapper.parseObject(text, JsonArray.class);
     List<T> list = new ArrayList<>(jsonArray.size());
     for (int i = 0;i < jsonArray.size(); i++) {
-      list.add(ConverterUtils.toJavaObject(jsonArray.get(i), clazz));
+      list.add(GsonWrapper.toJavaObject(jsonArray.get(i), clazz));
     }
     return list;
   }
 
   public Object parse(String text) {
-    return ConverterUtils.parseObject(text);
+    return GsonWrapper.parseObject(text);
   }
 
   public JSONObject toJSONObject(Map<String, Object> param) {
@@ -57,10 +57,10 @@ public class GSONParser implements JSONParser {
     return new GsonArray(list);
   }
   public <T> T toJavaObject(JSONObject json, Class<T> clazz) {
-    return ConverterUtils.toJavaObject(((GsonObject)json).getRawObject(), clazz);
+    return GsonWrapper.toJavaObject(((GsonObject)json).getRawObject(), clazz);
   }
 
   public String toJSONString(Object object) {
-    return ConverterUtils.getGsonInstance().toJson(object);
+    return GsonWrapper.getGsonInstance().toJson(object);
   }
 }

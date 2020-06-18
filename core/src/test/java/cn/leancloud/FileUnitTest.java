@@ -60,7 +60,8 @@ public class FileUnitTest extends TestCase {
     // get file from object
     AVFile appFile = avObject.getAVFile("applicatFile");
     assertEquals(avFile.getUrl(), appFile.getUrl());
-    assertEquals(avFile.getMetaData(), appFile.getMetaData());
+    assertEquals(avFile.getMetaData().size(), appFile.getMetaData().size());
+    assertEquals(avFile.getMetaData().get("_checksum"), appFile.getMetaData().get("_checksum"));
 
     appFile.getData();
 

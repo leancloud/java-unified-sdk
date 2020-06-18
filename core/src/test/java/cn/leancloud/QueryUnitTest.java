@@ -189,15 +189,15 @@ public class QueryUnitTest extends TestCase {
     List<AVObject> avObjects = query.find();
     assertFalse(avObjects.isEmpty());
     for (AVObject obj : avObjects) {
-      assertContains(2, obj.getList("scores"));
+      assertContains(2l, obj.getList("scores"));
     }
 
     // whereContainsAll
-    ArrayList<Integer> numbers = new ArrayList<Integer>();
-    numbers.add(2);
-    numbers.add(3);
-    numbers.add(4);
-    numbers.add(5);
+    ArrayList<Long> numbers = new ArrayList<Long>();
+    numbers.add(2l);
+    numbers.add(3l);
+    numbers.add(4l);
+    numbers.add(5l);
     query = new AVQuery(className);
     query.whereContainsAll("scores", numbers);
     avObjects = query.find();

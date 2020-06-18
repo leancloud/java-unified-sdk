@@ -17,33 +17,37 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class ConverterUtils {
-  static Gson gson = new GsonBuilder().serializeNulls()
+public class GsonWrapper {
+  static final ObjectDeserializer objectDeserializer = new ObjectDeserializer();
+  static final BaseOperationAdapter baseOperationAdapter = new BaseOperationAdapter();
+  static final JSONObjectAdapter jsonObjectAdapter = new JSONObjectAdapter();
+  static final JSONArrayAdapter jsonArrayAdapter = new JSONArrayAdapter();
+  static final Gson gson = new GsonBuilder().serializeNulls()
           .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE)
-          .registerTypeAdapter(AVObject.class, new ObjectDeserializer())
-          .registerTypeAdapter(AVUser.class, new ObjectDeserializer())
-          .registerTypeAdapter(AVFile.class, new ObjectDeserializer())
-          .registerTypeAdapter(AVRole.class, new ObjectDeserializer())
-          .registerTypeAdapter(AVStatus.class, new ObjectDeserializer())
-          .registerTypeAdapter(AVInstallation.class, new ObjectDeserializer())
-          .registerTypeAdapter(BaseOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(AddOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(AddRelationOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(AddUniqueOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(BitAndOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(BitOrOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(BitXOROperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(CompoundOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(DecrementOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(DeleteOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(IncrementOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(NumericOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(RemoveOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(RemoveRelationOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(SetOperation.class, new BaseOperationAdapter())
-          .registerTypeAdapter(GsonObject.class, new JSONObjectAdapter())
-          .registerTypeAdapter(JSONObject.class, new JSONObjectAdapter())
-          .registerTypeAdapter(GsonArray.class, new JSONArrayAdapter())
+          .registerTypeAdapter(AVObject.class, objectDeserializer)
+          .registerTypeAdapter(AVUser.class, objectDeserializer)
+          .registerTypeAdapter(AVFile.class, objectDeserializer)
+          .registerTypeAdapter(AVRole.class, objectDeserializer)
+          .registerTypeAdapter(AVStatus.class, objectDeserializer)
+          .registerTypeAdapter(AVInstallation.class, objectDeserializer)
+          .registerTypeAdapter(BaseOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(AddOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(AddRelationOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(AddUniqueOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(BitAndOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(BitOrOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(BitXOROperation.class, baseOperationAdapter)
+          .registerTypeAdapter(CompoundOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(DecrementOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(DeleteOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(IncrementOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(NumericOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(RemoveOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(RemoveRelationOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(SetOperation.class, baseOperationAdapter)
+          .registerTypeAdapter(GsonObject.class, jsonObjectAdapter)
+          .registerTypeAdapter(JSONObject.class, jsonObjectAdapter)
+          .registerTypeAdapter(GsonArray.class, jsonArrayAdapter)
           .registerTypeAdapter(FileUploadToken.class, new FileUploadTokenAdapter())
           .registerTypeAdapter(AppAccessEndpoint.class,
                   new GeneralObjectAdapter<>(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES,
@@ -56,9 +60,6 @@ public class ConverterUtils {
                           TypeToken.get(AVCaptchaValidateResult.class)))
           .registerTypeAdapter(new TypeToken<Map<String, Object>>(){}.getType(),  new MapDeserializerDoubleAsIntFix())
           .create();
-
-  public static void initialize() {
-  }
 
   public static Gson getGsonInstance() {
     return gson;

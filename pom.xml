@@ -12,8 +12,8 @@
     <module>core</module>
     <module>realtime</module>
     <module>leanengine</module>
-    <module>converter-gson</module>
-    <module>converter-fastjson</module>
+<!--    <module>converter-gson</module>-->
+<!--    <module>converter-fastjson</module>-->
   </modules>
 
   <licenses>
@@ -55,6 +55,7 @@
     <project.reporting.sourceEncoding>UTF-8</project.reporting.sourceEncoding>
     <!-- Compilation -->
     <java.version>1.7</java.version>
+    <maven.test.skip>true</maven.test.skip>
   </properties>
 
   <dependencies>

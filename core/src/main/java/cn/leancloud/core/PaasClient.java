@@ -1,6 +1,5 @@
 package cn.leancloud.core;
 
-import cn.leancloud.gson.ConverterUtils;
 import cn.leancloud.network.DNSDetoxicant;
 import cn.leancloud.service.APIService;
 import cn.leancloud.service.PushService;

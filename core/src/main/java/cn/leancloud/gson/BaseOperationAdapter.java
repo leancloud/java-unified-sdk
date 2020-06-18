@@ -31,10 +31,10 @@ public class BaseOperationAdapter extends TypeAdapter<BaseOperation> {
     jsonObject.addProperty(ATTR_OP, op.getOperation());
     jsonObject.addProperty(ATTR_FIELD, op.getField());
     jsonObject.addProperty(ATTR_FINAL, op.isFinal());
-    jsonObject.add(ATTR_OBJECT, ConverterUtils.toJsonElement(op.getValue()));
+    jsonObject.add(ATTR_OBJECT, GsonWrapper.toJsonElement(op.getValue()));
     if (op instanceof CompoundOperation) {
       List<ObjectFieldOperation> subOps = ((CompoundOperation)op).getSubOperations();
-      jsonObject.add(ATTR_SUBOPS, ConverterUtils.toJsonElement(subOps));
+      jsonObject.add(ATTR_SUBOPS, GsonWrapper.toJsonElement(subOps));
     }
     TypeAdapters.JSON_ELEMENT.write(writer, jsonObject);
   }

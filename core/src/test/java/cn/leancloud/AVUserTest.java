@@ -15,6 +15,9 @@ import java.util.concurrent.CountDownLatch;
 
 public class AVUserTest extends TestCase {
   private boolean operationSucceed = false;
+  private static final String USERNAME = "jfeng20200618";
+  private static final String PASSWORD = "FER$@$@#Ffwe";
+  private static final String EMAIL = "jfeng20200618@test.com";
   public AVUserTest(String name) {
     super(name);
     Configure.initializeRuntime();
@@ -36,9 +39,9 @@ public class AVUserTest extends TestCase {
 
   public void testSingupWithEmail() throws Exception {
     AVUser user = new AVUser();
-    user.setEmail("jfeng@test.com");
-    user.setUsername("jfeng");
-    user.setPassword("FER$@$@#Ffwe");
+    user.setEmail(EMAIL);
+    user.setUsername(USERNAME);
+    user.setPassword(PASSWORD);
     final CountDownLatch latch = new CountDownLatch(1);
     user.signUpInBackground().subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
@@ -67,7 +70,7 @@ public class AVUserTest extends TestCase {
 
   public void testLogin() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
@@ -313,7 +316,7 @@ public class AVUserTest extends TestCase {
 
   public void testCurrentUserWithNew() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
@@ -350,9 +353,9 @@ public class AVUserTest extends TestCase {
   public void testCheckAuthenticatedFalse() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     AVUser u = new AVUser();
-    u.setEmail("jfeng@test.com");
-    u.setUsername("jfeng");
-    u.setPassword("FER$@$@#Ffwe");
+    u.setEmail(EMAIL);
+    u.setUsername(USERNAME);
+    u.setPassword(PASSWORD);
     u.setObjectId("ferewr2343");
     u.checkAuthenticatedInBackground().subscribe(new Observer<Boolean>() {
       public void onSubscribe(Disposable disposable) {
@@ -377,7 +380,7 @@ public class AVUserTest extends TestCase {
   }
   public void testCheckAuthenticatedTrue() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
@@ -418,7 +421,7 @@ public class AVUserTest extends TestCase {
   public void testSaveCurrentUserData() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     operationSucceed = false;
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
@@ -460,7 +463,7 @@ public class AVUserTest extends TestCase {
   public void testFetchThenUpdateCurrentUser() throws Exception {
     operationSucceed = false;
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
       }
@@ -535,7 +538,7 @@ public class AVUserTest extends TestCase {
   public void testFetchThenUpdateAnotherUserObject() throws Exception {
     operationSucceed = false;
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
       }
@@ -637,7 +640,7 @@ public class AVUserTest extends TestCase {
     final CountDownLatch latch = new CountDownLatch(1);
     operationSucceed = false;
 
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 

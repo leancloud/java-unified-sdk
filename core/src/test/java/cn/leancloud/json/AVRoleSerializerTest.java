@@ -4,7 +4,7 @@ import cn.leancloud.AVACL;
 import cn.leancloud.AVObject;
 import cn.leancloud.AVRole;
 import cn.leancloud.Configure;
-import cn.leancloud.gson.ConverterUtils;
+import cn.leancloud.gson.GsonWrapper;
 import cn.leancloud.ops.AddOperation;
 import cn.leancloud.types.AVDate;
 import junit.framework.TestCase;
@@ -74,7 +74,7 @@ public class AVRoleSerializerTest extends TestCase {
 
   public void testAVObjectDeserialize() {
     String text = "{\"@type\":\"cn.leancloud.AVObject\",\"className\":\"Student\",\"version\":5,\"serverData\":{\"address\":\"Beijing City\",\"@type\":\"java.util.HashMap\",\"age\":5}}";
-    AVObject object = ConverterUtils.parseObject(text, AVObject.class);
+    AVObject object = GsonWrapper.parseObject(text, AVObject.class);
     System.out.println(object.toJSONString());
   }
 
@@ -88,6 +88,6 @@ public class AVRoleSerializerTest extends TestCase {
 
   public void testBaseOperatorSerializer() {
     AddOperation op = new AddOperation("age", 5);
-    System.out.println("Operator jsonString is: " + ConverterUtils.getGsonInstance().toJson(op));
+    System.out.println("Operator jsonString is: " + GsonWrapper.getGsonInstance().toJson(op));
   }
 }

@@ -222,6 +222,9 @@ public class Utils {
                 (String) map.get(AVObject.KEY_CLASSNAME) : (String) map.get("@type");
         AVObject avObject = Transformer.objectFromClassName(className);
         Map<String, Object> serverData = (Map) map.get(ObjectDeserializer.KEY_SERVERDATA);
+        if (serverData.containsKey(AVObject.KEY_CLASSNAME)) {
+          serverData.remove(AVObject.KEY_CLASSNAME);
+        }
         Map<String, Object> decodedValues = new HashMap<>();
         for(Map.Entry<String, Object> entry: serverData.entrySet()) {
           String k = entry.getKey();
@@ -284,6 +287,7 @@ public class Utils {
     if (type.equals("Pointer") || type.equals("Object")) {
       AVObject avObject = Transformer.objectFromClassName((String) map.get("className"));
 //      avObject.resetServerData(map);
+      map.remove("className");
       for (Map.Entry<String, Object> entry: map.entrySet()) {
         String k = entry.getKey();
         Object v = entry.getValue();

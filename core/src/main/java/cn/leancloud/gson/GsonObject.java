@@ -22,7 +22,7 @@ public class GsonObject extends JSONObject{
     this.gsonObject = new com.google.gson.JsonObject();
     if (null != map) {
       for (Map.Entry<String, Object> entry : map.entrySet()) {
-        gsonObject.add(entry.getKey(), ConverterUtils.toJsonElement(entry.getValue()));
+        gsonObject.add(entry.getKey(), GsonWrapper.toJsonElement(entry.getValue()));
       }
     }
   }
@@ -32,7 +32,7 @@ public class GsonObject extends JSONObject{
     private Object value;
     InnerEntry(String key, JsonElement value) {
       this.key = key;
-      this.value = ConverterUtils.toJavaObject(value);
+      this.value = GsonWrapper.toJavaObject(value);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class GsonObject extends JSONObject{
 
   public Object get(Object key) {
     com.google.gson.JsonElement element = this.gsonObject.get((String)key);
-    return ConverterUtils.toJavaObject(element);
+    return GsonWrapper.toJavaObject(element);
   }
 
   public JSONObject getJSONObject(String key) {
@@ -286,7 +286,7 @@ public class GsonObject extends JSONObject{
   }
   public Date getDate(String key) {
     Object val = getObject(key, Object.class);
-    return ConverterUtils.castToDate(val);
+    return GsonWrapper.castToDate(val);
   }
 
   public java.sql.Date getSqlDate(String key) {
@@ -300,14 +300,14 @@ public class GsonObject extends JSONObject{
     if (value instanceof GsonObject) {
       this.gsonObject.add(key, ((GsonObject) value).getRawObject());
     } else {
-      com.google.gson.JsonElement element = ConverterUtils.toJsonElement(value);
+      com.google.gson.JsonElement element = GsonWrapper.toJsonElement(value);
       this.gsonObject.add(key, element);
     }
     return value;
   }
 
   public JSONObject fluentPut(String key, Object value) {
-    com.google.gson.JsonElement ele = ConverterUtils.toJsonElement(value);
+    com.google.gson.JsonElement ele = GsonWrapper.toJsonElement(value);
     this.gsonObject.add(key, ele);
     return this;
   }
@@ -367,13 +367,13 @@ public class GsonObject extends JSONObject{
     Map<String, Object> map = new HashMap<>(this.gsonObject.size());
     Set<Map.Entry<String, com.google.gson.JsonElement>> objects = this.gsonObject.entrySet();
     for (Map.Entry<String, JsonElement> entry: objects) {
-      map.put(entry.getKey(), ConverterUtils.toJavaObject(entry.getValue()));
+      map.put(entry.getKey(), GsonWrapper.toJavaObject(entry.getValue()));
     }
     return map;
   }
 
   public <T> T toJavaObject(Class<T> clazz) {
-    return ConverterUtils.toJavaObject(gsonObject, clazz);
+    return GsonWrapper.toJavaObject(gsonObject, clazz);
   }
 
   public int hashCode() {

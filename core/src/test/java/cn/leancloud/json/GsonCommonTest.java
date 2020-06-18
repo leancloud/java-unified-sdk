@@ -1,7 +1,7 @@
 package cn.leancloud.json;
 
 import cn.leancloud.AVObject;
-import cn.leancloud.gson.ConverterUtils;
+import cn.leancloud.gson.GsonWrapper;
 import cn.leancloud.service.AppAccessEndpoint;
 import cn.leancloud.sms.AVCaptchaDigest;
 import com.google.gson.reflect.TypeToken;
@@ -30,7 +30,7 @@ public class GsonCommonTest extends TestCase {
             "\t\t\"device\":\"Watering System\"\n" +
             "\t}\n" +
             "]}";
-    Object json = ConverterUtils.parseObject(text);
+    Object json = GsonWrapper.parseObject(text);
     System.out.println(json.toString());
   }
 
@@ -45,16 +45,16 @@ public class GsonCommonTest extends TestCase {
     data.put("age", 5);
     data.put("address", "Beijing City");
     map.put("serverData", data);
-    System.out.println(ConverterUtils.toJsonString(map));
+    System.out.println(GsonWrapper.toJsonString(map));
   }
 
   public void testJSONObjectSerialize() {
     JSONObject object = JSONObject.Builder.create(null);
     object.put("className", "Student");
     object.put("version", 5);
-    String objectString = ConverterUtils.getGsonInstance().toJson(object);
+    String objectString = GsonWrapper.getGsonInstance().toJson(object);
     System.out.println("object jsonString: " + objectString);
-    JSONObject other = ConverterUtils.getGsonInstance().fromJson(objectString, JSONObject.class);
+    JSONObject other = GsonWrapper.getGsonInstance().fromJson(objectString, JSONObject.class);
 
     assertEquals(object.getInteger("version"), other.getInteger("version"));
     assertEquals(object.getString("className"), other.getString("className"));
@@ -67,7 +67,7 @@ public class GsonCommonTest extends TestCase {
             "]";
     ArrayList<Map<String, Object>> responses;
     Type ResponseList = new TypeToken<ArrayList<Map<String, Object>>>() {}.getType();
-    responses = ConverterUtils.getGsonInstance().fromJson(draft, ResponseList);
+    responses = GsonWrapper.getGsonInstance().fromJson(draft, ResponseList);
     System.out.println(responses.toString());
   }
 
