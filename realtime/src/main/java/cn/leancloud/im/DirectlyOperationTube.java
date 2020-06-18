@@ -242,7 +242,8 @@ public class DirectlyOperationTube implements OperationTube {
 
   public boolean queryConversationsDirectly(final String clientId, final String queryString, int requestId) {
     AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
-    session.queryConversations(JSON.parseObject(queryString, Map.class), requestId, MDFive.computeMD5(queryString));
+    Map<String, Object> map = new HashMap<>();
+    session.queryConversations(JSON.parseObject(queryString, map.getClass()), requestId, MDFive.computeMD5(queryString));
     return true;
   }
 

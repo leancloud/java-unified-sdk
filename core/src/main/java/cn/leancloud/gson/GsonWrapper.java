@@ -59,6 +59,7 @@ public class GsonWrapper {
                   new GeneralObjectAdapter<>(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES,
                           TypeToken.get(AVCaptchaValidateResult.class)))
           .registerTypeAdapter(new TypeToken<Map<String, Object>>(){}.getType(),  new MapDeserializerDoubleAsIntFix())
+          .registerTypeAdapter(Map.class,  new MapDeserializerDoubleAsIntFix())
           .create();
 
   public static Gson getGsonInstance() {
@@ -84,6 +85,7 @@ public class GsonWrapper {
     }
     return gson.toJsonTree(object);
   }
+
 
   public static Object parseObject(String jsonString) {
     return gson.fromJson(jsonString, new TypeToken<Map<String, Object>>(){}.getType());

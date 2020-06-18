@@ -21,7 +21,7 @@ public class GSONParser implements JSONParser {
   }
 
   public JSONObject parseObject(String text) {
-    JsonObject jsonObject = GsonWrapper.parseObject(text, JsonObject.class);
+    Map jsonObject = GsonWrapper.parseObject(text, Map.class);
     return new GsonObject(jsonObject);
   }
 
