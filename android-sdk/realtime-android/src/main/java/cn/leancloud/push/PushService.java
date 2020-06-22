@@ -73,7 +73,7 @@ public class PushService extends Service {
   private static Object connecting = new Object();
   private volatile static boolean isStarted = false;
 
-  private static boolean isAutoWakeUp = true;
+  private static boolean isAutoWakeUp = false;
   static String DefaultChannelId = "";
 
   static volatile boolean enableForegroundService = false;
@@ -186,7 +186,7 @@ public class PushService extends Service {
   @TargetApi(Build.VERSION_CODES.ECLAIR)
   @Override
   public int onStartCommand(final Intent intent, int flags, int startId) {
-    LOGGER.d("PushService#onStartCommand");
+    LOGGER.i("PushService#onStartCommand");
     if (enableForegroundService) {
       startForeground(foregroundIdentifier, foregroundNotification);
     } else {
@@ -236,7 +236,7 @@ public class PushService extends Service {
 
   @Override
   public void onDestroy() {
-    LOGGER.d("PushService#onDestroy");
+    LOGGER.i("PushService#onDestroy");
     connectionManager.cleanup();
 
     if (enableForegroundService) {
@@ -253,7 +253,7 @@ public class PushService extends Service {
 
       if (isAutoWakeUp && Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
         try {
-          LOGGER.d("Let's try to wake PushService again");
+          LOGGER.i("Let's try to wake PushService again");
           Intent i = new Intent(AVOSCloud.getContext(), PushService.class);
           i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
           startService(i);
@@ -280,9 +280,8 @@ public class PushService extends Service {
   @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
   @Override
   public void onTaskRemoved(Intent rootIntent) {
-    LOGGER.d("try to restart service on task Removed");
-
     if (isAutoWakeUp) {
+      LOGGER.i("try to restart service on task Removed");
 
       Intent restartServiceIntent = new Intent(getApplicationContext(), this.getClass());
       restartServiceIntent.setPackage(getPackageName());
@@ -397,7 +396,7 @@ public class PushService extends Service {
 
   /**
    * Set whether to automatically wake up PushService
-   * @param isAutoWakeUp the default value is true
+   * @param isAutoWakeUp the default value is false
    */
   public static void setAutoWakeUp(boolean isAutoWakeUp) {
     PushService.isAutoWakeUp = isAutoWakeUp;
