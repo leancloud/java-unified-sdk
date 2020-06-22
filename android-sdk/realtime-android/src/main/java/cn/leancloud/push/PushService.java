@@ -73,7 +73,7 @@ public class PushService extends Service {
   private static Object connecting = new Object();
   private volatile static boolean isStarted = false;
 
-  private static boolean isAutoWakeUp = false;
+  private static boolean isAutoWakeUp = true;
   static String DefaultChannelId = "";
 
   static volatile boolean enableForegroundService = false;
