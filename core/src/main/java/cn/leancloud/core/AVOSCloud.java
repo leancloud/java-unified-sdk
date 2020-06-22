@@ -78,9 +78,7 @@ public class AVOSCloud {
     AVObject.registerSubclass(AVUser.class);
     AVObject.registerSubclass(AVFile.class);
     AVObject.registerSubclass(AVInstallation.class);
-  }
 
-  public static void initialize(String appId, String appKey) {
     applicationId = appId;
     applicationKey = appKey;
     PaasClient.initializeGlobalClient();
