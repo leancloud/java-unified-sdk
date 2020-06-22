@@ -396,7 +396,7 @@ public class PushService extends Service {
 
   /**
    * Set whether to automatically wake up PushService
-   * @param isAutoWakeUp the default value is false
+   * @param isAutoWakeUp the default value is true
    */
   public static void setAutoWakeUp(boolean isAutoWakeUp) {
     PushService.isAutoWakeUp = isAutoWakeUp;

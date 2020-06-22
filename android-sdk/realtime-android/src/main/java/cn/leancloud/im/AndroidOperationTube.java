@@ -353,7 +353,7 @@ public class AndroidOperationTube implements OperationTube {
       LOGGER.e("failed to startService. cause: root Context is null.");
       if (null != callback) {
         callback.internalDone(new AVException(AVException.OTHER_CAUSE,
-            "root Context is null, please make sure you initialize correctly."));
+            "root Context is null, please initialize at first."));
       }
       return false;
     }
@@ -378,6 +378,10 @@ public class AndroidOperationTube implements OperationTube {
 
     if (AVOSCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
+      if (null != receiver && receiver instanceof AVIMBaseBroadcastReceiver) {
+        ((AVIMBaseBroadcastReceiver)receiver).execute(new HashMap<>(),
+            new AVException(AVException.OTHER_CAUSE, "root Context is null, please initialize at first."));
+      }
       return false;
     }
     int requestId = WindTalker.getNextIMRequestId();
@@ -410,6 +414,10 @@ public class AndroidOperationTube implements OperationTube {
                                                BroadcastReceiver receiver) {
     if (AVOSCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
+      if (null != receiver && receiver instanceof AVIMBaseBroadcastReceiver) {
+        ((AVIMBaseBroadcastReceiver)receiver).execute(new HashMap<>(),
+            new AVException(AVException.OTHER_CAUSE, "root Context is null, please initialize at first."));
+      }
       return false;
     }
 
@@ -449,6 +457,10 @@ public class AndroidOperationTube implements OperationTube {
                                                 BroadcastReceiver receiver) {
     if (AVOSCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
+      if (null != receiver && receiver instanceof AVIMBaseBroadcastReceiver) {
+        ((AVIMBaseBroadcastReceiver)receiver).execute(new HashMap<>(),
+            new AVException(AVException.OTHER_CAUSE, "root Context is null, please initialize at first."));
+      }
       return false;
     }
     int requestId = WindTalker.getNextIMRequestId();
