@@ -378,6 +378,11 @@ public class AndroidOperationTube implements OperationTube {
 
     if (AVOSCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
+      if (receiver != null && receiver instanceof AVIMBaseBroadcastReceiver) {
+        ((AVIMBaseBroadcastReceiver)receiver).execute(new HashMap<String, Object>(),
+            new AVException(AVException.OTHER_CAUSE,
+                "root Context is null, please make sure you initialize correctly."));
+      }
       return false;
     }
     int requestId = WindTalker.getNextIMRequestId();
@@ -410,6 +415,11 @@ public class AndroidOperationTube implements OperationTube {
                                                BroadcastReceiver receiver) {
     if (AVOSCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
+      if (receiver != null && receiver instanceof AVIMBaseBroadcastReceiver) {
+        ((AVIMBaseBroadcastReceiver)receiver).execute(new HashMap<String, Object>(),
+            new AVException(AVException.OTHER_CAUSE,
+                "root Context is null, please make sure you initialize correctly."));
+      }
       return false;
     }
 
@@ -449,6 +459,11 @@ public class AndroidOperationTube implements OperationTube {
                                                 BroadcastReceiver receiver) {
     if (AVOSCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
+      if (receiver != null && receiver instanceof AVIMBaseBroadcastReceiver) {
+        ((AVIMBaseBroadcastReceiver)receiver).execute(new HashMap<String, Object>(),
+            new AVException(AVException.OTHER_CAUSE,
+                "root Context is null, please make sure you initialize correctly."));
+      }
       return false;
     }
     int requestId = WindTalker.getNextIMRequestId();
