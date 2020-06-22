@@ -48,9 +48,7 @@ public class AVOSCloud {
     return logLevel.intLevel() >= AVLogger.Level.DEBUG.intLevel();
   }
 
-
-
-  public static void initialize(String appId, String appKey) {
+  static {
     ObjectTypeAdapter adapter = new ObjectTypeAdapter();
     ParserConfig.getGlobalInstance().putDeserializer(AVObject.class, adapter);
     ParserConfig.getGlobalInstance().putDeserializer(AVUser.class, adapter);
@@ -72,7 +70,9 @@ public class AVOSCloud {
     AVObject.registerSubclass(AVUser.class);
     AVObject.registerSubclass(AVFile.class);
     AVObject.registerSubclass(AVInstallation.class);
+  }
 
+  public static void initialize(String appId, String appKey) {
     applicationId = appId;
     applicationKey = appKey;
     PaasClient.initializeGlobalClient();
