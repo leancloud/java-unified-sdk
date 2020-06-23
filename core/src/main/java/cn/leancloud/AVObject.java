@@ -40,6 +40,8 @@ public class AVObject {
 
   public static final String KEY_CLASSNAME = "className";
 
+  public static final String KEY_IGNORE_HOOKS = "__ignore_hooks";
+
   private static final String INTERNAL_PATTERN = "^[\\da-z][\\d-a-z]*$";
   private static final Set<String> RESERVED_ATTRS = new HashSet<String>(
           Arrays.asList(KEY_CREATED_AT, KEY_UPDATED_AT, KEY_OBJECT_ID, KEY_ACL));
@@ -59,6 +61,13 @@ public class AVObject {
   @JSONField(serialize = false)
   private volatile boolean fetchWhenSave = false;
   protected volatile boolean totallyOverwrite = false;
+
+  public enum Hook {
+    beforeSave, afterSave, beforeUpdate, afterUpdate, beforeDelete, afterDelete,
+  }
+
+  @JSONField(serialize = false)
+  private Set<Hook> ignoreHooks = new TreeSet<Hook>();
 
   /**
    * Default constructor.
@@ -712,6 +721,9 @@ public class AVObject {
       tmp.remove(KEY_CREATED_AT);
       tmp.remove(KEY_UPDATED_AT);
       tmp.remove(KEY_OBJECT_ID);
+      if (ignoreHooks.size() > 0) {
+        tmp.put(KEY_IGNORE_HOOKS, ignoreHooks);
+      }
       return new JSONObject(tmp);
     }
 
@@ -730,6 +742,10 @@ public class AVObject {
         ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Set, KEY_ACL, acl);
         params.putAll(op.encode());
       }
+    }
+
+    if (ignoreHooks.size() > 0) {
+      params.put(KEY_IGNORE_HOOKS, ignoreHooks);
     }
 
     if (!needBatchMode()) {
@@ -1150,10 +1166,14 @@ public class AVObject {
    * @return observable instance.
    */
   public Observable<AVNull> deleteInBackground() {
-    if (totallyOverwrite) {
-      return PaasClient.getStorageClient().deleteWholeObject(this.endpointClassName, getObjectId());
+    Map<String, Object> ignoreParam = new HashMap<>();
+    if (ignoreHooks.size() > 0) {
+      ignoreParam.put(KEY_IGNORE_HOOKS, ignoreHooks);
     }
-    return PaasClient.getStorageClient().deleteObject(this.className, getObjectId());
+    if (totallyOverwrite) {
+      return PaasClient.getStorageClient().deleteWholeObject(this.endpointClassName, getObjectId(), ignoreParam);
+    }
+    return PaasClient.getStorageClient().deleteObject(this.className, getObjectId(), ignoreParam);
   }
 
   /**
@@ -1182,6 +1202,7 @@ public class AVObject {
       return Observable.just(AVNull.getINSTANCE());
     }
     String className = null;
+    Map<String, Object> ignoreParams = new HashMap<>();
     StringBuilder sb = new StringBuilder();
     for (AVObject o : objects) {
       if (StringUtil.isEmpty(o.getObjectId()) || StringUtil.isEmpty(o.getClassName())) {
@@ -1196,7 +1217,7 @@ public class AVObject {
         return Observable.error(new IllegalArgumentException("The objects class name must be the same."));
       }
     }
-    return PaasClient.getStorageClient().deleteObject(className, sb.toString());
+    return PaasClient.getStorageClient().deleteObject(className, sb.toString(), ignoreParams);
   }
 
   /**
@@ -1536,6 +1557,28 @@ public class AVObject {
     }
   }
 
+  /**
+   * disable beforeXXX Hooks
+   */
+  public void disableBeforeHook() {
+    Collections.addAll(ignoreHooks, Hook.beforeSave, Hook.beforeUpdate, Hook.beforeDelete);
+  }
+
+  /**
+   * disable afterXXX Hooks
+   */
+  public void disableAfterHook() {
+    Collections.addAll(ignoreHooks, Hook.afterSave, Hook.afterUpdate, Hook.afterDelete);
+  }
+
+  /**
+   * ignore specified Hook
+   * @param hook target Hook.
+   */
+  public void ignoreHook(Hook hook) {
+    ignoreHooks.add(hook);
+  }
+
   protected static <T extends AVObject> T cast(AVObject object, Class<T> clazz) throws Exception {
     if (clazz.getClass().isAssignableFrom(object.getClass())) {
       return (T) object;
@@ -1570,7 +1613,6 @@ public class AVObject {
 
   @Override
   public int hashCode() {
-
     return Objects.hash(getClassName(), getServerData(), operations, acl, isFetchWhenSave());
   }
 }

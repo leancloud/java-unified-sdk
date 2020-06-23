@@ -183,9 +183,16 @@ public class AVOSCloud {
     return applicationKey;
   }
 
+  public static String getHookKey() {
+    return hookKey;
+  }
+  public static void setHookKey(String key) {
+    hookKey = key;
+  }
   private static REGION defaultRegion = REGION.NorthChina;
   private static String applicationId = "";
   private static String applicationKey = "";
+  private static String hookKey = "";
   private static volatile AVLogger.Level logLevel = AVLogger.Level.INFO;
   static boolean printAllHeaders = false;
   private static boolean enableCircularReferenceDetect = false;
