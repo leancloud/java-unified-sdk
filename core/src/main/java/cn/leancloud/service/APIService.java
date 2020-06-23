@@ -48,8 +48,10 @@ public interface APIService {
                                     @Body JSONObject object, @Query("fetchWhenSave") boolean fetchFlag,
                                     @Query("where") JSONObject where);
 
-  @DELETE("/1.1/classes/{className}/{objectId}")
-  Observable<AVNull> deleteObject(@Path("className") String className, @Path("objectId") String objectId);
+//  @DELETEWITHBODY("/1.1/classes/{className}/{objectId}")
+  @HTTP(method = "DELETE", path = "/1.1/classes/{className}/{objectId}", hasBody = true)
+  Observable<AVNull> deleteObject(@Path("className") String className, @Path("objectId") String objectId,
+                                  @Body Map<String, Object> param);
 
   @POST("/1.1/batch")
   Observable<JSONArray> batchCreate(@Body JSONObject param);
@@ -69,8 +71,10 @@ public interface APIService {
   @GET("/1.1/{endpointClass}/{objectId}")
   Observable<AVObject> getWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
                                       @Query("include") String includeKeys);
-  @DELETE("/1.1/{endpointClass}/{objectId}")
-  Observable<AVNull> deleteWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId);
+//  @DELETE("/1.1/{endpointClass}/{objectId}")
+  @HTTP(method = "DELETE", path = "/1.1/{endpointClass}/{objectId}", hasBody = true)
+  Observable<AVNull> deleteWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
+                                       @Body Map<String, Object> param);
 
   /**
    * request format:
