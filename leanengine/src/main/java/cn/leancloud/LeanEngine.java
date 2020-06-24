@@ -37,15 +37,19 @@ public class LeanEngine {
    * @param clientKey The client key provided in the AVOSCloud dashboard.
    * @param masterKey The master key provided in the AVOSCloud dashboard.
    */
-  public static void initialize(String applicationId, String clientKey, String masterKey) {
+  public static void initialize(String applicationId, String clientKey, String masterKey, String hookKey) {
     String androidKey = EngineAppConfiguration.getEnvOrProperty(EngineAppConfiguration.SYSTEM_ATTR_ANDX_KEY);
-    initialize(applicationId, clientKey, masterKey, androidKey);
+    initialize(applicationId, clientKey, masterKey, hookKey, androidKey);
   }
 
-  protected static void initialize(String applicationId, String clientKey, String masterKey, String androidxKey) {
+  protected static void initialize(String applicationId, String clientKey, String masterKey, String hookKey,
+                                   String androidxKey) {
     AVOSCloud.setLogLevel(AVLogger.Level.ALL);// let log4j make decision.
     AppConfiguration.setLogAdapter(new Log4jAdapter());
     AVOSCloud.initialize(applicationId, clientKey);
+    if (!StringUtil.isEmpty(hookKey)) {
+      AVOSCloud.setHookKey(hookKey);
+    }
 
     Map<String, String> affiliatedKeys = null;
     if (!StringUtil.isEmpty(androidxKey)) {

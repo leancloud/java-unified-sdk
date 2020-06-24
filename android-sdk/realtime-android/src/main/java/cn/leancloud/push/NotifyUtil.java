@@ -66,7 +66,7 @@ public class NotifyUtil {
 
   private static void registerApp() {
     Set<String> appSet = getRegisteredApps();
-    if (appSet != null) {
+    if (appSet != null && AVOSCloud.getContext() != null) {
       appSet.add(Base64Encoder.encode(AVOSCloud.getContext().getPackageName()));
       PersistenceUtil.sharedInstance().saveContentToFile(JSON.toJSONString(appSet),
           getRegisterAppsFile());

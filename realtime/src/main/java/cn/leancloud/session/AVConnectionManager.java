@@ -211,6 +211,11 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
               public void onSubscribe(@NonNull Disposable var1) { }
 
               public void onNext(@NonNull String var1) {
+                if (StringUtil.isEmpty(var1)) {
+                  LOGGER.e("failed to get RTM Endpoint. cause: push router url is emptry.");
+                  reConnectionRTMServer();
+                  return;
+                }
                 String routerHost = var1.startsWith("http")? var1 : "https://" + var1;
                 appRouter.fetchRTMConnectionServer(routerHost, AVOSCloud.getApplicationId(), installationId,
                         1, retryConnectionCount < 1)

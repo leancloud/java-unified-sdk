@@ -58,7 +58,9 @@ public class IntentUtil {
       if (null != result) {
         callbackIntent.putExtra(CALLBACK_RESULT_KEY, result);
       }
-      LocalBroadcastManager.getInstance(AVOSCloud.getContext()).sendBroadcast(callbackIntent);
+      if (AVOSCloud.getContext() != null) {
+        LocalBroadcastManager.getInstance(AVOSCloud.getContext()).sendBroadcast(callbackIntent);
+      }
     }
   }
 
@@ -67,7 +69,9 @@ public class IntentUtil {
     if (null != throwable) {
       callbackIntent.putExtra(Conversation.callbackExceptionKey, throwable);
     }
-    LocalBroadcastManager.getInstance(AVOSCloud.getContext()).sendBroadcast(callbackIntent);
+    if (AVOSCloud.getContext() != null) {
+      LocalBroadcastManager.getInstance(AVOSCloud.getContext()).sendBroadcast(callbackIntent);
+    }
   }
 
   private static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId,
@@ -89,7 +93,9 @@ public class IntentUtil {
       if (null != bundle) {
         callbackIntent.putExtras(bundle);
       }
-      LocalBroadcastManager.getInstance(AVOSCloud.getContext()).sendBroadcast(callbackIntent);
+      if (AVOSCloud.getContext() != null) {
+        LocalBroadcastManager.getInstance(AVOSCloud.getContext()).sendBroadcast(callbackIntent);
+      }
     }
   }
 
