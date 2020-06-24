@@ -114,6 +114,9 @@ public class AppRouter {
   }
 
   protected AppAccessEndpoint buildDefaultEndpoint(String appId) {
+    if (null == appId || appId.length() <= 8) {
+      return null;
+    }
     AppAccessEndpoint result = new AppAccessEndpoint();
     String appIdPrefix = appId.substring(0, 8).toLowerCase();
     AVOSCloud.REGION region = getAppRegion(appId);
@@ -186,6 +189,14 @@ public class AppRouter {
   }
 
   private Observable<String> getEndpoint(final String appId, final AVOSService service, boolean forceUpdate) {
+    if (StringUtil.isEmpty(appId)) {
+      LOGGER.e("application id is empty.");
+      return Observable.just("");
+    }
+    if (appId.length() <= 8) {
+      LOGGER.e("application id is invalid(too short):" + appId);
+      return Observable.just("");
+    }
     String fixedHost = this.customizedEndpoint.getServerHost(service);
     if (!StringUtil.isEmpty(fixedHost)) {
       return Observable.just(fixedHost);

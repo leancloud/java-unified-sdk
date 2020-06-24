@@ -33,7 +33,9 @@ public abstract class AVIMBaseBroadcastReceiver extends BroadcastReceiver {
       }
       HashMap<String, Object> result = (HashMap<String, Object>) intent.getSerializableExtra(IntentUtil.CALLBACK_RESULT_KEY);
       execute(result, error);
-      LocalBroadcastManager.getInstance(AVOSCloud.getContext()).unregisterReceiver(this);
+      if (AVOSCloud.getContext() != null) {
+        LocalBroadcastManager.getInstance(AVOSCloud.getContext()).unregisterReceiver(this);
+      }
     } catch (Exception e) {
       if (callback != null) {
         callback.internalDone(null, new AVException(e));

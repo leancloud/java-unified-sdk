@@ -214,8 +214,8 @@ public class StorageClient {
     });
   }
 
-  public Observable<AVNull> deleteObject(final String className, String objectId) {
-    return wrapObservable(apiService.deleteObject(className, objectId));
+  public Observable<AVNull> deleteObject(final String className, String objectId, Map<String, Object> param) {
+    return wrapObservable(apiService.deleteObject(className, objectId, param));
   }
 
 //  private JsonObject getJsonObject(JSONObject data) {
@@ -278,8 +278,8 @@ public class StorageClient {
     return wrapObservable(apiService.getWholeObject(endpointClass, objectId, includeKeys));
   }
 
-  public Observable<AVNull> deleteWholeObject(final String endpointClass, String objectId) {
-    return wrapObservable(apiService.deleteWholeObject(endpointClass, objectId));
+  public Observable<AVNull> deleteWholeObject(final String endpointClass, String objectId, Map<String, Object> param) {
+    return wrapObservable(apiService.deleteWholeObject(endpointClass, objectId, param));
   }
 
   public Observable<AVFile> fetchFile(String objectId) {
