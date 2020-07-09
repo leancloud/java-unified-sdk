@@ -11,10 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import java.lang.annotation.IncompleteAnnotationException;
 import java.lang.reflect.Method;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -137,6 +134,15 @@ public class AVIMMessageManager {
       conversation.increaseUnreadCount(1, message.mentioned());
     }
     conversation.setLastMessageAt(new Date(message.getTimestamp()));
+
+    // add notification: unreadMessageCountUpdated.
+    if (!isTransient && null != conversationEventHandler) {
+      if (AVIMOptions.getGlobalOptions().isOnlyPushCount()) {
+        AbstractMap.SimpleEntry<Integer, Boolean> unreadInfo = new AbstractMap.SimpleEntry<>(conversation.getUnreadMessagesCount(),
+                message.mentioned());
+        conversationEventHandler.processEvent(Conversation.STATUS_ON_UNREAD_EVENT, message, unreadInfo, conversation);
+      }
+    }
 
     retrieveAllMessageHandlers(message, conversation, false, null);
   }
