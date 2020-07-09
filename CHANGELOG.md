@@ -2,6 +2,28 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 7.0.0 release
+
+#### Break changes
+- 底层依赖的 JSON 解析库由 fastjson 切换成 Gson，升级方法可参考[博客说明](https://leancloudblog.com/java-unified-sdk-switch-to-gson/)。
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- performance optimization.
+
+## 6.5.9 release
+
+#### Break changes
+- None
+
+#### New features
+- send onUnreadMessagesCountUpdated notification before onMessage callback.
+
+#### Optimization and fixed bugs
+- performance optimization.
+
 ## 6.5.8 release
 
 #### Break changes

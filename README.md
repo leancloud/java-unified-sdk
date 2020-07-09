@@ -37,6 +37,49 @@ SDK 中所有存储 API 接口与 LeanCloud 云端交互严格遵循 LeanCloud R
 - [x] 魅族推送
 - [x] Firebase Cloud Messaging
 
+## Migration to 7.x
+从 7.0.0 版本开始，我们将 Java Unified SDK 底层的 JSON 解析模块完全切换到了 Gson，开发者在业务层使用 Java Unified SDK 与 JSON 解析库，主要有如下三种情形：
+
+1. 业务层并没有特别使用 JSON 解析库，JSON 解析属于 Java Unified SDK 的内部实现细节，一般情况下开发者感知不到这一改变，所以这时候应用层可以无缝切换。
+2. 业务代码中因 Java Unified SDK 的原因顺带使用了部分 fastjson 核心类型（例如 JSONObject 和 JSONArray），要切换到最新版就需要去掉这些 fastjson 核心类的使用。出于兼容目的 Java Unified SDK 也提供了完全相同的 API 接口，所以开发者在升级的时候只需要将引用的包名由 `com.alibaba.fastjson` 替换成 `cn.leancloud.json` 即可，例如：
+
+```
+//import com.alibaba.fastjson.JSON
+//import com.alibaba.fastjson.JSONObject
+//import com.alibaba.fastjson.JSONArray
+
+import cn.leancloud.json.JSON
+import cn.leancloud.json.JSONObject
+import cn.leancloud.json.JSONArray
+```
+3. 业务层自主使用了 fastjson 解析库，例如访问了 LeanCloud 之外的 REST API Server，强依赖 fastjson 进行了数据解析，此时最好不要升级到新版本（除非能容忍同时引入 fastjson 和 Gson 两套解析框架）。
+
+### 参考 demo：
+
+- 使用存储服务的用户，可以参考 [storage sample app(branch: feat/gson)](https://github.com/leancloud/java-unified-sdk/tree/feat/gson/android-sdk/storage-sample-app);
+- 使用即时通讯/推送服务的用户，可以参考 [chatkit-android(branch: feat/gson)](https://github.com/leancloud/LeanCloudChatKit-Android/tree/feat/gson);
+
+
+### 其他问题：
+
+1. 升级到 `7.0.0-SNAPSHOT` 之后，Android Studio 打包时出现 RuntimeException，出错信息如下：
+
+```
+java.lang.RuntimeException
+        at org.objectweb.asm.ClassVisitor.visitModule(ClassVisitor.java:148)
+        at org.objectweb.asm.ClassReader.readModule(ClassReader.java:731)
+        at org.objectweb.asm.ClassReader.accept(ClassReader.java:632)
+        at com.google.firebase.perf.plugin.instrumentation.Instrument.instrument(Instrument.java:151)
+        at com.google.firebase.perf.plugin.instrumentation.Instrument.instrumentClassesInJar(Instrument.java:100)
+```
+
+按照[这里](https://github.com/google/gson/issues/1641)的解释，可以通过升级 `Android Gradle plugin -> 3.5.3, Gradle -> v5.5` 解决。
+
+
+2. 能不能让开发者配置使用 fastjson 还是 Gson？
+
+我们有计划将 Java Unified SDK 核心代码和 JSON 解析库分开，以后开发者可以根据自己的需求配置使用 Gson 或者 fastjson，类似于 retrofit2 的 converter factory，开发排期则要视开发者的需求而定。
+
 ## Bugs and Feedback
 大家使用中发现 Bug、或者有任何疑问或建议，请使用  [GitHub Issues](https://github.com/leancloud/java-unified-sdk/issues) 来告知我们，非常感谢大家的反馈。
 
