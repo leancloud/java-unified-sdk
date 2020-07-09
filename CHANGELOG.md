@@ -2,6 +2,17 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.5.9 release
+
+#### Break changes
+- None
+
+#### New features
+- send onUnreadMessagesCountUpdated notification before onMessage callback.
+
+#### Optimization and fixed bugs
+- performance optimization.
+
 ## 6.5.8 release
 
 #### Break changes
