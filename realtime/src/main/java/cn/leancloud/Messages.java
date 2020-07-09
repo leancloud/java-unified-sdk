@@ -21410,6 +21410,15 @@ public final class Messages {
         int index);
 
     /**
+     * <code>optional bool existing = 32;</code>
+     */
+    boolean hasExisting();
+    /**
+     * <code>optional bool existing = 32;</code>
+     */
+    boolean getExisting();
+
+    /**
      * <pre>
      * used in shutup query
      * </pre>
@@ -21530,6 +21539,7 @@ public final class Messages {
       tempConvIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       allowedPids_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       failedPids_ = java.util.Collections.emptyList();
+      existing_ = false;
       next_ = "";
     }
 
@@ -21758,15 +21768,20 @@ public final class Messages {
                   input.readMessage(cn.leancloud.Messages.ErrorCommand.PARSER, extensionRegistry));
               break;
             }
+            case 256: {
+              bitField0_ |= 0x02000000;
+              existing_ = input.readBool();
+              break;
+            }
             case 322: {
               com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x02000000;
+              bitField0_ |= 0x04000000;
               next_ = bs;
               break;
             }
             case 802: {
               cn.leancloud.Messages.JsonObjectMessage.Builder subBuilder = null;
-              if (((bitField0_ & 0x04000000) == 0x04000000)) {
+              if (((bitField0_ & 0x08000000) == 0x08000000)) {
                 subBuilder = results_.toBuilder();
               }
               results_ = input.readMessage(cn.leancloud.Messages.JsonObjectMessage.PARSER, extensionRegistry);
@@ -21774,12 +21789,12 @@ public final class Messages {
                 subBuilder.mergeFrom(results_);
                 results_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x04000000;
+              bitField0_ |= 0x08000000;
               break;
             }
             case 810: {
               cn.leancloud.Messages.JsonObjectMessage.Builder subBuilder = null;
-              if (((bitField0_ & 0x08000000) == 0x08000000)) {
+              if (((bitField0_ & 0x10000000) == 0x10000000)) {
                 subBuilder = where_.toBuilder();
               }
               where_ = input.readMessage(cn.leancloud.Messages.JsonObjectMessage.PARSER, extensionRegistry);
@@ -21787,12 +21802,12 @@ public final class Messages {
                 subBuilder.mergeFrom(where_);
                 where_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x08000000;
+              bitField0_ |= 0x10000000;
               break;
             }
             case 826: {
               cn.leancloud.Messages.JsonObjectMessage.Builder subBuilder = null;
-              if (((bitField0_ & 0x10000000) == 0x10000000)) {
+              if (((bitField0_ & 0x20000000) == 0x20000000)) {
                 subBuilder = attr_.toBuilder();
               }
               attr_ = input.readMessage(cn.leancloud.Messages.JsonObjectMessage.PARSER, extensionRegistry);
@@ -21800,12 +21815,12 @@ public final class Messages {
                 subBuilder.mergeFrom(attr_);
                 attr_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x10000000;
+              bitField0_ |= 0x20000000;
               break;
             }
             case 834: {
               cn.leancloud.Messages.JsonObjectMessage.Builder subBuilder = null;
-              if (((bitField0_ & 0x20000000) == 0x20000000)) {
+              if (((bitField0_ & 0x40000000) == 0x40000000)) {
                 subBuilder = attrModified_.toBuilder();
               }
               attrModified_ = input.readMessage(cn.leancloud.Messages.JsonObjectMessage.PARSER, extensionRegistry);
@@ -21813,7 +21828,7 @@ public final class Messages {
                 subBuilder.mergeFrom(attrModified_);
                 attrModified_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x20000000;
+              bitField0_ |= 0x40000000;
               break;
             }
           }
@@ -22669,6 +22684,21 @@ public final class Messages {
       return failedPids_.get(index);
     }
 
+    public static final int EXISTING_FIELD_NUMBER = 32;
+    private boolean existing_;
+    /**
+     * <code>optional bool existing = 32;</code>
+     */
+    public boolean hasExisting() {
+      return ((bitField0_ & 0x02000000) == 0x02000000);
+    }
+    /**
+     * <code>optional bool existing = 32;</code>
+     */
+    public boolean getExisting() {
+      return existing_;
+    }
+
     public static final int NEXT_FIELD_NUMBER = 40;
     private volatile java.lang.Object next_;
     /**
@@ -22679,7 +22709,7 @@ public final class Messages {
      * <code>optional string next = 40;</code>
      */
     public boolean hasNext() {
-      return ((bitField0_ & 0x02000000) == 0x02000000);
+      return ((bitField0_ & 0x04000000) == 0x04000000);
     }
     /**
      * <pre>
@@ -22729,7 +22759,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.JsonObjectMessage results = 100;</code>
      */
     public boolean hasResults() {
-      return ((bitField0_ & 0x04000000) == 0x04000000);
+      return ((bitField0_ & 0x08000000) == 0x08000000);
     }
     /**
      * <code>optional .cn.leancloud.JsonObjectMessage results = 100;</code>
@@ -22750,7 +22780,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.JsonObjectMessage where = 101;</code>
      */
     public boolean hasWhere() {
-      return ((bitField0_ & 0x08000000) == 0x08000000);
+      return ((bitField0_ & 0x10000000) == 0x10000000);
     }
     /**
      * <code>optional .cn.leancloud.JsonObjectMessage where = 101;</code>
@@ -22771,7 +22801,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.JsonObjectMessage attr = 103;</code>
      */
     public boolean hasAttr() {
-      return ((bitField0_ & 0x10000000) == 0x10000000);
+      return ((bitField0_ & 0x20000000) == 0x20000000);
     }
     /**
      * <code>optional .cn.leancloud.JsonObjectMessage attr = 103;</code>
@@ -22792,7 +22822,7 @@ public final class Messages {
      * <code>optional .cn.leancloud.JsonObjectMessage attrModified = 104;</code>
      */
     public boolean hasAttrModified() {
-      return ((bitField0_ & 0x20000000) == 0x20000000);
+      return ((bitField0_ & 0x40000000) == 0x40000000);
     }
     /**
      * <code>optional .cn.leancloud.JsonObjectMessage attrModified = 104;</code>
@@ -22943,18 +22973,21 @@ public final class Messages {
         output.writeMessage(31, failedPids_.get(i));
       }
       if (((bitField0_ & 0x02000000) == 0x02000000)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 40, next_);
+        output.writeBool(32, existing_);
       }
       if (((bitField0_ & 0x04000000) == 0x04000000)) {
-        output.writeMessage(100, getResults());
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 40, next_);
       }
       if (((bitField0_ & 0x08000000) == 0x08000000)) {
-        output.writeMessage(101, getWhere());
+        output.writeMessage(100, getResults());
       }
       if (((bitField0_ & 0x10000000) == 0x10000000)) {
-        output.writeMessage(103, getAttr());
+        output.writeMessage(101, getWhere());
       }
       if (((bitField0_ & 0x20000000) == 0x20000000)) {
+        output.writeMessage(103, getAttr());
+      }
+      if (((bitField0_ & 0x40000000) == 0x40000000)) {
         output.writeMessage(104, getAttrModified());
       }
       unknownFields.writeTo(output);
@@ -23097,21 +23130,25 @@ public final class Messages {
           .computeMessageSize(31, failedPids_.get(i));
       }
       if (((bitField0_ & 0x02000000) == 0x02000000)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(40, next_);
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(32, existing_);
       }
       if (((bitField0_ & 0x04000000) == 0x04000000)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(100, getResults());
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(40, next_);
       }
       if (((bitField0_ & 0x08000000) == 0x08000000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(101, getWhere());
+          .computeMessageSize(100, getResults());
       }
       if (((bitField0_ & 0x10000000) == 0x10000000)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(103, getAttr());
+          .computeMessageSize(101, getWhere());
       }
       if (((bitField0_ & 0x20000000) == 0x20000000)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(103, getAttr());
+      }
+      if (((bitField0_ & 0x40000000) == 0x40000000)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(104, getAttrModified());
       }
@@ -23268,6 +23305,11 @@ public final class Messages {
           .equals(other.getAllowedPidsList());
       result = result && getFailedPidsList()
           .equals(other.getFailedPidsList());
+      result = result && (hasExisting() == other.hasExisting());
+      if (hasExisting()) {
+        result = result && (getExisting()
+            == other.getExisting());
+      }
       result = result && (hasNext() == other.hasNext());
       if (hasNext()) {
         result = result && getNext()
@@ -23436,6 +23478,11 @@ public final class Messages {
       if (getFailedPidsCount() > 0) {
         hash = (37 * hash) + FAILEDPIDS_FIELD_NUMBER;
         hash = (53 * hash) + getFailedPidsList().hashCode();
+      }
+      if (hasExisting()) {
+        hash = (37 * hash) + EXISTING_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getExisting());
       }
       if (hasNext()) {
         hash = (37 * hash) + NEXT_FIELD_NUMBER;
@@ -23667,32 +23714,34 @@ public final class Messages {
         } else {
           failedPidsBuilder_.clear();
         }
-        next_ = "";
+        existing_ = false;
         bitField0_ = (bitField0_ & ~0x80000000);
+        next_ = "";
+        bitField1_ = (bitField1_ & ~0x00000001);
         if (resultsBuilder_ == null) {
           results_ = null;
         } else {
           resultsBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000001);
+        bitField1_ = (bitField1_ & ~0x00000002);
         if (whereBuilder_ == null) {
           where_ = null;
         } else {
           whereBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000002);
+        bitField1_ = (bitField1_ & ~0x00000004);
         if (attrBuilder_ == null) {
           attr_ = null;
         } else {
           attrBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000004);
+        bitField1_ = (bitField1_ & ~0x00000008);
         if (attrModifiedBuilder_ == null) {
           attrModified_ = null;
         } else {
           attrModifiedBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000008);
+        bitField1_ = (bitField1_ & ~0x00000010);
         return this;
       }
 
@@ -23863,33 +23912,37 @@ public final class Messages {
         if (((from_bitField0_ & 0x80000000) == 0x80000000)) {
           to_bitField0_ |= 0x02000000;
         }
-        result.next_ = next_;
+        result.existing_ = existing_;
         if (((from_bitField1_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x04000000;
+        }
+        result.next_ = next_;
+        if (((from_bitField1_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x08000000;
         }
         if (resultsBuilder_ == null) {
           result.results_ = results_;
         } else {
           result.results_ = resultsBuilder_.build();
         }
-        if (((from_bitField1_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x08000000;
+        if (((from_bitField1_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x10000000;
         }
         if (whereBuilder_ == null) {
           result.where_ = where_;
         } else {
           result.where_ = whereBuilder_.build();
         }
-        if (((from_bitField1_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x10000000;
+        if (((from_bitField1_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x20000000;
         }
         if (attrBuilder_ == null) {
           result.attr_ = attr_;
         } else {
           result.attr_ = attrBuilder_.build();
         }
-        if (((from_bitField1_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x20000000;
+        if (((from_bitField1_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x40000000;
         }
         if (attrModifiedBuilder_ == null) {
           result.attrModified_ = attrModified_;
@@ -24123,8 +24176,11 @@ public final class Messages {
             }
           }
         }
+        if (other.hasExisting()) {
+          setExisting(other.getExisting());
+        }
         if (other.hasNext()) {
-          bitField0_ |= 0x80000000;
+          bitField1_ |= 0x00000001;
           next_ = other.next_;
           onChanged();
         }
@@ -26328,6 +26384,38 @@ public final class Messages {
         return failedPidsBuilder_;
       }
 
+      private boolean existing_ ;
+      /**
+       * <code>optional bool existing = 32;</code>
+       */
+      public boolean hasExisting() {
+        return ((bitField0_ & 0x80000000) == 0x80000000);
+      }
+      /**
+       * <code>optional bool existing = 32;</code>
+       */
+      public boolean getExisting() {
+        return existing_;
+      }
+      /**
+       * <code>optional bool existing = 32;</code>
+       */
+      public Builder setExisting(boolean value) {
+        bitField0_ |= 0x80000000;
+        existing_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool existing = 32;</code>
+       */
+      public Builder clearExisting() {
+        bitField0_ = (bitField0_ & ~0x80000000);
+        existing_ = false;
+        onChanged();
+        return this;
+      }
+
       private java.lang.Object next_ = "";
       /**
        * <pre>
@@ -26337,7 +26425,7 @@ public final class Messages {
        * <code>optional string next = 40;</code>
        */
       public boolean hasNext() {
-        return ((bitField0_ & 0x80000000) == 0x80000000);
+        return ((bitField1_ & 0x00000001) == 0x00000001);
       }
       /**
        * <pre>
@@ -26392,7 +26480,7 @@ public final class Messages {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x80000000;
+  bitField1_ |= 0x00000001;
         next_ = value;
         onChanged();
         return this;
@@ -26405,7 +26493,7 @@ public final class Messages {
        * <code>optional string next = 40;</code>
        */
       public Builder clearNext() {
-        bitField0_ = (bitField0_ & ~0x80000000);
+        bitField1_ = (bitField1_ & ~0x00000001);
         next_ = getDefaultInstance().getNext();
         onChanged();
         return this;
@@ -26422,7 +26510,7 @@ public final class Messages {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x80000000;
+  bitField1_ |= 0x00000001;
         next_ = value;
         onChanged();
         return this;
@@ -26435,7 +26523,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.JsonObjectMessage results = 100;</code>
        */
       public boolean hasResults() {
-        return ((bitField1_ & 0x00000001) == 0x00000001);
+        return ((bitField1_ & 0x00000002) == 0x00000002);
       }
       /**
        * <code>optional .cn.leancloud.JsonObjectMessage results = 100;</code>
@@ -26460,7 +26548,7 @@ public final class Messages {
         } else {
           resultsBuilder_.setMessage(value);
         }
-        bitField1_ |= 0x00000001;
+        bitField1_ |= 0x00000002;
         return this;
       }
       /**
@@ -26474,7 +26562,7 @@ public final class Messages {
         } else {
           resultsBuilder_.setMessage(builderForValue.build());
         }
-        bitField1_ |= 0x00000001;
+        bitField1_ |= 0x00000002;
         return this;
       }
       /**
@@ -26482,7 +26570,7 @@ public final class Messages {
        */
       public Builder mergeResults(cn.leancloud.Messages.JsonObjectMessage value) {
         if (resultsBuilder_ == null) {
-          if (((bitField1_ & 0x00000001) == 0x00000001) &&
+          if (((bitField1_ & 0x00000002) == 0x00000002) &&
               results_ != null &&
               results_ != cn.leancloud.Messages.JsonObjectMessage.getDefaultInstance()) {
             results_ =
@@ -26494,7 +26582,7 @@ public final class Messages {
         } else {
           resultsBuilder_.mergeFrom(value);
         }
-        bitField1_ |= 0x00000001;
+        bitField1_ |= 0x00000002;
         return this;
       }
       /**
@@ -26507,14 +26595,14 @@ public final class Messages {
         } else {
           resultsBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000001);
+        bitField1_ = (bitField1_ & ~0x00000002);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.JsonObjectMessage results = 100;</code>
        */
       public cn.leancloud.Messages.JsonObjectMessage.Builder getResultsBuilder() {
-        bitField1_ |= 0x00000001;
+        bitField1_ |= 0x00000002;
         onChanged();
         return getResultsFieldBuilder().getBuilder();
       }
@@ -26553,7 +26641,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.JsonObjectMessage where = 101;</code>
        */
       public boolean hasWhere() {
-        return ((bitField1_ & 0x00000002) == 0x00000002);
+        return ((bitField1_ & 0x00000004) == 0x00000004);
       }
       /**
        * <code>optional .cn.leancloud.JsonObjectMessage where = 101;</code>
@@ -26578,7 +26666,7 @@ public final class Messages {
         } else {
           whereBuilder_.setMessage(value);
         }
-        bitField1_ |= 0x00000002;
+        bitField1_ |= 0x00000004;
         return this;
       }
       /**
@@ -26592,7 +26680,7 @@ public final class Messages {
         } else {
           whereBuilder_.setMessage(builderForValue.build());
         }
-        bitField1_ |= 0x00000002;
+        bitField1_ |= 0x00000004;
         return this;
       }
       /**
@@ -26600,7 +26688,7 @@ public final class Messages {
        */
       public Builder mergeWhere(cn.leancloud.Messages.JsonObjectMessage value) {
         if (whereBuilder_ == null) {
-          if (((bitField1_ & 0x00000002) == 0x00000002) &&
+          if (((bitField1_ & 0x00000004) == 0x00000004) &&
               where_ != null &&
               where_ != cn.leancloud.Messages.JsonObjectMessage.getDefaultInstance()) {
             where_ =
@@ -26612,7 +26700,7 @@ public final class Messages {
         } else {
           whereBuilder_.mergeFrom(value);
         }
-        bitField1_ |= 0x00000002;
+        bitField1_ |= 0x00000004;
         return this;
       }
       /**
@@ -26625,14 +26713,14 @@ public final class Messages {
         } else {
           whereBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000002);
+        bitField1_ = (bitField1_ & ~0x00000004);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.JsonObjectMessage where = 101;</code>
        */
       public cn.leancloud.Messages.JsonObjectMessage.Builder getWhereBuilder() {
-        bitField1_ |= 0x00000002;
+        bitField1_ |= 0x00000004;
         onChanged();
         return getWhereFieldBuilder().getBuilder();
       }
@@ -26671,7 +26759,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.JsonObjectMessage attr = 103;</code>
        */
       public boolean hasAttr() {
-        return ((bitField1_ & 0x00000004) == 0x00000004);
+        return ((bitField1_ & 0x00000008) == 0x00000008);
       }
       /**
        * <code>optional .cn.leancloud.JsonObjectMessage attr = 103;</code>
@@ -26696,7 +26784,7 @@ public final class Messages {
         } else {
           attrBuilder_.setMessage(value);
         }
-        bitField1_ |= 0x00000004;
+        bitField1_ |= 0x00000008;
         return this;
       }
       /**
@@ -26710,7 +26798,7 @@ public final class Messages {
         } else {
           attrBuilder_.setMessage(builderForValue.build());
         }
-        bitField1_ |= 0x00000004;
+        bitField1_ |= 0x00000008;
         return this;
       }
       /**
@@ -26718,7 +26806,7 @@ public final class Messages {
        */
       public Builder mergeAttr(cn.leancloud.Messages.JsonObjectMessage value) {
         if (attrBuilder_ == null) {
-          if (((bitField1_ & 0x00000004) == 0x00000004) &&
+          if (((bitField1_ & 0x00000008) == 0x00000008) &&
               attr_ != null &&
               attr_ != cn.leancloud.Messages.JsonObjectMessage.getDefaultInstance()) {
             attr_ =
@@ -26730,7 +26818,7 @@ public final class Messages {
         } else {
           attrBuilder_.mergeFrom(value);
         }
-        bitField1_ |= 0x00000004;
+        bitField1_ |= 0x00000008;
         return this;
       }
       /**
@@ -26743,14 +26831,14 @@ public final class Messages {
         } else {
           attrBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000004);
+        bitField1_ = (bitField1_ & ~0x00000008);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.JsonObjectMessage attr = 103;</code>
        */
       public cn.leancloud.Messages.JsonObjectMessage.Builder getAttrBuilder() {
-        bitField1_ |= 0x00000004;
+        bitField1_ |= 0x00000008;
         onChanged();
         return getAttrFieldBuilder().getBuilder();
       }
@@ -26789,7 +26877,7 @@ public final class Messages {
        * <code>optional .cn.leancloud.JsonObjectMessage attrModified = 104;</code>
        */
       public boolean hasAttrModified() {
-        return ((bitField1_ & 0x00000008) == 0x00000008);
+        return ((bitField1_ & 0x00000010) == 0x00000010);
       }
       /**
        * <code>optional .cn.leancloud.JsonObjectMessage attrModified = 104;</code>
@@ -26814,7 +26902,7 @@ public final class Messages {
         } else {
           attrModifiedBuilder_.setMessage(value);
         }
-        bitField1_ |= 0x00000008;
+        bitField1_ |= 0x00000010;
         return this;
       }
       /**
@@ -26828,7 +26916,7 @@ public final class Messages {
         } else {
           attrModifiedBuilder_.setMessage(builderForValue.build());
         }
-        bitField1_ |= 0x00000008;
+        bitField1_ |= 0x00000010;
         return this;
       }
       /**
@@ -26836,7 +26924,7 @@ public final class Messages {
        */
       public Builder mergeAttrModified(cn.leancloud.Messages.JsonObjectMessage value) {
         if (attrModifiedBuilder_ == null) {
-          if (((bitField1_ & 0x00000008) == 0x00000008) &&
+          if (((bitField1_ & 0x00000010) == 0x00000010) &&
               attrModified_ != null &&
               attrModified_ != cn.leancloud.Messages.JsonObjectMessage.getDefaultInstance()) {
             attrModified_ =
@@ -26848,7 +26936,7 @@ public final class Messages {
         } else {
           attrModifiedBuilder_.mergeFrom(value);
         }
-        bitField1_ |= 0x00000008;
+        bitField1_ |= 0x00000010;
         return this;
       }
       /**
@@ -26861,14 +26949,14 @@ public final class Messages {
         } else {
           attrModifiedBuilder_.clear();
         }
-        bitField1_ = (bitField1_ & ~0x00000008);
+        bitField1_ = (bitField1_ & ~0x00000010);
         return this;
       }
       /**
        * <code>optional .cn.leancloud.JsonObjectMessage attrModified = 104;</code>
        */
       public cn.leancloud.Messages.JsonObjectMessage.Builder getAttrModifiedBuilder() {
-        bitField1_ |= 0x00000008;
+        bitField1_ |= 0x00000010;
         onChanged();
         return getAttrModifiedFieldBuilder().getBuilder();
       }
@@ -48657,7 +48745,7 @@ public final class Messages {
       "\001(\003\022\014\n\004tots\030\010 \001(\003\022\014\n\004type\030\t \001(\t\022\013\n\003ids\030\n" +
       " \003(\t\022\017\n\007appCode\030\013 \001(\005\022\016\n\006appMsg\030\014 \001(\t\"L\n" +
       "\rUnreadCommand\022(\n\005convs\030\001 \003(\0132\031.cn.leanc" +
-      "loud.UnreadTuple\022\021\n\tnotifTime\030\002 \001(\003\"\322\006\n\013" +
+      "loud.UnreadTuple\022\021\n\tnotifTime\030\002 \001(\003\"\344\006\n\013" +
       "ConvCommand\022\t\n\001m\030\001 \003(\t\022\021\n\ttransient\030\002 \001(" +
       "\010\022\016\n\006unique\030\003 \001(\010\022\013\n\003cid\030\004 \001(\t\022\r\n\005cdate\030" +
       "\005 \001(\t\022\016\n\006initBy\030\006 \001(\t\022\014\n\004sort\030\007 \001(\t\022\r\n\005l" +
@@ -48673,118 +48761,118 @@ public final class Messages {
       ".leancloud.ConvMemberInfo\022\020\n\010tempConv\030\033 " +
       "\001(\010\022\023\n\013tempConvTTL\030\034 \001(\005\022\023\n\013tempConvIds\030" +
       "\035 \003(\t\022\023\n\013allowedPids\030\036 \003(\t\022.\n\nfailedPids" +
-      "\030\037 \003(\0132\032.cn.leancloud.ErrorCommand\022\014\n\004ne",
-      "xt\030( \001(\t\0220\n\007results\030d \001(\0132\037.cn.leancloud" +
-      ".JsonObjectMessage\022.\n\005where\030e \001(\0132\037.cn.l" +
-      "eancloud.JsonObjectMessage\022-\n\004attr\030g \001(\013" +
-      "2\037.cn.leancloud.JsonObjectMessage\0225\n\014att" +
-      "rModified\030h \001(\0132\037.cn.leancloud.JsonObjec" +
-      "tMessage\"x\n\013RoomCommand\022\016\n\006roomId\030\001 \001(\t\022" +
-      "\t\n\001s\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\t\n\001n\030\004 \001(\t\022\021\n\ttran" +
-      "sient\030\005 \001(\010\022\023\n\013roomPeerIds\030\006 \003(\t\022\020\n\010byPe" +
-      "erId\030\007 \001(\t\"\312\002\n\013LogsCommand\022\013\n\003cid\030\001 \001(\t\022" +
-      "\t\n\001l\030\002 \001(\005\022\r\n\005limit\030\003 \001(\005\022\t\n\001t\030\004 \001(\003\022\n\n\002",
-      "tt\030\005 \001(\003\022\014\n\004tmid\030\006 \001(\t\022\013\n\003mid\030\007 \001(\t\022\020\n\010c" +
-      "hecksum\030\010 \001(\t\022\016\n\006stored\030\t \001(\010\022@\n\tdirecti" +
-      "on\030\n \001(\0162(.cn.leancloud.LogsCommand.Quer" +
-      "yDirection:\003OLD\022\021\n\ttIncluded\030\013 \001(\010\022\022\n\ntt" +
-      "Included\030\014 \001(\010\022\016\n\006lctype\030\r \001(\005\022#\n\004logs\030i" +
-      " \003(\0132\025.cn.leancloud.LogItem\"\"\n\016QueryDire" +
-      "ction\022\007\n\003OLD\020\001\022\007\n\003NEW\020\002\"L\n\nRcpCommand\022\n\n" +
-      "\002id\030\001 \001(\t\022\013\n\003cid\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022\014\n\004rea" +
-      "d\030\004 \001(\010\022\014\n\004from\030\005 \001(\t\"8\n\tReadTuple\022\013\n\003ci" +
-      "d\030\001 \002(\t\022\021\n\ttimestamp\030\002 \001(\003\022\013\n\003mid\030\003 \001(\t\"",
-      "N\n\014MaxReadTuple\022\013\n\003pid\030\001 \001(\t\022\027\n\017maxAckTi" +
-      "mestamp\030\002 \001(\003\022\030\n\020maxReadTimestamp\030\003 \001(\003\"" +
-      "P\n\013ReadCommand\022\013\n\003cid\030\001 \001(\t\022\014\n\004cids\030\002 \003(" +
-      "\t\022&\n\005convs\030\003 \003(\0132\027.cn.leancloud.ReadTupl" +
-      "e\"`\n\017PresenceCommand\022(\n\006status\030\001 \001(\0162\030.c" +
-      "n.leancloud.StatusType\022\026\n\016sessionPeerIds" +
-      "\030\002 \003(\t\022\013\n\003cid\030\003 \001(\t\"?\n\rReportCommand\022\022\n\n" +
-      "initiative\030\001 \001(\010\022\014\n\004type\030\002 \001(\t\022\014\n\004data\030\003" +
-      " \001(\t\"\340\001\n\tPatchItem\022\013\n\003cid\030\001 \001(\t\022\013\n\003mid\030\002" +
-      " \001(\t\022\021\n\ttimestamp\030\003 \001(\003\022\016\n\006recall\030\004 \001(\010\022",
-      "\014\n\004data\030\005 \001(\t\022\026\n\016patchTimestamp\030\006 \001(\003\022\014\n" +
-      "\004from\030\007 \001(\t\022\021\n\tbinaryMsg\030\010 \001(\014\022\022\n\nmentio" +
-      "nAll\030\t \001(\010\022\023\n\013mentionPids\030\n \003(\t\022\021\n\tpatch" +
-      "Code\030\013 \001(\003\022\023\n\013patchReason\030\014 \001(\t\"O\n\014Patch" +
-      "Command\022(\n\007patches\030\001 \003(\0132\027.cn.leancloud." +
-      "PatchItem\022\025\n\rlastPatchTime\030\002 \001(\003\"\240\001\n\rPub" +
-      "subCommand\022\013\n\003cid\030\001 \001(\t\022\014\n\004cids\030\002 \003(\t\022\r\n" +
-      "\005topic\030\003 \001(\t\022\020\n\010subtopic\030\004 \001(\t\022\016\n\006topics" +
-      "\030\005 \003(\t\022\021\n\tsubtopics\030\006 \003(\t\0220\n\007results\030\007 \001" +
-      "(\0132\037.cn.leancloud.JsonObjectMessage\"\377\001\n\020",
-      "BlacklistCommand\022\016\n\006srcCid\030\001 \001(\t\022\016\n\006toPi" +
-      "ds\030\002 \003(\t\022\016\n\006srcPid\030\003 \001(\t\022\016\n\006toCids\030\004 \003(\t" +
-      "\022\r\n\005limit\030\005 \001(\005\022\014\n\004next\030\006 \001(\t\022\023\n\013blocked" +
-      "Pids\030\010 \003(\t\022\023\n\013blockedCids\030\t \003(\t\022\023\n\013allow" +
-      "edPids\030\n \003(\t\022.\n\nfailedPids\030\013 \003(\0132\032.cn.le" +
-      "ancloud.ErrorCommand\022\t\n\001t\030\014 \001(\003\022\t\n\001n\030\r \001" +
-      "(\t\022\t\n\001s\030\016 \001(\t\"\217\t\n\016GenericCommand\022&\n\003cmd\030" +
-      "\001 \001(\0162\031.cn.leancloud.CommandType\022 \n\002op\030\002" +
-      " \001(\0162\024.cn.leancloud.OpType\022\r\n\005appId\030\003 \001(" +
-      "\t\022\016\n\006peerId\030\004 \001(\t\022\t\n\001i\030\005 \001(\005\022\026\n\016installa",
-      "tionId\030\006 \001(\t\022\020\n\010priority\030\007 \001(\005\022\017\n\007servic" +
-      "e\030\010 \001(\005\022\020\n\010serverTs\030\t \001(\003\022\020\n\010clientTs\030\n " +
-      "\001(\003\022\030\n\020notificationType\030\013 \001(\005\0220\n\014loginMe" +
-      "ssage\030d \001(\0132\032.cn.leancloud.LoginCommand\022" +
-      ".\n\013dataMessage\030e \001(\0132\031.cn.leancloud.Data" +
-      "Command\0224\n\016sessionMessage\030f \001(\0132\034.cn.lea" +
-      "ncloud.SessionCommand\0220\n\014errorMessage\030g " +
-      "\001(\0132\032.cn.leancloud.ErrorCommand\0222\n\rdirec" +
-      "tMessage\030h \001(\0132\033.cn.leancloud.DirectComm" +
-      "and\022,\n\nackMessage\030i \001(\0132\030.cn.leancloud.A",
-      "ckCommand\0222\n\runreadMessage\030j \001(\0132\033.cn.le" +
-      "ancloud.UnreadCommand\022.\n\013readMessage\030k \001" +
-      "(\0132\031.cn.leancloud.ReadCommand\022,\n\nrcpMess" +
-      "age\030l \001(\0132\030.cn.leancloud.RcpCommand\022.\n\013l" +
-      "ogsMessage\030m \001(\0132\031.cn.leancloud.LogsComm" +
-      "and\022.\n\013convMessage\030n \001(\0132\031.cn.leancloud." +
-      "ConvCommand\022.\n\013roomMessage\030o \001(\0132\031.cn.le" +
-      "ancloud.RoomCommand\0226\n\017presenceMessage\030p" +
-      " \001(\0132\035.cn.leancloud.PresenceCommand\0222\n\rr" +
-      "eportMessage\030q \001(\0132\033.cn.leancloud.Report",
-      "Command\0220\n\014patchMessage\030r \001(\0132\032.cn.leanc" +
-      "loud.PatchCommand\0222\n\rpubsubMessage\030s \001(\013" +
-      "2\033.cn.leancloud.PubsubCommand\0228\n\020blackli" +
-      "stMessage\030t \001(\0132\036.cn.leancloud.Blacklist" +
-      "Command\0226\n\017loggedinMessage\030u \001(\0132\035.cn.le" +
-      "ancloud.LoggedinCommand*\213\002\n\013CommandType\022" +
-      "\013\n\007session\020\000\022\010\n\004conv\020\001\022\n\n\006direct\020\002\022\007\n\003ac" +
-      "k\020\003\022\007\n\003rcp\020\004\022\n\n\006unread\020\005\022\010\n\004logs\020\006\022\t\n\005er" +
-      "ror\020\007\022\t\n\005login\020\010\022\010\n\004data\020\t\022\010\n\004room\020\n\022\010\n\004" +
-      "read\020\013\022\014\n\010presence\020\014\022\n\n\006report\020\r\022\010\n\004echo",
-      "\020\016\022\014\n\010loggedin\020\017\022\n\n\006logout\020\020\022\r\n\tloggedou" +
-      "t\020\021\022\t\n\005patch\020\022\022\n\n\006pubsub\020\023\022\r\n\tblacklist\020" +
-      "\024\022\n\n\006goaway\020\025*\215\010\n\006OpType\022\010\n\004open\020\001\022\007\n\003ad" +
-      "d\020\002\022\n\n\006remove\020\003\022\t\n\005close\020\004\022\n\n\006opened\020\005\022\n" +
-      "\n\006closed\020\006\022\t\n\005query\020\007\022\020\n\014query_result\020\010\022" +
-      "\014\n\010conflict\020\t\022\t\n\005added\020\n\022\013\n\007removed\020\013\022\013\n" +
-      "\007refresh\020\014\022\r\n\trefreshed\020\r\022\t\n\005start\020\036\022\013\n\007" +
-      "started\020\037\022\n\n\006joined\020 \022\022\n\016members_joined\020" +
-      "!\022\010\n\004left\020\'\022\020\n\014members_left\020(\022\013\n\007results" +
-      "\020*\022\t\n\005count\020+\022\n\n\006result\020,\022\n\n\006update\020-\022\013\n",
-      "\007updated\020.\022\010\n\004mute\020/\022\n\n\006unmute\0200\022\n\n\006stat" +
-      "us\0201\022\013\n\007members\0202\022\014\n\010max_read\0203\022\r\n\tis_me" +
-      "mber\0204\022\026\n\022member_info_update\0205\022\027\n\023member" +
-      "_info_updated\0206\022\027\n\023member_info_changed\0207" +
-      "\022\010\n\004join\020P\022\n\n\006invite\020Q\022\t\n\005leave\020R\022\010\n\004kic" +
-      "k\020S\022\n\n\006reject\020T\022\013\n\007invited\020U\022\n\n\006kicked\020V" +
-      "\022\n\n\006upload\020d\022\014\n\010uploaded\020e\022\r\n\tsubscribe\020" +
-      "x\022\016\n\nsubscribed\020y\022\017\n\013unsubscribe\020z\022\020\n\014un" +
-      "subscribed\020{\022\021\n\ris_subscribed\020|\022\013\n\006modif" +
-      "y\020\226\001\022\r\n\010modified\020\227\001\022\n\n\005block\020\252\001\022\014\n\007unblo",
-      "ck\020\253\001\022\014\n\007blocked\020\254\001\022\016\n\tunblocked\020\255\001\022\024\n\017m" +
-      "embers_blocked\020\256\001\022\026\n\021members_unblocked\020\257" +
-      "\001\022\020\n\013check_block\020\260\001\022\021\n\014check_result\020\261\001\022\017" +
-      "\n\nadd_shutup\020\264\001\022\022\n\rremove_shutup\020\265\001\022\021\n\014q" +
-      "uery_shutup\020\266\001\022\021\n\014shutup_added\020\267\001\022\023\n\016shu" +
-      "tup_removed\020\270\001\022\022\n\rshutup_result\020\271\001\022\r\n\010sh" +
-      "utuped\020\272\001\022\017\n\nunshutuped\020\273\001\022\025\n\020members_sh" +
-      "utuped\020\274\001\022\027\n\022members_unshutuped\020\275\001\022\021\n\014ch" +
-      "eck_shutup\020\276\001*\035\n\nStatusType\022\006\n\002on\020\001\022\007\n\003o" +
-      "ff\020\002*/\n\nDeviceType\022\013\n\007unknown\020\000\022\013\n\007andro",
-      "id\020\001\022\007\n\003ios\020\002B\007\242\002\004AVIM"
+      "\030\037 \003(\0132\032.cn.leancloud.ErrorCommand\022\020\n\010ex",
+      "isting\030  \001(\010\022\014\n\004next\030( \001(\t\0220\n\007results\030d " +
+      "\001(\0132\037.cn.leancloud.JsonObjectMessage\022.\n\005" +
+      "where\030e \001(\0132\037.cn.leancloud.JsonObjectMes" +
+      "sage\022-\n\004attr\030g \001(\0132\037.cn.leancloud.JsonOb" +
+      "jectMessage\0225\n\014attrModified\030h \001(\0132\037.cn.l" +
+      "eancloud.JsonObjectMessage\"x\n\013RoomComman" +
+      "d\022\016\n\006roomId\030\001 \001(\t\022\t\n\001s\030\002 \001(\t\022\t\n\001t\030\003 \001(\003\022" +
+      "\t\n\001n\030\004 \001(\t\022\021\n\ttransient\030\005 \001(\010\022\023\n\013roomPee" +
+      "rIds\030\006 \003(\t\022\020\n\010byPeerId\030\007 \001(\t\"\312\002\n\013LogsCom" +
+      "mand\022\013\n\003cid\030\001 \001(\t\022\t\n\001l\030\002 \001(\005\022\r\n\005limit\030\003 ",
+      "\001(\005\022\t\n\001t\030\004 \001(\003\022\n\n\002tt\030\005 \001(\003\022\014\n\004tmid\030\006 \001(\t" +
+      "\022\013\n\003mid\030\007 \001(\t\022\020\n\010checksum\030\010 \001(\t\022\016\n\006store" +
+      "d\030\t \001(\010\022@\n\tdirection\030\n \001(\0162(.cn.leanclou" +
+      "d.LogsCommand.QueryDirection:\003OLD\022\021\n\ttIn" +
+      "cluded\030\013 \001(\010\022\022\n\nttIncluded\030\014 \001(\010\022\016\n\006lcty" +
+      "pe\030\r \001(\005\022#\n\004logs\030i \003(\0132\025.cn.leancloud.Lo" +
+      "gItem\"\"\n\016QueryDirection\022\007\n\003OLD\020\001\022\007\n\003NEW\020" +
+      "\002\"L\n\nRcpCommand\022\n\n\002id\030\001 \001(\t\022\013\n\003cid\030\002 \001(\t" +
+      "\022\t\n\001t\030\003 \001(\003\022\014\n\004read\030\004 \001(\010\022\014\n\004from\030\005 \001(\t\"" +
+      "8\n\tReadTuple\022\013\n\003cid\030\001 \002(\t\022\021\n\ttimestamp\030\002",
+      " \001(\003\022\013\n\003mid\030\003 \001(\t\"N\n\014MaxReadTuple\022\013\n\003pid" +
+      "\030\001 \001(\t\022\027\n\017maxAckTimestamp\030\002 \001(\003\022\030\n\020maxRe" +
+      "adTimestamp\030\003 \001(\003\"P\n\013ReadCommand\022\013\n\003cid\030" +
+      "\001 \001(\t\022\014\n\004cids\030\002 \003(\t\022&\n\005convs\030\003 \003(\0132\027.cn." +
+      "leancloud.ReadTuple\"`\n\017PresenceCommand\022(" +
+      "\n\006status\030\001 \001(\0162\030.cn.leancloud.StatusType" +
+      "\022\026\n\016sessionPeerIds\030\002 \003(\t\022\013\n\003cid\030\003 \001(\t\"?\n" +
+      "\rReportCommand\022\022\n\ninitiative\030\001 \001(\010\022\014\n\004ty" +
+      "pe\030\002 \001(\t\022\014\n\004data\030\003 \001(\t\"\340\001\n\tPatchItem\022\013\n\003" +
+      "cid\030\001 \001(\t\022\013\n\003mid\030\002 \001(\t\022\021\n\ttimestamp\030\003 \001(",
+      "\003\022\016\n\006recall\030\004 \001(\010\022\014\n\004data\030\005 \001(\t\022\026\n\016patch" +
+      "Timestamp\030\006 \001(\003\022\014\n\004from\030\007 \001(\t\022\021\n\tbinaryM" +
+      "sg\030\010 \001(\014\022\022\n\nmentionAll\030\t \001(\010\022\023\n\013mentionP" +
+      "ids\030\n \003(\t\022\021\n\tpatchCode\030\013 \001(\003\022\023\n\013patchRea" +
+      "son\030\014 \001(\t\"O\n\014PatchCommand\022(\n\007patches\030\001 \003" +
+      "(\0132\027.cn.leancloud.PatchItem\022\025\n\rlastPatch" +
+      "Time\030\002 \001(\003\"\240\001\n\rPubsubCommand\022\013\n\003cid\030\001 \001(" +
+      "\t\022\014\n\004cids\030\002 \003(\t\022\r\n\005topic\030\003 \001(\t\022\020\n\010subtop" +
+      "ic\030\004 \001(\t\022\016\n\006topics\030\005 \003(\t\022\021\n\tsubtopics\030\006 " +
+      "\003(\t\0220\n\007results\030\007 \001(\0132\037.cn.leancloud.Json",
+      "ObjectMessage\"\377\001\n\020BlacklistCommand\022\016\n\006sr" +
+      "cCid\030\001 \001(\t\022\016\n\006toPids\030\002 \003(\t\022\016\n\006srcPid\030\003 \001" +
+      "(\t\022\016\n\006toCids\030\004 \003(\t\022\r\n\005limit\030\005 \001(\005\022\014\n\004nex" +
+      "t\030\006 \001(\t\022\023\n\013blockedPids\030\010 \003(\t\022\023\n\013blockedC" +
+      "ids\030\t \003(\t\022\023\n\013allowedPids\030\n \003(\t\022.\n\nfailed" +
+      "Pids\030\013 \003(\0132\032.cn.leancloud.ErrorCommand\022\t" +
+      "\n\001t\030\014 \001(\003\022\t\n\001n\030\r \001(\t\022\t\n\001s\030\016 \001(\t\"\217\t\n\016Gene" +
+      "ricCommand\022&\n\003cmd\030\001 \001(\0162\031.cn.leancloud.C" +
+      "ommandType\022 \n\002op\030\002 \001(\0162\024.cn.leancloud.Op" +
+      "Type\022\r\n\005appId\030\003 \001(\t\022\016\n\006peerId\030\004 \001(\t\022\t\n\001i",
+      "\030\005 \001(\005\022\026\n\016installationId\030\006 \001(\t\022\020\n\010priori" +
+      "ty\030\007 \001(\005\022\017\n\007service\030\010 \001(\005\022\020\n\010serverTs\030\t " +
+      "\001(\003\022\020\n\010clientTs\030\n \001(\003\022\030\n\020notificationTyp" +
+      "e\030\013 \001(\005\0220\n\014loginMessage\030d \001(\0132\032.cn.leanc" +
+      "loud.LoginCommand\022.\n\013dataMessage\030e \001(\0132\031" +
+      ".cn.leancloud.DataCommand\0224\n\016sessionMess" +
+      "age\030f \001(\0132\034.cn.leancloud.SessionCommand\022" +
+      "0\n\014errorMessage\030g \001(\0132\032.cn.leancloud.Err" +
+      "orCommand\0222\n\rdirectMessage\030h \001(\0132\033.cn.le" +
+      "ancloud.DirectCommand\022,\n\nackMessage\030i \001(",
+      "\0132\030.cn.leancloud.AckCommand\0222\n\runreadMes" +
+      "sage\030j \001(\0132\033.cn.leancloud.UnreadCommand\022" +
+      ".\n\013readMessage\030k \001(\0132\031.cn.leancloud.Read" +
+      "Command\022,\n\nrcpMessage\030l \001(\0132\030.cn.leanclo" +
+      "ud.RcpCommand\022.\n\013logsMessage\030m \001(\0132\031.cn." +
+      "leancloud.LogsCommand\022.\n\013convMessage\030n \001" +
+      "(\0132\031.cn.leancloud.ConvCommand\022.\n\013roomMes" +
+      "sage\030o \001(\0132\031.cn.leancloud.RoomCommand\0226\n" +
+      "\017presenceMessage\030p \001(\0132\035.cn.leancloud.Pr" +
+      "esenceCommand\0222\n\rreportMessage\030q \001(\0132\033.c",
+      "n.leancloud.ReportCommand\0220\n\014patchMessag" +
+      "e\030r \001(\0132\032.cn.leancloud.PatchCommand\0222\n\rp" +
+      "ubsubMessage\030s \001(\0132\033.cn.leancloud.Pubsub" +
+      "Command\0228\n\020blacklistMessage\030t \001(\0132\036.cn.l" +
+      "eancloud.BlacklistCommand\0226\n\017loggedinMes" +
+      "sage\030u \001(\0132\035.cn.leancloud.LoggedinComman" +
+      "d*\213\002\n\013CommandType\022\013\n\007session\020\000\022\010\n\004conv\020\001" +
+      "\022\n\n\006direct\020\002\022\007\n\003ack\020\003\022\007\n\003rcp\020\004\022\n\n\006unread" +
+      "\020\005\022\010\n\004logs\020\006\022\t\n\005error\020\007\022\t\n\005login\020\010\022\010\n\004da" +
+      "ta\020\t\022\010\n\004room\020\n\022\010\n\004read\020\013\022\014\n\010presence\020\014\022\n",
+      "\n\006report\020\r\022\010\n\004echo\020\016\022\014\n\010loggedin\020\017\022\n\n\006lo" +
+      "gout\020\020\022\r\n\tloggedout\020\021\022\t\n\005patch\020\022\022\n\n\006pubs" +
+      "ub\020\023\022\r\n\tblacklist\020\024\022\n\n\006goaway\020\025*\215\010\n\006OpTy" +
+      "pe\022\010\n\004open\020\001\022\007\n\003add\020\002\022\n\n\006remove\020\003\022\t\n\005clo" +
+      "se\020\004\022\n\n\006opened\020\005\022\n\n\006closed\020\006\022\t\n\005query\020\007\022" +
+      "\020\n\014query_result\020\010\022\014\n\010conflict\020\t\022\t\n\005added" +
+      "\020\n\022\013\n\007removed\020\013\022\013\n\007refresh\020\014\022\r\n\trefreshe" +
+      "d\020\r\022\t\n\005start\020\036\022\013\n\007started\020\037\022\n\n\006joined\020 \022" +
+      "\022\n\016members_joined\020!\022\010\n\004left\020\'\022\020\n\014members" +
+      "_left\020(\022\013\n\007results\020*\022\t\n\005count\020+\022\n\n\006resul",
+      "t\020,\022\n\n\006update\020-\022\013\n\007updated\020.\022\010\n\004mute\020/\022\n" +
+      "\n\006unmute\0200\022\n\n\006status\0201\022\013\n\007members\0202\022\014\n\010m" +
+      "ax_read\0203\022\r\n\tis_member\0204\022\026\n\022member_info_" +
+      "update\0205\022\027\n\023member_info_updated\0206\022\027\n\023mem" +
+      "ber_info_changed\0207\022\010\n\004join\020P\022\n\n\006invite\020Q" +
+      "\022\t\n\005leave\020R\022\010\n\004kick\020S\022\n\n\006reject\020T\022\013\n\007inv" +
+      "ited\020U\022\n\n\006kicked\020V\022\n\n\006upload\020d\022\014\n\010upload" +
+      "ed\020e\022\r\n\tsubscribe\020x\022\016\n\nsubscribed\020y\022\017\n\013u" +
+      "nsubscribe\020z\022\020\n\014unsubscribed\020{\022\021\n\ris_sub" +
+      "scribed\020|\022\013\n\006modify\020\226\001\022\r\n\010modified\020\227\001\022\n\n",
+      "\005block\020\252\001\022\014\n\007unblock\020\253\001\022\014\n\007blocked\020\254\001\022\016\n" +
+      "\tunblocked\020\255\001\022\024\n\017members_blocked\020\256\001\022\026\n\021m" +
+      "embers_unblocked\020\257\001\022\020\n\013check_block\020\260\001\022\021\n" +
+      "\014check_result\020\261\001\022\017\n\nadd_shutup\020\264\001\022\022\n\rrem" +
+      "ove_shutup\020\265\001\022\021\n\014query_shutup\020\266\001\022\021\n\014shut" +
+      "up_added\020\267\001\022\023\n\016shutup_removed\020\270\001\022\022\n\rshut" +
+      "up_result\020\271\001\022\r\n\010shutuped\020\272\001\022\017\n\nunshutupe" +
+      "d\020\273\001\022\025\n\020members_shutuped\020\274\001\022\027\n\022members_u" +
+      "nshutuped\020\275\001\022\021\n\014check_shutup\020\276\001*\035\n\nStatu" +
+      "sType\022\006\n\002on\020\001\022\007\n\003off\020\002*/\n\nDeviceType\022\013\n\007",
+      "unknown\020\000\022\013\n\007android\020\001\022\007\n\003ios\020\002B\007\242\002\004AVIM"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -48893,7 +48981,7 @@ public final class Messages {
     internal_static_cn_leancloud_ConvCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_leancloud_ConvCommand_descriptor,
-        new java.lang.String[] { "M", "Transient", "Unique", "Cid", "Cdate", "InitBy", "Sort", "Limit", "Skip", "Flag", "Count", "Udate", "T", "N", "S", "StatusSub", "StatusPub", "StatusTTL", "UniqueId", "TargetClientId", "MaxReadTimestamp", "MaxAckTimestamp", "QueryAllMembers", "MaxReadTuples", "Cids", "Info", "TempConv", "TempConvTTL", "TempConvIds", "AllowedPids", "FailedPids", "Next", "Results", "Where", "Attr", "AttrModified", });
+        new java.lang.String[] { "M", "Transient", "Unique", "Cid", "Cdate", "InitBy", "Sort", "Limit", "Skip", "Flag", "Count", "Udate", "T", "N", "S", "StatusSub", "StatusPub", "StatusTTL", "UniqueId", "TargetClientId", "MaxReadTimestamp", "MaxAckTimestamp", "QueryAllMembers", "MaxReadTuples", "Cids", "Info", "TempConv", "TempConvTTL", "TempConvIds", "AllowedPids", "FailedPids", "Existing", "Next", "Results", "Where", "Attr", "AttrModified", });
     internal_static_cn_leancloud_RoomCommand_descriptor =
       getDescriptor().getMessageTypes().get(16);
     internal_static_cn_leancloud_RoomCommand_fieldAccessorTable = new
