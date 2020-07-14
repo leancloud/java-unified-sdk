@@ -39,7 +39,12 @@ public class AVMixPushManager {
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
                                          AVOPPOPushAdapter callback) {
+    if (null == context || StringUtil.isEmpty(appKey) || StringUtil.isEmpty(appSecret)) {
+      LOGGER.e("invalid parameter. context=" + context + ", appKey=" + appKey);
+      return false;
+    }
     if (!isSupportOppoPush(context)) {
+      LOGGER.e("current device doesn't support OPPO Push.");
       return false;
     }
     HeytapPushManager.init(context, true);
@@ -58,8 +63,7 @@ public class AVMixPushManager {
    * @return
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
-                                         String profile,
-                                         AVOPPOPushAdapter callback) {
+                                         String profile, AVOPPOPushAdapter callback) {
     oppoDeviceProfile = profile;
     return registerOppoPush(context, appKey, appSecret, callback);
   }
