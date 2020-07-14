@@ -1,7 +1,5 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
-import cn.leancloud.utils.AVUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
@@ -19,6 +17,8 @@ import java.util.concurrent.CountDownLatch;
 
 public class AVUserTest extends TestCase {
   private boolean operationSucceed = false;
+  private final static String USERNAME = "jfeng";
+  private static final String PASSWORD = "FER$@$@#Ffwe";
   public AVUserTest(String name) {
     super(name);
     Configure.initializeRuntime();
