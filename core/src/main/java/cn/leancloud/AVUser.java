@@ -8,6 +8,8 @@ import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.gson.ObjectDeserializer;
 import cn.leancloud.ops.Utils;
+import cn.leancloud.sms.AVSMS;
+import cn.leancloud.sms.AVSMSOption;
 import cn.leancloud.types.AVNull;
 import cn.leancloud.utils.ErrorUtils;
 import cn.leancloud.utils.StringUtil;
@@ -817,40 +819,138 @@ public class AVUser extends AVObject {
     return PaasClient.getStorageClient().requestResetPassword(email);
   }
 
+  /**
+   * request sms code for resetting password
+   * @param phoneNumber mobile phone number
+   * @return observable instance
+   */
   public static Observable<AVNull> requestPasswordResetBySmsCodeInBackground(String phoneNumber) {
     return requestPasswordResetBySmsCodeInBackground(phoneNumber, null);
   }
 
+  /**
+   * request sms code for resetting password, collaborating with AVCaptcha
+   * @param phoneNumber mobile phone number
+   * @param validateToken validated token, retrieved after invoking AVCaptcha#verifyCaptchaCodeInBackground
+   * @return observable instance
+   */
   public static Observable<AVNull> requestPasswordResetBySmsCodeInBackground(String phoneNumber, String validateToken) {
     return PaasClient.getStorageClient().requestResetPasswordBySmsCode(phoneNumber, validateToken);
   }
 
+  /**
+   * reset password with sms code for current user.
+   * @param smsCode sms code
+   * @param newPassword new password
+   * @return observable instance
+   */
   public static Observable<AVNull> resetPasswordBySmsCodeInBackground(String smsCode, String newPassword) {
     return PaasClient.getStorageClient().resetPasswordBySmsCode(smsCode, newPassword);
   }
+
+  /**
+   * update current user's password
+   * @param oldPass old password
+   * @param newPass new password
+   * @return observable instance
+   */
   public Observable<AVNull> updatePasswordInBackground(String oldPass, String newPass) {
     return PaasClient.getStorageClient().updatePassword(this, oldPass, newPass);
   }
 
+  /**
+   * request verified email
+   * @param email email address
+   * @return observable instance
+   */
   public static Observable<AVNull> requestEmailVerifyInBackground(String email) {
     return PaasClient.getStorageClient().requestEmailVerify(email);
   }
 
+  /**
+   * request sms code for verification mobile phone.
+   * @param mobilePhone mobile phone number.
+   * @return observable instance
+   */
   public static Observable<AVNull> requestMobilePhoneVerifyInBackground(String mobilePhone) {
+    if (StringUtil.isEmpty(mobilePhone) || !AVSMS.checkMobilePhoneNumber(mobilePhone)) {
+      return Observable.error(new IllegalArgumentException("mobile phone number is empty or invalid"));
+    }
     return requestMobilePhoneVerifyInBackground(mobilePhone, null);
   }
+
+  /**
+   * request sms code for verification mobile phone, collaborating with AVCaptcha
+   * @param mobilePhone mobile phone number.
+   * @param validateToken validated token, retrieved after invoking AVCaptcha#verifyCaptchaCodeInBackground
+   * @return observable instance.
+   */
   public static Observable<AVNull> requestMobilePhoneVerifyInBackground(String mobilePhone, String validateToken) {
+    if (StringUtil.isEmpty(mobilePhone) || !AVSMS.checkMobilePhoneNumber(mobilePhone)) {
+      return Observable.error(new IllegalArgumentException("mobile phone number is empty or invalid"));
+    }
     return PaasClient.getStorageClient().requestMobilePhoneVerify(mobilePhone, validateToken);
   }
 
-  public static Observable<AVNull> requestLoginSmsCodeInBackground(String phoneNumber) {
-    return requestLoginSmsCodeInBackground(phoneNumber, null);
+  /**
+   * request sms code for login
+   * @param mobilePhone mobile phone number.
+   * @return observable instance
+   */
+  public static Observable<AVNull> requestLoginSmsCodeInBackground(String mobilePhone) {
+    if (StringUtil.isEmpty(mobilePhone) || !AVSMS.checkMobilePhoneNumber(mobilePhone)) {
+      return Observable.error(new IllegalArgumentException("mobile phone number is empty or invalid"));
+    }
+    return requestLoginSmsCodeInBackground(mobilePhone, null);
   }
-  public static Observable<AVNull> requestLoginSmsCodeInBackground(String phoneNumber, String validateToken) {
-    return PaasClient.getStorageClient().requestLoginSmsCode(phoneNumber, validateToken);
+
+  /**
+   * request sms code for login, collaborating with AVCaptcha
+   * @param mobilePhone mobile phone number
+   * @param validateToken validated token, retrieved after invoking AVCaptcha#verifyCaptchaCodeInBackground
+   * @return observable instance.
+   */
+  public static Observable<AVNull> requestLoginSmsCodeInBackground(String mobilePhone, String validateToken) {
+    if (StringUtil.isEmpty(mobilePhone) || !AVSMS.checkMobilePhoneNumber(mobilePhone)) {
+      return Observable.error(new IllegalArgumentException("mobile phone number is empty or invalid"));
+    }
+    return PaasClient.getStorageClient().requestLoginSmsCode(mobilePhone, validateToken);
   }
+
+  /**
+   * verify sms code with current user's phone number.
+   * @param verifyCode sms code
+   * @return observable instance.
+   */
   public static Observable<AVNull> verifyMobilePhoneInBackground(String verifyCode) {
     return PaasClient.getStorageClient().verifyMobilePhone(verifyCode);
+  }
+
+  /**
+   * request sms code for updating phone number of current user.
+   * @param mobilePhone mobile phone number.
+   * @param option sms option
+   * @return observable instance
+   */
+  public static Observable<AVNull> requestSMSCodeForUpdatingPhoneNumberInBackground(String mobilePhone, AVSMSOption option) {
+    if (StringUtil.isEmpty(mobilePhone) || !AVSMS.checkMobilePhoneNumber(mobilePhone)) {
+      return Observable.error(new IllegalArgumentException("mobile phone number is empty or invalid"));
+    }
+    Map<String, Object> param = (null == option)? new HashMap<String, Object>() : option.getOptionMap();
+    return PaasClient.getStorageClient().requestSMSCodeForUpdatingPhoneNumber(mobilePhone, param);
+  }
+
+  /**
+   * verify sms code for updating phone number of current user.
+   * @param code    sms code
+   * @param mobilePhone mobile phone number.
+   * @return observable instance
+   */
+  public static Observable<AVNull> verifySMSCodeForUpdatingPhoneNumberInBackground(String code, String mobilePhone) {
+    if (StringUtil.isEmpty(code) || StringUtil.isEmpty(mobilePhone)) {
+      return Observable.error(new IllegalArgumentException("code or mobilePhone is empty"));
+    }
+    return PaasClient.getStorageClient().verifySMSCodeForUpdatingPhoneNumber(code, mobilePhone);
   }
 
   private boolean checkUserAuthentication(final AVCallback callback) {

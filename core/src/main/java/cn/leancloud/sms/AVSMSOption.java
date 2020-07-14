@@ -47,7 +47,7 @@ public class AVSMSOption {
     this.ttl = ttl;
   }
 
-  Map<String, Object> getOptionMap() {
+  public Map<String, Object> getOptionMap() {
     Map<String, Object> result = new HashMap<String, Object>();
     fillMap("name", applicationName, result);
     fillMap("op", operation, result);
