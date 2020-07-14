@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 7.0.1 release
+
+#### Break changes
+- None
+
+#### New features
+- add static method: AVUser#requestSMSCodeForUpdatingPhoneNumberInBackground and AVUser#verifySMSCodeForUpdatingPhoneNumberInBackground
+- upgrade oppo push sdk from 2.0.2 to 2.1.0
+
+#### Optimization and fixed bugs
+- performance optimization.
+
 ## 7.0.0 release
 
 #### Break changes
@@ -9,6 +21,18 @@ Following is change logs for recently release versions, you can refer to [releas
 
 #### New features
 - None
+
+#### Optimization and fixed bugs
+- performance optimization.
+
+## 6.5.10 release
+
+#### Break changes
+- None
+
+#### New features
+- add static method: AVUser#requestSMSCodeForUpdatingPhoneNumberInBackground and AVUser#verifySMSCodeForUpdatingPhoneNumberInBackground
+- upgrade oppo push sdk from 2.0.2 to 2.1.0
 
 #### Optimization and fixed bugs
 - performance optimization.
