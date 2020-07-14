@@ -12,6 +12,8 @@ import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
+import com.heytap.msp.push.HeytapPushManager;
+
 /**
  * Created by wli on 16/6/27.
  */
@@ -37,10 +39,17 @@ public class AVMixPushManager {
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
                                          AVOPPOPushAdapter callback) {
-    if (!isSupportOppoPush(context)) {
+    if (null == context || StringUtil.isEmpty(appKey) || StringUtil.isEmpty(appSecret)) {
+      LOGGER.e("invalid parameter. context=" + context + ", appKey=" + appKey);
       return false;
     }
-    com.heytap.mcssdk.PushManager.getInstance().register(context, appKey, appSecret, callback);
+    if (!isSupportOppoPush(context)) {
+      LOGGER.e("current device doesn't support OPPO Push.");
+      return false;
+    }
+    HeytapPushManager.init(context, true);
+    HeytapPushManager.register(context, appKey, appSecret, callback);
+    HeytapPushManager.requestNotificationPermission();
     return true;
   }
 
@@ -54,8 +63,7 @@ public class AVMixPushManager {
    * @return
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
-                                         String profile,
-                                         AVOPPOPushAdapter callback) {
+                                         String profile, AVOPPOPushAdapter callback) {
     oppoDeviceProfile = profile;
     return registerOppoPush(context, appKey, appSecret, callback);
   }
@@ -68,21 +76,21 @@ public class AVMixPushManager {
    * @return
    */
   public static boolean isSupportOppoPush(Context context) {
-    return com.heytap.mcssdk.PushManager.isSupportPush(context);
+    return HeytapPushManager.isSupportPush();
   }
 
   /**
    * pause oppo push
    */
   public static void pauseOppoPush() {
-    com.heytap.mcssdk.PushManager.getInstance().pausePush();
+    HeytapPushManager.pausePush();
   }
 
   /**
    * resume oppo push
    */
   public static void resumeOppoPush() {
-    com.heytap.mcssdk.PushManager.getInstance().resumePush();
+    HeytapPushManager.resumePush();
   }
 
   /**
@@ -95,7 +103,7 @@ public class AVMixPushManager {
    */
   public static void setOppoPushTime(List<Integer> weekDays, int startHour, int startMinute,
                                      int endHour, int endMinute) {
-    com.heytap.mcssdk.PushManager.getInstance().setPushTime(weekDays, startHour, startMinute,
+    HeytapPushManager.setPushTime(weekDays, startHour, startMinute,
         endHour, endMinute);
   }
 
@@ -103,83 +111,83 @@ public class AVMixPushManager {
    * set oppo push aliases.
    * @param aliases
    */
+  @Deprecated
   public static void setOppoAliases(List<String> aliases) {
-    com.heytap.mcssdk.PushManager.getInstance().setAliases(aliases);
   }
 
   /**
    * unset oppo push aliases.
    * @param alias
    */
+  @Deprecated
   public static void unsetOppoAlias(String alias) {
-    com.heytap.mcssdk.PushManager.getInstance().unsetAlias(alias);
   }
 
   /**
    * get oppo aliases.
    */
+  @Deprecated
   public static void getOppoAliases() {
-    com.heytap.mcssdk.PushManager.getInstance().getAliases();
   }
 
   /**
    * set oppo push account.
    * @param account
    */
+  @Deprecated
   public static void setOppoUserAccount(String account) {
-    com.heytap.mcssdk.PushManager.getInstance().setUserAccount(account);
   }
 
   /**
    * unset oppo push accounts.
    * @param accounts
    */
+  @Deprecated
   public static void unsetOppoUserAccouts(List<String> accounts) {
-    com.heytap.mcssdk.PushManager.getInstance().unsetUserAccounts(accounts);
   }
 
   /**
    * get oppo push accounts.
    */
+  @Deprecated
   public static void getOppoUserAccounts() {
-    com.heytap.mcssdk.PushManager.getInstance().getUserAccounts();
   }
 
   /**
    * set oppo push tags.
    * @param tags
    */
+  @Deprecated
   public static void setOppoTags(List<String> tags) {
-    com.heytap.mcssdk.PushManager.getInstance().setTags(tags);
   }
 
   /**
    * unset oppo push tags.
    * @param tags
    */
+  @Deprecated
   public static void unsetOppoTags(List<String> tags) {
-    com.heytap.mcssdk.PushManager.getInstance().unsetTags(tags);
   }
 
   /**
    * retrieve oppo push tags.
    */
+  @Deprecated
   public static void getOppoTags() {
-    com.heytap.mcssdk.PushManager.getInstance().getTags();
   }
 
   /**
    * get oppo push status
    */
   public static void getOppoPushStatus() {
-    com.heytap.mcssdk.PushManager.getInstance().getPushStatus();
+    HeytapPushManager.getPushStatus();
   }
 
   /**
    * get oppo notification status.
    */
   public static void getOppoNotificationStatus() {
-    com.heytap.mcssdk.PushManager.getInstance().getNotificationStatus();
+    HeytapPushManager.getNotificationStatus();
   }
 
   /**
@@ -201,6 +209,7 @@ public class AVMixPushManager {
           }
         }
       }));
+      HeytapPushManager.unRegister();
     }
   }
 

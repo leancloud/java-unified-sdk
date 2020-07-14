@@ -10,7 +10,7 @@ import cn.leancloud.callback.SaveCallback;
  * OPPO推送暂时只支持通知栏消息的推送。消息下发到OS系统模块并由系统通知模块展示，在用户点击通知前，不启动应用。
  * 参考：https://open.oppomobile.com/wiki/doc#id=10196
  */
-public class AVOPPOPushAdapter extends com.heytap.mcssdk.callback.PushAdapter {
+public class AVOPPOPushAdapter implements com.heytap.msp.push.callback.ICallBackResultService {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVOPPOPushAdapter.class);
   private static final String VENDOR_OPPO = "oppo";
 
@@ -42,9 +42,8 @@ public class AVOPPOPushAdapter extends com.heytap.mcssdk.callback.PushAdapter {
     }
   }
 
-  @Override
   public void onRegister(int responseCode, String registerID) {
-    if (responseCode != com.heytap.mcssdk.mode.ErrorCode.SUCCESS) {
+    if (responseCode != 0) {
       LOGGER.e("failed to register device. errorCode: " + responseCode);
       return;
     }
@@ -54,4 +53,37 @@ public class AVOPPOPushAdapter extends com.heytap.mcssdk.callback.PushAdapter {
     }
     updateAVInstallation(registerID);
   }
+
+  public void onUnRegister(int responseCode) {
+    if (responseCode != 0) {
+      LOGGER.e("failed to unregister device. errorCode: " + responseCode);
+    } else {
+      LOGGER.i("succeeded to unregister device.");
+    }
+  }
+
+  public void onSetPushTime(int responseCode, String var2) {
+    if (responseCode != 0) {
+      LOGGER.e("failed to setPushTime. errorCode: " + responseCode);
+    } else {
+      LOGGER.i("succeeded to setPushTime.");
+    }
+  }
+
+  public void onGetPushStatus(int responseCode, int status) {
+    if (responseCode != 0) {
+      LOGGER.e("failed to getPushStatus. errorCode: " + responseCode);
+    } else {
+      LOGGER.i("succeeded to getPushStatus.");
+    }
+  }
+
+  public void onGetNotificationStatus(int responseCode, int status) {
+    if (responseCode != 0) {
+      LOGGER.e("failed to getNotificationStatus. errorCode: " + responseCode);
+    } else {
+      LOGGER.i("succeeded to getNotificationStatus.");
+    }
+  }
+
 }
