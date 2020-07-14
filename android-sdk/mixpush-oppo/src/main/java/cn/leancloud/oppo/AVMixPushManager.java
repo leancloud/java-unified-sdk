@@ -43,11 +43,11 @@ public class AVMixPushManager {
       LOGGER.e("invalid parameter. context=" + context + ", appKey=" + appKey);
       return false;
     }
+    HeytapPushManager.init(context, true);
     if (!isSupportOppoPush(context)) {
       LOGGER.e("current device doesn't support OPPO Push.");
       return false;
     }
-    HeytapPushManager.init(context, true);
     HeytapPushManager.register(context, appKey, appSecret, callback);
     HeytapPushManager.requestNotificationPermission();
     return true;
