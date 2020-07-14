@@ -56,22 +56,34 @@ public class AVOPPOPushAdapter implements com.heytap.msp.push.callback.ICallBack
 
   public void onUnRegister(int responseCode) {
     if (responseCode != 0) {
-      ;
+      LOGGER.e("failed to unregister device. errorCode: " + responseCode);
     } else {
-      ;
+      LOGGER.i("succeeded to unregister device.");
     }
   }
 
   public void onSetPushTime(int responseCode, String var2) {
-
+    if (responseCode != 0) {
+      LOGGER.e("failed to setPushTime. errorCode: " + responseCode);
+    } else {
+      LOGGER.i("succeeded to setPushTime.");
+    }
   }
 
   public void onGetPushStatus(int responseCode, int status) {
-    ;
+    if (responseCode != 0) {
+      LOGGER.e("failed to getPushStatus. errorCode: " + responseCode);
+    } else {
+      LOGGER.i("succeeded to getPushStatus.");
+    }
   }
 
   public void onGetNotificationStatus(int responseCode, int status) {
-    ;
+    if (responseCode != 0) {
+      LOGGER.e("failed to getNotificationStatus. errorCode: " + responseCode);
+    } else {
+      LOGGER.i("succeeded to getNotificationStatus.");
+    }
   }
 
 }
