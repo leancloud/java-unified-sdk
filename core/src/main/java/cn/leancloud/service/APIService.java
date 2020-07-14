@@ -230,6 +230,12 @@ public interface APIService {
   @POST("/1.1/verifySmsCode/{code}")
   Observable<AVNull> verifySMSCode(@Path("code") String code, @Body Map<String, Object> param);
 
+  @POST("/1.1/requestChangePhoneNumber")
+  Observable<AVNull> requestSMSCodeForUpdatingPhoneNumber(@Body Map<String, Object> param);
+
+  @POST("/1.1/changePhoneNumber")
+  Observable<AVNull> verifySMSCodeForUpdatingPhoneNumber(@Body Map<String, Object> param);
+
   /**
    * FullText Search API
    */

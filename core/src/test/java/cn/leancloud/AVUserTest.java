@@ -5,6 +5,7 @@ import cn.leancloud.utils.AVUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import cn.leancloud.types.AVNull;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
@@ -689,6 +690,150 @@ public class AVUserTest extends TestCase {
     });
 
     latch.await();
+    assertTrue(operationSucceed);
+  }
+
+  public void testRequestSMSCodeForUpdatingPhoneNumberWithoutLogin() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    AVUser.requestSMSCodeForUpdatingPhoneNumberInBackground("18600345188", null).subscribe(
+            new Observer<AVNull>() {
+              @Override
+              public void onSubscribe(Disposable disposable) {
+
+              }
+
+              @Override
+              public void onNext(AVNull avNull) {
+                latch.countDown();
+              }
+
+              @Override
+              public void onError(Throwable throwable) {
+                System.out.println("failed to requestSMSCodeForUpdatingPhoneNumber.");
+                throwable.printStackTrace();
+                operationSucceed = true;
+                latch.countDown();
+              }
+
+              @Override
+              public void onComplete() {
+
+              }
+            }
+    );
+    latch.await();
+    assertTrue(operationSucceed);
+  }
+
+  public void testRequestSMSCodeForUpdatingPhoneNumber() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
+      public void onSubscribe(Disposable disposable) {
+        System.out.println("onSubscribe " + disposable.toString());
+      }
+
+      public void onNext(AVUser avUser) {
+        System.out.println("onNext. result=" + JSON.toJSONString(avUser));
+
+        AVUser currentUser = AVUser.getCurrentUser();
+        System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
+        System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
+
+        AVUser.requestSMSCodeForUpdatingPhoneNumberInBackground("18600345188", null).subscribe(
+                new Observer<AVNull>() {
+                  @Override
+                  public void onSubscribe(Disposable disposable) {
+
+                  }
+
+                  @Override
+                  public void onNext(AVNull avNull) {
+                    System.out.println("Succeed to requestSMSCodeForUpdatingPhoneNumber");
+                    operationSucceed = true;
+                    latch.countDown();
+                  }
+
+                  @Override
+                  public void onError(Throwable throwable) {
+                    System.out.println("Failed to requestSMSCodeForUpdatingPhoneNumber");
+                    throwable.printStackTrace();
+                    latch.countDown();
+                  }
+
+                  @Override
+                  public void onComplete() {
+                  }
+                }
+        );
+      }
+
+      public void onError(Throwable throwable) {
+        System.out.println("Failed to login.");
+        latch.countDown();
+      }
+
+      public void onComplete() {
+        System.out.println("onComplete");
+      }
+    });
+    latch.await();
+    AVUser.logOut();
+    assertTrue(operationSucceed);
+  }
+
+  public void testVerifySMSCodeForUpdatingPhoneNumber() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
+      public void onSubscribe(Disposable disposable) {
+        System.out.println("onSubscribe " + disposable.toString());
+      }
+
+      public void onNext(AVUser avUser) {
+        System.out.println("onNext. result=" + JSON.toJSONString(avUser));
+
+        AVUser currentUser = AVUser.getCurrentUser();
+        System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
+        System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
+
+        AVUser.verifySMSCodeForUpdatingPhoneNumberInBackground("135966", "18600345188").subscribe(
+                new Observer<AVNull>() {
+          @Override
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(AVNull avNull) {
+            System.out.println("Succeed to verifySMSCodeForUpdatingPhoneNumber");
+            operationSucceed = true;
+            latch.countDown();
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            System.out.println("Failed to verifySMSCodeForUpdatingPhoneNumber");
+            throwable.printStackTrace();
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
+      }
+
+      public void onError(Throwable throwable) {
+        System.out.println("Failed to login.");
+        latch.countDown();
+      }
+
+      public void onComplete() {
+        System.out.println("onComplete");
+      }
+    });
+    latch.await();
+    AVUser.logOut();
     assertTrue(operationSucceed);
   }
 }

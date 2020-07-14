@@ -740,6 +740,11 @@ public class StorageClient {
     return wrapObservable(apiService.requestSMSCode(param));
   }
 
+  public Observable<AVNull> requestSMSCodeForUpdatingPhoneNumber(String mobilePhone, Map<String, Object> param) {
+    param.put("mobilePhoneNumber", mobilePhone);
+    return wrapObservable(apiService.requestSMSCodeForUpdatingPhoneNumber(param));
+  }
+
   public Observable<AVNull> verifySMSCode(String code, String mobilePhone) {
     if (StringUtil.isEmpty(code) || StringUtil.isEmpty(mobilePhone)) {
       return Observable.error(new IllegalArgumentException("code or mobilePhone is empty"));
@@ -747,6 +752,16 @@ public class StorageClient {
     Map<String, Object> param = new HashMap<String, Object>(1);
     param.put("mobilePhoneNumber", mobilePhone);
     return wrapObservable(apiService.verifySMSCode(code, param));
+  }
+
+  public Observable<AVNull> verifySMSCodeForUpdatingPhoneNumber(String code, String mobilePhone) {
+    if (StringUtil.isEmpty(code) || StringUtil.isEmpty(mobilePhone)) {
+      return Observable.error(new IllegalArgumentException("code or mobilePhone is empty"));
+    }
+    Map<String, Object> param = new HashMap<String, Object>(1);
+    param.put("mobilePhoneNumber", mobilePhone);
+    param.put("code", code);
+    return wrapObservable(apiService.verifySMSCodeForUpdatingPhoneNumber(param));
   }
 
   public Observable<AVSearchResponse> search(Map<String, String> params) {
