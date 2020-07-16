@@ -44,7 +44,9 @@ public class AVUtils {
 
   public static Map<String, Object> createStringObjectMap(String key, Object value) {
     Map<String, Object> map = new HashMap<String, Object>();
-    map.put(key, value);
+    if (null != value) {
+      map.put(key, value);
+    }
     return map;
   }
 
@@ -94,6 +96,17 @@ public class AVUtils {
         continue;
       }
       left.put(entry.getKey(), entry.getValue());
+    }
+  }
+
+  public static void putAllWithNullFilter(Map<String, Object> source, Map<String, Object> dest) {
+    if (null == source || null == dest) {
+      return;
+    }
+    for (Map.Entry<String, Object> e: dest.entrySet()) {
+      if (null != e.getValue()) {
+        source.put(e.getKey(), e.getValue());
+      }
     }
   }
 }

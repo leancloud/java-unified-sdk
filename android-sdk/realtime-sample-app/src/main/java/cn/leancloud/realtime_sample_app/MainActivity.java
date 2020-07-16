@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -233,17 +234,21 @@ public class MainActivity extends AppCompatActivity {
         case R.id.navigation_notifications:
           mTextMessage.setText(R.string.title_notifications);
           try {
-            AVIMAudioMessage audioMessage = new AVIMAudioMessage(MainActivity.this.getCacheDir().getAbsolutePath() + "/dYRQ8YfHavfile/c1fa842a72de9129f5b2b342cbeb3c9d");
+            AVFile file = new AVFile("apple.acc", "https://some.website.com/apple.acc", new HashMap<>());
+            AVIMAudioMessage m = new AVIMAudioMessage(file);
+            m.setText("来自苹果发布会现场的录音");
+//            AVIMAudioMessage audioMessage = new AVIMAudioMessage(MainActivity.this.getCacheDir().getAbsolutePath() + "/dYRQ8YfHavfile/c1fa842a72de9129f5b2b342cbeb3c9d");
             currentClient.createTemporaryConversation(Arrays.asList("abc", "def"), new AVIMConversationCreatedCallback() {
               @Override
               public void done(AVIMConversation conversation, AVIMException e) {
                 if (e != null) {
                   Log.e("tag", "failed to create conversations. error ", e);
                 } else {
-                  conversation.sendMessage(audioMessage, new AVIMConversationCallback() {
+                  conversation.sendMessage(m, new AVIMConversationCallback() {
                     @Override
                     public void done(AVIMException ex) {
                       if (null != ex) {
+                        ex.printStackTrace();
                         Log.e("tag", "failed to send Audio Message, cause: " + ex.getMessage());
                       } else {
                         Log.d("tag", "succeed to send audio message.");

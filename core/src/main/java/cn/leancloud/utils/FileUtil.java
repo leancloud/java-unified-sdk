@@ -61,21 +61,24 @@ public class FileUtil {
   public static String getMimeTypeFromFilename(String fileName) {
     String extension = getExtensionFromFilename(fileName);
     if (!StringUtil.isEmpty(extension)) {
-      return detector.getMimeTypeFromExtension(extension);
+      String result = detector.getMimeTypeFromExtension(extension);
+      return null != result? result : "";
     }
     return "";
   }
 
   public static String getMimeTypeFromPath(String localPath) {
     if (!StringUtil.isEmpty(localPath)) {
-      return detector.getMimeTypeFromPath(localPath);
+      String result = detector.getMimeTypeFromPath(localPath);
+      return null != result? result : "";
     }
     return "";
   }
 
   public static String getMimeTypeFromUrl(String url) {
     if (!StringUtil.isEmpty(url)) {
-      return detector.getMimeTypeFromUrl(url);
+      String result = detector.getMimeTypeFromUrl(url);
+      return null != result? result : "";
     }
     return "";
   }

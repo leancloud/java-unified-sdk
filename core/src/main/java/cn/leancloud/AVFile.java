@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import cn.leancloud.upload.*;
+import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.FileUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSONObject;
@@ -87,7 +88,6 @@ public final class AVFile extends AVObject {
     addMetaData(FILE_SUM_KEY, md5);
     addMetaData(FILE_LENGTH_KEY, data.length);
     internalPut(KEY_MIME_TYPE, FileUtil.getMimeTypeFromFilename(name));
-    logger.d("localpath=" + localPath);
   }
 
   /**
@@ -136,7 +136,7 @@ public final class AVFile extends AVObject {
     internalPut(KEY_URL, url);
     Map<String, Object> meta = new HashMap<String, Object>();
     if (null != metaData) {
-      meta.putAll(metaData);
+      AVUtils.putAllWithNullFilter(meta, metaData);
     }
     if (external) {
       meta.put(FILE_SOURCE_KEY, FILE_SOURCE_EXTERNAL);
@@ -479,7 +479,7 @@ public final class AVFile extends AVObject {
             .map(new Function<AVObject, AVFile>() {
               @Override
               public AVFile apply(AVObject avObject) throws Exception {
-                AVFile.this.serverData.putAll(parameters.getInnerMap());
+                AVUtils.putAllWithNullFilter(AVFile.this.serverData, parameters);
                 AVFile.this.mergeRawData(avObject, true);
                 AVFile.this.onSaveSuccess();
                 return AVFile.this;
