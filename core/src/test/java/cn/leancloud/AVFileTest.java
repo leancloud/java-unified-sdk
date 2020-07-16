@@ -5,6 +5,7 @@ import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -252,7 +253,7 @@ public class AVFileTest extends TestCase {
 
   public void testExternalFile2() throws Exception {
     String url = "http://i1.wp.com/blog.avoscloud.com/wp-content/uploads/2014/05/screen568x568-1.jpg?resize=202%2C360";
-    AVFile file = new AVFile("screen.jpg", url);
+    AVFile file = new AVFile("screen.jpg", url, null);
     file.saveInBackground().subscribe(new Observer<AVFile>() {
       @Override
       public void onSubscribe(Disposable disposable) {
@@ -261,6 +262,40 @@ public class AVFileTest extends TestCase {
 
       @Override
       public void onNext(AVFile avFile) {
+        System.out.println(avFile.toJSONString());
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testExternalFile3() throws Exception {
+    String url = "https://some.website.com/apple.acc";
+    AVFile file = new AVFile("screen.jpg", url, null);
+    file.saveInBackground(true)
+            .subscribeOn(Schedulers.io())
+            .subscribe(new Observer<AVFile>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(AVFile avFile) {
+        System.out.println(avFile.toJSONString());
         testSucceed = true;
         latch.countDown();
       }

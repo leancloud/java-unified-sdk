@@ -1,9 +1,6 @@
 package cn.leancloud.im;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVQuery;
-import cn.leancloud.AVUser;
-import cn.leancloud.Configure;
+import cn.leancloud.*;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.im.v2.AVIMConversation;
@@ -11,6 +8,7 @@ import cn.leancloud.im.v2.AVIMConversationsQuery;
 import cn.leancloud.im.v2.AVIMException;
 import cn.leancloud.im.v2.callback.*;
 import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
+import cn.leancloud.im.v2.messages.AVIMAudioMessage;
 import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.utils.StringUtil;
 import junit.framework.TestCase;
@@ -356,6 +354,55 @@ public class AVIMClientTest extends TestCase {
                               System.out.println("succeed to query member info, result=" + memberInfoList);
                             }
                             opersationSucceed = true;
+                            countDownLatch.countDown();
+                          }
+                        });
+                      }
+                    }
+                  });
+        }
+      }
+    });
+    countDownLatch.await();
+    client.close(null);
+    assertTrue(opersationSucceed);
+  }
+
+  public void testSendAudioMessageInTempConv() throws Exception {
+    final AVIMClient client = AVIMClient.getInstance("testUser1");
+    Thread.sleep(4000);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed open client.");
+          e.printStackTrace();
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed open client.");
+          client.createTemporaryConversation(Arrays.asList("testUser2"),
+                  new AVIMConversationCreatedCallback() {
+                    @Override
+                    public void done(AVIMConversation conversation, AVIMException ex) {
+                      if (null != ex) {
+                        System.out.println("failed to create temp Conv");
+                        ex.printStackTrace();
+                        countDownLatch.countDown();
+                      } else {
+                        System.out.println("succeed to create temp Conv");
+                        AVFile file = new AVFile("apple.acc", "https://some.website.com/apple.acc", null);
+                        AVIMAudioMessage m = new AVIMAudioMessage(file);
+                        m.setText("来自苹果发布会现场的录音");
+                        conversation.sendMessage(m, new AVIMConversationCallback() {
+                          @Override
+                          public void done(AVIMException e3) {
+                            if (null != e3) {
+                              System.out.println("failed to send audio message.");
+                              e3.printStackTrace();
+                            } else {
+                              System.out.println("succeed to send audio message.");
+                              opersationSucceed = true;
+                            }
                             countDownLatch.countDown();
                           }
                         });
