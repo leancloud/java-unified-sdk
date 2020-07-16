@@ -2,6 +2,17 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 7.0.2 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- fixed: AVFile upload failed for some special external url(mime_type is null).
+
 ## 7.0.1 release
 
 #### Break changes
