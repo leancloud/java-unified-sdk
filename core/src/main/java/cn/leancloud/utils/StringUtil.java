@@ -1,10 +1,9 @@
 package cn.leancloud.utils;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringUtil {
   private static final String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -82,6 +81,42 @@ public class StringUtil {
       // e.printStackTrace();
     }
     return null;
+  }
+
+  private static String convertTimestamp(String kvPhrase) {
+    String dateFormBegin = "new Date(";
+    int index = kvPhrase.indexOf(dateFormBegin);
+    if (index < 0) {
+      return kvPhrase;
+    }
+    String key = kvPhrase.substring(0, index);
+    String value = kvPhrase.substring(index).substring(dateFormBegin.length());
+    String separator = value.substring(value.length() - 1);
+    value = value.substring(0, value.length() - 2);
+    Date realDate = new Date(Long.valueOf(value));
+    return key + "\"" + StringUtil.stringFromDate(realDate) + "\"" + separator;
+  }
+
+  public static String replaceFastjsonDateForm(String text) {
+    if (StringUtil.isEmpty(text)) {
+      return text;
+    }
+    String fastjsonDateSpecialForm = "\"[a-zA-Z0-9]+\":new Date\\(\\d+\\)[,})\\]]";
+    Pattern fastjsonDateSpecialPattern = Pattern.compile(fastjsonDateSpecialForm);
+    Matcher m = fastjsonDateSpecialPattern.matcher(text);
+    Map<String, String> replaceKVs = new HashMap<String, String>();
+    while (m.find()) {
+      String subString = m.group();
+      String replacedString = convertTimestamp(subString);
+      replaceKVs.put(subString, replacedString);
+    }
+
+    for (String k : replaceKVs.keySet()) {
+      String replacedString = replaceKVs.get(k);
+      text = text.replace(k, replacedString);
+    }
+
+    return text;
   }
 
   public static String join(CharSequence delimiter,

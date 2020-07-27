@@ -14,9 +14,11 @@ import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
 import cn.leancloud.json.JSONArray;
 
+import java.text.DateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.reactivex.Observable;
@@ -1512,6 +1514,7 @@ public class AVObject {
 
     objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.ops.[A-Za-z]+Op\",", "");
 
+    objectString = StringUtil.replaceFastjsonDateForm(objectString);
     return JSON.parseObject(objectString, AVObject.class);
   }
 
