@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 7.0.3 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- fixed: resolved json deserialization problem from fastjson output(such as `{"attr":new Date(12232472840)}`) in AVUser cache file.
+
+
 ## 7.0.2 release
 
 #### Break changes
