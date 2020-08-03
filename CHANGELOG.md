@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 7.0.4 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- fixed: parse ConversationMemberInfo list in member query, and AVUser list in follower/followee query.
+
+
 ## 7.0.3 release
 
 #### Break changes
