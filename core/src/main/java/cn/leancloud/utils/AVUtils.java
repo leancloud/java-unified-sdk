@@ -1,13 +1,13 @@
 package cn.leancloud.utils;
 
 import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
+import com.google.gson.JsonObject;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
 public class AVUtils {
@@ -48,6 +48,20 @@ public class AVUtils {
       map.put(key, value);
     }
     return map;
+  }
+
+  public static JSONObject getJSONObjectFromMap(Map<String, Object> param) {
+    return AppConfiguration.getJsonParser().toJSONObject(param);
+  }
+
+  public static List<JSONObject> getObjectListFromMapList(List<Map<String, Object>> params) {
+    List<JSONObject> result = new ArrayList<>();
+    if (null != params) {
+      for (Map<String, Object> p: params) {
+        result.add(getJSONObjectFromMap(p));
+      }
+    }
+    return result;
   }
 
   public static String jsonStringFromMapWithNull(Object map) {

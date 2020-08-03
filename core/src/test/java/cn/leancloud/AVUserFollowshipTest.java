@@ -174,6 +174,11 @@ public class AVUserFollowshipTest extends TestCase {
 
         AVQuery<AVObject> query = avUser.followerQuery();
         List<AVObject> followers = query.find();
+        if (null != followers) {
+          for (AVObject fo: followers) {
+            System.out.println("follower: " + fo.toJSONString());
+          }
+        }
         operationSucceed = true;
         latch.countDown();
       }
@@ -192,28 +197,49 @@ public class AVUserFollowshipTest extends TestCase {
   }
 
   public void testFollow() throws Exception {
-    AVUser logginUser = AVUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
-    logginUser.followInBackground(JFENG_OBJECT_ID).blockingFirst();
-
-    AVUser jfeng = AVUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
-
     final CountDownLatch latch = new CountDownLatch(1);
-    AVQuery query = jfeng.followerQuery();
-    query.findInBackground().subscribe(new Observer<List<AVObject>>() {
+
+    AVUser logginUser = AVUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
+    logginUser.followInBackground(JFENG_OBJECT_ID).subscribe(new Observer<JSONObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(List<AVObject> o) {
-        for (AVObject tmp: o) {
-          System.out.println("result User:" + tmp);
-          if ("jfeng001".equals(tmp.getAVObject("follower").getString("username"))) {
-            operationSucceed = true;
+      public void onNext(JSONObject object) {
+        System.out.println("succeed follow. " + object.toString());
+        AVUser jfeng = AVUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
+
+        AVQuery query = jfeng.followerQuery();
+        query.findInBackground().subscribe(new Observer<List<AVObject>>() {
+          @Override
+          public void onSubscribe(Disposable disposable) {
+
           }
-        }
-        latch.countDown();
+
+          @Override
+          public void onNext(List<AVObject> o) {
+            for (AVObject tmp: o) {
+              System.out.println("result User:" + tmp);
+              if ("jfeng001".equals(tmp.getAVObject("follower").getString("username"))) {
+                operationSucceed = true;
+              }
+            }
+            latch.countDown();
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            throwable.printStackTrace();
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
       }
 
       @Override
@@ -224,46 +250,69 @@ public class AVUserFollowshipTest extends TestCase {
 
       @Override
       public void onComplete() {
-
       }
     });
+
     latch.await();
     assertTrue(operationSucceed);
   }
 
   public void testUnfollow() throws Exception {
-    AVUser logginUser = AVUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
-    logginUser.unfollowInBackground(JFENG_OBJECT_ID).blockingFirst();
-
-    AVUser jfeng = AVUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
-
     final CountDownLatch latch = new CountDownLatch(1);
-    AVQuery query = jfeng.followerQuery();
-    query.findInBackground().subscribe(new Observer<List<AVObject>>() {
+    AVUser logginUser = AVUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
+    logginUser.unfollowInBackground(JFENG_OBJECT_ID).subscribe(new Observer<JSONObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(List<AVObject> o) {
-        System.out.println("onNext");
-        operationSucceed = (null == o) || o.size() < 1;
-        latch.countDown();
+      public void onNext(JSONObject object) {
+        System.out.println("succeed to unfollow. " + object.toString());
+
+        AVUser jfeng = AVUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
+
+        AVQuery query = jfeng.followerQuery();
+        query.findInBackground().subscribe(new Observer<List<AVObject>>() {
+          @Override
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(List<AVObject> o) {
+            System.out.println("onNext");
+            operationSucceed = (null == o) || o.size() < 1;
+            latch.countDown();
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            System.out.println("onError");
+            throwable.printStackTrace();
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+            System.out.println("onComplete");
+          }
+        });
       }
 
       @Override
       public void onError(Throwable throwable) {
-        System.out.println("onError");
         throwable.printStackTrace();
         latch.countDown();
       }
 
       @Override
       public void onComplete() {
-        System.out.println("onComplete");
+
       }
     });
+
+
     latch.await();
     assertTrue(operationSucceed);
   }

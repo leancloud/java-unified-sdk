@@ -14,13 +14,13 @@ public interface RealtimeService {
   Observable<Signature> createSignature(@Body JSONObject sessionToken);
 
   @GET("/1.1/classes/_ConversationMemberInfo")
-  Observable<Map<String, List<JSONObject>>> queryMemberInfo(@Header("X-LC-IM-Session-Token") String realtimeSessionToken,
+  Observable<Map<String, List<Map<String, Object>>>> queryMemberInfo(@Header("X-LC-IM-Session-Token") String realtimeSessionToken,
                                                @QueryMap Map<String, String> query);
 
   @POST("/1.1/LiveQuery/subscribe")
-  Observable<JSONObject> subscribe(@Body JSONObject param);
+  Observable<Map<String, Object>> subscribe(@Body JSONObject param);
 
   @POST("/1.1/LiveQuery/unsubscribe")
-  Observable<JSONObject> unsubscribe(@Body JSONObject param);
+  Observable<Map<String, Object>> unsubscribe(@Body JSONObject param);
 
 }

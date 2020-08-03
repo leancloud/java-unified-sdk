@@ -11,6 +11,7 @@ import cn.leancloud.ops.Utils;
 import cn.leancloud.sms.AVSMS;
 import cn.leancloud.sms.AVSMSOption;
 import cn.leancloud.types.AVNull;
+import cn.leancloud.utils.AVUtils;
 import cn.leancloud.utils.ErrorUtils;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSON;
@@ -1029,14 +1030,14 @@ public class AVUser extends AVObject {
   private Map<String, List<AVUser>> parseFollowerAndFollowee(JSONObject jsonObject) {
     Map<String, List<AVUser>> map = new HashMap<String, List<AVUser>>();
     if (null != jsonObject) {
-      List<JSONObject> followers = (List<JSONObject>)jsonObject.get("followers");
-      if ( null != followers) {
+      List<JSONObject> followers = AVUtils.getObjectListFromMapList((List<Map<String, Object>>)jsonObject.get("followers"));
+      if ( null != followers && followers.size() > 0) {
         List<AVUser> followerUsers = new LinkedList<AVUser>();
         processResultList(followers, followerUsers, FOLLOWER_TAG);
         map.put(FOLLOWER_TAG, followerUsers);
       }
-      List<JSONObject> followees = (List<JSONObject>)jsonObject.get("followees");
-      if (null != followees) {
+      List<JSONObject> followees = AVUtils.getObjectListFromMapList((List<Map<String, Object>>)jsonObject.get("followees"));
+      if (null != followees && followees.size() > 0) {
         List<AVUser> followeeUsers = new LinkedList<AVUser>();
         processResultList(followees, followeeUsers, FOLLOWEE_TAG);
         map.put(FOLLOWEE_TAG, followeeUsers);

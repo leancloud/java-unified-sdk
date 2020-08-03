@@ -81,12 +81,12 @@ public class RealtimeClient {
 
   public Observable<List<AVIMConversationMemberInfo>> queryMemberInfo(Map<String, String> query, String rtmSessionToken) {
     return wrapObservable(service.queryMemberInfo(rtmSessionToken, query))
-            .map(new Function<Map<String, List<JSONObject>>, List<AVIMConversationMemberInfo>>() {
+            .map(new Function<Map<String, List<Map<String, Object>>>, List<AVIMConversationMemberInfo>>() {
               @Override
-              public List<AVIMConversationMemberInfo> apply(Map<String, List<JSONObject>> rawResult) throws Exception {
-                List<JSONObject> objects = rawResult.get("results");
+              public List<AVIMConversationMemberInfo> apply(Map<String, List<Map<String, Object>>> rawResult) throws Exception {
+                List<Map<String, Object>> objects = rawResult.get("results");
                 List<AVIMConversationMemberInfo> result = new LinkedList<AVIMConversationMemberInfo>();
-                for (JSONObject object: objects) {
+                for (Map<String, Object> object: objects) {
                   AVIMConversationMemberInfo tmp = AVIMConversationMemberInfo.createInstance(object);
                   result.add(tmp);
                 }
@@ -96,9 +96,19 @@ public class RealtimeClient {
   }
 
   public Observable<JSONObject> subscribeLiveQuery(Map<String, Object> params) {
-    return wrapObservable(service.subscribe(JSONObject.Builder.create(params)));
+    return wrapObservable(service.subscribe(JSONObject.Builder.create(params))).map(new Function<Map<String, Object>, JSONObject>() {
+      @Override
+      public JSONObject apply(Map<String, Object> o) throws Exception {
+        return AppConfiguration.getJsonParser().toJSONObject(o);
+      }
+    });
   }
   public Observable<JSONObject> unsubscribeLiveQuery(Map<String, Object> params) {
-    return wrapObservable(service.unsubscribe(JSONObject.Builder.create(params)));
+    return wrapObservable(service.unsubscribe(JSONObject.Builder.create(params))).map(new Function<Map<String, Object>, JSONObject>() {
+      @Override
+      public JSONObject apply(Map<String, Object> o) throws Exception {
+        return AppConfiguration.getJsonParser().toJSONObject(o);
+      }
+    });
   }
 }

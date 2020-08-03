@@ -1,12 +1,17 @@
 package cn.leancloud.im.v2.conversation;
 
+import cn.leancloud.utils.StringUtil;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class AVIMConversationMemberInfo {
   public static final String ATTR_OJBECTID = "infoId";
+  public static final String ATTR_OJBECTID2 = "objectId";
   public static final String ATTR_CONVID = "conversationId";
+  public static final String ATTR_CONVID_SIMPLE = "cid";
   public static final String ATTR_MEMBERID = "peerId";
+  public static final String ATTR_CLIENTID = "clientId";
   public static final String ATTR_ROLE = "role";
   private static final String ATTR_CREATEDAT = "createdAt";
   private static final String ATTR_NICKNAME = "nickname";
@@ -156,7 +161,9 @@ public class AVIMConversationMemberInfo {
     HashMap<String, String> attrs = new HashMap<>();
     attrs.put(ATTR_MEMBERID, getMemberId());
     attrs.put(ATTR_ROLE, getRole().getName());
-    attrs.put(ATTR_OJBECTID, getObjectId());
+    if (!StringUtil.isEmpty(getObjectId())) {
+      attrs.put(ATTR_OJBECTID, getObjectId());
+    }
     return attrs;
   }
 
@@ -170,9 +177,18 @@ public class AVIMConversationMemberInfo {
       return null;
     }
     String conversationId = (String)data.get(ATTR_CONVID);
+    if (StringUtil.isEmpty(conversationId)) {
+      conversationId = (String) data.get(ATTR_CONVID_SIMPLE);
+    }
     String memberId = (String)data.get(ATTR_MEMBERID);
+    if (StringUtil.isEmpty(memberId)) {
+      memberId = (String) data.get(ATTR_CLIENTID);
+    }
     String roleStr = (String)data.get(ATTR_ROLE);
     String objectId = (String)data.get(ATTR_OJBECTID);
+    if (StringUtil.isEmpty(objectId)) {
+      objectId = (String) data.get(ATTR_OJBECTID2);
+    }
     ConversationMemberRole role = ConversationMemberRole.fromString(roleStr);
     return new AVIMConversationMemberInfo(objectId, conversationId, memberId, role);
   }

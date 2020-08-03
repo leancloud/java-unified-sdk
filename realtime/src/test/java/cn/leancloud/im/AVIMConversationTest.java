@@ -5,6 +5,8 @@ import cn.leancloud.AVQuery;
 import cn.leancloud.Configure;
 import cn.leancloud.im.v2.*;
 import cn.leancloud.im.v2.callback.*;
+import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
+import cn.leancloud.im.v2.conversation.ConversationMemberRole;
 import cn.leancloud.im.v2.messages.AVIMRecalledMessage;
 import cn.leancloud.im.v2.messages.AVIMTextMessage;
 import cn.leancloud.session.AVConnectionManager;
@@ -1330,6 +1332,68 @@ public class AVIMConversationTest extends TestCase {
                       opersationSucceed = true;
                     }
                     countDownLatch.countDown();
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testMuteConversationMembersInfo() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    List<String> members = Arrays.asList("testUser2", "testUser3", "testUser4");
+    client.createConversation(members, "UnitTestConversation", null, false, true, new AVIMConversationCreatedCallback() {
+      @Override
+      public void done(final AVIMConversation conversation, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to create conversation. cause: " + e.getMessage());
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed to create conversation, continue to update member role...");
+          conversation.updateMemberRole("testUser2", ConversationMemberRole.MANAGER, new AVIMConversationCallback() {
+            @Override
+            public void done(AVIMException e1) {
+              if (null != e1) {
+                System.out.println("failed to promote testUser2. cause: " + e1.getMessage());
+                countDownLatch.countDown();
+              } else {
+                System.out.println("succeed to promote testUser2.");
+                conversation.updateMemberRole("testUser3", ConversationMemberRole.MEMBER, new AVIMConversationCallback() {
+                  @Override
+                  public void done(AVIMException e2) {
+                    if (null != e2) {
+                      System.out.println("failed to promote testUser3. cause: " + e2.getMessage());
+                      countDownLatch.countDown();
+                    } else {
+                      System.out.println("succeed to promote testUser3.");
+                      conversation.getAllMemberInfo(0, 10, new AVIMConversationMemberQueryCallback() {
+                        @Override
+                        public void done(List<AVIMConversationMemberInfo> memberInfoList, AVIMException e3) {
+                          if (null != e3) {
+                            opersationSucceed = true;
+                            for (AVIMConversationMemberInfo info: memberInfoList) {
+                              System.out.println("memberInfo: " + info.toString());
+                            }
+                          } else {
+                            System.out.println("failed to query memberInfo. cause: " + e3.getMessage());
+                          }
+                          countDownLatch.countDown();
+                        }
+                      });
+                    }
                   }
                 });
               }
