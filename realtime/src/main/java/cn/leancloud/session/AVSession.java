@@ -330,7 +330,6 @@ public class AVSession {
       return;
     }
 
-    // TODO: add request suppression.
     Operation op = Operation.getOperation(
             AVIMOperation.CONVERSATION_QUERY.getCode(), selfId, null, requestId);
     op.setIdentifier(identifier);
