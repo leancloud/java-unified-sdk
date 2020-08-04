@@ -30,9 +30,11 @@ public class AVIMConversationsQueryTest extends TestCase {
     Thread.sleep(2000);
     opersationSucceed = false;
     final CountDownLatch latch = new CountDownLatch(1);
+    System.out.println("try to openClient within setUp...");
     client.open(new AVIMClientCallback() {
       @Override
       public void done(AVIMClient client, AVIMException e) {
+        System.out.println("openClient returned with result: " + (null == e));
         latch.countDown();
       }
     });
@@ -50,6 +52,28 @@ public class AVIMConversationsQueryTest extends TestCase {
     });
     latch.await();
     this.countDownLatch = null;
+  }
+
+  public void testNPECrashforIssue133() throws Exception {
+    AVIMConversationsQuery query = client.getConversationsQuery();
+    query.setQueryPolicy(AVQuery.CachePolicy.NETWORK_ONLY);
+    query.orderByDescending("updatedAt");
+    query.whereContains("m", client.getClientId());
+    query.findInBackground(new AVIMConversationQueryCallback() {
+      @Override
+      public void done(List<AVIMConversation> conversations, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to query convs");
+          e.printStackTrace();
+        } else {
+          System.out.println("succeed to query convs。 result：" + conversations.size());
+          opersationSucceed = true;
+        }
+        countDownLatch.countDown();
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
   }
 
   public void testCommonQuery() throws Exception {

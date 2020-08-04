@@ -120,7 +120,7 @@ public class GsonObject extends JSONObject{
     if (element.isJsonNull()) {
       return null;
     }
-    return null;//this.gsonObject.getObject(key, clazz);
+    return GsonWrapper.parseObject(element.toString(), clazz);
   }
 
   /**

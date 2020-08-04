@@ -12,4 +12,10 @@ public class Configure {
     AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
     AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
   }
+
+  public static void initializeWithApp(String appId, String appKey) {
+    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
+    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
+    AVOSCloud.initialize(appId, appKey);
+  }
 }
