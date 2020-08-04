@@ -279,6 +279,8 @@ public class MainActivity extends AppCompatActivity {
                 }
               }
             });
+
+
 //            AVFile file = new AVFile("apple.acc", "https://some.website.com/apple.acc", new HashMap<>());
 //            AVIMAudioMessage m = new AVIMAudioMessage(file);
 //            m.setText("来自苹果发布会现场的录音");
