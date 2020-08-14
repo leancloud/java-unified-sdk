@@ -229,13 +229,28 @@ public class AVIMTypedMessage extends AVIMMessage{
    * 从 conversation 数据中解析 lastMessage
    * @return
    */
-  static AVIMMessage parseMessage(String conversationId, JSONObject jsonObject) {
+//  private static AVIMMessage parseMessage(String conversationId, JSONObject jsonObject) {
+//    if (null != jsonObject && jsonObject.containsKey(KEY_MESSAGE_ID)) {
+//      try {
+//        String from = jsonObject.getString(KEY_MESSAGE_FROM);
+//        String data = jsonObject.getString(KEY_MESSAGE_CONTENT);
+//        long timestamp = jsonObject.getLong(KEY_MESSAGE_TIMESTAMP);
+//        String msgId = jsonObject.getString(KEY_MESSAGE_ID);
+//        AVIMMessage message = new AVIMMessage(conversationId, from, timestamp, -1);
+//        message.setMessageId(msgId);
+//        message.setContent(data);
+//        return AVIMMessageManagerHelper.parseTypedMessage(message);
+//      } catch (Exception e) {}
+//    }
+//    return null;
+//  }
+  static AVIMMessage parseMessage(String conversationId, Map<String, Object> jsonObject) {
     if (null != jsonObject && jsonObject.containsKey(KEY_MESSAGE_ID)) {
       try {
-        String from = jsonObject.getString(KEY_MESSAGE_FROM);
-        String data = jsonObject.getString(KEY_MESSAGE_CONTENT);
-        long timestamp = jsonObject.getLong(KEY_MESSAGE_TIMESTAMP);
-        String msgId = jsonObject.getString(KEY_MESSAGE_ID);
+        String from = (String) jsonObject.get(KEY_MESSAGE_FROM);
+        String data = (String) jsonObject.get(KEY_MESSAGE_CONTENT);
+        long timestamp = (long) jsonObject.get(KEY_MESSAGE_TIMESTAMP);
+        String msgId = (String) jsonObject.get(KEY_MESSAGE_ID);
         AVIMMessage message = new AVIMMessage(conversationId, from, timestamp, -1);
         message.setMessageId(msgId);
         message.setContent(data);

@@ -1793,12 +1793,48 @@ public class AVIMConversation {
    * @param jsonObj json object
    * @return conversation instance.
    */
-  public static AVIMConversation parseFromJson(AVIMClient client, JSONObject jsonObj) {
+//  private static AVIMConversation parseFromJson(AVIMClient client, JSONObject jsonObj) {
+//    if (null == jsonObj || null == client) {
+//      return null;
+//    }
+//
+//    String conversationId = jsonObj.getString(AVObject.KEY_OBJECT_ID);
+//    if (StringUtil.isEmpty(conversationId)) {
+//      return null;
+//    }
+//    boolean systemConv = false;
+//    boolean transientConv = false;
+//    boolean tempConv = false;
+//    if (jsonObj.containsKey(Conversation.SYSTEM)) {
+//      systemConv = jsonObj.getBoolean(Conversation.SYSTEM);
+//    }
+//    if (jsonObj.containsKey(Conversation.TRANSIENT)) {
+//      transientConv = jsonObj.getBoolean(Conversation.TRANSIENT);
+//    }
+//    if (jsonObj.containsKey(Conversation.TEMPORARY)) {
+//      tempConv = jsonObj.getBoolean(Conversation.TEMPORARY);
+//    }
+//    AVIMConversation originConv = null;
+//    if (systemConv) {
+//      originConv = new AVIMServiceConversation(client, conversationId);
+//    } else if (tempConv) {
+//      originConv = new AVIMTemporaryConversation(client, conversationId);
+//    } else if (transientConv) {
+//      originConv = new AVIMChatRoom(client, conversationId);
+//    } else {
+//      originConv = new AVIMConversation(client, conversationId);
+//    }
+//    originConv.updateFetchTimestamp(System.currentTimeMillis());
+//
+//    return updateConversation(originConv, jsonObj);
+//  }
+
+  public static AVIMConversation parseFromJson(AVIMClient client, Map<String, Object> jsonObj) {
     if (null == jsonObj || null == client) {
       return null;
     }
 
-    String conversationId = jsonObj.getString(AVObject.KEY_OBJECT_ID);
+    String conversationId = (String) jsonObj.get(AVObject.KEY_OBJECT_ID);
     if (StringUtil.isEmpty(conversationId)) {
       return null;
     }
@@ -1806,13 +1842,13 @@ public class AVIMConversation {
     boolean transientConv = false;
     boolean tempConv = false;
     if (jsonObj.containsKey(Conversation.SYSTEM)) {
-      systemConv = jsonObj.getBoolean(Conversation.SYSTEM);
+      systemConv = (boolean)jsonObj.get(Conversation.SYSTEM);
     }
     if (jsonObj.containsKey(Conversation.TRANSIENT)) {
-      transientConv = jsonObj.getBoolean(Conversation.TRANSIENT);
+      transientConv = (boolean)jsonObj.get(Conversation.TRANSIENT);
     }
     if (jsonObj.containsKey(Conversation.TEMPORARY)) {
-      tempConv = jsonObj.getBoolean(Conversation.TEMPORARY);
+      tempConv = (boolean)jsonObj.get(Conversation.TEMPORARY);
     }
     AVIMConversation originConv = null;
     if (systemConv) {
@@ -1829,22 +1865,21 @@ public class AVIMConversation {
     return updateConversation(originConv, jsonObj);
   }
 
-  static AVIMConversation updateConversation(AVIMConversation conversation, JSONObject jsonObj) {
+  static AVIMConversation updateConversation(AVIMConversation conversation, Map<String, Object> jsonObj) {
     if (null == jsonObj || null == conversation) {
       return conversation;
     }
 
-    String conversationId = jsonObj.getString(AVObject.KEY_OBJECT_ID);
-    List<String> m = jsonObj.getObject(Conversation.MEMBERS, List.class);
+    String conversationId = (String) jsonObj.get(AVObject.KEY_OBJECT_ID);
+    List<String> m = (List<String>)jsonObj.get(Conversation.MEMBERS);
     conversation.setMembers(m);
-    conversation.setCreator(jsonObj.getString(Conversation.CREATOR));
+    conversation.setCreator((String) jsonObj.get(Conversation.CREATOR));
     HashMap<String, Object> attributes = new HashMap<String, Object>();
 
     if (jsonObj.containsKey(Conversation.ATTRIBUTE)) {
-      JSONObject moreAttributes = jsonObj.getJSONObject(Conversation.ATTRIBUTE);
+      Map<String, Object> moreAttributes = (Map<String, Object>) jsonObj.get(Conversation.ATTRIBUTE);
       if (moreAttributes != null) {
-        Map<String, Object> moreAttributesMap = JSON.toJavaObject(moreAttributes, Map.class);
-        attributes.putAll(moreAttributesMap);
+        attributes.putAll(moreAttributes);
       }
     }
     conversation.setAttributesForInit(attributes);
@@ -1859,18 +1894,54 @@ public class AVIMConversation {
     conversation.setLastMessage(message);
 
     if (jsonObj.containsKey(Conversation.LAST_MESSAGE_AT)) {
-      conversation.setLastMessageAt(Utils.dateFromMap(jsonObj.getObject(Conversation.LAST_MESSAGE_AT, Map.class)));
+      conversation.setLastMessageAt(Utils.dateFromMap((Map<String, Object>)jsonObj.get(Conversation.LAST_MESSAGE_AT)));
     }
 
     return conversation;
   }
 
+//  private static AVIMConversation updateConversation(AVIMConversation conversation, JSONObject jsonObj) {
+//    if (null == jsonObj || null == conversation) {
+//      return conversation;
+//    }
+//
+//    String conversationId = jsonObj.getString(AVObject.KEY_OBJECT_ID);
+//    List<String> m = jsonObj.getObject(Conversation.MEMBERS, List.class);
+//    conversation.setMembers(m);
+//    conversation.setCreator(jsonObj.getString(Conversation.CREATOR));
+//    HashMap<String, Object> attributes = new HashMap<String, Object>();
+//
+//    if (jsonObj.containsKey(Conversation.ATTRIBUTE)) {
+//      JSONObject moreAttributes = jsonObj.getJSONObject(Conversation.ATTRIBUTE);
+//      if (moreAttributes != null) {
+//        Map<String, Object> moreAttributesMap = JSON.toJavaObject(moreAttributes, Map.class);
+//        attributes.putAll(moreAttributesMap);
+//      }
+//    }
+//    conversation.setAttributesForInit(attributes);
+//
+//    conversation.instanceData.clear();
+//    for (Map.Entry<String, Object> entry : jsonObj.entrySet()) {
+//      String key = entry.getKey();
+//      conversation.instanceData.put(key, entry.getValue());
+//    }
+//
+//    AVIMMessage message = AVIMTypedMessage.parseMessage(conversationId, jsonObj);
+//    conversation.setLastMessage(message);
+//
+//    if (jsonObj.containsKey(Conversation.LAST_MESSAGE_AT)) {
+//      conversation.setLastMessageAt(Utils.dateFromMap(jsonObj.getObject(Conversation.LAST_MESSAGE_AT, Map.class)));
+//    }
+//
+//    return conversation;
+//  }
+
   public AVIMException processQueryResult(String result) {
     if (null != result) {
       try {
-        JSONArray jsonArray = JSON.parseArray(String.valueOf(result));
+        List<Map<String, Object>> jsonArray = JSON.parseObject(String.valueOf(result), List.class);
         if (null != jsonArray && !jsonArray.isEmpty()) {
-          JSONObject jsonObject = jsonArray.getJSONObject(0);
+          Map<String, Object> jsonObject = jsonArray.get(0);
           updateConversation(this, jsonObject);
           client.mergeConversationCache(this, true, null);
           storage.insertConversations(Arrays.asList(this));

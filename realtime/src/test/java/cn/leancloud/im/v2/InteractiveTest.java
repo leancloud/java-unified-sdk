@@ -551,8 +551,8 @@ public class InteractiveTest extends TestCase {
               Map<String, Object> checkpoint = new HashMap<>();
               checkpoint.put("name", "MemberListIsVerified");
               checkpoint.put("memberSize", 3);
-              checkpoint.put("attr.attr1", null);
-              checkpoint.put("attr.attr2", now.getTime());
+              checkpoint.put("attr.attr1", deleteOp);
+              checkpoint.put("attr.attr2", now);
               boolean assertResult = verifyConversationWithExpect(conversation, checkpoint);
               if (!assertResult) {
                 System.out.println("❌　Site:" + clientId + " conversation doesn't match expected. conv=" + conversation.toJSONString());

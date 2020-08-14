@@ -61,6 +61,9 @@ public class GSONParser implements JSONParser {
   }
 
   public String toJSONString(Object object) {
+    if (object instanceof String) {
+      return (String) object;
+    }
     return GsonWrapper.getGsonInstance().toJson(object);
   }
 }

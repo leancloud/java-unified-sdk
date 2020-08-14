@@ -436,7 +436,7 @@ public class AVIMMessage {
     return JSON.toJSONString(this.dumpRawData());
   }
 
-  public static AVIMMessage parseJSON(JSONObject jsonObject) {
+  private static AVIMMessage parseJSON(Map<String, Object> jsonObject) {
     if (null == jsonObject) {
       return null;
     }
@@ -449,6 +449,13 @@ public class AVIMMessage {
         binaryMessage.setBytes(Base64Decoder.decodeToBytes(binString));
       } else if (binValue instanceof byte[]){
         binaryMessage.setBytes((byte[]) binValue);
+      } else if (binValue instanceof List) {
+        Object[] a = (Object[]) ((List<Integer>) binValue).toArray();
+        byte[] b = new byte[a.length];
+        for (int i = 0; i < a.length; i ++) {
+          b[i] = ((Integer)a[i]).byteValue();
+        }
+        binaryMessage.setBytes(b);
       }
       message = binaryMessage;
     } else if (jsonObject.containsKey("typeMsgData")) {
@@ -470,10 +477,10 @@ public class AVIMMessage {
       message.setUniqueToken((String) jsonObject.get("uniqueToken"));
     }
     if (jsonObject.containsKey("io")) {
-      message.setMessageIOType(AVIMMessageIOType.getMessageIOType(jsonObject.getIntValue("io")));
+      message.setMessageIOType(AVIMMessageIOType.getMessageIOType((int)jsonObject.get("io")));
     }
     if (jsonObject.containsKey("status")) {
-      message.setMessageStatus(AVIMMessageStatus.getMessageStatus(jsonObject.getIntValue("status")));
+      message.setMessageStatus(AVIMMessageStatus.getMessageStatus((int)jsonObject.get("status")));
     }
     if (jsonObject.containsKey("timestamp")) {
       message.setTimestamp(((Number) jsonObject.get("timestamp")).longValue());
@@ -488,7 +495,7 @@ public class AVIMMessage {
       message.setUpdateAt(((Number) jsonObject.get("patchTimestamp")).longValue());
     }
     if (jsonObject.containsKey("mentionAll")) {
-      message.setMentionAll(jsonObject.getBooleanValue("mentionAll"));
+      message.setMentionAll((boolean)jsonObject.get("mentionAll"));
     }
     if (jsonObject.containsKey("mentionPids")) {
       message.setMentionList((List<String>) jsonObject.get("mentionPids"));
@@ -514,7 +521,7 @@ public class AVIMMessage {
     }
 
     Map<String, Object> json = JSON.parseObject(content, Map.class);
-    return parseJSON(JSONObject.Builder.create(json));
+    return parseJSON(json);
   }
 
   public enum AVIMMessageStatus {
