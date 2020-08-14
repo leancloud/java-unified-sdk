@@ -73,6 +73,18 @@ public class AVIMClientTest extends TestCase {
 //  }
 
   public void testOpenClientThroughAVUser() throws Exception {
+    {
+      try {
+        AVUser usr = new AVUser();
+        usr.setEmail(userEmail);
+        usr.setUsername(userName);
+        usr.setPassword(userPassword);
+        usr.signUp();
+      } catch (Exception e) {
+
+      }
+
+    }
     AVUser currentUser = AVUser.logIn(userName, userPassword).blockingFirst();
     final AVIMClient client = AVIMClient.getInstance(currentUser);
     Thread.sleep(4000);

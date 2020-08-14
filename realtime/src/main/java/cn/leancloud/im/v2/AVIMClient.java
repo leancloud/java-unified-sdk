@@ -567,7 +567,8 @@ public class AVIMClient {
     return (now + AVSession.REALTIME_TOKEN_WINDOW_INSECONDS) >= this.realtimeSessionTokenExpired;
   }
 
-  AVIMConversation mergeConversationCache(AVIMConversation allNewConversation, boolean forceReplace, JSONObject deltaObject) {
+
+  AVIMConversation mergeConversationCache(AVIMConversation allNewConversation, boolean forceReplace, Map<String, Object> deltaObject) {
     if (null == allNewConversation || StringUtil.isEmpty(allNewConversation.getConversationId())) {
       return null;
     }
@@ -587,6 +588,27 @@ public class AVIMClient {
       return origin;
     }
   }
+
+//  AVIMConversation mergeConversationCache(AVIMConversation allNewConversation, boolean forceReplace, JSONObject deltaObject) {
+//    if (null == allNewConversation || StringUtil.isEmpty(allNewConversation.getConversationId())) {
+//      return null;
+//    }
+//    String convId = allNewConversation.getConversationId();
+//    if (forceReplace) {
+//      this.conversationCache.put(convId, allNewConversation);
+//      return allNewConversation;
+//    } else {
+//      AVIMConversation origin = this.conversationCache.get(convId);
+//      if (null == origin) {
+//        this.conversationCache.put(convId, allNewConversation);
+//        origin = allNewConversation;
+//      } else {
+//        // update cache object again.
+//        origin = AVIMConversation.updateConversation(origin, deltaObject);
+//      }
+//      return origin;
+//    }
+//  }
 
   void queryConversationMemberInfo(final QueryConditions queryConditions, final AVIMConversationMemberQueryCallback cb) {
     if (null == queryConditions || null == cb) {

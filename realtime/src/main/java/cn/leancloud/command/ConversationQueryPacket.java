@@ -3,6 +3,7 @@ package cn.leancloud.command;
 import cn.leancloud.Messages;
 import cn.leancloud.im.v2.AVIMClient;
 import cn.leancloud.im.v2.Conversation;
+import cn.leancloud.json.JSON;
 import cn.leancloud.utils.StringUtil;
 
 import java.util.Arrays;
@@ -50,7 +51,11 @@ public class ConversationQueryPacket extends PeerBasedCommandPacket {
       Object whereParam = queryParams.get(Conversation.QUERY_PARAM_WHERE);
       if (null != whereParam && !StringUtil.isEmpty(whereParam.toString())) {
         Messages.JsonObjectMessage.Builder messageBuild = Messages.JsonObjectMessage.newBuilder();
-        messageBuild.setData(whereParam.toString());
+        if (whereParam instanceof String) {
+          messageBuild.setData((String) whereParam);
+        } else {
+          messageBuild.setData(JSON.toJSONString(whereParam));
+        }
         builder.setWhere(messageBuild);
       }
 

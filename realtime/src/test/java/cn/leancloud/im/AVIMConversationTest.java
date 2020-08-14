@@ -740,6 +740,9 @@ public class AVIMConversationTest extends TestCase {
         } else {
           System.out.println("succeed to query converstaion.");
           opersationSucceed = conversations.size() > 0;
+          for(AVIMConversation c: conversations) {
+            System.out.println(c.getType());
+          }
         }
         countDownLatch.countDown();
       }
@@ -755,6 +758,47 @@ public class AVIMConversationTest extends TestCase {
     this.conversationEventHandler.onInvited(client, conv, "nobody");
     this.conversationEventHandler.onMemberBlocked(client, conv, Arrays.asList("Tom", "Jerry"),"nobody");
     assertTrue(this.conversationEventHandler.getCount(0x00ffFF) == 3);
+  }
+
+  public void testCreateTempConversation() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    client.createTemporaryConversation(Arrays.asList("testUser007"), 1800, new AVIMConversationCreatedCallback() {
+      @Override
+      public void done(AVIMConversation conversation, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to create temp conversation. cause:" + e.getMessage());
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed to create temp conversation: " + conversation.toJSONString());
+          client.getConversationsQuery().findTempConversationsInBackground(Arrays.asList(conversation.getConversationId()),
+                  new AVIMConversationQueryCallback() {
+            @Override
+            public void done(List<AVIMConversation> conversations, AVIMException e) {
+              if (null != e) {
+                System.out.println("failed to create conversation. cause:" + e.getMessage());
+                countDownLatch.countDown();
+              } else {
+                for (AVIMConversation c : conversations) {
+                  System.out.println(c.toJSONString());
+                }
+                opersationSucceed = conversations.size() > 0;
+                countDownLatch.countDown();
+              }
+            }
+          });
+        }
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
   }
 
   public void testCreateConversationWithAttributes() throws Exception {
@@ -1194,7 +1238,7 @@ public class AVIMConversationTest extends TestCase {
             "\"objectId\":\"5dee02017c4cc935c85c93de\",\"m\":[\"T8\",\"William\"],\"tr\":false,\"createdAt\":\"2019-12-09T08:12:49.475Z\"," +
             "\"c\":\"T8\",\"uniqueId\":\"61e52ce97f2b93050655a1c83371b070\",\"mu\":[]," +
             "\"attr\":{\"alias\":\"TestConv1575943063325\",\"type\":4,\"ts\":1579603439430}}";
-    JSONObject jsonObj = JSON.parseObject(jsonString);
+    Map<String, Object> jsonObj = JSON.parseObject(jsonString, Map.class);
     AVIMClient client = AVIMClient.getInstance("test");
     AVIMConversation conv = AVIMConversation.parseFromJson(client, jsonObj);
     Date createdAt = StringUtil.dateFromString("2019-12-09T08:12:49.475Z");
@@ -1384,8 +1428,10 @@ public class AVIMConversationTest extends TestCase {
                         public void done(List<AVIMConversationMemberInfo> memberInfoList, AVIMException e3) {
                           if (null != e3) {
                             opersationSucceed = true;
-                            for (AVIMConversationMemberInfo info: memberInfoList) {
-                              System.out.println("memberInfo: " + info.toString());
+                            if (null != memberInfoList) {
+                              for (AVIMConversationMemberInfo info: memberInfoList) {
+                                System.out.println("memberInfo: " + info.toString());
+                              }
                             }
                           } else {
                             System.out.println("failed to query memberInfo. cause: " + e3.getMessage());

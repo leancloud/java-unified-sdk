@@ -663,14 +663,14 @@ public class AVIMConversationsQuery {
         List<AVIMConversation> conversations = null;
         if (null != result) {
           Object callbackData = result.get(Conversation.callbackData);
-          if (callbackData instanceof JSONArray) {
-            JSONArray content = (JSONArray) callbackData;
+          if (callbackData instanceof List) {
+            List<Map<String, Object>> content = (List<Map<String, Object>>) callbackData;
             conversations = parseQueryResult(content);
             if (null != conversations && conversations.size() > 0) {
               cacheQueryResult(queryParams, conversations);
             }
           } else if (callbackData instanceof String) {
-            conversations = parseQueryResult(JSON.parseArray(String.valueOf(callbackData)));
+            conversations = parseQueryResult(JSON.parseObject(String.valueOf(callbackData), List.class));
             if (null != conversations && conversations.size() > 0) {
               cacheQueryResult(queryParams, conversations);
             }
@@ -701,10 +701,10 @@ public class AVIMConversationsQuery {
     QueryResultCache.getInstance().cacheResult(cacheKey, JSON.toJSONString(conversationList));
   }
 
-  private List<AVIMConversation> parseQueryResult(JSONArray content) {
+  private List<AVIMConversation> parseQueryResult(List<Map<String, Object>> content) {
     List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
     for (int i = 0; i < content.size(); i++) {
-      JSONObject jsonObject = content.getJSONObject(i);
+      Map<String, Object> jsonObject = content.get(i);
       AVIMConversation allNewConversation = AVIMConversation.parseFromJson(client, jsonObject);
       if (null != allNewConversation) {
         AVIMConversation convResult = client.mergeConversationCache(allNewConversation, false, jsonObject);
@@ -715,4 +715,19 @@ public class AVIMConversationsQuery {
     }
     return conversations;
   }
+//
+//  private List<AVIMConversation> parseQueryResult(JSONArray content) {
+//    List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
+//    for (int i = 0; i < content.size(); i++) {
+//      JSONObject jsonObject = content.getJSONObject(i);
+//      AVIMConversation allNewConversation = AVIMConversation.parseFromJson(client, jsonObject);
+//      if (null != allNewConversation) {
+//        AVIMConversation convResult = client.mergeConversationCache(allNewConversation, false, jsonObject);
+//        if (null != convResult) {
+//          conversations.add(convResult);
+//        }
+//      }
+//    }
+//    return conversations;
+//  }
 }
