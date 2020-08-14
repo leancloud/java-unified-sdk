@@ -760,6 +760,47 @@ public class AVIMConversationTest extends TestCase {
     assertTrue(this.conversationEventHandler.getCount(0x00ffFF) == 3);
   }
 
+  public void testCreateTempConversation() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    client.createTemporaryConversation(Arrays.asList("testUser007"), 1800, new AVIMConversationCreatedCallback() {
+      @Override
+      public void done(AVIMConversation conversation, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to create temp conversation. cause:" + e.getMessage());
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed to create temp conversation: " + conversation.toJSONString());
+          client.getConversationsQuery().findTempConversationsInBackground(Arrays.asList(conversation.getConversationId()),
+                  new AVIMConversationQueryCallback() {
+            @Override
+            public void done(List<AVIMConversation> conversations, AVIMException e) {
+              if (null != e) {
+                System.out.println("failed to create conversation. cause:" + e.getMessage());
+                countDownLatch.countDown();
+              } else {
+                for (AVIMConversation c : conversations) {
+                  System.out.println(c.toJSONString());
+                }
+                opersationSucceed = conversations.size() > 0;
+                countDownLatch.countDown();
+              }
+            }
+          });
+        }
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
   public void testCreateConversationWithAttributes() throws Exception {
     client = AVIMClient.getInstance("testUser1");
     final CountDownLatch tmpCounter = new CountDownLatch(1);

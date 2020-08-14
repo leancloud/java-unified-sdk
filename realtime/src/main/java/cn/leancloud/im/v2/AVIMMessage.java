@@ -422,7 +422,7 @@ public class AVIMMessage {
         result.put("binaryMsg", bytes);
       }
     } else if (this instanceof AVIMTypedMessage) {
-      result.put("typeMsgData", JSON.parseObject(getContent()));
+      result.put("typeMsgData", JSON.parseObject(getContent(), Map.class));
     } else {
       String content = getContent();
       if (!StringUtil.isEmpty(content)) {
@@ -436,7 +436,7 @@ public class AVIMMessage {
     return JSON.toJSONString(this.dumpRawData());
   }
 
-  private static AVIMMessage parseJSON(Map<String, Object> jsonObject) {
+  public static AVIMMessage parseJSON(Map<String, Object> jsonObject) {
     if (null == jsonObject) {
       return null;
     }

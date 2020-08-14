@@ -102,6 +102,8 @@ public class AVIMConversation {
     if (instanceData.containsKey(Conversation.TEMPORARYTTL)) {
       if (instanceData.get(Conversation.TEMPORARYTTL) instanceof Long) {
         return Long.valueOf((long)instanceData.get(Conversation.TEMPORARYTTL)).intValue();
+      } else if (instanceData.get(Conversation.TEMPORARYTTL) instanceof Double) {
+        return Double.valueOf((double)instanceData.get(Conversation.TEMPORARYTTL)).intValue();
       } else {
         return (int)instanceData.get(Conversation.TEMPORARYTTL);
       }
