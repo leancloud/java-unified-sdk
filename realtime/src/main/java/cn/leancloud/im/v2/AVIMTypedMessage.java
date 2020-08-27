@@ -52,12 +52,15 @@ public class AVIMTypedMessage extends AVIMMessage{
 
   @Override
   public final String getContent() {
-    JSONObject json = JSONObject.Builder.create(null);
-    json.put("_lctype", this.getMessageType());
     if (!fieldCache.containsKey(this.getClass())) {
       computeFieldAttribute(this.getClass());
     }
     Map<String, FieldAttribute> classFieldAttributesMap = fieldCache.get(this.getClass());
+    if (null == classFieldAttributesMap || classFieldAttributesMap.size() < 1) {
+      return super.getContent();
+    }
+    JSONObject json = JSONObject.Builder.create(null);
+    json.put("_lctype", this.getMessageType());
     for (FieldAttribute fieldAttribute : classFieldAttributesMap.values()) {
       Object fieldValue = fieldAttribute.get(this);
       json.put(fieldAttribute.getAliaName(), fieldValue);
@@ -72,12 +75,16 @@ public class AVIMTypedMessage extends AVIMMessage{
       computeFieldAttribute(this.getClass());
     }
     Map<String, FieldAttribute> classFieldAttributesMap = fieldCache.get(this.getClass());
-    for (FieldAttribute fieldAttribute : classFieldAttributesMap.values()) {
-      Object value = contentMap.get(fieldAttribute.getAliaName());
-      if (value instanceof Map && fieldAttribute.getFieldType() != null) {
-        value = JSON.parseObject(JSON.toJSONString(value), fieldAttribute.getFieldType());
+    if (null == classFieldAttributesMap || classFieldAttributesMap.size() < 1) {
+      super.setContent(content);
+    } else {
+      for (FieldAttribute fieldAttribute : classFieldAttributesMap.values()) {
+        Object value = contentMap.get(fieldAttribute.getAliaName());
+        if (value instanceof Map && fieldAttribute.getFieldType() != null) {
+          value = JSON.parseObject(JSON.toJSONString(value), fieldAttribute.getFieldType());
+        }
+        fieldAttribute.set(this, value);
       }
-      fieldAttribute.set(this, value);
     }
   }
 
