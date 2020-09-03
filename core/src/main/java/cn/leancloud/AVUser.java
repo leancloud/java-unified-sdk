@@ -742,7 +742,7 @@ public class AVUser extends AVObject {
 
   public static synchronized void changeCurrentUser(AVUser newUser, boolean save) {
     if (null != newUser) {
-      newUser.setPassword(null);
+      newUser.removeOperationForKey(ATTR_PASSWORD);
     }
     File currentUserArchivePath = currentUserArchivePath();
     if (null != newUser && save) {

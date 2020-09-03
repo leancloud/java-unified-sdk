@@ -664,6 +664,10 @@ public class AVObject {
     this.operations.clear();
   }
 
+  protected void removeOperationForKey(String key) {
+    this.operations.remove(key);
+  }
+
   protected void addNewOperation(ObjectFieldOperation op) {
     if (null == op) {
       return;

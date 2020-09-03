@@ -8,6 +8,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -616,6 +617,189 @@ public class AVUserTest extends TestCase {
 
       @Override
       public void onComplete() {
+      }
+    });
+    latch.await();
+    assertTrue(operationSucceed);
+  }
+
+  public void testAssociateAuthDataWithMultiplePlatforms() throws Exception {
+    final Map<String, Object> weixinAuthData = new HashMap<String, Object>();
+    weixinAuthData.put("expires_at", "2019-01-07T02:41:13.580Z");
+    weixinAuthData.put("openid", "6A83158");
+    weixinAuthData.put("access_token", "DCIF");
+    weixinAuthData.put("platform", "weixin");
+
+    final Map<String, Object> qqAuthData = new HashMap<String, Object>();
+    qqAuthData.put("expires_at", "2019-01-07T02:41:13.580Z");
+    qqAuthData.put("openid", "6A83faefewfew158");
+    qqAuthData.put("access_token", "DCfafewerEWDWIF");
+    qqAuthData.put("platform", "qq");
+
+    final String username = "jfeng2020";
+    final String userEmail = "jfeng2020@test.com";
+//    AVUser user = new AVUser();
+//    user.setEmail(userEmail);
+//    user.setUsername(username);
+//    user.setPassword("FER$@$@#Ffwe");
+//    user.signUp();
+
+    final CountDownLatch latch = new CountDownLatch(1);
+    operationSucceed = false;
+    AVUser.logIn(username, "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+      @Override
+      public void onSubscribe(@NotNull Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(@NotNull AVUser avUser) {
+        System.out.println("succeed to login with username/password. currentUser: " + avUser.toJSONString());
+
+        avUser.associateWithAuthData(weixinAuthData, "weixin").subscribe(new Observer<AVUser>() {
+          @Override
+          public void onSubscribe(@NotNull Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(@NotNull AVUser abUser) {
+            System.out.println("succeed to associate with weixin data. currentUser: " + abUser.toJSONString());
+            abUser.associateWithAuthData(qqAuthData, "qq").subscribe(new Observer<AVUser>() {
+              @Override
+              public void onSubscribe(@NotNull Disposable disposable) {
+
+              }
+
+              @Override
+              public void onNext(@NotNull AVUser acUser) {
+                System.out.println("succeed to associate with qq data. currentUser: " + acUser.toJSONString());
+                AVUser.currentUser().logOut();
+                operationSucceed = true;
+                latch.countDown();
+              }
+
+              @Override
+              public void onError(@NotNull Throwable throwable) {
+                System.out.println("failed to associate qq data, cause: " + throwable.getMessage());
+                latch.countDown();
+              }
+
+              @Override
+              public void onComplete() {
+
+              }
+            });
+          }
+
+          @Override
+          public void onError(@NotNull Throwable throwable) {
+            System.out.println("failed to associate weixin data, cause: " + throwable.getMessage());
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
+      }
+
+      @Override
+      public void onError(@NotNull Throwable throwable) {
+        System.out.println("failed to login with username/passwd, cause: " + throwable.getMessage());
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(operationSucceed);
+  }
+
+  public void testDissociateAuthData() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    operationSucceed = false;
+
+    final Map<String, Object> qqAuthData = new HashMap<String, Object>();
+    qqAuthData.put("expires_at", "2019-01-07T02:41:13.580Z");
+    qqAuthData.put("openid", "6A83faefewfew158");
+    qqAuthData.put("access_token", "DCfafewerEWDWIF");
+    qqAuthData.put("platform", "qq");
+
+    AVUser.loginWithAuthData(qqAuthData, "qq").subscribe(new Observer<AVUser>() {
+      @Override
+      public void onSubscribe(@NotNull Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(@NotNull AVUser avUser) {
+        System.out.println("succeed to login with QQ data. currentUser: " + avUser.toJSONString());
+        JSONObject auth = avUser.getJSONObject("authData");
+        System.out.println("authData: " + auth.toJSONString());
+        avUser.dissociateWithAuthData("qq").subscribe(new Observer<AVUser>() {
+          @Override
+          public void onSubscribe(@NotNull Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(@NotNull AVUser axUser) {
+            System.out.println("succeed to dissociate with QQ data. currentUser: " + axUser.toJSONString());
+
+            JSONObject auth = axUser.getJSONObject("authData");
+            System.out.println("authData: " + auth.toJSONString());
+
+            operationSucceed = true;
+            axUser.associateWithAuthData(qqAuthData, "qq").subscribe(new Observer<AVUser>() {
+              @Override
+              public void onSubscribe(@NotNull Disposable disposable) {
+
+              }
+
+              @Override
+              public void onNext(@NotNull AVUser avUser) {
+                latch.countDown();
+              }
+
+              @Override
+              public void onError(@NotNull Throwable throwable) {
+                latch.countDown();
+              }
+
+              @Override
+              public void onComplete() {
+
+              }
+            });
+          }
+
+          @Override
+          public void onError(@NotNull Throwable throwable) {
+            System.out.println("failed to dissociate with qq data, cause: " + throwable.getMessage());
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
+      }
+
+      @Override
+      public void onError(@NotNull Throwable throwable) {
+        System.out.println("failed to login with qq data, cause: " + throwable.getMessage());
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
       }
     });
     latch.await();
