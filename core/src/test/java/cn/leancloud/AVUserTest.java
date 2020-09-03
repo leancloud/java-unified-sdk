@@ -744,6 +744,7 @@ public class AVUserTest extends TestCase {
         System.out.println("succeed to login with QQ data. currentUser: " + avUser.toJSONString());
         JSONObject auth = avUser.getJSONObject("authData");
         System.out.println("authData: " + auth.toJSONString());
+        avUser.setFetchWhenSave(true);
         avUser.dissociateWithAuthData("qq").subscribe(new Observer<AVUser>() {
           @Override
           public void onSubscribe(@NotNull Disposable disposable) {
