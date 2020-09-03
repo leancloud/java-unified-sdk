@@ -2,6 +2,17 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 7.0.8 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- fixed: AVUser#associateWithAuthData will remove user password if logged in with username/password.
+
 
 ## 7.0.7 release
 
