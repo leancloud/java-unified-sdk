@@ -382,7 +382,8 @@ public class AVUserFollowshipTest extends TestCase {
           @Override
           public void done(Map avObjects, AVException avException) {
             operationSucceed = (null != avObjects);
-            System.out.println(JSON.toJSONString(avObjects));
+            System.out.println(JSON.toJSONString(avObjects.get("follower")));
+            System.out.println(JSON.toJSONString(avObjects.get("followee")));
             if (null != avException) {
               avException.printStackTrace();
             }
