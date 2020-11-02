@@ -17,6 +17,7 @@ public class FileUploadTokenAdapter extends TypeAdapter<FileUploadToken> {
   private static final String FIELD_PROVIDER = "provider";
   private static final String FIELD_TOKEN = "token";
   private static final String FIELD_URL = "url";
+  private static final String FIELD_KEY = "key";
 
   public void write(JsonWriter writer, FileUploadToken token) throws IOException {
     JsonObject jsonObject = new JsonObject();
@@ -26,6 +27,7 @@ public class FileUploadTokenAdapter extends TypeAdapter<FileUploadToken> {
     jsonObject.addProperty(FIELD_PROVIDER, token.getProvider());
     jsonObject.addProperty(FIELD_TOKEN, token.getToken());
     jsonObject.addProperty(FIELD_URL, token.getUrl());
+    jsonObject.addProperty(FIELD_KEY, token.getKey());
     TypeAdapters.JSON_ELEMENT.write(writer, jsonObject);
   }
 
@@ -51,6 +53,9 @@ public class FileUploadTokenAdapter extends TypeAdapter<FileUploadToken> {
       }
       if (jsonObject.has(FIELD_URL)) {
         token.setUrl(jsonObject.get(FIELD_URL).getAsString());
+      }
+      if (jsonObject.has(FIELD_KEY)) {
+        token.setKey(jsonObject.get(FIELD_KEY).getAsString());
       }
       return token;
     }

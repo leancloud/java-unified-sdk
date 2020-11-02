@@ -15,6 +15,8 @@ public class FileUploadToken {
 
   private String url = null;
 
+  private String key = null;
+
   public FileUploadToken() {
   }
 
@@ -66,6 +68,14 @@ public class FileUploadToken {
     this.url = url;
   }
 
+  public String getKey() {
+    return key;
+  }
+
+  public void setKey(String key) {
+    this.key = key;
+  }
+
   @java.lang.Override
   public java.lang.String toString() {
     return "FileUploadToken{" +
@@ -75,6 +85,7 @@ public class FileUploadToken {
             ", provider='" + provider + '\'' +
             ", token='" + token + '\'' +
             ", url='" + url + '\'' +
+            ", key='" + key + '\'' +
             '}';
   }
 
@@ -88,11 +99,12 @@ public class FileUploadToken {
             AVUtils.equals(uploadUrl, that.uploadUrl) &&
             AVUtils.equals(provider, that.provider) &&
             AVUtils.equals(token, that.token) &&
-            AVUtils.equals(url, that.url);
+            AVUtils.equals(url, that.url) &&
+            AVUtils.equals(key, that.key);
   }
 
   @Override
   public int hashCode() {
-    return AVUtils.hash(bucket, objectId, uploadUrl, provider, token, url);
+    return AVUtils.hash(bucket, objectId, uploadUrl, provider, token, url, key);
   }
 }
