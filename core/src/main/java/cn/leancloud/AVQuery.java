@@ -924,9 +924,6 @@ public class AVQuery<T extends AVObject> implements Cloneable {
 
   protected Observable<List<T>> findInBackground(int explicitLimit) {
     Map<String, String> query = assembleParameters();
-    if (this.includeACL && null != query) {
-      query.put("returnACL", "true");
-    }
     if (explicitLimit > 0) {
       query.put("limit", Integer.toString(explicitLimit));
     }
@@ -1046,12 +1043,19 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    */
   public Map<String, String> assembleParameters() {
     conditions.assembleParameters();
-    return conditions.getParameters();
+    Map<String, String> query = conditions.getParameters();
+    if (this.includeACL && null != query) {
+      query.put("returnACL", "true");
+    }
+    return query;
   }
 
   protected Map<String, Object> assembleJsonParam() {
     Map<String, Object> result = conditions.assembleJsonParam();
     result.put("className", getClassName());
+    if (this.includeACL && null != query) {
+      result.put("returnACL", true);
+    }
     return result;
   }
 
