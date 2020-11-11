@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.5.13 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- close #141: internally optimized file upload flow.
+- fixed #144: can't subscribe livequery within jvm.
+
 ## 6.5.12 release
 
 #### Break changes
