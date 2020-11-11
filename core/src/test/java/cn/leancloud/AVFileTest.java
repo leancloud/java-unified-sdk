@@ -59,7 +59,7 @@ public class AVFileTest extends TestCase {
         String mimeType = avFile.getMimeType();
         System.out.println("url=" + url + ", name=" + name + ", key=" + key + ", size=" + size);
         System.out.println("objId=" + objectId + ", thumbnail=" + thumbnailUrl + ", mime=" + mimeType);
-        testSucceed = url.length() > 0 && thumbnailUrl.length() > 0 && name.length() > 0 && key.length() > 0;
+        testSucceed = url.length() > 0 && thumbnailUrl.length() > 0 && name.length() > 0;
         testSucceed = testSucceed && objectId.equals(fileObjectId);
         testSucceed = testSucceed && (mimeType.length() > 0);
         latch.countDown();

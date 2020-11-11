@@ -496,8 +496,8 @@ public final class AVFile extends AVObject {
 
   private Observable<AVFile> saveWithProgressCallback(boolean keepFileName, final ProgressCallback callback) {
     JSONObject paramData = generateChangedParam();
-    final String fileKey = FileUtil.generateFileKey(this.getName(), keepFileName);
-    paramData.put("key", fileKey);
+//    final String fileKey = FileUtil.generateFileKey(this.getName(), keepFileName);
+//    paramData.put("key", fileKey);
     paramData.put("__type", "File");
     if (StringUtil.isEmpty(getObjectId())) {
       if (!StringUtil.isEmpty(getUrl())) {
@@ -513,7 +513,7 @@ public final class AVFile extends AVObject {
                   AVFile.this.internalPutDirectly(KEY_OBJECT_ID, fileUploadToken.getObjectId());
                   AVFile.this.internalPutDirectly(KEY_BUCKET, fileUploadToken.getBucket());
                   AVFile.this.internalPutDirectly(KEY_PROVIDER, fileUploadToken.getProvider());
-                  AVFile.this.internalPutDirectly(KEY_FILE_KEY, fileKey);
+                  AVFile.this.internalPutDirectly(KEY_FILE_KEY, fileUploadToken.getKey());
 
                   Uploader uploader = new FileUploader(AVFile.this, fileUploadToken, callback);
                   AVFile.this.internalPutDirectly(KEY_URL, fileUploadToken.getUrl());

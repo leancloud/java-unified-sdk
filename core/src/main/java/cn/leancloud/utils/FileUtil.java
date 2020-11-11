@@ -18,20 +18,20 @@ public class FileUtil {
     detector = mimeTypeDetector;
   }
 
-  public static String generateFileKey(String name, boolean keepFilename) {
-    String key = StringUtil.getRandomString(DEFAULT_FILE_KEY_LEN);
-    int idx = 0;
-    if (!StringUtil.isEmpty(name)) {
-      idx = name.lastIndexOf(".");
-    }
-    if (keepFilename) {
-      key += "/" + name;
-    } else if (idx > 0) {
-      String postFix = name.substring(idx);
-      key += postFix;
-    }
-    return key;
-  }
+//  public static String generateFileKey(String name, boolean keepFilename) {
+//    String key = StringUtil.getRandomString(DEFAULT_FILE_KEY_LEN);
+//    int idx = 0;
+//    if (!StringUtil.isEmpty(name)) {
+//      idx = name.lastIndexOf(".");
+//    }
+//    if (keepFilename) {
+//      key += "/" + name;
+//    } else if (idx > 0) {
+//      String postFix = name.substring(idx);
+//      key += postFix;
+//    }
+//    return key;
+//  }
 
   public static String getExtensionFromFilename(String filename) {
     if (!StringUtil.isEmpty(filename) && Pattern.matches("[a-zA-Z_0-9\\.\\-\\(\\)\\%]+", filename)) {
