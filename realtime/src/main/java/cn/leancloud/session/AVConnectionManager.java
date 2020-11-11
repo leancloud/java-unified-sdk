@@ -316,7 +316,6 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     LOGGER.d("webSocket(client=" + client + ") established...");
     connectionEstablished = true;
     retryConnectionCount = 0;
-    resetConnectingStatus(true);
 
     // auto send login packet.
     if (!AVIMOptions.getGlobalOptions().isDisableAutoLogin4Push()) {
@@ -331,6 +330,9 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
 
     initSessionsIfExists();
+
+    resetConnectingStatus(true);
+
     for (AVConnectionListener listener: connectionListeners.values()) {
       listener.onWebSocketOpen();
     }
