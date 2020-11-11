@@ -40,7 +40,7 @@ public class AVObject {
 
   private static final String INTERNAL_PATTERN = "^[\\da-z][\\d-a-z]*$";
   private static final Set<String> RESERVED_ATTRS = new HashSet<String>(
-          Arrays.asList(KEY_CREATED_AT, KEY_UPDATED_AT, KEY_OBJECT_ID, KEY_ACL));
+          Arrays.asList(KEY_CREATED_AT, KEY_UPDATED_AT, KEY_OBJECT_ID, KEY_ACL, KEY_CLASSNAME));
 
   protected static final AVLogger logger = LogUtil.getLogger(AVObject.class);
   protected static final int UUID_LEN = UUID.randomUUID().toString().length();
