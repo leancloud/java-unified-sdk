@@ -30,7 +30,6 @@ public class AVQuery<T extends AVObject> implements Cloneable {
   private java.lang.Boolean isRunning;
   private CachePolicy cachePolicy = CachePolicy.IGNORE_CACHE;
   private long maxCacheAge = -1;
-  private boolean includeACL = false;
 
   QueryConditions conditions;
 
@@ -216,6 +215,11 @@ public class AVQuery<T extends AVObject> implements Cloneable {
     Map<String, String> query = assembleParameters();
     String cacheKey = QueryResultCache.generateKeyForQueryCondition(getClassName(), query);
     QueryResultCache.getInstance().clearCachedFile(cacheKey);
+
+    // clear result for getFirstInBackground().
+    query.put("limit", "1");
+    cacheKey = QueryResultCache.generateKeyForQueryCondition(getClassName(), query);
+    QueryResultCache.getInstance().clearCachedFile(cacheKey);
   }
 
   /**
@@ -337,7 +341,7 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return include flag.
    */
   public boolean isIncludeACL() {
-    return includeACL;
+    return conditions.isIncludeACL();
   }
 
   /**
@@ -346,10 +350,9 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return this query.
    */
   public AVQuery<T> includeACL(boolean includeACL) {
-    this.includeACL = includeACL;
+    conditions.includeACL(includeACL);
     return this;
   }
-
 
   /**
    * Include nested AVObjects for the provided key. You can use dot notation to specify which fields
@@ -924,9 +927,6 @@ public class AVQuery<T extends AVObject> implements Cloneable {
 
   protected Observable<List<T>> findInBackground(int explicitLimit) {
     Map<String, String> query = assembleParameters();
-    if (this.includeACL && null != query) {
-      query.put("returnACL", "true");
-    }
     if (explicitLimit > 0) {
       query.put("limit", Integer.toString(explicitLimit));
     }

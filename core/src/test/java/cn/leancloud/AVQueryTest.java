@@ -8,6 +8,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -458,6 +459,176 @@ public class AVQueryTest extends TestCase {
     });
     latch.await();
     assertTrue(testSucceed);
+  }
+
+  public void testQueryAllAfterClearCache() throws Exception {
+    final AVQuery query = new AVQuery("Student");
+    query.orderByDescending(AVObject.KEY_CREATED_AT);
+    query.limit(5);
+    query.skip(1);
+    query.findInBackground().subscribe(new Observer<List<AVObject>>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(List<AVObject> o) {
+        System.out.println("succeed to query at first time, result size: " + o.size());
+        query.clearCachedResult();
+        query.findInBackground().subscribe(new Observer<List<AVObject>>() {
+          @Override
+          public void onSubscribe(@NotNull Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(@NotNull List<AVObject> o) {
+            System.out.println("succeed to query at second time, result size: " + o.size());
+            testSucceed = true;
+            latch.countDown();
+          }
+
+          @Override
+          public void onError(@NotNull Throwable throwable) {
+            System.out.println("failed to query at second time");
+            throwable.printStackTrace();
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
+
+      }
+
+      public void onError(Throwable throwable) {
+        System.out.println("failed to query at first time");
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+
+  }
+
+  public void testQueryFirstAfterClearCache() throws Exception {
+    final AVQuery query = new AVQuery("Student");
+    query.orderByDescending(AVObject.KEY_CREATED_AT);
+    query.limit(5);
+    query.skip(1);
+    query.getFirstInBackground().subscribe(new Observer<AVObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(AVObject o) {
+        System.out.println("succeed to query at first time, result objectId: " + o.getObjectId());
+        query.clearCachedResult();
+        query.setCachePolicy(AVQuery.CachePolicy.CACHE_ELSE_NETWORK);
+        query.getFirstInBackground().subscribe(new Observer<AVObject>() {
+          @Override
+          public void onSubscribe(@NotNull Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(@NotNull AVObject o) {
+            System.out.println("succeed to query at second time, result objectId: " + o.getObjectId());
+            testSucceed = true;
+            latch.countDown();
+          }
+
+          @Override
+          public void onError(@NotNull Throwable throwable) {
+            System.out.println("failed to query at second time");
+            throwable.printStackTrace();
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
+
+      }
+
+      public void onError(Throwable throwable) {
+        System.out.println("failed to query at first time");
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+
+  }
+
+  public void testQueryCountAfterClearCache() throws Exception {
+    final AVQuery query = new AVQuery("Student");
+    query.orderByDescending(AVObject.KEY_CREATED_AT);
+    query.limit(5);
+    query.skip(1);
+    query.countInBackground().subscribe(new Observer<Integer>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(Integer o) {
+        System.out.println("succeed to query at first time, count: " + o);
+        query.clearCachedResult();
+        query.setCachePolicy(AVQuery.CachePolicy.CACHE_ELSE_NETWORK);
+        query.countInBackground().subscribe(new Observer<Integer>() {
+          @Override
+          public void onSubscribe(@NotNull Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(@NotNull Integer o) {
+            System.out.println("succeed to query at second time, count: " + o);
+            testSucceed = true;
+            latch.countDown();
+          }
+
+          @Override
+          public void onError(@NotNull Throwable throwable) {
+            System.out.println("failed to query at second time");
+            throwable.printStackTrace();
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
+
+      }
+
+      public void onError(Throwable throwable) {
+        System.out.println("failed to query at first time");
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+
   }
 
   public void testDeepIncludeQuery() throws Exception {
