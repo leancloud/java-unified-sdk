@@ -156,7 +156,6 @@ public class QueryConditions implements Cloneable {
   /**
    * set include ACL or not.
    * @param includeACL Flag to indicate need ACL returned in result.
-   * @return this query.
    */
   public void includeACL(boolean includeACL) {
     this.includeACL = includeACL;
