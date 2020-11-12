@@ -17,10 +17,12 @@ public class QueryConditions implements Cloneable {
   private int skip = -1;
   private String order;
   private Map<String, String> parameters;
+  private boolean includeACL = false;
 
   public QueryConditions() {
     where = new HashMap<String, List<QueryOperation>>();
     include = new LinkedList<String>();
+    includeACL = false;
     parameters = new HashMap<String, String>();
   }
 
@@ -36,6 +38,7 @@ public class QueryConditions implements Cloneable {
     condition.setTrace(this.trace);
     condition.setSkip(this.skip);
     condition.setOrder(this.order);
+    condition.includeACL(this.includeACL);
     return condition;
   }
 
@@ -142,6 +145,23 @@ public class QueryConditions implements Cloneable {
     }
   }
 
+  /**
+   * Flag to indicate need ACL returned in result.
+   * @return include flag.
+   */
+  public boolean isIncludeACL() {
+    return includeACL;
+  }
+
+  /**
+   * set include ACL or not.
+   * @param includeACL Flag to indicate need ACL returned in result.
+   * @return this query.
+   */
+  public void includeACL(boolean includeACL) {
+    this.includeACL = includeACL;
+  }
+
   public Map<String, Object> compileWhereOperationMap() {
     Map<String, Object> result = new HashMap<String, Object>();
     for (Map.Entry<String, List<QueryOperation>> entry : where.entrySet()) {
@@ -223,6 +243,9 @@ public class QueryConditions implements Cloneable {
     if (skip >= 0) {
       result.put("skip",  skip);
     }
+    if (includeACL) {
+      result.put("returnACL", "true");
+    }
     if (!StringUtil.isEmpty(order)) {
       result.put("order", order);
     }
@@ -249,6 +272,9 @@ public class QueryConditions implements Cloneable {
     if (skip >= 0) {
       parameters.put("skip", Integer.toString(skip));
     }
+    if (includeACL) {
+      parameters.put("returnACL", "true");
+    }
     if (!StringUtil.isEmpty(order)) {
       parameters.put("order", order);
     }
@@ -260,6 +286,7 @@ public class QueryConditions implements Cloneable {
       String keys = StringUtil.join(",", selectedKeys);
       parameters.put("keys", keys);
     }
+
     return parameters;
   }
 
@@ -460,23 +487,4 @@ public class QueryConditions implements Cloneable {
   public void whereDoesNotExist(String key) {
     addWhereItem(key, "$exists", false);
   }
-
-//  public String generateQueryString() {
-//    assembleParameters();
-//    Map<String, String> params = getParameters();
-//    StringBuilder sb = new StringBuilder();
-//    int index = 0;
-//    for (Map.Entry<String, String> param: params.entrySet()) {
-//      if (index > 0) {
-//        sb.append("&");
-//      }
-//      index++;
-//      sb.append(param.getKey());
-//      sb.append("=");
-//      sb.append(param.getValue());
-//    }
-//    return sb.toString();
-//  }
-
-
 }
