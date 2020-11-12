@@ -30,7 +30,7 @@ allprojects {
 }
 
 ext {
-    sdkVersion = "7.0.8"
+    sdkVersion = "7.0.9"
     supportLibVersion = "26.1.0"
     converterVersion = "2.1.0"
     rxandroidVersion = "2.1.1"
