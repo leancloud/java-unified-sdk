@@ -175,16 +175,16 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
     final boolean isTransient = directCommand.hasTransient() && directCommand.getTransient();
     final boolean hasMore = directCommand.hasHasMore() && directCommand.getHasMore();
     final long patchTimestamp = directCommand.getPatchTimestamp();
-    final boolean mentionAll = directCommand.hasMentionAll()? directCommand.getMentionAll() : false;
+    final boolean mentionAll = directCommand.hasMentionAll() && directCommand.getMentionAll();
     final List<String> mentionList = directCommand.getMentionPidsList();
 
     try {
       if (!isTransient) {
         if (!StringUtil.isEmpty(conversationId)) {
-          AVConnectionManager.getInstance().sendPacket(ConversationAckPacket.getConversationAckPacket(
+          session.sendPacket(ConversationAckPacket.getConversationAckPacket(
                   session.getSelfPeerId(), conversationId, messageId));
         } else {
-          AVConnectionManager.getInstance().sendPacket(genSessionAckPacket(messageId));
+          session.sendPacket(genSessionAckPacket(messageId));
         }
       }
 
@@ -518,8 +518,8 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
   }
 
   private void processGoawayCommand(String peerId) {
-    AVConnectionManager.getInstance().resetConnection();
-    AVConnectionManager.getInstance().startConnection(new AVCallback() {
+    session.getConnectionManager().resetConnection();
+    session.getConnectionManager().startConnection(new AVCallback() {
       @Override
       protected void internalDone0(Object o, AVException avException) {
         session.reopen();

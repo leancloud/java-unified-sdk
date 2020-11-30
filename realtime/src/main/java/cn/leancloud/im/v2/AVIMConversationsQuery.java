@@ -682,7 +682,8 @@ public class AVIMConversationsQuery {
       }
     };
 
-    InternalConfiguration.getOperationTube().queryConversations(this.client.getClientId(), queryParamsString, tmpCallback);
+    InternalConfiguration.getOperationTube().queryConversations(this.client.getConnectionManager(),
+            this.client.getClientId(), queryParamsString, tmpCallback);
   }
 
   private void cacheQueryResult(final Map<String, String> queryParams, List<AVIMConversation> conversations) {

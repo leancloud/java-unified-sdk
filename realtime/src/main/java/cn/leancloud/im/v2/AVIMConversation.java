@@ -706,13 +706,13 @@ public class AVIMConversation {
               callback.internalDone(e);
             }
           } else {
-            InternalConfiguration.getOperationTube().sendMessage(client.getClientId(), getConversationId(), getType(),
+            InternalConfiguration.getOperationTube().sendMessage(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(),
                     message, messageOption, wrapperCallback);
           }
         }
       });
     } else {
-      InternalConfiguration.getOperationTube().sendMessage(client.getClientId(), getConversationId(), getType(),
+      InternalConfiguration.getOperationTube().sendMessage(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(),
               message, messageOption, wrapperCallback);
     }
   }
@@ -771,13 +771,13 @@ public class AVIMConversation {
               callback.internalDone(e);
             }
           } else {
-            InternalConfiguration.getOperationTube().updateMessage(client.getClientId(), getType(), oldMessage,
+            InternalConfiguration.getOperationTube().updateMessage(client.getConnectionManager(), client.getClientId(), getType(), oldMessage,
                     newMessage, tmpCallback);
           }
         }
       });
     } else {
-      InternalConfiguration.getOperationTube().updateMessage(client.getClientId(), getType(), oldMessage, newMessage,
+      InternalConfiguration.getOperationTube().updateMessage(client.getConnectionManager(), client.getClientId(), getType(), oldMessage, newMessage,
               tmpCallback);
     }
   }
@@ -818,7 +818,7 @@ public class AVIMConversation {
         }
       }
     };
-    InternalConfiguration.getOperationTube().recallMessage(client.getClientId(), getType(), message, tmpCallback);
+    InternalConfiguration.getOperationTube().recallMessage(client.getConnectionManager(), client.getClientId(), getType(), message, tmpCallback);
   }
 
   /**
@@ -874,7 +874,7 @@ public class AVIMConversation {
         }
       }
     };
-    boolean ret = InternalConfiguration.getOperationTube().fetchReceiptTimestamps(client.getClientId(), getConversationId(),
+    boolean ret = InternalConfiguration.getOperationTube().fetchReceiptTimestamps(client.getConnectionManager(), client.getClientId(), getConversationId(),
             getType(),
             Conversation.AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, tmpCallback);
     if (!ret && null != callback) {
@@ -975,7 +975,7 @@ public class AVIMConversation {
     params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld.getCode());
     params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
     params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, msgType);
-    boolean ret = InternalConfiguration.getOperationTube().queryMessages(this.client.getClientId(), getConversationId(),
+    boolean ret = InternalConfiguration.getOperationTube().queryMessages(client.getConnectionManager(), this.client.getClientId(), getConversationId(),
             getType(), JSON.toJSONString(params),
             Conversation.AVIMOperation.CONVERSATION_MESSAGE_QUERY, callback);
     if (!ret) {
@@ -997,7 +997,7 @@ public class AVIMConversation {
     params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, direction.getCode());
     params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
     params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, 0);
-    boolean ret = InternalConfiguration.getOperationTube().queryMessages(this.client.getClientId(), getConversationId(),
+    boolean ret = InternalConfiguration.getOperationTube().queryMessages(client.getConnectionManager(), this.client.getClientId(), getConversationId(),
             getType(), JSON.toJSONString(params),
             Conversation.AVIMOperation.CONVERSATION_MESSAGE_QUERY, cb);
     if (!ret && null != cb) {
@@ -1332,7 +1332,7 @@ public class AVIMConversation {
     }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), getConversationId(),
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), getConversationId(),
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_ADD_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
@@ -1356,7 +1356,7 @@ public class AVIMConversation {
     }
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), getConversationId(),
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), getConversationId(),
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_RM_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
@@ -1375,7 +1375,7 @@ public class AVIMConversation {
     AVIMConversationMemberInfo info = new AVIMConversationMemberInfo(conversationId, memberId, role);
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS, info.getUpdateAttrs());
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_PROMOTE_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1397,7 +1397,7 @@ public class AVIMConversation {
     String conversationId = getConversationId();
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_MUTE_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
@@ -1420,7 +1420,7 @@ public class AVIMConversation {
     String conversationId = getConversationId();
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_UNMUTE_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
@@ -1445,7 +1445,7 @@ public class AVIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.QUERY_PARAM_LIMIT, limit);
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, callback);
     if (!ret) {
       callback.internalDone(null,
@@ -1468,7 +1468,7 @@ public class AVIMConversation {
     String conversationId = getConversationId();
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_BLOCK_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1490,7 +1490,7 @@ public class AVIMConversation {
     String conversationId = getConversationId();
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_UNBLOCK_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1514,7 +1514,7 @@ public class AVIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.QUERY_PARAM_LIMIT, limit);
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(this.client.getClientId(), conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, callback);
     if (!ret) {
       callback.internalDone(null,
@@ -1535,7 +1535,7 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().processMembers(client.getClientId(), getConversationId(), getType(),
+    InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(),
             null, Conversation.AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, callback);
   }
 
@@ -1553,7 +1553,7 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), getConversationId(), getType(),
+    InternalConfiguration.getOperationTube().participateConversation(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(),
             null, Conversation.AVIMOperation.CONVERSATION_MUTE, callback);
   }
 
@@ -1571,7 +1571,7 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), getConversationId(), getType(),
+    InternalConfiguration.getOperationTube().participateConversation(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(),
             null, Conversation.AVIMOperation.CONVERSATION_UNMUTE, callback);
   }
 
@@ -1590,7 +1590,7 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), getConversationId(), getType(),
+    InternalConfiguration.getOperationTube().participateConversation(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(),
             null, Conversation.AVIMOperation.CONVERSATION_QUIT, callback);
   }
 
@@ -1608,7 +1608,7 @@ public class AVIMConversation {
       }
       return;
     }
-    InternalConfiguration.getOperationTube().participateConversation(client.getClientId(), getConversationId(), getType(),
+    InternalConfiguration.getOperationTube().participateConversation(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(),
             null, Conversation.AVIMOperation.CONVERSATION_JOIN, callback);
   }
 
@@ -1624,7 +1624,7 @@ public class AVIMConversation {
         params.put(Conversation.PARAM_MESSAGE_QUERY_TIMESTAMP, lastMessage.getTimestamp());
       }
       InternalConfiguration.getOperationTube()
-              .markConversationRead(client.getClientId(), getConversationId(), getType(), params);
+              .markConversationRead(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(), params);
     }
   }
 
@@ -1668,7 +1668,7 @@ public class AVIMConversation {
           }
         }
       };
-      InternalConfiguration.getOperationTube().updateConversation(this.client.getClientId(), getConversationId(),
+      InternalConfiguration.getOperationTube().updateConversation(client.getConnectionManager(), this.client.getClientId(), getConversationId(),
               getType(), params, tmpCallback);
     } else {
       if (null != callback) {
@@ -1691,7 +1691,7 @@ public class AVIMConversation {
       return;
     }
     Map<String, Object> params = getFetchRequestParams();
-    InternalConfiguration.getOperationTube().queryConversations(this.client.getClientId(),
+    InternalConfiguration.getOperationTube().queryConversations(client.getConnectionManager(), this.client.getClientId(),
             JSON.toJSONString(params), new AVIMCommonJsonCallback() {
               @Override
               public void done(Map<String, Object> result, AVIMException e) {

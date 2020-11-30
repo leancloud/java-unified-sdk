@@ -216,7 +216,7 @@ public class AVLiveQuery {
   }
 
   private void loginLiveQuery(final AVLiveQuerySubscribeCallback callback) {
-    boolean ret = InternalConfiguration.getOperationTube().loginLiveQuery(getSubscribeId(), callback);
+    boolean ret = InternalConfiguration.getOperationTube().loginLiveQuery(AVConnectionManager.getInstance(), getSubscribeId(), callback);
     if (!ret && null != callback) {
       callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "can't invoke operation in background."));
     }

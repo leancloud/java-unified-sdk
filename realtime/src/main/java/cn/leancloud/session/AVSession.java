@@ -51,6 +51,8 @@ public class AVSession {
    * client id
    */
   private final String selfId;
+  private final String installationId;
+
   /**
    * client tag(optional)
    */
@@ -95,17 +97,27 @@ public class AVSession {
 
   final AVSessionListener sessionListener;
   private final AVConnectionListener websocketListener;
+  final AVConnectionManager connectionManager;
 
   public AVConnectionListener getWebSocketListener() {
     return websocketListener;
   }
 
-  public AVSession(String selfId, AVSessionListener sessionListener) {
+  public AVSession(AVConnectionManager connectionManager, String selfId, String installationId, AVSessionListener sessionListener) {
     this.selfId = selfId;
+    this.installationId = installationId;
     this.sessionListener = sessionListener;
     pendingMessages = new PendingMessageCache<PendingMessageCache.Message>(selfId, PendingMessageCache.Message.class);
     conversationOperationCache = new AVIMOperationQueue(selfId);
     this.websocketListener = new AVDefaultConnectionListener(this);
+    this.connectionManager = connectionManager;
+  }
+
+  AVConnectionManager getConnectionManager() {
+    return this.connectionManager;
+  }
+  public void sendPacket(CommandPacket packet) {
+    this.connectionManager.sendPacket(packet);
   }
 
   public boolean setSessionResume(boolean flag) {
@@ -132,7 +144,7 @@ public class AVSession {
     this.tag = clientTag;
     updateUserSessionToken(sessionToken);
     try {
-      boolean connectionEstablished = AVConnectionManager.getInstance().isConnectionEstablished();
+      boolean connectionEstablished = connectionManager.isConnectionEstablished();
       if (!connectionEstablished) {
         sessionListener.onError(AVSession.this, new IllegalStateException(
                 "Connection Lost"), OPERATION_OPEN_SESSION, requestId);
@@ -166,12 +178,12 @@ public class AVSession {
           LOGGER.d("failed to generate signaure. cause:", exception);
         } else {
           SessionControlPacket scp = SessionControlPacket.genSessionCommand(
-                  getSelfPeerId(), null,
+                  installationId, getSelfPeerId(), null,
                   SessionControlPacket.SessionControlOp.RENEW_RTMTOKEN, sig,
                   getLastNotifyTime(), getLastPatchTime(), requestId);
           scp.setTag(tag);
           scp.setSessionToken(realtimeSessionToken);
-          AVConnectionManager.getInstance().sendPacket(scp);
+          connectionManager.sendPacket(scp);
         }
       }
 
@@ -207,7 +219,7 @@ public class AVSession {
   public boolean realtimeSessionTokenExpired() {
     long now = System.currentTimeMillis()/1000;
     return (now + REALTIME_TOKEN_WINDOW_INSECONDS) >= this.realtimeSessionTokenExpired;
-  };
+  }
 
   private void openWithSessionToken(String rtmSessionToken) {
 //    SessionControlPacket scp = SessionControlPacket.genSessionCommand(
@@ -216,9 +228,10 @@ public class AVSession {
 //    scp.setSessionToken(rtmSessionToken);
 //    scp.setReconnectionRequest(true);
 //    scp.setAppId(AVOSCloud.getApplicationId());
-    CommandPacket scp = WindTalker.getInstance().assembleSessionOpenPacket(this.getSelfPeerId(), this.tag, rtmSessionToken,
+    CommandPacket scp = WindTalker.getInstance().assembleSessionOpenPacket(this.installationId,
+            this.getSelfPeerId(), this.tag, rtmSessionToken,
             this.getLastNotifyTime(), this.getLastPatchTime(), true, null);
-    AVConnectionManager.getInstance().sendPacket(scp);
+    connectionManager.sendPacket(scp);
   }
 
   private void openWithSignature(final int requestId, final boolean reconnectionFlag,
@@ -235,9 +248,10 @@ public class AVSession {
         } else {
           conversationOperationCache.offer(AVIMOperationQueue.Operation.getOperation(
                   Conversation.AVIMOperation.CLIENT_OPEN.getCode(), getSelfPeerId(), null, requestId));
-          CommandPacket scp = WindTalker.getInstance().assembleSessionOpenPacket(getSelfPeerId(), tag, sig, getLastNotifyTime(),
+          CommandPacket scp = WindTalker.getInstance().assembleSessionOpenPacket(installationId,
+                  getSelfPeerId(), tag, sig, getLastNotifyTime(),
                   getLastPatchTime(), reconnectionFlag, requestId);
-          AVConnectionManager.getInstance().sendPacket(scp);
+          connectionManager.sendPacket(scp);
         }
       }
 
@@ -285,12 +299,12 @@ public class AVSession {
         this.sessionListener.onSessionClose(this, requestId);
         return;
       }
-      if (AVConnectionManager.getInstance().isConnectionEstablished()) {
+      if (connectionManager.isConnectionEstablished()) {
         conversationOperationCache.offer(Operation.getOperation(
                 AVIMOperation.CLIENT_DISCONNECT.getCode(), selfId, null, requestId));
-        CommandPacket scp = WindTalker.getInstance().assembleSessionPacket(this.selfId, null,
+        CommandPacket scp = WindTalker.getInstance().assembleSessionPacket(this.installationId, this.selfId, null,
                 SessionControlPacket.SessionControlOp.CLOSE, null, requestId);
-        AVConnectionManager.getInstance().sendPacket(scp);
+        connectionManager.sendPacket(scp);
       } else {
         // 如果网络已经断开的时候，我们就不要管它了，直接强制关闭吧
         this.sessionListener.onSessionClose(this, requestId);
@@ -317,9 +331,9 @@ public class AVSession {
 
   public void queryOnlinePeers(List<String> peerIds, int requestId) {
     SessionControlPacket scp =
-            SessionControlPacket.genSessionCommand(this.selfId, peerIds,
+            SessionControlPacket.genSessionCommand(this.installationId, this.selfId, peerIds,
                     SessionControlPacket.SessionControlOp.QUERY, null, requestId);
-    AVConnectionManager.getInstance().sendPacket(scp);
+    connectionManager.sendPacket(scp);
   }
 
   public void queryConversations(Map<String, Object> params, int requestId, String identifier) {
@@ -339,7 +353,7 @@ public class AVSession {
       LOGGER.d("[RequestSuppression] offer operation with requestId=" + requestId + ", selfId=" + selfId);
       ConversationQueryPacket packet = ConversationQueryPacket.getConversationQueryPacket(getSelfPeerId(),
               params, requestId);
-      AVConnectionManager.getInstance().sendPacket(packet);
+      connectionManager.sendPacket(packet);
     } else {
       LOGGER.d("[RequestSuppression] other request is running, pending current request(requestId=" + requestId + ", selfId=" + selfId + ")" );
     }
@@ -351,7 +365,7 @@ public class AVSession {
               "Please call AVIMClient.open() first");
     } else if (Status.Resuming == currentStatus) {
       return new AVException(new RuntimeException("Connecting to server"));
-    } else if (!AVConnectionManager.getInstance().isConnectionEstablished()) {
+    } else if (!connectionManager.isConnectionEstablished()) {
       return new AVException(new RuntimeException("Connection Lost"));
     } else {
       return null;
@@ -382,7 +396,7 @@ public class AVSession {
                                     final Map<String, Object> attributes,
                                     final boolean isTransient, final boolean isUnique, final boolean isTemp, final int tempTTL,
                                     final boolean isSystem, final int requestId) {
-    if (!AVConnectionManager.getInstance().isConnectionEstablished()) {
+    if (!connectionManager.isConnectionEstablished()) {
       RuntimeException se = new RuntimeException("Connection Lost");
       sessionListener.onError(this, se, Conversation.AVIMOperation.CONVERSATION_CREATION.getCode(),
               requestId);
@@ -403,7 +417,7 @@ public class AVSession {
         if (e == null) {
           conversationOperationCache.offer(Operation.getOperation(
                   AVIMOperation.CONVERSATION_CREATION.getCode(), getSelfPeerId(), null, requestId));
-          AVConnectionManager.getInstance().sendPacket(ConversationControlPacket.genConversationCommand(selfId, null,
+          connectionManager.sendPacket(ConversationControlPacket.genConversationCommand(selfId, null,
                   members, ConversationControlPacket.ConversationControlOp.START, attributes, sig,
                   isTransient, isUnique, isTemp, tempTTL, isSystem, requestId));
         } else {
@@ -500,7 +514,7 @@ public class AVSession {
           largestTimeStamp = message.getTimestamp();
         }
       }
-      AVConnectionManager.getInstance().sendPacket(ConversationAckPacket.getConversationAckPacket(getSelfPeerId(),
+      connectionManager.sendPacket(ConversationAckPacket.getConversationAckPacket(getSelfPeerId(),
               conversationId, largestTimeStamp));
     }
   }

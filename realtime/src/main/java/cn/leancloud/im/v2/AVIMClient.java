@@ -1,6 +1,7 @@
 package cn.leancloud.im.v2;
 
 import cn.leancloud.AVException;
+import cn.leancloud.AVInstallation;
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVUser;
 import cn.leancloud.im.AVIMOptions;
@@ -10,6 +11,7 @@ import cn.leancloud.im.v2.callback.*;
 import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
 import cn.leancloud.query.QueryConditions;
 import cn.leancloud.service.RealtimeClient;
+import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.session.AVSession;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -84,9 +86,14 @@ public class AVIMClient {
   private ConcurrentMap<String, AVIMConversation> conversationCache =
           new ConcurrentHashMap<String, AVIMConversation>();
 
-  private AVIMClient(String clientId) {
+  private AVConnectionManager connectionManager;
+  private AVInstallation currentInstallation;
+
+  private AVIMClient(AVConnectionManager connectionManager, String clientId, AVInstallation installation) {
     this.clientId = clientId;
     this.storage = AVIMMessageStorage.getInstance(clientId);
+    this.connectionManager = connectionManager;
+    this.currentInstallation = installation;
   }
 
   /**
@@ -104,18 +111,40 @@ public class AVIMClient {
     return AVIMClient.clientEventHandler;
   }
 
+  AVConnectionManager getConnectionManager() {
+    return this.connectionManager;
+  }
+
+  public String getInstallationId() {
+    if (null == currentInstallation) {
+      return null;
+    }
+    return currentInstallation.getInstallationId();
+  }
+
   /**
    * get AVIMClient instance by clientId.
    * @param clientId client id.
    * @return imclient instance.
    */
   public static AVIMClient getInstance(String clientId) {
+    return getInstance(AVConnectionManager.getInstance(), clientId, AVInstallation.getCurrentInstallation());
+  }
+
+  public static AVIMClient peekInstance(String clientId) {
+    if (StringUtil.isEmpty(clientId)) {
+      return null;
+    }
+    return clients.get(clientId);
+  }
+
+  public static AVIMClient getInstance(AVConnectionManager connectionManager, String clientId, AVInstallation installation) {
     if (StringUtil.isEmpty(clientId)) {
       return null;
     }
     AVIMClient client = clients.get(clientId);
     if (null == client) {
-      client = new AVIMClient(clientId);
+      client = new AVIMClient(connectionManager, clientId, installation);
       AVIMClient elderClient = clients.putIfAbsent(clientId, client);
       if (null != elderClient) {
         client = elderClient;
@@ -173,6 +202,7 @@ public class AVIMClient {
     client.userSessionToken = sessionToken;
     return client;
   }
+
   public static AVIMClient getInstance(AVUser user, String tag) {
     AVIMClient client = getInstance(user);
     client.tag = tag;
@@ -181,7 +211,7 @@ public class AVIMClient {
 
   public void getClientStatus(final AVIMClientStatusCallback callback) {
     OperationTube operationTube = InternalConfiguration.getOperationTube();
-    operationTube.queryClientStatus(this.clientId, callback);
+    operationTube.queryClientStatus(this.connectionManager, this.clientId, callback);
   }
 
   /**
@@ -209,7 +239,7 @@ public class AVIMClient {
   public void open(AVIMClientOpenOption option, final AVIMClientCallback callback) {
     boolean reConnect = null == option? false : option.isReconnect();
     OperationTube operationTube = InternalConfiguration.getOperationTube();
-    operationTube.openClient(clientId, tag, userSessionToken, reConnect, callback);
+    operationTube.openClient(this.connectionManager, clientId, tag, userSessionToken, reConnect, callback);
   }
 
   /**
@@ -219,7 +249,7 @@ public class AVIMClient {
    * @param callback callback function.
    */
   public void getOnlineClients(List<String> clients, final AVIMOnlineClientsCallback callback) {
-    InternalConfiguration.getOperationTube().queryOnlineClients(this.clientId, clients, callback);
+    InternalConfiguration.getOperationTube().queryOnlineClients(this.connectionManager, this.clientId, clients, callback);
   }
 
   /**
@@ -385,7 +415,8 @@ public class AVIMClient {
         }
       }
     };
-    InternalConfiguration.getOperationTube().createConversation(getClientId(), conversationMembers, assembledAttributes,
+    InternalConfiguration.getOperationTube().createConversation(this.connectionManager,
+            getClientId(), conversationMembers, assembledAttributes,
             isTransient, isUnique, isTemp, tempTTL, middleCallback);
   }
 
@@ -547,7 +578,7 @@ public class AVIMClient {
         }
       }
     };
-    InternalConfiguration.getOperationTube().closeClient(this.clientId, internalCallback);
+    InternalConfiguration.getOperationTube().closeClient(this.connectionManager, this.clientId, internalCallback);
   }
 
   /**
@@ -619,7 +650,7 @@ public class AVIMClient {
     } else {
       // refresh realtime session token.
       LOGGER.d("realtime session token expired, start to refresh...");
-      boolean ret = InternalConfiguration.getOperationTube().renewSessionToken(this.getClientId(), new AVIMClientCallback() {
+      boolean ret = InternalConfiguration.getOperationTube().renewSessionToken(this.connectionManager, this.getClientId(), new AVIMClientCallback() {
         @Override
         public void done(AVIMClient client, AVIMException e) {
           if (null != e) {

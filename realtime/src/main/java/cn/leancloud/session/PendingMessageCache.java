@@ -36,7 +36,7 @@ public class PendingMessageCache<E extends PersistentQueue.HasId> {
   }
 
   private Map<String, E> msgMapping;
-  private PersistentQueue<E> messages;
+  private final PersistentQueue<E> messages;
 
   PendingMessageCache(String peerId, Class<E> type) {
     this.messages = new PersistentQueue<E>(peerId, type);
