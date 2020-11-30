@@ -90,7 +90,7 @@ public class AVConnectionManagerTest extends TestCase {
     Thread.sleep(3000);
 
     SessionControlPacket scp = SessionControlPacket.genSessionCommand(
-            "fengjunwen", null,
+            installation, "fengjunwen", null,
             SessionControlPacket.SessionControlOp.OPEN, null,
             0, 0, requestId);
     scp.setTag("mobile");

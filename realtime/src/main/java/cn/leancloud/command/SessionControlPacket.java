@@ -117,7 +117,9 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
       }
     }
     if (op.equals(SessionControlOp.OPEN) || op.equals(SessionControlOp.CLOSE)) {
-      builder.setDeviceId(deviceId);
+      if (!StringUtil.isEmpty(deviceId)) {
+        builder.setDeviceId(deviceId);
+      }
     }
 
     if (!StringUtil.isEmpty(signature)) {

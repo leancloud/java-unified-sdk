@@ -15,7 +15,6 @@ import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.session.AVSession;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
