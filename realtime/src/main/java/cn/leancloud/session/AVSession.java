@@ -222,12 +222,6 @@ public class AVSession {
   }
 
   private void openWithSessionToken(String rtmSessionToken) {
-//    SessionControlPacket scp = SessionControlPacket.genSessionCommand(
-//            this.getSelfPeerId(), null, SessionControlPacket.SessionControlOp.OPEN,
-//            null, this.getLastNotifyTime(), this.getLastPatchTime(), null);
-//    scp.setSessionToken(rtmSessionToken);
-//    scp.setReconnectionRequest(true);
-//    scp.setAppId(AVOSCloud.getApplicationId());
     CommandPacket scp = WindTalker.getInstance().assembleSessionOpenPacket(this.installationId,
             this.getSelfPeerId(), this.tag, rtmSessionToken,
             this.getLastNotifyTime(), this.getLastPatchTime(), true, null);

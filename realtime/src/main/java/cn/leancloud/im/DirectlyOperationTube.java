@@ -23,7 +23,6 @@ import java.util.Map;
 public class DirectlyOperationTube implements OperationTube {
   private static final AVLogger LOGGER = LogUtil.getLogger(DirectlyOperationTube.class);
 
-
   private final boolean needCacheRequestKey;
   public DirectlyOperationTube(boolean needCacheRequestKey) {
     this.needCacheRequestKey = needCacheRequestKey;
@@ -361,13 +360,15 @@ public class DirectlyOperationTube implements OperationTube {
 
   public void onOperationCompleted(String clientId, String conversationId, int requestId,
                                    Conversation.AVIMOperation operation, Throwable throwable) {
-    LOGGER.d("enter onOperationCompleted with clientId=" + clientId + ", convId=" + conversationId + ", requestId="
-      + requestId + ", operation=" + operation);
+
     AVCallback callback = getCachedCallback(clientId, conversationId, requestId, operation);
     if (null == callback) {
-      LOGGER.w("encounter illegal response, ignore it: clientId=" + clientId + ", convId=" + conversationId + ", requestId=" + requestId);
+      LOGGER.w("onOperationCompleted encounter illegal response, ignore it: clientId=" + clientId
+              + ", convId=" + conversationId + ", requestId=" + requestId + ", operation=" + operation);
       return;
     }
+    LOGGER.d("enter onOperationCompleted with clientId=" + clientId + ", convId=" + conversationId + ", requestId="
+            + requestId + ", operation=" + operation);
     switch (operation) {
       case CLIENT_OPEN:
       case CLIENT_DISCONNECT:
@@ -383,14 +384,14 @@ public class DirectlyOperationTube implements OperationTube {
 
   public void onOperationCompletedEx(String clientId, String conversationId, int requestId,
                                      Conversation.AVIMOperation operation, HashMap<String, Object> resultData) {
-    LOGGER.d("enter onOperationCompletedEx with clientId=" + clientId + ", convId=" + conversationId + ", requestId="
-            + requestId + ", operation=" + operation + ", resultData=" + resultData.toString());
     AVCallback callback = getCachedCallback(clientId, conversationId, requestId, operation);
     if (null == callback) {
-      LOGGER.w("encounter illegal response, ignore it: clientId=" + clientId + ", convId=" + conversationId
-              + ", requestId=" + requestId);
+      LOGGER.w("onOperationCompletedEx encounter illegal response, ignore it: clientId=" + clientId + ", convId="
+              + conversationId + ", requestId=" + requestId + ", operation=" + operation + ", resultData=" + resultData.toString());
       return;
     }
+    LOGGER.d("enter onOperationCompletedEx with clientId=" + clientId + ", convId=" + conversationId + ", requestId="
+            + requestId + ", operation=" + operation + ", resultData=" + resultData.toString());
     switch (operation) {
       case CLIENT_ONLINE_QUERY:
         callback.internalDone((List<String>)resultData.get(Conversation.callbackOnlineClients), null);

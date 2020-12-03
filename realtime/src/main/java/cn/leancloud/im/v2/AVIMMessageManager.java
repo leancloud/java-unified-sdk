@@ -234,7 +234,7 @@ public class AVIMMessageManager {
         int type = object.getInteger("_lctype");
         return type;
       } catch (Exception e) {
-        LOGGER.d("Parsing json data failed and use default messageType 0. cause: " + e.getMessage());
+//        LOGGER.d("Parsing json data failed and use default messageType 0. cause: " + e.getMessage());
       }
     }
     return 0;
