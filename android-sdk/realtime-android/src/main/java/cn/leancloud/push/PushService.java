@@ -627,16 +627,16 @@ public class PushService extends Service {
         String tag = (String) param.get(Conversation.PARAM_CLIENT_TAG);
         String userSession = (String) param.get(Conversation.PARAM_CLIENT_USERSESSIONTOKEN);
         boolean reConnection = (boolean) param.get(Conversation.PARAM_CLIENT_RECONNECTION);
-        this.directlyOperationTube.openClientDirectly(clientId, tag, userSession, reConnection, requestId);
+        this.directlyOperationTube.openClientDirectly(connectionManager, clientId, tag, userSession, reConnection, requestId);
         break;
       case CLIENT_DISCONNECT:
-        this.directlyOperationTube.closeClientDirectly(clientId, requestId);
+        this.directlyOperationTube.closeClientDirectly(connectionManager, clientId, requestId);
         break;
       case CLIENT_REFRESH_TOKEN:
-        this.directlyOperationTube.renewSessionTokenDirectly(clientId, requestId);
+        this.directlyOperationTube.renewSessionTokenDirectly(connectionManager, clientId, requestId);
         break;
       case CLIENT_STATUS:
-        AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+        AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId, AVInstallation.getCurrentInstallation().getInstallationId(), connectionManager);
         AVIMClientStatus status = AVIMClientStatusNone;
         if (AVSession.Status.Opened != session.getCurrentStatus()) {
           status = AVIMClientStatus.AVIMClientStatusPaused;
@@ -650,7 +650,7 @@ public class PushService extends Service {
         break;
       case CLIENT_ONLINE_QUERY:
         List<String> idList = (List<String>) param.get(Conversation.PARAM_ONLINE_CLIENTS);
-        this.directlyOperationTube.queryOnlineClientsDirectly(clientId, idList, requestId);
+        this.directlyOperationTube.queryOnlineClientsDirectly(connectionManager, clientId, idList, requestId);
         break;
       case CONVERSATION_CREATION:
         List<String> members = (List<String>) param.get(Conversation.PARAM_CONVERSATION_MEMBER);
@@ -668,20 +668,20 @@ public class PushService extends Service {
         }
         int tempTTL = isTemp ? (int) param.get(Conversation.PARAM_CONVERSATION_TEMPORARY_TTL) : 0;
         Map<String, Object> attributes = (Map<String, Object>) param.get(Conversation.PARAM_CONVERSATION_ATTRIBUTE);
-        directlyOperationTube.createConversationDirectly(clientId, members, attributes, isTransient,
+        directlyOperationTube.createConversationDirectly(connectionManager, clientId, members, attributes, isTransient,
             isUnique, isTemp, tempTTL, requestId);
         break;
       case CONVERSATION_QUERY:
-        this.directlyOperationTube.queryConversationsDirectly(clientId, keyData, requestId);
+        this.directlyOperationTube.queryConversationsDirectly(connectionManager, clientId, keyData, requestId);
         break;
       case CONVERSATION_UPDATE:
-        this.directlyOperationTube.updateConversationDirectly(clientId, conversationId, convType, param, requestId);
+        this.directlyOperationTube.updateConversationDirectly(connectionManager, clientId, conversationId, convType, param, requestId);
         break;
       case CONVERSATION_QUIT:
       case CONVERSATION_JOIN:
       case CONVERSATION_MUTE:
       case CONVERSATION_UNMUTE:
-        this.directlyOperationTube.participateConversationDirectly(clientId, conversationId, convType,
+        this.directlyOperationTube.participateConversationDirectly(connectionManager, clientId, conversationId, convType,
             param, operation, requestId);
         break;
       case CONVERSATION_ADD_MEMBER:
@@ -695,31 +695,31 @@ public class PushService extends Service {
       case CONVERSATION_MUTED_MEMBER_QUERY:
       case CONVERSATION_FETCH_RECEIPT_TIME:
       case CONVERSATION_MEMBER_COUNT_QUERY:
-        this.directlyOperationTube.processMembersDirectly(clientId, conversationId, convType, keyData,
+        this.directlyOperationTube.processMembersDirectly(connectionManager, clientId, conversationId, convType, keyData,
             operation, requestId);
         break;
       case CONVERSATION_MESSAGE_QUERY:
-        this.directlyOperationTube.queryMessagesDirectly(clientId, conversationId, convType, keyData,
+        this.directlyOperationTube.queryMessagesDirectly(connectionManager, clientId, conversationId, convType, keyData,
             AVIMOperation.CONVERSATION_MESSAGE_QUERY, requestId);
         break;
       case CONVERSATION_READ:
-        this.directlyOperationTube.markConversationReadDirectly(clientId, conversationId, convType,
+        this.directlyOperationTube.markConversationReadDirectly(connectionManager, clientId, conversationId, convType,
             param, requestId);
         break;
       case CONVERSATION_RECALL_MESSAGE:
         existedMessage = AVIMMessage.parseJSONString(keyData);
-        this.directlyOperationTube.recallMessageDirectly(clientId, convType, existedMessage, requestId);
+        this.directlyOperationTube.recallMessageDirectly(connectionManager, clientId, convType, existedMessage, requestId);
         break;
       case CONVERSATION_SEND_MESSAGE:
         existedMessage = AVIMMessage.parseJSONString(keyData);;
         AVIMMessageOption option = AVIMMessageOption.parseJSONString(intent.getExtras().getString(Conversation.INTENT_KEY_MESSAGE_OPTION));
-        this.directlyOperationTube.sendMessageDirectly(clientId, conversationId, convType,
+        this.directlyOperationTube.sendMessageDirectly(connectionManager, clientId, conversationId, convType,
             existedMessage, option, requestId);
         break;
       case CONVERSATION_UPDATE_MESSAGE:
         existedMessage = AVIMMessage.parseJSONString(keyData);;
         AVIMMessage secondMessage = AVIMMessage.parseJSONString(intent.getExtras().getString(Conversation.INTENT_KEY_MESSAGE_EX));
-        this.directlyOperationTube.updateMessageDirectly(clientId, convType, existedMessage, secondMessage, requestId);
+        this.directlyOperationTube.updateMessageDirectly(connectionManager, clientId, convType, existedMessage, secondMessage, requestId);
         break;
       default:
         LOGGER.w("not support operation: " + operation);
@@ -749,7 +749,7 @@ public class PushService extends Service {
     if (AVLiveQuery.ACTION_LIVE_QUERY_LOGIN.equals(action)) {
       int requestId = intent.getExtras().getInt(Conversation.INTENT_KEY_REQUESTID);
       String subscriptionId = intent.getExtras().getString(AVLiveQuery.SUBSCRIBE_ID);
-      this.directlyOperationTube.loginLiveQueryDirectly(subscriptionId, requestId);
+      this.directlyOperationTube.loginLiveQueryDirectly(connectionManager, subscriptionId, requestId);
     } else {
       LOGGER.w("unknown action: " + action);
     }

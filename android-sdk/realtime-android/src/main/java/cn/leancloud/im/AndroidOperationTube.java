@@ -14,6 +14,7 @@ import java.util.Map;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import cn.leancloud.AVException;
+import cn.leancloud.AVInstallation;
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVOSCloud;
 import cn.leancloud.callback.AVCallback;
@@ -35,6 +36,7 @@ import cn.leancloud.json.JSON;
 import cn.leancloud.livequery.AVLiveQuery;
 import cn.leancloud.livequery.AVLiveQuerySubscribeCallback;
 import cn.leancloud.push.PushService;
+import cn.leancloud.session.AVConnectionManager;
 import cn.leancloud.session.AVSession;
 import cn.leancloud.session.AVSessionManager;
 import cn.leancloud.utils.LogUtil;
@@ -47,7 +49,7 @@ import cn.leancloud.utils.StringUtil;
 public class AndroidOperationTube implements OperationTube {
   private static AVLogger LOGGER = LogUtil.getLogger(AndroidOperationTube.class);
 
-  public boolean openClient(final String clientId, String tag, String userSessionToken,
+  public boolean openClient(AVConnectionManager connectionManager, final String clientId, String tag, String userSessionToken,
                             boolean reConnect, final AVIMClientCallback callback) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CLIENT_TAG, tag);
@@ -69,7 +71,7 @@ public class AndroidOperationTube implements OperationTube {
         AVIMOperation.CLIENT_OPEN);
   }
 
-  public boolean queryClientStatus(String clientId, final AVIMClientStatusCallback callback) {
+  public boolean queryClientStatus(AVConnectionManager connectionManager, String clientId, final AVIMClientStatusCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
@@ -87,7 +89,7 @@ public class AndroidOperationTube implements OperationTube {
     return this.sendClientCMDToPushService(clientId, null, receiver, AVIMOperation.CLIENT_STATUS);
   }
 
-  public boolean closeClient(final String self, final AVIMClientCallback callback) {
+  public boolean closeClient(AVConnectionManager connectionManager, final String self, final AVIMClientCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
@@ -101,7 +103,7 @@ public class AndroidOperationTube implements OperationTube {
     return this.sendClientCMDToPushService(self, null, receiver, AVIMOperation.CLIENT_DISCONNECT);
   }
 
-  public boolean renewSessionToken(String clientId, final AVIMClientCallback callback) {
+  public boolean renewSessionToken(AVConnectionManager connectionManager, String clientId, final AVIMClientCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
@@ -114,7 +116,7 @@ public class AndroidOperationTube implements OperationTube {
     return this.sendClientCMDToPushService(clientId, null, receiver, AVIMOperation.CLIENT_REFRESH_TOKEN);
   }
 
-  public boolean queryOnlineClients(String self, List<String> clients, final AVIMOnlineClientsCallback callback) {
+  public boolean queryOnlineClients(AVConnectionManager connectionManager, String self, List<String> clients, final AVIMOnlineClientsCallback callback) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_ONLINE_CLIENTS, clients);
 
@@ -139,7 +141,7 @@ public class AndroidOperationTube implements OperationTube {
     return this.sendClientCMDToPushService(self, JSON.toJSONString(params), receiver, AVIMOperation.CLIENT_ONLINE_QUERY);
   }
 
-  public boolean createConversation(final String self, final List<String> members,
+  public boolean createConversation(AVConnectionManager connectionManager, final String self, final List<String> members,
                                     final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
                                     final boolean isTemp, int tempTTL, final AVIMCommonJsonCallback callback) {
     Map<String, Object> params = new HashMap<String, Object>();
@@ -166,7 +168,7 @@ public class AndroidOperationTube implements OperationTube {
         AVIMOperation.CONVERSATION_CREATION);
   }
 
-  public boolean updateConversation(final String clientId, String conversationId, int convType,
+  public boolean updateConversation(AVConnectionManager connectionManager, final String clientId, String conversationId, int convType,
                                     final Map<String, Object> param, final AVIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
@@ -182,7 +184,7 @@ public class AndroidOperationTube implements OperationTube {
         null, null, AVIMOperation.CONVERSATION_UPDATE, receiver);
   }
 
-  public boolean participateConversation(final String clientId, String conversationId, int convType, final Map<String, Object> param,
+  public boolean participateConversation(AVConnectionManager connectionManager, final String clientId, String conversationId, int convType, final Map<String, Object> param,
                                          Conversation.AVIMOperation operation, final AVIMConversationCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
@@ -199,7 +201,7 @@ public class AndroidOperationTube implements OperationTube {
         null, null, operation, receiver);
   }
 
-  public boolean queryConversations(final String clientId, final String queryString, final AVIMCommonJsonCallback callback) {
+  public boolean queryConversations(AVConnectionManager connectionManager, final String clientId, final String queryString, final AVIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
@@ -213,18 +215,18 @@ public class AndroidOperationTube implements OperationTube {
     return this.sendClientCMDToPushService(clientId, queryString, receiver, AVIMOperation.CONVERSATION_QUERY);
   }
 
-  public boolean queryConversationsInternally(final String clientId, final String queryString,
+  public boolean queryConversationsInternally(AVConnectionManager connectionManager, final String clientId, final String queryString,
                                               final AVIMCommonJsonCallback callback) {
     // internal query conversation.
     LOGGER.d("queryConversationsInternally...");
     int requestId = WindTalker.getNextIMRequestId();
     RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
-    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId);
+    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId, AVInstallation.getCurrentInstallation().getInstallationId(), connectionManager);
     session.queryConversations(JSON.parseObject(queryString, Map.class), requestId, MDFive.computeMD5(queryString));
     return true;
   }
 
-  public boolean sendMessage(String clientId, String conversationId, int convType, final AVIMMessage message,
+  public boolean sendMessage(AVConnectionManager connectionManager, String clientId, String conversationId, int convType, final AVIMMessage message,
                              final AVIMMessageOption messageOption, final AVIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
@@ -239,7 +241,7 @@ public class AndroidOperationTube implements OperationTube {
         message, messageOption, AVIMOperation.CONVERSATION_SEND_MESSAGE, receiver);
   }
 
-  public boolean updateMessage(String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage,
+  public boolean updateMessage(AVConnectionManager connectionManager, String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage,
                                final AVIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
@@ -254,7 +256,7 @@ public class AndroidOperationTube implements OperationTube {
         newMessage, AVIMOperation.CONVERSATION_UPDATE_MESSAGE, receiver);
   }
 
-  public boolean recallMessage(String clientId, int convType, AVIMMessage message,
+  public boolean recallMessage(AVConnectionManager connectionManager, String clientId, int convType, AVIMMessage message,
                                final AVIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
@@ -269,12 +271,13 @@ public class AndroidOperationTube implements OperationTube {
         message, null, AVIMOperation.CONVERSATION_RECALL_MESSAGE, receiver);
   }
 
-  public boolean fetchReceiptTimestamps(String clientId, String conversationId, int convType, Conversation.AVIMOperation operation,
+  public boolean fetchReceiptTimestamps(AVConnectionManager connectionManager, String clientId,
+                                        String conversationId, int convType, Conversation.AVIMOperation operation,
                                         final AVIMCommonJsonCallback callback) {
     return false;
   }
 
-  public boolean queryMessages(String clientId, String conversationId, int convType, String params,
+  public boolean queryMessages(AVConnectionManager connectionManager, String clientId, String conversationId, int convType, String params,
                                final Conversation.AVIMOperation operation, final AVIMMessagesQueryCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
@@ -291,7 +294,8 @@ public class AndroidOperationTube implements OperationTube {
         AVIMOperation.CONVERSATION_MESSAGE_QUERY, receiver);
   }
 
-  public boolean processMembers(String clientId, String conversationId, int convType, String params,
+  public boolean processMembers(AVConnectionManager connectionManager, String clientId,
+                                String conversationId, int convType, String params,
                                 Conversation.AVIMOperation op, final AVCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
@@ -329,14 +333,14 @@ public class AndroidOperationTube implements OperationTube {
         op, receiver);
   }
 
-  public boolean markConversationRead(String clientId, String conversationId, int convType,
+  public boolean markConversationRead(AVConnectionManager connectionManager, String clientId, String conversationId, int convType,
                                       Map<String, Object> lastMessageParam) {
     String dataString = null == lastMessageParam ? null : JSON.toJSONString(lastMessageParam);
     return this.sendClientCMDToPushService(clientId, conversationId, convType, dataString,
         null, null, AVIMOperation.CONVERSATION_READ, null);
   }
 
-  public boolean loginLiveQuery(String subscriptionId, final AVLiveQuerySubscribeCallback callback) {
+  public boolean loginLiveQuery(AVConnectionManager connectionManager, String subscriptionId, final AVLiveQuerySubscribeCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
       receiver = new AVIMBaseBroadcastReceiver(callback) {
