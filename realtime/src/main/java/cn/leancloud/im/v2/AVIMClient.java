@@ -130,6 +130,11 @@ public class AVIMClient {
     return getInstance(AVConnectionManager.getInstance(), clientId, AVInstallation.getCurrentInstallation());
   }
 
+  /**
+   * peek AVIMClient instance by clientId.
+   * @param clientId client id.
+   * @return imclient instance, NULL if not existed.
+   */
   public static AVIMClient peekInstance(String clientId) {
     if (StringUtil.isEmpty(clientId)) {
       return null;
@@ -137,6 +142,13 @@ public class AVIMClient {
     return clients.get(clientId);
   }
 
+  /**
+   * get AVIMClient instance by clientId.
+   * @param connectionManager  connection manager.
+   * @param clientId client id.
+   * @param installation installation id.
+   * @return imclient instance.
+   */
   public static AVIMClient getInstance(AVConnectionManager connectionManager, String clientId, AVInstallation installation) {
     if (StringUtil.isEmpty(clientId)) {
       return null;
@@ -202,6 +214,12 @@ public class AVIMClient {
     return client;
   }
 
+  /**
+   * get AVIMClient instance by AVUser
+   * @param user user instance.
+   * @param tag client tag.
+   * @return imclient instance.
+   */
   public static AVIMClient getInstance(AVUser user, String tag) {
     AVIMClient client = getInstance(user);
     client.tag = tag;

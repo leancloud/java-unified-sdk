@@ -151,12 +151,12 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
     return builder.build();
   }
 
-  public static SessionControlPacket genSessionCommand(String installationId, String selfId, List<String> peers,
+  public static SessionControlPacket genSessionCommand(String deviceId, String selfId, List<String> peers,
                                                        String op, Signature signature, Integer requestId) {
-    return genSessionCommand(installationId, selfId, peers, op, signature, 0, 0, requestId);
+    return genSessionCommand(deviceId, selfId, peers, op, signature, 0, 0, requestId);
   }
 
-  public static SessionControlPacket genSessionCommand(String installationId, String selfId, List<String> peers, String op, Signature signature,
+  public static SessionControlPacket genSessionCommand(String deviceId, String selfId, List<String> peers, String op, Signature signature,
                                                        long lastUnreadNotifyTime, long lastPatchTime, Integer requestId) {
 
     SessionControlPacket scp = new SessionControlPacket();
@@ -176,7 +176,7 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
     scp.lastPatchTime = lastPatchTime;
     scp.sessionConfig |= PATCH_FLAG | PATCH_FLAG_TEMPORARY_CONV | PATCH_FLAG_ACK_4_TRANSIENT_MSG;
     scp.sessionConfig |= PATCH_FLAG_SUPPORT_CONVMEMBER_INFO;
-    scp.setDeviceId(installationId);
+    scp.setDeviceId(deviceId);
     if (op.equals(SessionControlOp.RENEW_RTMTOKEN)) {
       scp.setPeerId(selfId);
     } else if (op.equals(SessionControlOp.OPEN)) {
