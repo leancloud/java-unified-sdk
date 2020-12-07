@@ -5,7 +5,6 @@ import cn.leancloud.AVLogger;
 import cn.leancloud.callback.AVCallback;
 import cn.leancloud.core.AVOSCloud;
 import cn.leancloud.im.AVIMOptions;
-import cn.leancloud.im.v2.Conversation;
 import junit.framework.TestCase;
 
 import java.util.concurrent.CountDownLatch;

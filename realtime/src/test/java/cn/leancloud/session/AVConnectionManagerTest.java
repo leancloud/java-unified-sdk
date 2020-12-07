@@ -1,13 +1,9 @@
 package cn.leancloud.session;
 
-import cn.leancloud.AVLogger;
 import cn.leancloud.Configure;
 import cn.leancloud.Messages;
 import cn.leancloud.command.LoginPacket;
 import cn.leancloud.command.SessionControlPacket;
-import cn.leancloud.core.AVOSCloud;
-import cn.leancloud.session.AVConnectionListener;
-import cn.leancloud.session.AVConnectionManager;
 import junit.framework.TestCase;
 
 import java.util.concurrent.CountDownLatch;
