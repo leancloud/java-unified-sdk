@@ -69,6 +69,7 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
 
   String tag;
   String sessionToken;
+  String deviceId;
 
   public SessionControlPacket() {
     this.setCmd(SESSION_COMMAND);
@@ -88,6 +89,10 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
 
   public void setTag(String tag) {
     this.tag = tag;
+  }
+
+  public void setDeviceId(String deviceId) {
+    this.deviceId = deviceId;
   }
 
   @Override
@@ -112,7 +117,9 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
       }
     }
     if (op.equals(SessionControlOp.OPEN) || op.equals(SessionControlOp.CLOSE)) {
-      builder.setDeviceId(AVInstallation.getCurrentInstallation().getInstallationId());
+      if (!StringUtil.isEmpty(deviceId)) {
+        builder.setDeviceId(deviceId);
+      }
     }
 
     if (!StringUtil.isEmpty(signature)) {
@@ -144,12 +151,12 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
     return builder.build();
   }
 
-  public static SessionControlPacket genSessionCommand(String selfId, List<String> peers,
+  public static SessionControlPacket genSessionCommand(String deviceId, String selfId, List<String> peers,
                                                        String op, Signature signature, Integer requestId) {
-    return genSessionCommand(selfId, peers, op, signature, 0, 0, requestId);
+    return genSessionCommand(deviceId, selfId, peers, op, signature, 0, 0, requestId);
   }
 
-  public static SessionControlPacket genSessionCommand(String selfId, List<String> peers, String op, Signature signature,
+  public static SessionControlPacket genSessionCommand(String deviceId, String selfId, List<String> peers, String op, Signature signature,
                                                        long lastUnreadNotifyTime, long lastPatchTime, Integer requestId) {
 
     SessionControlPacket scp = new SessionControlPacket();
@@ -169,6 +176,7 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
     scp.lastPatchTime = lastPatchTime;
     scp.sessionConfig |= PATCH_FLAG | PATCH_FLAG_TEMPORARY_CONV | PATCH_FLAG_ACK_4_TRANSIENT_MSG;
     scp.sessionConfig |= PATCH_FLAG_SUPPORT_CONVMEMBER_INFO;
+    scp.setDeviceId(deviceId);
     if (op.equals(SessionControlOp.RENEW_RTMTOKEN)) {
       scp.setPeerId(selfId);
     } else if (op.equals(SessionControlOp.OPEN)) {

@@ -18,7 +18,6 @@ public class AVDefaultSessionListener extends AVSessionListener {
   private static final AVLogger LOGGER = LogUtil.getLogger(AVDefaultSessionListener.class);
 
   public AVDefaultSessionListener() {
-    ;
   }
 
   @Override

@@ -55,7 +55,7 @@ public class AVConversationHolder {
           session.conversationOperationCache.offer(Operation.getOperation(
                   AVIMOperation.CONVERSATION_ADD_MEMBER.getCode(), session.getSelfPeerId(),
                   conversationId, requestId));
-          AVConnectionManager.getInstance().sendPacket(ConversationControlPacket.genConversationCommand(
+          session.sendPacket(ConversationControlPacket.genConversationCommand(
                   session.getSelfPeerId(), conversationId, members,
                   ConversationControlPacket.ConversationControlOp.ADD, null, sig, requestId));
         } else {
@@ -90,7 +90,7 @@ public class AVConversationHolder {
           session.conversationOperationCache.offer(Operation.getOperation(
                   AVIMOperation.CONVERSATION_RM_MEMBER.getCode(), session.getSelfPeerId(),
                   conversationId, requestId));
-          AVConnectionManager.getInstance().sendPacket(ConversationControlPacket.genConversationCommand(
+          session.sendPacket(ConversationControlPacket.genConversationCommand(
                   session.getSelfPeerId(), conversationId, members,
                   ConversationControlOp.REMOVE, null, sig, requestId));
         } else {
@@ -120,7 +120,7 @@ public class AVConversationHolder {
     session.conversationOperationCache.offer(Operation.getOperation(
             AVIMOperation.CONVERSATION_MUTE_MEMBER.getCode(), session.getSelfPeerId(),
             conversationId, requestId));
-    AVConnectionManager.getInstance().sendPacket(ConversationControlPacket.genConversationCommand(
+    session.sendPacket(ConversationControlPacket.genConversationCommand(
             session.getSelfPeerId(), conversationId, members,
             ConversationControlOp.ADD_SHUTUP, null, null, requestId));
   }
@@ -132,7 +132,7 @@ public class AVConversationHolder {
     session.conversationOperationCache.offer(Operation.getOperation(
             AVIMOperation.CONVERSATION_UNMUTE_MEMBER.getCode(), session.getSelfPeerId(),
             conversationId, requestId));
-    AVConnectionManager.getInstance().sendPacket(ConversationControlPacket.genConversationCommand(
+    session.sendPacket(ConversationControlPacket.genConversationCommand(
             session.getSelfPeerId(), conversationId, members,
             ConversationControlOp.REMOVE_SHUTUP, null, null, requestId));
   }
@@ -149,7 +149,7 @@ public class AVConversationHolder {
           session.conversationOperationCache.offer(Operation.getOperation(
                   AVIMOperation.CONVERSATION_BLOCK_MEMBER.getCode(), session.getSelfPeerId(),
                   conversationId, requestId));
-          AVConnectionManager.getInstance().sendPacket(BlacklistCommandPacket.genBlacklistCommandPacket(
+          session.sendPacket(BlacklistCommandPacket.genBlacklistCommandPacket(
                   session.getSelfPeerId(), conversationId,
                   BlacklistCommandPacket.BlacklistCommandOp.BLOCK, members, sig, requestId));
         } else {
@@ -183,7 +183,7 @@ public class AVConversationHolder {
           session.conversationOperationCache.offer(Operation.getOperation(
                   AVIMOperation.CONVERSATION_UNBLOCK_MEMBER.getCode(), session.getSelfPeerId(),
                   conversationId, requestId));
-          AVConnectionManager.getInstance().sendPacket(BlacklistCommandPacket.genBlacklistCommandPacket(
+          session.sendPacket(BlacklistCommandPacket.genBlacklistCommandPacket(
                   session.getSelfPeerId(), conversationId,
                   BlacklistCommandPacket.BlacklistCommandOp.UNBLOCK, members, sig, requestId));
         } else {
@@ -214,7 +214,7 @@ public class AVConversationHolder {
           session.conversationOperationCache.offer(Operation.getOperation(
                   AVIMOperation.CONVERSATION_JOIN.getCode(), session.getSelfPeerId(), conversationId,
                   requestId));
-          AVConnectionManager.getInstance().sendPacket(ConversationControlPacket.genConversationCommand(
+          session.sendPacket(ConversationControlPacket.genConversationCommand(
                   session.getSelfPeerId(), conversationId, Arrays.asList(session.getSelfPeerId()),
                   ConversationControlOp.ADD, null, sig, requestId));
         } else {
@@ -249,7 +249,7 @@ public class AVConversationHolder {
             conversationId, null, ConversationControlOp.QUERY_SHUTUP, null, null, requestId);
     packet.setQueryOffset(offset);
     packet.setQueryLimit(limit);
-    AVConnectionManager.getInstance().sendPacket(packet);
+    session.sendPacket(packet);
   }
 
   public void queryBlockedMembers(int offset, int limit, int requestId) {
@@ -261,7 +261,7 @@ public class AVConversationHolder {
             requestId));
     BlacklistCommandPacket packet = BlacklistCommandPacket.genBlacklistCommandPacket(session.getSelfPeerId(),
             conversationId, BlacklistCommandPacket.BlacklistCommandOp.QUERY, offset, limit, requestId);
-    AVConnectionManager.getInstance().sendPacket(packet);
+    session.sendPacket(packet);
   }
 
   public void updateInfo(Map<String, Object> attr, int requestId) {
@@ -271,7 +271,7 @@ public class AVConversationHolder {
     session.conversationOperationCache.offer(Operation.getOperation(
             AVIMOperation.CONVERSATION_UPDATE.getCode(), session.getSelfPeerId(), conversationId,
             requestId));
-    AVConnectionManager.getInstance().sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
+    session.sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
             conversationId, null, ConversationControlOp.UPDATE, attr, null, requestId));
 
   }
@@ -285,7 +285,7 @@ public class AVConversationHolder {
             requestId));
     ConversationControlPacket ccp = ConversationControlPacket.genConversationMemberCommand(session.getSelfPeerId(),
             conversationId, ConversationControlOp.MEMBER_UPDATE, member, null, requestId);
-    AVConnectionManager.getInstance().sendPacket(ccp);
+    session.sendPacket(ccp);
   }
 
   public void sendMessage(AVIMMessage message, int requestId, AVIMMessageOption messageOption) {
@@ -300,7 +300,7 @@ public class AVConversationHolder {
     session.storeMessage((PendingMessageCache.Message.getMessage(message.getContent(),
             String.valueOf(requestId), messageOption.isReceipt(), conversationId)), requestId);
 
-    AVConnectionManager.getInstance().sendPacket(ConversationDirectMessagePacket.getConversationMessagePacket(
+    session.sendPacket(ConversationDirectMessagePacket.getConversationMessagePacket(
                     session.getSelfPeerId(),
                     conversationId,
                     message.getContent(), binaryMessage, message.isMentionAll(), message.getMentionList(),
@@ -322,7 +322,7 @@ public class AVConversationHolder {
       String messageId = recallMessage.getMessageId();
       long timeStamp = recallMessage.getTimestamp();
 
-      AVConnectionManager.getInstance().sendPacket(
+      session.sendPacket(
               MessagePatchModifyPacket.getMessagePatchPacketForRecall(session.getSelfPeerId(), conversationId, messageId,
                       timeStamp, requestId));
     } else if (operation.equals(AVIMOperation.CONVERSATION_UPDATE_MESSAGE)){
@@ -336,7 +336,7 @@ public class AVConversationHolder {
         binaryData = ((AVIMBinaryMessage) newMessage).getBytes();
       }
 
-      AVConnectionManager.getInstance().sendPacket(MessagePatchModifyPacket.getMessagePatchPacketForUpdate(session.getSelfPeerId(),
+      session.sendPacket(MessagePatchModifyPacket.getMessagePatchPacketForUpdate(session.getSelfPeerId(),
               conversationId, messageId, data, binaryData, mentionAll, mentionList, timeStamp, requestId));
     }
   }
@@ -348,7 +348,7 @@ public class AVConversationHolder {
     session.conversationOperationCache.offer(Operation.getOperation(
             AVIMOperation.CONVERSATION_QUIT.getCode(), session.getSelfPeerId(), conversationId,
             requestId));
-    AVConnectionManager.getInstance().sendPacket(ConversationControlPacket.genConversationCommand(
+    session.sendPacket(ConversationControlPacket.genConversationCommand(
             session.getSelfPeerId(), conversationId, Arrays.asList(session.getSelfPeerId()),
             ConversationControlOp.REMOVE, null, null, requestId));
   }
@@ -368,7 +368,7 @@ public class AVConversationHolder {
     session.conversationOperationCache.offer(Operation.getOperation(
             AVIMOperation.CONVERSATION_MESSAGE_QUERY.getCode(), session.getSelfPeerId(),
             conversationId, requestId));
-    AVConnectionManager.getInstance().sendPacket(ConversationMessageQueryPacket.getConversationMessageQueryPacket(
+    session.sendPacket(ConversationMessageQueryPacket.getConversationMessageQueryPacket(
             session.getSelfPeerId(), conversationId, msgId, timestamp, sclosed, toMsgId, toTimestamp, toclosed,
             direct, limit, msgType, requestId));
   }
@@ -380,7 +380,7 @@ public class AVConversationHolder {
     session.conversationOperationCache.offer(Operation.getOperation(
             AVIMOperation.CONVERSATION_MUTE.getCode(), session.getSelfPeerId(), conversationId,
             requestId));
-    AVConnectionManager.getInstance().sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
+    session.sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
             conversationId, null, ConversationControlOp.MUTE, null, null, requestId));
 
   }
@@ -392,7 +392,7 @@ public class AVConversationHolder {
     session.conversationOperationCache.offer(Operation.getOperation(
             AVIMOperation.CONVERSATION_UNMUTE.getCode(), session.getSelfPeerId(), conversationId,
             requestId));
-    AVConnectionManager.getInstance().sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
+    session.sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
             conversationId, null, ConversationControlOp.UNMUTE, null, null, requestId));
   }
 
@@ -404,7 +404,7 @@ public class AVConversationHolder {
             AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY.getCode(), session.getSelfPeerId(),
             conversationId,
             requestId));
-    AVConnectionManager.getInstance().sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
+    session.sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
             conversationId, null, ConversationControlOp.COUNT, null, null, requestId));
 
   }
@@ -416,7 +416,7 @@ public class AVConversationHolder {
     session.conversationOperationCache.offer(Operation.getOperation(
             AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME.getCode(), session.getSelfPeerId(), conversationId,
             requestId));
-    AVConnectionManager.getInstance().sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
+    session.sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
             conversationId, null, ConversationControlOp.MAX_READ, null, null, requestId));
 
   }
@@ -430,7 +430,7 @@ public class AVConversationHolder {
 
     UnreadMessagesClearPacket packet =
             UnreadMessagesClearPacket.getUnreadClearPacket(session.getSelfPeerId(), conversationId, msgId, timestamp, requestId);
-    AVConnectionManager.getInstance().sendPacket(packet);
+    session.sendPacket(packet);
 
     // 因为没有返回值，所以在发送 command 后直接置 unreadCount 为 0 并发送事件
     onUnreadMessagesEvent(null, 0, false);
@@ -716,17 +716,17 @@ public class AVConversationHolder {
       String data = item.getData();
       long timestamp = item.getTimestamp();
       String msgId = item.getMsgId();
-      boolean mentionAll = item.hasMentionAll()? item.getMentionAll():false;
+      boolean mentionAll = item.hasMentionAll() && item.getMentionAll();
       List<String> mentionList = item.getMentionPidsList();
       boolean isBinaryMsg = item.hasBin() && item.getBin();
 
       AVIMMessage message = null;
       if (isBinaryMsg && null != data) {
         message = new AVIMBinaryMessage(this.conversationId, from, timestamp, ackAt, readAt);
-        ((AVIMBinaryMessage)message).setBytes(Base64Decoder.decodeToBytes(data.toString()));
+        ((AVIMBinaryMessage)message).setBytes(Base64Decoder.decodeToBytes(data));
       } else {
         message = new AVIMMessage(this.conversationId, from, timestamp, ackAt, readAt);
-        message.setContent(data.toString());
+        message.setContent(data);
       }
       message.setMessageId(msgId);
       message.setMentionAll(mentionAll);
@@ -1142,8 +1142,8 @@ public class AVConversationHolder {
     if (null == client || null == convCommand) {
       return null;
     }
-    boolean isTemp = convCommand.hasTempConv()? convCommand.getTempConv() : false;
-    boolean isTransient = convCommand.hasTransient()? convCommand.getTransient() : false;
+    boolean isTemp = convCommand.hasTempConv() && convCommand.getTempConv();
+    boolean isTransient = convCommand.hasTransient() && convCommand.getTransient();
     int tempTTL = convCommand.hasTempConvTTL()?convCommand.getTempConvTTL() : 0;
 
     AVIMConversation conversation = client.getConversation(this.conversationId, isTransient, isTemp);
@@ -1170,7 +1170,8 @@ public class AVConversationHolder {
       LOGGER.d("try to query conversation info for id=" + conversation.getConversationId());
 
       Map<String, Object> fetchParams = conversation.getFetchRequestParams();
-      InternalConfiguration.getOperationTube().queryConversationsInternally(session.getSelfPeerId(), JSON.toJSONString(fetchParams),
+      InternalConfiguration.getOperationTube().queryConversationsInternally(session.getConnectionManager(),
+              session.getSelfPeerId(), JSON.toJSONString(fetchParams),
               new AVIMCommonJsonCallback() {
                 @Override
                 public void done(Map<String, Object> result, AVIMException e) {

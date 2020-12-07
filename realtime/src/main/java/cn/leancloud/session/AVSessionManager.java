@@ -30,22 +30,22 @@ public class AVSessionManager {
   }
 
   private void initSessionsIfExists() {
-    Map<String, String> cachedSessions = AVSessionCacheHelper.getTagCacheInstance().getAllSession();
-    for (Map.Entry<String, String> entry : cachedSessions.entrySet()) {
-      AVSession s = getOrCreateSession(entry.getKey());
-      s.setSessionResume(true);
-      s.setTag(entry.getValue());
-    }
+//    Map<String, String> cachedSessions = AVSessionCacheHelper.getTagCacheInstance().getAllSession();
+//    for (Map.Entry<String, String> entry : cachedSessions.entrySet()) {
+//      AVSession s = getOrCreateSession(entry.getKey());
+//      s.setSessionResume(true);
+//      s.setTag(entry.getValue());
+//    }
   }
 
-  public AVSession getOrCreateSession(String peerId) {
+  public AVSession getOrCreateSession(String peerId, String installationId, AVConnectionManager connectionManager) {
     try {
       // 据说这行有NPE，所以不得不catch起来避免app崩溃
       boolean newAdded = !peerIdEnabledSessions.containsKey(peerId);
       AVSession session = null;
       if (newAdded) {
-        session = new AVSession(peerId, new AVDefaultSessionListener());
-        AVConnectionManager.getInstance().subscribeConnectionListener(peerId, session.getWebSocketListener());
+        session = new AVSession(connectionManager, peerId, installationId, new AVDefaultSessionListener());
+        connectionManager.subscribeConnectionListener(peerId, session.getWebSocketListener());
         peerIdEnabledSessions.put(peerId, session);
       } else {
         session = peerIdEnabledSessions.get(peerId);
@@ -60,7 +60,7 @@ public class AVSessionManager {
   public void removeSession(String peerId) {
     AVSession session = peerIdEnabledSessions.remove(peerId);
     if (session != null && session.getWebSocketListener() != null) {
-      AVConnectionManager.getInstance().unsubscribeConnectionListener(session.getSelfPeerId());
+      session.connectionManager.unsubscribeConnectionListener(session.getSelfPeerId());
     }
   }
 

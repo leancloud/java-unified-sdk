@@ -41,7 +41,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
 
   private static AVConnectionManager instance = null;
   private AVStandardWebSocketClient webSocketClient = null;
-  private Object webSocketClientWatcher = new Object();
+  private final Object webSocketClientWatcher = new Object();
   private String currentRTMConnectionServer = null;
   private int retryConnectionCount = 0;
 
@@ -55,18 +55,24 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private volatile boolean connecting = false;
   private volatile AVCallback pendingCallback = null;
   private volatile ConnectionPolicy connectionPolicy = ConnectionPolicy.Keep;
+  private final AVInstallation currentInstallation;
 
-  private Map<String, AVConnectionListener> connectionListeners = new ConcurrentHashMap<>(1);
-  private Map<String, AVConnectionListener> defaultConnectionListeners = new HashMap<>(2);
+  private final Map<String, AVConnectionListener> connectionListeners = new ConcurrentHashMap<>(1);
+  private final Map<String, AVConnectionListener> defaultConnectionListeners = new HashMap<>(2);
 
   public synchronized static AVConnectionManager getInstance() {
     if (instance == null) {
-      instance = new AVConnectionManager(false);
+      instance = new AVConnectionManager(AVInstallation.getCurrentInstallation(), false);
     }
     return instance;
   }
 
-  private AVConnectionManager(boolean autoConnection) {
+  public static AVConnectionManager createInstance(AVInstallation installation) {
+    return new AVConnectionManager(installation, false);
+  }
+
+  private AVConnectionManager(AVInstallation installation, boolean autoConnection) {
+    this.currentInstallation = installation;
     subscribeDefaultConnectionListener(AVPushMessageListener.DEFAULT_ID, AVPushMessageListener.getInstance());
     if (autoConnection) {
       startConnection(new AVCallback() {
@@ -206,7 +212,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
       return;
     }
     final AppRouter appRouter = AppRouter.getInstance();
-    final String installationId = AVInstallation.getCurrentInstallation().getInstallationId();
+    final String installationId = currentInstallation.getInstallationId();
     appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.RTM).subscribe(new Observer<String>() {
               public void onSubscribe(@NonNull Disposable var1) { }
 
@@ -322,7 +328,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
       AVIMOptions globalOptions = AVIMOptions.getGlobalOptions();
       LoginPacket lp = new LoginPacket();
       lp.setAppId(AVOSCloud.getApplicationId());
-      lp.setInstallationId(AVInstallation.getCurrentInstallation().getInstallationId());
+      lp.setInstallationId(currentInstallation.getInstallationId());
       if (null != globalOptions.getSystemReporter()) {
         lp.setSystemInfo(globalOptions.getSystemReporter().getInfo());
       }
@@ -344,7 +350,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private void initSessionsIfExists() {
     Map<String, String> cachedSessions = AVSessionCacheHelper.getTagCacheInstance().getAllSession();
     for (Map.Entry<String, String> entry : cachedSessions.entrySet()) {
-      AVSession s = AVSessionManager.getInstance().getOrCreateSession(entry.getKey());
+      AVSession s = AVSessionManager.getInstance().getOrCreateSession(entry.getKey(), currentInstallation.getInstallationId(), this);
       s.setTag(entry.getValue());
       s.setSessionStatus(AVSession.Status.Closed);
       AVDefaultConnectionListener defaultSessionListener = new AVDefaultConnectionListener(s);

@@ -95,7 +95,7 @@ public class AVSessionCacheHelper {
     /**
      * 用来缓存 sessionToken，sessionToken 用来做自动登录使用
      */
-    private static Map<String, String> imSessionTokenMap = new HashMap<>();
+    private static final Map<String, String> imSessionTokenMap = new HashMap<>();
 
     static String getIMSessionToken(String clientId) {
       if (AVIMOptions.getGlobalOptions().isAutoOpen()) {

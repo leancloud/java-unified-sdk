@@ -40,10 +40,10 @@ public class WindTalker {
     }
   }
 
-  public CommandPacket assembleSessionOpenPacket(String clientId, String tag, String sessionToken, long lastNotifyTime,
+  public CommandPacket assembleSessionOpenPacket(String deviceId, String clientId, String tag, String sessionToken, long lastNotifyTime,
                                                  long lastPatchTime, boolean reConnect, Integer requestId) {
     SessionControlPacket scp = SessionControlPacket.genSessionCommand(
-            clientId, null, SessionControlPacket.SessionControlOp.OPEN,
+            deviceId, clientId, null, SessionControlPacket.SessionControlOp.OPEN,
             null, lastNotifyTime, lastPatchTime, requestId);
     scp.setSessionToken(sessionToken);
     scp.setReconnectionRequest(reConnect);
@@ -51,10 +51,10 @@ public class WindTalker {
     return scp;
   }
 
-  public CommandPacket assembleSessionOpenPacket(String clientId, String tag, Signature signature, long lastNotifyTime,
+  public CommandPacket assembleSessionOpenPacket(String deviceId, String clientId, String tag, Signature signature, long lastNotifyTime,
                                                  long lastPatchTime, boolean reConnect, int requestId) {
     SessionControlPacket scp = SessionControlPacket.genSessionCommand(
-            clientId, null,
+            deviceId, clientId, null,
             SessionControlPacket.SessionControlOp.OPEN, signature,
             lastNotifyTime, lastPatchTime, requestId);
     scp.setTag(tag);
@@ -65,9 +65,9 @@ public class WindTalker {
     return scp;
   }
 
-  public CommandPacket assembleSessionPacket(String selfId, List<String> peers,
+  public CommandPacket assembleSessionPacket(String deviceId, String selfId, List<String> peers,
                                              String op, Signature signature, Integer requestId) {
-    SessionControlPacket scp = SessionControlPacket.genSessionCommand(selfId, peers, op, signature, requestId);
+    SessionControlPacket scp = SessionControlPacket.genSessionCommand(deviceId, selfId, peers, op, signature, requestId);
     return scp;
   }
 

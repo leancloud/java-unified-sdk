@@ -83,7 +83,7 @@ public class AVOKWebSocketClientTest extends TestCase {
         final String installation = "d45304813cf37c6c1a2177f84aee0bb8";
 
         SessionControlPacket scp = SessionControlPacket.genSessionCommand(
-                "fengjunwen", null,
+                installation, "fengjunwen", null,
                 SessionControlPacket.SessionControlOp.OPEN, null,
                 0, 0, requestId);
         scp.setTag("mobile");

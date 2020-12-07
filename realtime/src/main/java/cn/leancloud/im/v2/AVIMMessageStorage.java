@@ -135,7 +135,7 @@ public class AVIMMessageStorage {
 
   public void insertMessage(AVIMMessage message, boolean breakpoint) {
     if (null == message) {
-      LOGGER.d("delegate is null, skip insertMessage operation.");
+//      LOGGER.d("delegate is null, skip insertMessage operation.");
       return;
     }
     insertMessages(Arrays.asList(message), breakpoint);
@@ -145,7 +145,7 @@ public class AVIMMessageStorage {
     int insertCount = 0;
 
     if (null == this.delegate) {
-      LOGGER.d("delegate is null, skip insertMessages operation.");
+//      LOGGER.d("delegate is null, skip insertMessages operation.");
       return insertCount;
     }
     for (AVIMMessage message: messages) {
@@ -189,7 +189,7 @@ public class AVIMMessageStorage {
       return false;
     }
     if (null == this.delegate) {
-      LOGGER.d("delegate is null, skip insertLocalMessages operation.");
+//      LOGGER.d("delegate is null, skip insertLocalMessages operation.");
       return true;
     }
     String internalMessageId = generateInternalMessageId(message.getUniqueToken());
@@ -227,7 +227,7 @@ public class AVIMMessageStorage {
       return false;
     }
     if (null == this.delegate) {
-      LOGGER.d("delegate is null, skip removeLocalMessage operation.");
+//      LOGGER.d("delegate is null, skip removeLocalMessage operation.");
       return true;
     }
     String internalMessageId = generateInternalMessageId(message.getUniqueToken());
@@ -239,7 +239,7 @@ public class AVIMMessageStorage {
 
   public void insertContinuousMessages(List<AVIMMessage> messages, String conversationId) {
     if (null == this.delegate) {
-      LOGGER.d("delegate is null, skip insertContinuousMessages operation.");
+//      LOGGER.d("delegate is null, skip insertContinuousMessages operation.");
       return;
     }
     if (null == messages || messages.isEmpty() || StringUtil.isEmpty(conversationId)) {
@@ -264,7 +264,7 @@ public class AVIMMessageStorage {
 
   public boolean containMessage(AVIMMessage message) {
     if (null == this.delegate) {
-      LOGGER.d("delegate is null, skip containMessage operation.");
+//      LOGGER.d("delegate is null, skip containMessage operation.");
       return false;
     }
     int cnt = this.delegate.queryCount(MESSAGE_TABLE, new String[] {},
@@ -306,7 +306,7 @@ public class AVIMMessageStorage {
 
   public synchronized boolean updateMessage(AVIMMessage message, String originalId) {
     if (null == this.delegate) {
-      LOGGER.d("delegate is null, skip updateMessage operation.");
+//      LOGGER.d("delegate is null, skip updateMessage operation.");
       return false;
     }
     Map<String, Object> values = new HashMap<>();
@@ -344,7 +344,7 @@ public class AVIMMessageStorage {
 
   public synchronized void deleteMessages(List<AVIMMessage> messages, String conversationId) {
     if (null == this.delegate) {
-      LOGGER.d("delegate is null, skip deleteMessages operation.");
+//      LOGGER.d("delegate is null, skip deleteMessages operation.");
       return;
     }
     for (AVIMMessage message : messages) {
@@ -404,7 +404,7 @@ public class AVIMMessageStorage {
   public void getMessages(String msgId, long timestamp, int limit, String conversationId,
                           StorageQueryCallback callback) {
     if (null == this.delegate) {
-      LOGGER.d("delegate is null, skip getMessages operation.");
+//      LOGGER.d("delegate is null, skip getMessages operation.");
       callback.done(null, null);
       return;
     }
@@ -434,7 +434,7 @@ public class AVIMMessageStorage {
 
   public long getMessageCount(String conversationId) {
     if (null == this.delegate) {
-      LOGGER.d("delegate is null, skip messageCount operation.");
+//      LOGGER.d("delegate is null, skip messageCount operation.");
       return 0l;
     }
     AVIMMessage lastBreakPointMessage = getLatestMessageWithBreakpoint(conversationId, true);
@@ -517,7 +517,7 @@ public class AVIMMessageStorage {
 
   public int insertConversations(List<AVIMConversation> conversations) {
     if (null == this.delegate) {
-      LOGGER.d("delegate is null, skip insert Conversations.");
+//      LOGGER.d("delegate is null, skip insert Conversations.");
       return 0;
     }
     for (AVIMConversation conversation : conversations) {
@@ -590,7 +590,7 @@ public class AVIMMessageStorage {
 
   public void deleteConversation(String conversationId) {
     if (null == this.delegate) {
-      LOGGER.d("delegate is null, skip delete operation.");
+//      LOGGER.d("delegate is null, skip delete operation.");
       return;
     }
     this.delegate.delete(CONVERSATION_TABLE, getWhereClause(COLUMN_CONVERSATION_ID),
