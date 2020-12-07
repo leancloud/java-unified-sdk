@@ -40,10 +40,6 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   private static final AVLogger LOGGER = LogUtil.getLogger(AVConnectionManager.class);
 
   private static AVConnectionManager instance = null;
-  private AVStandardWebSocketClient webSocketClient = null;
-  private final Object webSocketClientWatcher = new Object();
-  private String currentRTMConnectionServer = null;
-  private int retryConnectionCount = 0;
 
   enum ConnectionPolicy {
     Keep,
@@ -51,12 +47,32 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     ForceKeep
   }
 
-  private volatile boolean connectionEstablished = false;
-  private volatile boolean connecting = false;
-  private volatile AVCallback pendingCallback = null;
-  private volatile ConnectionPolicy connectionPolicy = ConnectionPolicy.Keep;
+  enum ConnectionStatus {
+    Offline,
+    Connecting,
+    Connected
+  }
+
+  /*
+   * socket related.
+   */
+  private AVStandardWebSocketClient webSocketClient = null;
+  private final Object webSocketClientWatcher = new Object();
+  private String currentRTMConnectionServer = null;
   private final AVInstallation currentInstallation;
 
+  /*
+   * connection status related.
+   */
+  private int retryConnectionCount = 0;
+  private volatile ConnectionStatus currentStatus = ConnectionStatus.Offline;
+  private volatile ConnectionPolicy connectionPolicy = ConnectionPolicy.Keep;
+
+  private volatile AVCallback pendingCallback = null;
+
+  /*
+  * listeners.
+  */
   private final Map<String, AVConnectionListener> connectionListeners = new ConcurrentHashMap<>(1);
   private final Map<String, AVConnectionListener> defaultConnectionListeners = new HashMap<>(2);
 
@@ -84,7 +100,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   private void resetConnectingStatus(boolean succeed) {
-    this.connecting = false;
+    this.currentStatus = succeed? ConnectionStatus.Connected: ConnectionStatus.Offline;
     if (null != pendingCallback) {
       if (succeed) {
         pendingCallback.internalDone(null);
@@ -172,37 +188,34 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public void startConnection(AVCallback callback) {
-    if (this.connectionEstablished) {
+    startConnection(callback, false);
+  }
+
+  private void startConnection(AVCallback callback, boolean ignoreGone) {
+    if (ConnectionStatus.Connected == this.currentStatus) {
       LOGGER.d("connection is established, directly response callback...");
       if (null != callback) {
         callback.internalDone(null);
       }
-    } else if (this.connecting) {
+    } else if (ConnectionStatus.Connecting == this.currentStatus) {
       LOGGER.d("on starting connection, save callback...");
       if (null != callback) {
         this.pendingCallback = callback;
       }
     } else {
-      LOGGER.d("start connection with callback...");
-      this.connecting = true;
-      this.pendingCallback = callback;
-      startConnectionInternal();
+      if (ignoreGone && ConnectionPolicy.LetItGone == connectionPolicy) {
+        LOGGER.d("ignore auto establish connection for policy:ConnectionPolicy.LetItGone...");
+      } else {
+        LOGGER.d("start connection with callback...");
+        currentStatus = ConnectionStatus.Connecting;
+        this.pendingCallback = callback;
+        startConnectionInternal();
+      }
     }
   }
 
   public void autoConnection() {
-    if (this.connectionEstablished) {
-      LOGGER.d("connection is established...");
-    } else if (this.connecting) {
-      LOGGER.d("on starting connection, ignore.");
-      return;
-    } else if (ConnectionPolicy.LetItGone == connectionPolicy) {
-      LOGGER.d("ignore auto establish connection for policy:ConnectionPolicy.LetItGone...");
-    } else {
-      LOGGER.d("start connection...");
-      this.connecting = true;
-      startConnectionInternal();
-    }
+    startConnection(null, true);
   }
 
   private void startConnectionInternal() {
@@ -263,7 +276,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public void resetConnection() {
-    connectionEstablished = false;
+    currentStatus = ConnectionStatus.Offline;
 
     synchronized (webSocketClientWatcher) {
       if (null != webSocketClient) {
@@ -278,7 +291,6 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
     }
 
     retryConnectionCount = 0;
-    connecting = false;
   }
 
   public void subscribeConnectionListener(String clientId, AVConnectionListener listener) {
@@ -312,7 +324,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   }
 
   public boolean isConnectionEstablished() {
-    return this.connectionEstablished;
+    return ConnectionStatus.Connected == this.currentStatus;
   }
 
   /**
@@ -320,7 +332,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
    */
   public void onOpen(WebSocketClient client) {
     LOGGER.d("webSocket(client=" + client + ") established...");
-    connectionEstablished = true;
+    currentStatus = ConnectionStatus.Connected;
     retryConnectionCount = 0;
 
     // auto send login packet.
@@ -360,7 +372,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
 
   public void onClose(WebSocketClient client, int var1, String var2, boolean var3) {
     LOGGER.d("client(" + client + ") closed...");
-    connectionEstablished = false;
+    currentStatus = ConnectionStatus.Offline;
     for (AVConnectionListener listener: connectionListeners.values()) {
       listener.onWebSocketClose();
     }
@@ -417,7 +429,7 @@ public class AVConnectionManager implements AVStandardWebSocketClient.WebSocketC
   public void onError(WebSocketClient client, Exception exception) {
     LOGGER.d("AVConnectionManager onError. client:" + client + ", exception:"
             + ((null != exception)? exception.getMessage(): "null"));
-    connectionEstablished = false;
+    currentStatus = ConnectionStatus.Offline;
     reConnectionRTMServer();
     for (AVConnectionListener listener: connectionListeners.values()) {
       listener.onError(null, null);
