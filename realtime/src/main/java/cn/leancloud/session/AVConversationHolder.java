@@ -620,35 +620,43 @@ public class AVConversationHolder {
     } else if (ConversationControlOp.SHUTUPED.equals(operation)
             || ConversationControlOp.UNSHUTUPED.equals(operation)) {
       String operator = convCommand.getInitBy();
-      if (null != operator && operator.equals(session.getSelfPeerId())) {
-        return;
-      } else {
-        onSelfShutupedNotify(ConversationControlOp.SHUTUPED.equals(operation), operator, convCommand);
-      }
+      // always notify application, it helps for multi-login.
+      onSelfShutupedNotify(ConversationControlOp.SHUTUPED.equals(operation), operator, convCommand);
+//      if (null != operator && operator.equals(session.getSelfPeerId())) {
+//        return;
+//      } else {
+//        onSelfShutupedNotify(ConversationControlOp.SHUTUPED.equals(operation), operator, convCommand);
+//      }
     } else if (ConversationControlOp.MEMBER_SHUTPED.equals(operation)
             || ConversationControlOp.MEMBER_UNSHUTUPED.equals(operation)) {
       String operator = convCommand.getInitBy();
-      if (null != operator && operator.equals(session.getSelfPeerId())) {
-        return;
-      } else {
-        onMemberShutupedNotify(ConversationControlOp.MEMBER_SHUTPED.equals(operation), operator, convCommand);
-      }
+      // always notify application, it helps for multi-login.
+      onMemberShutupedNotify(ConversationControlOp.MEMBER_SHUTPED.equals(operation), operator, convCommand);
+//      if (null != operator && operator.equals(session.getSelfPeerId())) {
+//        return;
+//      } else {
+//        onMemberShutupedNotify(ConversationControlOp.MEMBER_SHUTPED.equals(operation), operator, convCommand);
+//      }
     } else if (ConversationControlOp.BLOCKED.equals(operation)
             || ConversationControlOp.UNBLOCKED.equals(operation)) {
       String operator = convCommand.getInitBy();
-      if (null != operator && operator.equals(session.getSelfPeerId())) {
-        return;
-      } else {
-        onSelfBlockedNotify(ConversationControlOp.BLOCKED.equals(operation), operator, convCommand);
-      }
+      // always notify application, it helps for multi-login.
+      onSelfBlockedNotify(ConversationControlOp.BLOCKED.equals(operation), operator, convCommand);
+//      if (null != operator && operator.equals(session.getSelfPeerId())) {
+//        return;
+//      } else {
+//        onSelfBlockedNotify(ConversationControlOp.BLOCKED.equals(operation), operator, convCommand);
+//      }
     } else if (ConversationControlOp.MEMBER_BLOCKED_NOTIFY.equals(operation)
             || ConversationControlOp.MEMBER_UNBLOCKED_NOTIFY.equals(operation)) {
       String operator = convCommand.getInitBy();
-      if (null != operator && operator.equals(session.getSelfPeerId())) {
-        return;
-      } else {
-        onMemberBlockedNotify(ConversationControlOp.MEMBER_BLOCKED_NOTIFY.equals(operation), operator, convCommand);
-      }
+      // always notify application, it helps for multi-login.
+      onMemberBlockedNotify(ConversationControlOp.MEMBER_BLOCKED_NOTIFY.equals(operation), operator, convCommand);
+//      if (null != operator && operator.equals(session.getSelfPeerId())) {
+//        return;
+//      } else {
+//        onMemberBlockedNotify(ConversationControlOp.MEMBER_BLOCKED_NOTIFY.equals(operation), operator, convCommand);
+//      }
     }
   }
 
