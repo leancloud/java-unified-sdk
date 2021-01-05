@@ -2,6 +2,17 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 6.5.15 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- fixed: AVIMClientEventHandler#onClientOffline doesn't be invoked if kicked off more than one time.
+
 ## 6.5.14 release
 
 #### Break changes
