@@ -60,7 +60,7 @@ public abstract class AVIMClientEventHandler extends AVIMEventHandler {
         ((AVIMClient) eventScene).close(null); // TODO: FIXME
         break;
       default:
-        LOGGER.d("Not supported operation:" + operand);
+        LOGGER.d("ignore operation:" + operand);
     }
   }
 

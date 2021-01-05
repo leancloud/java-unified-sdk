@@ -28,6 +28,7 @@ public class AVDefaultSessionListener extends AVSessionListener {
     if (requestId > CommandPacket.UNSUPPORTED_OPERATION) {
       InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
               AVIMOperation.CLIENT_OPEN, null);
+      broadcastSessionStatus(session, Conversation.STATUS_ON_CLIENT_ONLINE);
     } else {
       LOGGER.d("internal session open.");
       onSessionResumed(session);
@@ -35,11 +36,7 @@ public class AVDefaultSessionListener extends AVSessionListener {
   }
 
   public void onSessionPaused(AVSession session) {
-    AVIMClientEventHandler handler = AVIMMessageManagerHelper.getClientEventHandler();
-    if (handler != null) {
-      handler.processEvent(Conversation.STATUS_ON_CONNECTION_PAUSED, null, null,
-              AVIMClient.getInstance(session.getSelfPeerId()));
-    }
+    broadcastSessionStatus(session, Conversation.STATUS_ON_CONNECTION_PAUSED);
   }
 
   @Override
@@ -52,10 +49,13 @@ public class AVDefaultSessionListener extends AVSessionListener {
 
   @Override
   public void onSessionResumed(AVSession session) {
+    broadcastSessionStatus(session, Conversation.STATUS_ON_CONNECTION_RESUMED);
+  }
+
+  private void broadcastSessionStatus(AVSession session, int operation) {
     AVIMClientEventHandler handler = AVIMMessageManagerHelper.getClientEventHandler();
     if (handler != null) {
-      handler.processEvent(Conversation.STATUS_ON_CONNECTION_RESUMED, null, null,
-              AVIMClient.getInstance(session.getSelfPeerId()));
+      handler.processEvent(operation, null, null, AVIMClient.getInstance(session.getSelfPeerId()));
     }
   }
 
