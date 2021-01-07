@@ -26,7 +26,7 @@ public class AVIMOptions {
    * 离线消息推送模式
    * true 为仅推送数量，false 为推送具体消息
    */
-  private boolean onlyPushCount = false;
+  private boolean onlyPushCount = true;
 
   /**
    * get global options instance.
