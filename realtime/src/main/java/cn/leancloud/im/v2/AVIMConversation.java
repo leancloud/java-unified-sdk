@@ -847,6 +847,14 @@ public class AVIMConversation {
    * @param callback callback function.
    */
   public void fetchReceiptTimestamps(final AVIMConversationCallback callback) {
+    if (isSystem() || isTransient()) {
+      LOGGER.w("system or transient conversation doesn't support fetchReceiptTimestamp command.");
+      if (null != callback) {
+        callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN,
+                "system or transient conversation doesn't support fetchReceiptTimestamp command."));
+      }
+      return;
+    }
     final AVIMCommonJsonCallback tmpCallback = new AVIMCommonJsonCallback() {
       @Override
       public void done(Map<String, Object> result, AVIMException e) {
@@ -1625,6 +1633,8 @@ public class AVIMConversation {
       }
       InternalConfiguration.getOperationTube()
               .markConversationRead(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(), params);
+    } else {
+      LOGGER.w("transient conversation/chatroom doesn't support read command.");
     }
   }
 
