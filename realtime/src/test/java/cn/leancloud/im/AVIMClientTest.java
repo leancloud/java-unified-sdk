@@ -16,6 +16,8 @@ import junit.framework.TestCase;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CountDownLatch;
 
 public class AVIMClientTest extends TestCase {
@@ -450,5 +452,24 @@ public class AVIMClientTest extends TestCase {
     });
     countDownLatch.await();
     client.close(null);
+  }
+
+  private String getFirstKey(ConcurrentMap<String, Object> container) {
+    if (null == container || container.size() < 1) {
+      return "";
+    }
+    return container.keySet().iterator().next();
+  }
+
+  public void testHashMapKeyOrder() throws Exception {
+    ConcurrentMap<String, Object> container = new ConcurrentHashMap<>();
+    String firstKey = getFirstKey(container);
+    System.out.println("firstKey at launch: " + firstKey);
+    for (int i = 0; i < 20;i++) {
+      String tmpKey = StringUtil.getRandomString(10);
+      container.put(tmpKey, System.currentTimeMillis());
+      firstKey = getFirstKey(container);
+      System.out.println("firstKey: " + firstKey + ", after add tmp key: " + tmpKey);
+    }
   }
 }
