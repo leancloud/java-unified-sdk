@@ -12,6 +12,8 @@ import junit.framework.TestSuite;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class AVFileTest extends TestCase {
@@ -117,6 +119,43 @@ public class AVFileTest extends TestCase {
         latch.countDown();
       }
 
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testBase64DataWithFileKey() throws Exception {
+    File localFile = new File("./20160704174809.jpeg");
+    final String testKey = StringUtil.getRandomString(16) + ".jpeg";
+    AVFile file = new AVFile("testfilename", localFile);
+//    Map<String, Object> metaData = new HashMap<>();
+//    metaData.put("format", "image/jpeg");
+//    file.setMetaData(metaData);
+    file.setACL(new AVACL());
+    file.setKey(testKey);
+    file.saveInBackground().subscribe(new Observer<AVFile>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+      }
+
+      @Override
+      public void onNext(AVFile avFile) {
+        String url = avFile.getUrl();
+        System.out.println("succeed to upload file. key=" + testKey + ", url=" + url);
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
       public void onComplete() {
 
       }

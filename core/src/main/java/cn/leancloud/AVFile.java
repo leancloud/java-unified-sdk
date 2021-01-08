@@ -293,6 +293,23 @@ public final class AVFile extends AVObject {
   }
 
   /**
+   * Set file key.
+   * @param fileKey - fileKey
+   * @notice this method needs authentication with masterKey!!
+   *
+   * File key is a part of url. After specified `fileKey`, the file's url should become `https://domain/fileKey`.
+   * With the help of this method, developer can upload file with particular path. For example, upload a robots.txt file as following:
+   *     File localFile = new File("./20160704174809.txt");
+   *     AVFile file = new AVFile("testfilename", localFile);
+   *     file.setKey("robots.txt");
+   *     file.saveInBackground().blockingSubscribe();
+   *
+   */
+  void setKey(String fileKey) {
+    internalPut(KEY_FILE_KEY, fileKey);
+  }
+
+  /**
    * Get file bucket.
    * @return file bucket.
    */
