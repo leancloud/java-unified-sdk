@@ -34,6 +34,31 @@ public class AVIMMessageTest extends TestCase {
     assertTrue(originMsg.equals(newMsg));
   }
 
+  public void testRawDump() throws Exception {
+    AVIMMessage originMsg = new AVIMMessage("conversationAlpha", "userBeta", 20000, 30000);
+    originMsg.setContent("just a test");
+    originMsg.setCurrentClient("clientOmega");
+    originMsg.setMentionAll(true);
+    originMsg.setMentionListString("@userA, @userB, @userC");
+    originMsg.setMessageId("msgId-xfhei-wrw");
+    originMsg.setMessageIOType(AVIMMessage.AVIMMessageIOType.AVIMMessageIOTypeIn);
+    originMsg.setMessageStatus(AVIMMessage.AVIMMessageStatus.AVIMMessageStatusReceipt);
+    originMsg.setUpdateAt(40000);
+    originMsg.setReadAt(3232099);
+    originMsg.setUniqueToken("uniquetoken-faei-read-8.8");
+    originMsg.setTransient(true);
+
+    Map<String, Object> rawDump = originMsg.dumpRawData();
+    System.out.println(rawDump);
+    assertTrue(rawDump.containsKey("transient"));
+
+    originMsg.setTransient(false);
+
+    rawDump = originMsg.dumpRawData();
+    System.out.println(rawDump);
+    assertTrue(!rawDump.containsKey("transient"));
+  }
+
   public void testBinaryMessageSerializer() throws Exception {
     AVIMBinaryMessage msg = new AVIMBinaryMessage();
     msg.setBytes(StringUtil.getRandomString(16).getBytes());

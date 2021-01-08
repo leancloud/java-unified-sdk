@@ -24,6 +24,8 @@ public class AVIMMessage {
   protected boolean mentionAll = false;
   protected String currentClient = null;
 
+  private boolean isTransient = false;
+
   protected String messageId;
   protected String uniqueToken;
 
@@ -335,6 +337,16 @@ public class AVIMMessage {
     return uniqueToken;
   }
 
+  /**
+   * set transient flag.
+   *
+   * @param isTransient transient flag.
+   * @notice  add this method just for flutter sdk.
+   */
+  void setTransient(boolean isTransient) {
+    this.isTransient = isTransient;
+  }
+
   public int hashCode() {
     final int prime = 31;
     int result = 7;
@@ -406,6 +418,9 @@ public class AVIMMessage {
     }
     if (this.readAt > 0) {
       result.put("readAt", this.readAt);
+    }
+    if (this.isTransient) {
+      result.put("transient", true);
     }
     result.put("io", ioType.getIOType());
     result.put("status", status.getStatusCode());
@@ -511,6 +526,9 @@ public class AVIMMessage {
     }
     if (jsonObject.containsKey("typeMsgData")) {
       message = AVIMMessageManager.parseTypedMessage(message);
+    }
+    if (jsonObject.containsKey("transient")) {
+      message.setTransient((Boolean) jsonObject.get("transient"));
     }
     return message;
   }

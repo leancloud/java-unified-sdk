@@ -128,6 +128,8 @@ public class AVIMMessageManager {
       client.getStorage().insertMessage(message, hasMore);
     }
     message = parseTypedMessage(message);
+    message.setTransient(isTransient);
+
     final AVIMConversation conversation = client.getConversation(message.getConversationId(), convType);
     conversation.setLastMessage(message);
     if (!isTransient) {
