@@ -101,7 +101,6 @@ public class AVIMConversationsQueryTest extends TestCase {
   public void testDirectQuery() throws Exception {
     AVIMConversationsQuery query = client.getConversationsQuery();
     String where = "{\"m\":{\"$regex\":\".*Tom.*\"}}";
-    query.setQueryPolicy(AVQuery.CachePolicy.NETWORK_ONLY);
     query.directFindInBackground(where, "createdAt", 0, 10, 2, new AVIMConversationQueryCallback() {
       @Override
       public void done(List<AVIMConversation> conversations, AVIMException e) {

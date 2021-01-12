@@ -601,6 +601,10 @@ public class AVIMConversationsQuery {
       queryParams.put("limit", Integer.toString(limit));
     }
     queryParams = AVIMConversationQueryConditions.assembleParameters(queryParams, flag);
+    if (AVIMConversationQueryConditions.isWithLastMessagesRefreshed(flag)) {
+      // always fetch from network while lastMessage is necessary.
+      this.policy = AVQuery.CachePolicy.NETWORK_ELSE_CACHE;
+    }
     findWithCondition(queryParams, callback);
   }
 

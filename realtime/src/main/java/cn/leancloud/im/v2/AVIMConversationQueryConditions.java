@@ -23,6 +23,10 @@ final class AVIMConversationQueryConditions extends QueryConditions {
     return isWithLastMessageRefreshed;
   }
 
+  public static boolean isWithLastMessagesRefreshed(int flag) {
+    return (flag & Flag_WithLastMessage) == Flag_WithLastMessage;
+  }
+
   /**
    * 设置是否携带最后一条消息
    *
