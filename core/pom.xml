@@ -2,13 +2,13 @@
   <parent>
     <groupId>cn.leancloud</groupId>
     <artifactId>leancloud-sdk</artifactId>
-    <version>7.0.10-SNAPSHOT</version>
+    <version>7.1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.leancloud</groupId>
   <artifactId>storage-core</artifactId>
   <packaging>jar</packaging>
-  <version>7.0.10-SNAPSHOT</version>
+  <version>7.1.0-SNAPSHOT</version>
   <name>storage core library</name>
   <url>http://maven.apache.org</url>
 

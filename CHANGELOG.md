@@ -2,6 +2,19 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 7.1.0 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- optimal: decouple imclient-connnection-installation binding, always query throught network for conversations with last-message.
+- fixed: AVIMClientEventHandler lost prevStatus for sequence: kickoff - session/open - kickoff again.
+- some internal optimizations(#149, #150, #151, #154, #155).
+
 ## 7.0.9 release
 
 #### Break changes
