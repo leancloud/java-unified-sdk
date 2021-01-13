@@ -30,6 +30,10 @@ public class Transformer {
       return AVStatus.CLASS_NAME;
     } else if (AVFile.class.isAssignableFrom(clazz)) {
       return AVFile.CLASS_NAME;
+    } else if (AVFriendship.class.isAssignableFrom(clazz)) {
+      return AVFriendship.CLASS_NAME;
+    } else if (AVFriendshipRequest.class.isAssignableFrom(clazz)) {
+      return AVFriendshipRequest.CLASS_NAME;
     } else {
       return subClassesReverseMAP.get(clazz);
     }
@@ -75,6 +79,10 @@ public class Transformer {
       result = new AVStatus();
     } else if (AVFile.class.isAssignableFrom(clazz)) {
       result = new AVFile();
+    } else if (AVFriendshipRequest.class.isAssignableFrom(clazz)) {
+      result = new AVFriendshipRequest();
+    } else if (AVFriendship.class.isAssignableFrom(clazz)) {
+      result = new AVFriendship();
     } else {
       result = new AVObject(clazz.getSimpleName());
     }
@@ -101,6 +109,10 @@ public class Transformer {
       result = new AVFile();
     } else if (AVInstallation.CLASS_NAME.equals(className)) {
       result = new AVInstallation();
+    } else if (AVFriendshipRequest.CLASS_NAME.equals(className)) {
+      result = new AVFriendshipRequest();
+    } else if (AVFriendship.CLASS_NAME.equals(className)) {
+      result = new AVFriendship();
     } else if (subClassesMAP.containsKey(className)) {
       try {
         result = subClassesMAP.get(className).newInstance();

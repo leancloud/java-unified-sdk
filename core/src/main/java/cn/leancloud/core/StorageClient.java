@@ -23,6 +23,7 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Scheduler;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.*;
@@ -367,6 +368,41 @@ public class StorageClient {
     });
   }
 
+  public Observable<AVFriendshipRequest> applyFriendshipRequest(final JSONObject data) {
+    Observable<AVObject> result = wrapObservable(apiService.applyFriendship(data));
+    if (null == result) {
+      return null;
+    }
+    return result.map(new Function<AVObject, AVFriendshipRequest>() {
+      @Override
+      public AVFriendshipRequest apply(@NotNull AVObject avObject) throws Exception {
+        return Transformer.transform(avObject, AVFriendshipRequest.class);
+      }
+    });
+  }
+
+  public Observable<AVFriendshipRequest> acceptFriendshipRequest(AVFriendshipRequest request, JSONObject param) {
+    Observable<AVObject> result = wrapObservable(apiService.acceptFriendshipRequest(request.getObjectId(), param));
+    if (null == result) {
+      return null;
+    }
+    return result.map(new Function<AVObject, AVFriendshipRequest>() {
+      @Override
+      public AVFriendshipRequest apply(@NotNull AVObject avObject) throws Exception {
+        return Transformer.transform(avObject, AVFriendshipRequest.class);
+      }
+    });
+  }
+  public Observable<AVFriendshipRequest> declineFriendshipRequest(AVFriendshipRequest request) {
+    Observable<AVObject> result = wrapObservable(apiService.declineFriendshipRequest(request.getObjectId()));
+    return result.map(new Function<AVObject, AVFriendshipRequest>() {
+      @Override
+      public AVFriendshipRequest apply(@NotNull AVObject avObject) throws Exception {
+        return Transformer.transform(avObject, AVFriendshipRequest.class);
+      }
+    });
+  }
+
   public Observable<Boolean> checkAuthenticated(String sessionToken) {
     Map<String, String> param = new HashMap<String, String>(1);
     param.put("session_token", sessionToken);
@@ -486,6 +522,10 @@ public class StorageClient {
 
   public Observable<JSONObject> unfollowUser(String followee, String follower) {
     return wrapObservable(apiService.unfollowUser(followee, follower));
+  }
+
+  public Observable<AVFriendship> updateFriendship(String followeeUserid, String friendshipObjectId, Map<String, Object> attr) {
+    return wrapObservable(apiService.updateFriendship(followeeUserid, friendshipObjectId, attr));
   }
 
   public Observable<JSONObject> getFollowersAndFollowees(String userId) {

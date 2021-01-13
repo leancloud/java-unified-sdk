@@ -37,6 +37,8 @@ public class AVUser extends AVObject {
   private static final String ATTR_MOBILEPHONE_VERIFIED = "mobilePhoneVerified";
   public static final String ATTR_SESSION_TOKEN = "sessionToken";
 
+  private static final String PARAM_ATTR_FRIENDSHIP = "friendship";
+
   private static final String AUTHDATA_TAG = "authData";
   private static final String AUTHDATA_PLATFORM_ANONYMOUS = "anonymous";
 
@@ -1017,6 +1019,147 @@ public class AVUser extends AVObject {
     query.whereEqualTo("user", AVUser.createWithoutData(CLASS_NAME, userObjectId));
     query.include("followee");
     return query;
+  }
+
+  /**
+   * apply new friendship to someone.
+   *
+   * @param friend target user.
+   * @param attributes additional attributes.
+   * @return Observable instance to monitor operation result.
+   */
+  public Observable<AVFriendshipRequest> applyFriendshipInBackground(AVUser friend, Map<String, Object> attributes) {
+    if (!checkUserAuthentication(null)) {
+      logger.d("current user isn't authenticated.");
+      return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
+              "No valid session token, make sure signUp or login has been called."));
+    }
+    if (null == friend || StringUtil.isEmpty(friend.getObjectId())) {
+      return Observable.error(ErrorUtils.propagateException(AVException.INVALID_PARAMETER,
+              "friend user is invalid."));
+    }
+    Map<String, Object> param = new HashMap<>();
+    param.put(AVFriendshipRequest.ATTR_USER, Utils.getParsedObject(this));
+    param.put(AVFriendshipRequest.ATTR_FRIEND, Utils.getParsedObject(friend));
+    if (null != attributes && attributes.size() > 0) {
+      param.put(PARAM_ATTR_FRIENDSHIP, attributes);
+    }
+    JSONObject jsonObject = AppConfiguration.getJsonParser().toJSONObject(param);
+    return PaasClient.getStorageClient().applyFriendshipRequest(jsonObject);
+  }
+
+  public Observable<AVFriendship> updateFriendship(AVFriendship friendship) {
+    if (!checkUserAuthentication(null)) {
+      logger.d("current user isn't authenticated.");
+      return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
+              "No valid session token, make sure signUp or login has been called."));
+    }
+    if (null == friendship || StringUtil.isEmpty(friendship.getObjectId())) {
+      return Observable.error(ErrorUtils.propagateException(AVException.INVALID_PARAMETER,
+              "friendship request is invalid."));
+    }
+    JSONObject changedParam = friendship.generateChangedParam();
+    if (null == changedParam || changedParam.size() < 1) {
+      return Observable.just(friendship);
+    }
+    HashMap<String, Object> param = new HashMap<>();
+    param.put(PARAM_ATTR_FRIENDSHIP, changedParam);
+    return PaasClient.getStorageClient().updateFriendship(getObjectId(), friendship.getObjectId(), param);
+  }
+
+  /**
+   * accept a friendship.
+   * @param request friendship request.
+   * @param attributes additional attributes.
+   * @return Observable instance to monitor operation result.
+   */
+  public Observable<AVFriendshipRequest> acceptFriendshipRequest(AVFriendshipRequest request, Map<String, Object> attributes) {
+    if (!checkUserAuthentication(null)) {
+      logger.d("current user isn't authenticated.");
+      return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
+              "No valid session token, make sure signUp or login has been called."));
+    }
+    if (null == request || StringUtil.isEmpty(request.getObjectId())) {
+      return Observable.error(ErrorUtils.propagateException(AVException.INVALID_PARAMETER,
+              "friendship request is invalid."));
+    }
+
+    HashMap<String, Object> param = new HashMap<>();
+    if (null != attributes) {
+      param.put(PARAM_ATTR_FRIENDSHIP, attributes);
+    }
+    JSONObject jsonObject = JSONObject.Builder.create(param);
+    return PaasClient.getStorageClient().acceptFriendshipRequest(request, jsonObject);
+  }
+
+  /**
+   * decline a friendship.
+   * @param request friendship request.
+   * @return Observable instance to monitor operation result.
+   */
+  public Observable<AVFriendshipRequest> declineFriendshipRequest(AVFriendshipRequest request) {
+    if (!checkUserAuthentication(null)) {
+      logger.d("current user isn't authenticated.");
+      return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
+              "No valid session token, make sure signUp or login has been called."));
+    }
+    if (null == request || StringUtil.isEmpty(request.getObjectId())) {
+      return Observable.error(ErrorUtils.propagateException(AVException.INVALID_PARAMETER,
+              "friendship request is invalid."));
+    }
+
+    return PaasClient.getStorageClient().declineFriendshipRequest(request);
+  }
+
+  /**
+   * get query for AVFriendshipRequest.
+   *
+   * @param status request status. following value can be used individually or combined with `and` operator:
+   *               AVFriendshipRequest.STATUS_PENDING(0x01), request is pending yet.
+   *               AVFriendshipRequest.STATUS_ACCEPTED(0x02), request is accepted by user.
+   *               AVFriendshipRequest.STATUS_DECLINED(0x04), request is declined by user.
+   * @param includeTargetUser boolean flag, indicating that need to include target user pointer or not.
+   * @param requestToMe boolean flag, indicating all requests are sent to current user or not.
+   *                    True, someone others sent requests to current user.
+   *                    False, current user sent requests to others.
+   * @return AVFriendshipRequest query, null for current user isn't authenticated.
+   */
+  public AVQuery<AVFriendshipRequest> friendshipRequestQuery(int status, boolean includeTargetUser, boolean requestToMe) {
+    if (!checkUserAuthentication(null)) {
+      logger.d("current user isn't authenticated.");
+      return null;
+    }
+    List<String> statusCondition = new ArrayList<>(1);
+    if ((status & AVFriendshipRequest.STATUS_PENDING) == AVFriendshipRequest.STATUS_PENDING) {
+      statusCondition.add(AVFriendshipRequest.RequestStatus.Pending.name().toLowerCase());
+    }
+    if ((status & AVFriendshipRequest.STATUS_ACCEPTED) == AVFriendshipRequest.STATUS_ACCEPTED) {
+      statusCondition.add(AVFriendshipRequest.RequestStatus.Accepted.name().toLowerCase());
+    }
+    if ((status & AVFriendshipRequest.STATUS_DECLINED) == AVFriendshipRequest.STATUS_DECLINED) {
+      statusCondition.add(AVFriendshipRequest.RequestStatus.Declined.name().toLowerCase());
+    }
+    if (statusCondition.size() < 1) {
+      logger.d("status is invalid.");
+      return null;
+    }
+
+    AVQuery<AVFriendshipRequest> result = new AVQuery<>(AVFriendshipRequest.CLASS_NAME);
+    result.whereContainedIn(AVFriendshipRequest.ATTR_STATUS, statusCondition);
+    if (requestToMe) {
+      result.whereEqualTo(AVFriendshipRequest.ATTR_FRIEND, this);
+      if (includeTargetUser) {
+        result.include(AVFriendshipRequest.ATTR_USER);
+      }
+    } else {
+      result.whereEqualTo(AVFriendshipRequest.ATTR_USER, this);
+      if (includeTargetUser) {
+        result.include(AVFriendshipRequest.ATTR_FRIEND);
+      }
+    }
+    result.addAscendingOrder(AVFriendshipRequest.ATTR_STATUS);
+    result.addDescendingOrder(AVObject.KEY_UPDATED_AT);
+    return result;
   }
 
   private void processResultList(List<JSONObject> results, List<AVUser> list, String tag) {
