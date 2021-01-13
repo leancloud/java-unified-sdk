@@ -98,6 +98,87 @@ public class AVIMConversationsQueryTest extends TestCase {
     assertTrue(opersationSucceed);
   }
 
+  public void testQueryEmptyConvWithLastMessage() throws Exception {
+    AVIMConversationsQuery query = client.getConversationsQuery();
+    query.whereEqualTo("objectId", "5d77057ec320f1ab6f8589c0").setWithLastMessagesRefreshed(true).limit(1)
+            .findInBackground(new AVIMConversationQueryCallback() {
+      @Override
+      public void done(List<AVIMConversation> conversations, AVIMException ex) {
+        if (null != ex) {
+          System.out.println("failed to query convs");
+          ex.printStackTrace();
+        } else {
+          System.out.println("succeed to query convs. results=" + conversations.size());
+          for (AVIMConversation conv : conversations) {
+            if (conv.getLastMessage() == null) {
+              opersationSucceed = true;
+            } else {
+              opersationSucceed = false;
+            }
+            System.out.println(conv.toJSONString());
+          }
+        }
+        countDownLatch.countDown();
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testQueryNormalConvWithLastRawMessage() throws Exception {
+    AVIMConversationsQuery query = client.getConversationsQuery();
+    query.whereEqualTo("objectId", "5ce23b8ec320f1ab6f53fd50").setWithLastMessagesRefreshed(true).limit(1)
+            .findInBackground(new AVIMConversationQueryCallback() {
+      @Override
+      public void done(List<AVIMConversation> conversations, AVIMException ex) {
+        if (null != ex) {
+          System.out.println("failed to query convs");
+          ex.printStackTrace();
+        } else {
+          System.out.println("succeed to query convs. results=" + conversations.size());
+          for (AVIMConversation conv : conversations) {
+            if (conv.getLastMessage() == null) {
+              opersationSucceed = false;
+            } else {
+              opersationSucceed = true;
+            }
+            System.out.println(conv.toJSONString());
+          }
+        }
+        countDownLatch.countDown();
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testQueryNormalConvWithLastTypedMessage() throws Exception {
+    AVIMConversationsQuery query = client.getConversationsQuery();
+    query.whereEqualTo("objectId", "5cfa1ff1c320f1ab6fa89f7e").setWithLastMessagesRefreshed(true).limit(1)
+            .findInBackground(new AVIMConversationQueryCallback() {
+              @Override
+              public void done(List<AVIMConversation> conversations, AVIMException ex) {
+                if (null != ex) {
+                  System.out.println("failed to query convs");
+                  ex.printStackTrace();
+                } else {
+                  System.out.println("succeed to query convs. results=" + conversations.size());
+                  for (AVIMConversation conv : conversations) {
+                    if (conv.getLastMessage() == null) {
+                      opersationSucceed = false;
+                    } else {
+                      opersationSucceed = true;
+                    }
+                    System.out.println(conv.toJSONString());
+                  }
+                }
+                countDownLatch.countDown();
+              }
+            });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
   public void testDirectQuery() throws Exception {
     AVIMConversationsQuery query = client.getConversationsQuery();
     String where = "{\"m\":{\"$regex\":\".*Tom.*\"}}";
