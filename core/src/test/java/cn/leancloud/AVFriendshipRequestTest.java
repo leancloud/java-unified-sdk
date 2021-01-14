@@ -313,7 +313,7 @@ public class AVFriendshipRequestTest extends TestCase {
                   public void onNext(AVFriendshipRequest avFriendshipRequest) {
                     AVUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl");
                     AVUser.currentUser().friendshipRequestQuery(
-                            AVFriendshipRequest.STATUS_DECLINED | AVFriendshipRequest.STATUS_ACCEPTED | AVFriendshipRequest.STATUS_PENDING,
+                            AVFriendshipRequest.STATUS_ANY,
                             true, true)
                             .findInBackground()
                             .subscribe(new Observer<List<AVFriendshipRequest>>() {
@@ -348,7 +348,7 @@ public class AVFriendshipRequestTest extends TestCase {
                     if (throwable.getMessage().contains("Friendship already exists.")) {
                       AVUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl");
                       AVUser.currentUser().friendshipRequestQuery(
-                              AVFriendshipRequest.STATUS_DECLINED | AVFriendshipRequest.STATUS_ACCEPTED | AVFriendshipRequest.STATUS_PENDING,
+                              AVFriendshipRequest.STATUS_ANY,
                               true, true)
                               .findInBackground()
                               .subscribe(new Observer<List<AVFriendshipRequest>>() {

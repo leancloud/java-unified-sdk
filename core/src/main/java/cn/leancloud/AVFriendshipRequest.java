@@ -16,6 +16,7 @@ public class AVFriendshipRequest extends AVObject {
   public static final int STATUS_PENDING = 0x01;
   public static final int STATUS_ACCEPTED = 0x02;
   public static final int STATUS_DECLINED = 0x04;
+  public static final int STATUS_ANY = STATUS_PENDING | STATUS_ACCEPTED | STATUS_DECLINED;
 
   enum RequestStatus {
     Pending, Accepted, Declined
@@ -50,6 +51,8 @@ public class AVFriendshipRequest extends AVObject {
    *
    * @param attributes additional attributes for this friend.
    * @return observable instance
+   *
+   * @notice: attributes is necessary as parameter bcz they are not properties of FriendshipRequest.
    */
   public Observable<? extends AVObject> accept(Map<String, Object> attributes) {
     AVUser currentUser = AVUser.currentUser();

@@ -1033,7 +1033,7 @@ public class AVUser extends AVObject {
    * @param isFollowerDirection query direction
    *                            true - query follower of current user(users which followed current user).
    *                            false - query followee of current user(users which current user followed).
-   * @return query instance
+   * @return query instance, null for non-authenticated.
    */
   public AVQuery<AVFriendship> friendshipQuery(boolean isFollowerDirection) {
     String userObjectId = getObjectId();
@@ -1075,10 +1075,16 @@ public class AVUser extends AVObject {
     if (null != attributes && attributes.size() > 0) {
       param.put(PARAM_ATTR_FRIENDSHIP, attributes);
     }
-    JSONObject jsonObject = AppConfiguration.getJsonParser().toJSONObject(param);
+    JSONObject jsonObject = JSONObject.Builder.create(param);
     return PaasClient.getStorageClient().applyFriendshipRequest(jsonObject);
   }
 
+  /**
+   * update friendship attributes.
+   *
+   * @param friendship friendship instance.
+   * @return observable instance.
+   */
   public Observable<AVFriendship> updateFriendship(AVFriendship friendship) {
     if (!checkUserAuthentication(null)) {
       logger.d("current user isn't authenticated.");
@@ -1087,7 +1093,7 @@ public class AVUser extends AVObject {
     }
     if (null == friendship || StringUtil.isEmpty(friendship.getObjectId())) {
       return Observable.error(ErrorUtils.propagateException(AVException.INVALID_PARAMETER,
-              "friendship request(user) is invalid."));
+              "friendship request(objectId) is invalid."));
     }
     if (null == friendship.getFollowee() || StringUtil.isEmpty(friendship.getFollowee().getObjectId())) {
       return Observable.error(ErrorUtils.propagateException(AVException.INVALID_PARAMETER,
@@ -1095,6 +1101,7 @@ public class AVUser extends AVObject {
     }
     JSONObject changedParam = friendship.generateChangedParam();
     if (null == changedParam || changedParam.size() < 1) {
+      logger.d("nothing is changed within friendship.");
       return Observable.just(friendship);
     }
     HashMap<String, Object> param = new HashMap<>();
@@ -1107,6 +1114,7 @@ public class AVUser extends AVObject {
    * @param request friendship request.
    * @param attributes additional attributes.
    * @return Observable instance to monitor operation result.
+   * @notice: attributes is necessary as parameter bcz they are not properties of FriendshipRequest.
    */
   public Observable<AVFriendshipRequest> acceptFriendshipRequest(AVFriendshipRequest request, Map<String, Object> attributes) {
     if (!checkUserAuthentication(null)) {
@@ -1116,11 +1124,11 @@ public class AVUser extends AVObject {
     }
     if (null == request || StringUtil.isEmpty(request.getObjectId())) {
       return Observable.error(ErrorUtils.propagateException(AVException.INVALID_PARAMETER,
-              "friendship request is invalid."));
+              "friendship request(objectId) is invalid."));
     }
 
     HashMap<String, Object> param = new HashMap<>();
-    if (null != attributes) {
+    if (null != attributes && attributes.size() > 0) {
       param.put(PARAM_ATTR_FRIENDSHIP, attributes);
     }
     JSONObject jsonObject = JSONObject.Builder.create(param);
@@ -1140,7 +1148,7 @@ public class AVUser extends AVObject {
     }
     if (null == request || StringUtil.isEmpty(request.getObjectId())) {
       return Observable.error(ErrorUtils.propagateException(AVException.INVALID_PARAMETER,
-              "friendship request is invalid."));
+              "friendship request(objectId) is invalid."));
     }
 
     return PaasClient.getStorageClient().declineFriendshipRequest(request);
@@ -1153,6 +1161,7 @@ public class AVUser extends AVObject {
    *               AVFriendshipRequest.STATUS_PENDING(0x01), request is pending yet.
    *               AVFriendshipRequest.STATUS_ACCEPTED(0x02), request is accepted by user.
    *               AVFriendshipRequest.STATUS_DECLINED(0x04), request is declined by user.
+   *               AVFriendshipRequest.STATUS_ANY(0x07), no matter any status, all of requests are wanted by current query.
    * @param includeTargetUser boolean flag, indicating that need to include target user pointer or not.
    * @param requestToMe boolean flag, indicating all requests are sent to current user or not.
    *                    True, someone others sent requests to current user.
@@ -1175,7 +1184,7 @@ public class AVUser extends AVObject {
       statusCondition.add(AVFriendshipRequest.RequestStatus.Declined.name().toLowerCase());
     }
     if (statusCondition.size() < 1) {
-      logger.d("status is invalid.");
+      logger.d("status parameter is invalid.");
       return null;
     }
 
@@ -1192,7 +1201,6 @@ public class AVUser extends AVObject {
         result.include(AVFriendshipRequest.ATTR_FRIEND);
       }
     }
-    result.addAscendingOrder(AVFriendshipRequest.ATTR_STATUS);
     result.addDescendingOrder(AVObject.KEY_UPDATED_AT);
     return result;
   }
