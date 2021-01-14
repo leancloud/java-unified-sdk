@@ -7,7 +7,6 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -68,39 +67,39 @@ public class AVFriendshipRequestTest extends TestCase {
         avUser.applyFriendshipInBackground(friend, null)
                 .subscribe(new Observer<AVFriendshipRequest>() {
                   @Override
-                  public void onSubscribe(@NotNull Disposable disposable) {
+                  public void onSubscribe(Disposable disposable) {
 
                   }
 
                   @Override
-                  public void onNext(@NotNull final AVFriendshipRequest friendshipRequest) {
+                  public void onNext(final AVFriendshipRequest friendshipRequest) {
                     System.out.println("succeed to create new friend request. result=" + JSON.toJSONString(friendshipRequest));
                     System.out.println("objectId=" + friendshipRequest.getObjectId());
                     AVUser.becomeWithSessionToken("52g2hsrptizbuyygafbhav4p3");
                     friendshipRequest.accept(null).subscribe(new Observer<AVObject>() {
                       @Override
-                      public void onSubscribe(@NotNull Disposable disposable) {
+                      public void onSubscribe(Disposable disposable) {
 
                       }
 
                       @Override
-                      public void onNext(@NotNull AVObject avObject) {
+                      public void onNext(AVObject avObject) {
                         System.out.println("succeed to accept new friend request. result=" + avObject);
                         friendshipRequest.deleteInBackground().subscribe(new Observer<AVNull>() {
                           @Override
-                          public void onSubscribe(@NotNull Disposable disposable) {
+                          public void onSubscribe(Disposable disposable) {
 
                           }
 
                           @Override
-                          public void onNext(@NotNull AVNull avNull) {
+                          public void onNext(AVNull avNull) {
                             System.out.println("succeed to delete new friend request.");
                             testSucceed = true;
                             latch.countDown();
                           }
 
                           @Override
-                          public void onError(@NotNull Throwable throwable) {
+                          public void onError(Throwable throwable) {
                             System.out.println("failed to delete new friend request.");
                             throwable.printStackTrace();
                             latch.countDown();
@@ -114,7 +113,7 @@ public class AVFriendshipRequestTest extends TestCase {
                       }
 
                       @Override
-                      public void onError(@NotNull Throwable throwable) {
+                      public void onError(Throwable throwable) {
                         System.out.println("failed to accept new friend request. result=");
                         throwable.printStackTrace();
                         latch.countDown();
@@ -128,7 +127,7 @@ public class AVFriendshipRequestTest extends TestCase {
                   }
 
                   @Override
-                  public void onError(@NotNull Throwable throwable) {
+                  public void onError(Throwable throwable) {
                     System.out.println("failed to create new friend request. result=" + throwable.getMessage());
 
                     if (throwable.getMessage().contains("Friendship already exists.")) {
@@ -174,23 +173,23 @@ public class AVFriendshipRequestTest extends TestCase {
                 avUser.applyFriendshipInBackground(friend, null)
                         .subscribe(new Observer<AVFriendshipRequest>() {
                           @Override
-                          public void onSubscribe(@NotNull Disposable disposable) {
+                          public void onSubscribe(Disposable disposable) {
 
                           }
 
                           @Override
-                          public void onNext(@NotNull final AVFriendshipRequest friendshipRequest) {
+                          public void onNext(final AVFriendshipRequest friendshipRequest) {
                             System.out.println("succeed to create new friend request. result=" + JSON.toJSONString(friendshipRequest));
                             System.out.println("objectId=" + friendshipRequest.getObjectId());
                             AVUser.becomeWithSessionToken("52g2hsrptizbuyygafbhav4p3");
                             friendshipRequest.decline().subscribe(new Observer<AVObject>() {
                               @Override
-                              public void onSubscribe(@NotNull Disposable disposable) {
+                              public void onSubscribe(Disposable disposable) {
 
                               }
 
                               @Override
-                              public void onNext(@NotNull AVObject avObject) {
+                              public void onNext(AVObject avObject) {
                                 System.out.println("succeed to decline new friend request. result=" + avObject);
                                 try {
                                   System.out.println("sleep 2000 ms...");
@@ -201,28 +200,28 @@ public class AVFriendshipRequestTest extends TestCase {
                                 }
                                 friendshipRequest.accept(null).subscribe(new Observer<AVObject>() {
                                   @Override
-                                  public void onSubscribe(@NotNull Disposable disposable) {
+                                  public void onSubscribe(Disposable disposable) {
 
                                   }
 
                                   @Override
-                                  public void onNext(@NotNull AVObject avObject) {
+                                  public void onNext(AVObject avObject) {
                                     System.out.println("succeed to accept the declined friend request.");
                                     friendshipRequest.deleteInBackground().subscribe(new Observer<AVNull>() {
                                       @Override
-                                      public void onSubscribe(@NotNull Disposable disposable) {
+                                      public void onSubscribe(Disposable disposable) {
 
                                       }
 
                                       @Override
-                                      public void onNext(@NotNull AVNull avNull) {
+                                      public void onNext(AVNull avNull) {
                                         System.out.println("succeed to delete new friend request.");
                                         testSucceed = true;
                                         latch.countDown();
                                       }
 
                                       @Override
-                                      public void onError(@NotNull Throwable throwable) {
+                                      public void onError(Throwable throwable) {
                                         System.out.println("failed to delete new friend request.");
                                         throwable.printStackTrace();
                                         latch.countDown();
@@ -236,7 +235,7 @@ public class AVFriendshipRequestTest extends TestCase {
                                   }
 
                                   @Override
-                                  public void onError(@NotNull Throwable throwable) {
+                                  public void onError(Throwable throwable) {
                                     System.out.println("failed to accept the declined friend request.");
                                     throwable.printStackTrace();
                                     latch.countDown();
@@ -250,7 +249,7 @@ public class AVFriendshipRequestTest extends TestCase {
                               }
 
                               @Override
-                              public void onError(@NotNull Throwable throwable) {
+                              public void onError(Throwable throwable) {
                                 System.out.println("failed to accept new friend request. result=");
                                 throwable.printStackTrace();
                                 latch.countDown();
@@ -264,7 +263,7 @@ public class AVFriendshipRequestTest extends TestCase {
                           }
 
                           @Override
-                          public void onError(@NotNull Throwable throwable) {
+                          public void onError(Throwable throwable) {
                             System.out.println("failed to create new friend request. result=");
                             throwable.printStackTrace();
                             latch.countDown();
@@ -306,12 +305,12 @@ public class AVFriendshipRequestTest extends TestCase {
                 }
                 avUser.applyFriendshipInBackground(friend, null).subscribe(new Observer<AVFriendshipRequest>() {
                   @Override
-                  public void onSubscribe(@NotNull Disposable disposable) {
+                  public void onSubscribe(Disposable disposable) {
 
                   }
 
                   @Override
-                  public void onNext(@NotNull AVFriendshipRequest avFriendshipRequest) {
+                  public void onNext(AVFriendshipRequest avFriendshipRequest) {
                     AVUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl");
                     AVUser.currentUser().friendshipRequestQuery(
                             AVFriendshipRequest.STATUS_DECLINED | AVFriendshipRequest.STATUS_ACCEPTED | AVFriendshipRequest.STATUS_PENDING,
@@ -319,12 +318,12 @@ public class AVFriendshipRequestTest extends TestCase {
                             .findInBackground()
                             .subscribe(new Observer<List<AVFriendshipRequest>>() {
                               @Override
-                              public void onSubscribe(@NotNull Disposable disposable) {
+                              public void onSubscribe(Disposable disposable) {
 
                               }
 
                               @Override
-                              public void onNext(@NotNull List<AVFriendshipRequest> avFriendshipRequests) {
+                              public void onNext(List<AVFriendshipRequest> avFriendshipRequests) {
                                 if (null != avFriendshipRequests && avFriendshipRequests.size() > 0) {
                                   testSucceed = true;
                                 }
@@ -332,7 +331,7 @@ public class AVFriendshipRequestTest extends TestCase {
                               }
 
                               @Override
-                              public void onError(@NotNull Throwable throwable) {
+                              public void onError(Throwable throwable) {
                                 System.out.println();
                                 latch.countDown();
                               }
@@ -345,7 +344,7 @@ public class AVFriendshipRequestTest extends TestCase {
                   }
 
                   @Override
-                  public void onError(@NotNull Throwable throwable) {
+                  public void onError(Throwable throwable) {
                     if (throwable.getMessage().contains("Friendship already exists.")) {
                       AVUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl");
                       AVUser.currentUser().friendshipRequestQuery(
@@ -354,12 +353,12 @@ public class AVFriendshipRequestTest extends TestCase {
                               .findInBackground()
                               .subscribe(new Observer<List<AVFriendshipRequest>>() {
                                 @Override
-                                public void onSubscribe(@NotNull Disposable disposable) {
+                                public void onSubscribe(Disposable disposable) {
 
                                 }
 
                                 @Override
-                                public void onNext(@NotNull List<AVFriendshipRequest> avFriendshipRequests) {
+                                public void onNext(List<AVFriendshipRequest> avFriendshipRequests) {
                                   if (null != avFriendshipRequests && avFriendshipRequests.size() > 0) {
                                     testSucceed = true;
                                   }
@@ -367,7 +366,7 @@ public class AVFriendshipRequestTest extends TestCase {
                                 }
 
                                 @Override
-                                public void onError(@NotNull Throwable throwable) {
+                                public void onError(Throwable throwable) {
                                   System.out.println();
                                   latch.countDown();
                                 }
@@ -405,12 +404,12 @@ public class AVFriendshipRequestTest extends TestCase {
   public void testSimpleRequestWithAnonymousUserAccept() throws Exception {
     AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
       @Override
-      public void onSubscribe(@NotNull Disposable disposable) {
+      public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(@NotNull final AVUser anonymousUser) {
+      public void onNext(final AVUser anonymousUser) {
         final AVUser target;
         try {
           target = AVUser.createWithoutData(AVUser.class, testUser1ObjectId);
@@ -422,23 +421,23 @@ public class AVFriendshipRequestTest extends TestCase {
         param.put("group", "collage");
         anonymousUser.applyFriendshipInBackground(target, param).subscribe(new Observer<AVFriendshipRequest>() {
           @Override
-          public void onSubscribe(@NotNull Disposable disposable) {
+          public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(@NotNull AVFriendshipRequest avFriendshipRequest) {
+          public void onNext(AVFriendshipRequest avFriendshipRequest) {
             System.out.println("try to query all request from current User");
             AVQuery<AVFriendshipRequest> query = anonymousUser.friendshipRequestQuery(AVFriendshipRequest.STATUS_PENDING,
                     true, false);
             query.findInBackground().subscribe(new Observer<List<AVFriendshipRequest>>() {
               @Override
-              public void onSubscribe(@NotNull Disposable disposable) {
+              public void onSubscribe(Disposable disposable) {
 
               }
 
               @Override
-              public void onNext(@NotNull List<AVFriendshipRequest> avFriendshipRequests) {
+              public void onNext(List<AVFriendshipRequest> avFriendshipRequests) {
                 System.out.println("succeed to query pending request from anonymous user. resultSize=" + avFriendshipRequests.size());
                 if (avFriendshipRequests.size() < 1) {
                   latch.countDown();
@@ -447,31 +446,31 @@ public class AVFriendshipRequestTest extends TestCase {
                 final AVFriendshipRequest targetFriendshipRequest = avFriendshipRequests.get(0);
                 AVUser.logIn(testUser1UserName, testUser1Password).subscribe(new Observer<AVUser>() {
                   @Override
-                  public void onSubscribe(@NotNull Disposable disposable) {
+                  public void onSubscribe(Disposable disposable) {
 
                   }
 
                   @Override
-                  public void onNext(@NotNull final AVUser secondUser) {
+                  public void onNext(final AVUser secondUser) {
                     Map<String, Object> param = new HashMap<>();
                     param.put("group", "fans");
                     secondUser.acceptFriendshipRequest(targetFriendshipRequest, param).subscribe(new Observer<AVFriendshipRequest>() {
                       @Override
-                      public void onSubscribe(@NotNull Disposable disposable) {
+                      public void onSubscribe(Disposable disposable) {
 
                       }
 
                       @Override
-                      public void onNext(@NotNull AVFriendshipRequest avFriendshipRequest) {
+                      public void onNext(AVFriendshipRequest avFriendshipRequest) {
                         AVQuery<AVFriendshipRequest> query = secondUser.friendshipRequestQuery(AVFriendshipRequest.STATUS_ACCEPTED, true, true);
                         query.findInBackground().subscribe(new Observer<List<AVFriendshipRequest>>() {
                           @Override
-                          public void onSubscribe(@NotNull Disposable disposable) {
+                          public void onSubscribe(Disposable disposable) {
 
                           }
 
                           @Override
-                          public void onNext(@NotNull List<AVFriendshipRequest> tmpRequests) {
+                          public void onNext(List<AVFriendshipRequest> tmpRequests) {
                             AVQuery<AVFriendship> query = secondUser.friendshipQuery(false);
                             query.whereEqualTo(AVFriendship.ATTR_FRIEND_STATUS, true);
                             query.addDescendingOrder(AVObject.KEY_UPDATED_AT);
@@ -485,19 +484,19 @@ public class AVFriendshipRequestTest extends TestCase {
                               friendship.put("remark", "丐帮帮主");
                               secondUser.updateFriendship(friendship).subscribe(new Observer<AVObject>() {
                                 @Override
-                                public void onSubscribe(@NotNull Disposable disposable) {
+                                public void onSubscribe(Disposable disposable) {
 
                                 }
 
                                 @Override
-                                public void onNext(@NotNull AVObject avObject) {
+                                public void onNext(AVObject avObject) {
                                   System.out.println("succeed to update friendship: " + avObject);
                                   testSucceed = true;
                                   latch.countDown();
                                 }
 
                                 @Override
-                                public void onError(@NotNull Throwable throwable) {
+                                public void onError(Throwable throwable) {
                                   System.out.println("failed to update friendship.");
                                   throwable.printStackTrace();
                                   latch.countDown();
@@ -517,7 +516,7 @@ public class AVFriendshipRequestTest extends TestCase {
                           }
 
                           @Override
-                          public void onError(@NotNull Throwable throwable) {
+                          public void onError(Throwable throwable) {
                             System.out.println("failed to query friendship request by user: " + testUser1UserName);
                             throwable.printStackTrace();
                             latch.countDown();
@@ -531,7 +530,7 @@ public class AVFriendshipRequestTest extends TestCase {
                       }
 
                       @Override
-                      public void onError(@NotNull Throwable throwable) {
+                      public void onError(Throwable throwable) {
                         System.out.println("failed to accept friendship request by user: " + testUser1UserName);
                         throwable.printStackTrace();
                         latch.countDown();
@@ -545,7 +544,7 @@ public class AVFriendshipRequestTest extends TestCase {
                   }
 
                   @Override
-                  public void onError(@NotNull Throwable throwable) {
+                  public void onError(Throwable throwable) {
                     System.out.println("failed to login with user: " + testUser1UserName);
                     throwable.printStackTrace();
                     latch.countDown();
@@ -559,7 +558,7 @@ public class AVFriendshipRequestTest extends TestCase {
               }
 
               @Override
-              public void onError(@NotNull Throwable throwable) {
+              public void onError(Throwable throwable) {
                 System.out.println("failed to query pending Friendship as anonymous user");
                 throwable.printStackTrace();
                 latch.countDown();
@@ -573,7 +572,7 @@ public class AVFriendshipRequestTest extends TestCase {
           }
 
           @Override
-          public void onError(@NotNull Throwable throwable) {
+          public void onError(Throwable throwable) {
             System.out.println("failed to apply new Friendship as anonymous user");
             throwable.printStackTrace();
             latch.countDown();
@@ -587,7 +586,7 @@ public class AVFriendshipRequestTest extends TestCase {
       }
 
       @Override
-      public void onError(@NotNull Throwable throwable) {
+      public void onError(Throwable throwable) {
         System.out.println("failed to login as anonymous user");
         throwable.printStackTrace();
         latch.countDown();
@@ -605,12 +604,12 @@ public class AVFriendshipRequestTest extends TestCase {
   public void testSimpleRequestWithAnonymousUserDecline() throws Exception {
     AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
       @Override
-      public void onSubscribe(@NotNull Disposable disposable) {
+      public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(@NotNull final AVUser anonymousUser) {
+      public void onNext(final AVUser anonymousUser) {
         final AVUser target;
         try {
           target = AVUser.createWithoutData(AVUser.class, testUser1ObjectId);
@@ -622,23 +621,23 @@ public class AVFriendshipRequestTest extends TestCase {
         param.put("group", "collage");
         anonymousUser.applyFriendshipInBackground(target, param).subscribe(new Observer<AVFriendshipRequest>() {
           @Override
-          public void onSubscribe(@NotNull Disposable disposable) {
+          public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(@NotNull AVFriendshipRequest avFriendshipRequest) {
+          public void onNext(AVFriendshipRequest avFriendshipRequest) {
             System.out.println("try to query all request from current User");
             AVQuery<AVFriendshipRequest> query = anonymousUser.friendshipRequestQuery(AVFriendshipRequest.STATUS_PENDING,
                     false, false);
             query.findInBackground().subscribe(new Observer<List<AVFriendshipRequest>>() {
               @Override
-              public void onSubscribe(@NotNull Disposable disposable) {
+              public void onSubscribe(Disposable disposable) {
 
               }
 
               @Override
-              public void onNext(@NotNull List<AVFriendshipRequest> avFriendshipRequests) {
+              public void onNext(List<AVFriendshipRequest> avFriendshipRequests) {
                 System.out.println("succeed to query pending request from anonymous user. resultSize=" + avFriendshipRequests.size());
                 if (avFriendshipRequests.size() < 1) {
                   latch.countDown();
@@ -647,36 +646,36 @@ public class AVFriendshipRequestTest extends TestCase {
                 final AVFriendshipRequest targetFriendshipRequest = avFriendshipRequests.get(0);
                 AVUser.logIn(testUser1UserName, testUser1Password).subscribe(new Observer<AVUser>() {
                   @Override
-                  public void onSubscribe(@NotNull Disposable disposable) {
+                  public void onSubscribe(Disposable disposable) {
 
                   }
 
                   @Override
-                  public void onNext(@NotNull final AVUser secondUser) {
+                  public void onNext(final AVUser secondUser) {
                     secondUser.declineFriendshipRequest(targetFriendshipRequest).subscribe(new Observer<AVFriendshipRequest>() {
                       @Override
-                      public void onSubscribe(@NotNull Disposable disposable) {
+                      public void onSubscribe(Disposable disposable) {
 
                       }
 
                       @Override
-                      public void onNext(@NotNull AVFriendshipRequest avFriendshipRequest) {
+                      public void onNext(AVFriendshipRequest avFriendshipRequest) {
                         AVQuery<AVFriendshipRequest> query =
                                 secondUser.friendshipRequestQuery(AVFriendshipRequest.STATUS_DECLINED, false, true);
                         query.findInBackground().subscribe(new Observer<List<AVFriendshipRequest>>() {
                           @Override
-                          public void onSubscribe(@NotNull Disposable disposable) {
+                          public void onSubscribe(Disposable disposable) {
 
                           }
 
                           @Override
-                          public void onNext(@NotNull List<AVFriendshipRequest> tmpRequests) {
+                          public void onNext(List<AVFriendshipRequest> tmpRequests) {
                             testSucceed = tmpRequests.size() > 0;
                             latch.countDown();
                           }
 
                           @Override
-                          public void onError(@NotNull Throwable throwable) {
+                          public void onError(Throwable throwable) {
                             System.out.println("failed to query friendship request by user: " + testUser1UserName);
                             throwable.printStackTrace();
                             latch.countDown();
@@ -690,7 +689,7 @@ public class AVFriendshipRequestTest extends TestCase {
                       }
 
                       @Override
-                      public void onError(@NotNull Throwable throwable) {
+                      public void onError(Throwable throwable) {
                         System.out.println("failed to accept friendship request by user: " + testUser1UserName);
                         throwable.printStackTrace();
                         latch.countDown();
@@ -704,7 +703,7 @@ public class AVFriendshipRequestTest extends TestCase {
                   }
 
                   @Override
-                  public void onError(@NotNull Throwable throwable) {
+                  public void onError(Throwable throwable) {
                     System.out.println("failed to login with user: " + testUser1UserName);
                     throwable.printStackTrace();
                     latch.countDown();
@@ -718,7 +717,7 @@ public class AVFriendshipRequestTest extends TestCase {
               }
 
               @Override
-              public void onError(@NotNull Throwable throwable) {
+              public void onError(Throwable throwable) {
                 System.out.println("failed to query pending Friendship as anonymous user");
                 throwable.printStackTrace();
                 latch.countDown();
@@ -732,7 +731,7 @@ public class AVFriendshipRequestTest extends TestCase {
           }
 
           @Override
-          public void onError(@NotNull Throwable throwable) {
+          public void onError(Throwable throwable) {
             System.out.println("failed to apply new Friendship as anonymous user");
             throwable.printStackTrace();
             latch.countDown();
@@ -746,7 +745,7 @@ public class AVFriendshipRequestTest extends TestCase {
       }
 
       @Override
-      public void onError(@NotNull Throwable throwable) {
+      public void onError(Throwable throwable) {
         System.out.println("failed to login as anonymous user");
         throwable.printStackTrace();
         latch.countDown();
