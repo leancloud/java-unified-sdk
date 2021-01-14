@@ -256,13 +256,23 @@ public class AVIMTypedMessage extends AVIMMessage{
       try {
         String from = (String) jsonObject.get(KEY_MESSAGE_FROM);
         String data = (String) jsonObject.get(KEY_MESSAGE_CONTENT);
-        long timestamp = (long) jsonObject.get(KEY_MESSAGE_TIMESTAMP);
+        Object timestampObj = jsonObject.get(KEY_MESSAGE_TIMESTAMP);
+        long timestamp = 0l;
+        if (timestampObj instanceof Double) {
+          timestamp = ((Double) timestampObj).longValue();
+        } else if (timestampObj instanceof Number) {
+          timestamp = ((Number) timestampObj).longValue();
+        } else {
+          timestamp = (long) timestampObj;
+        }
         String msgId = (String) jsonObject.get(KEY_MESSAGE_ID);
         AVIMMessage message = new AVIMMessage(conversationId, from, timestamp, -1);
         message.setMessageId(msgId);
         message.setContent(data);
         return AVIMMessageManagerHelper.parseTypedMessage(message);
-      } catch (Exception e) {}
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
     return null;
   }

@@ -16,7 +16,6 @@ import cn.leancloud.utils.ErrorUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSON;
-import cn.leancloud.json.JSONArray;
 import cn.leancloud.json.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
@@ -367,6 +366,41 @@ public class StorageClient {
     });
   }
 
+  public Observable<AVFriendshipRequest> applyFriendshipRequest(final JSONObject data) {
+    Observable<AVObject> result = wrapObservable(apiService.applyFriendship(data));
+    if (null == result) {
+      return null;
+    }
+    return result.map(new Function<AVObject, AVFriendshipRequest>() {
+      @Override
+      public AVFriendshipRequest apply(AVObject avObject) throws Exception {
+        return Transformer.transform(avObject, AVFriendshipRequest.class);
+      }
+    });
+  }
+
+  public Observable<AVFriendshipRequest> acceptFriendshipRequest(AVFriendshipRequest request, JSONObject param) {
+    Observable<AVObject> result = wrapObservable(apiService.acceptFriendshipRequest(request.getObjectId(), param));
+    if (null == result) {
+      return null;
+    }
+    return result.map(new Function<AVObject, AVFriendshipRequest>() {
+      @Override
+      public AVFriendshipRequest apply(AVObject avObject) throws Exception {
+        return Transformer.transform(avObject, AVFriendshipRequest.class);
+      }
+    });
+  }
+  public Observable<AVFriendshipRequest> declineFriendshipRequest(AVFriendshipRequest request) {
+    Observable<AVObject> result = wrapObservable(apiService.declineFriendshipRequest(request.getObjectId()));
+    return result.map(new Function<AVObject, AVFriendshipRequest>() {
+      @Override
+      public AVFriendshipRequest apply(AVObject avObject) throws Exception {
+        return Transformer.transform(avObject, AVFriendshipRequest.class);
+      }
+    });
+  }
+
   public Observable<Boolean> checkAuthenticated(String sessionToken) {
     Map<String, String> param = new HashMap<String, String>(1);
     param.put("session_token", sessionToken);
@@ -486,6 +520,10 @@ public class StorageClient {
 
   public Observable<JSONObject> unfollowUser(String followee, String follower) {
     return wrapObservable(apiService.unfollowUser(followee, follower));
+  }
+
+  public Observable<AVFriendship> updateFriendship(String followeeUserid, String friendObjectId, Map<String, Object> attr) {
+    return wrapObservable(apiService.updateFriendship(followeeUserid, friendObjectId, attr));
   }
 
   public Observable<JSONObject> getFollowersAndFollowees(String userId) {

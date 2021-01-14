@@ -17,8 +17,8 @@ import java.util.concurrent.CountDownLatch;
 
 public class AVUserTest extends TestCase {
   private boolean operationSucceed = false;
-  private static final String USERNAME = "jfeng20200618";
-  private static final String PASSWORD = "FER$@$@#Ffwe";
+  public static final String USERNAME = "jfeng20200618";
+  public static final String PASSWORD = "FER$@$@#Ffwe";
   private static final String EMAIL = "jfeng20200618@test.com";
   public AVUserTest(String name) {
     super(name);

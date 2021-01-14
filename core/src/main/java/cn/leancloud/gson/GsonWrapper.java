@@ -30,6 +30,8 @@ public class GsonWrapper {
           .registerTypeAdapter(AVRole.class, objectDeserializer)
           .registerTypeAdapter(AVStatus.class, objectDeserializer)
           .registerTypeAdapter(AVInstallation.class, objectDeserializer)
+          .registerTypeAdapter(AVFriendshipRequest.class, objectDeserializer)
+          .registerTypeAdapter(AVFriendship.class, objectDeserializer)
           .registerTypeAdapter(BaseOperation.class, baseOperationAdapter)
           .registerTypeAdapter(AddOperation.class, baseOperationAdapter)
           .registerTypeAdapter(AddRelationOperation.class, baseOperationAdapter)

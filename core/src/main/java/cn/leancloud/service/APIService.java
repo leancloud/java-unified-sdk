@@ -135,6 +135,16 @@ public interface APIService {
   @GET("/1.1/users")
   Observable<AVQueryResult> queryUsers(@QueryMap Map<String, String> query);
 
+  @POST("/1.1/users/friendshipRequests")
+  Observable<AVObject> applyFriendship(@Body JSONObject param);
+
+  @PUT("/1.1/users/friendshipRequests/{requestId}/accept")
+  Observable<AVObject> acceptFriendshipRequest(@Path("requestId") String requestId,
+                                                          @Body JSONObject param);
+
+  @PUT("/1.1/users/friendshipRequests/{requestId}/decline")
+  Observable<AVObject> declineFriendshipRequest(@Path("requestId") String requestId);
+
   @POST("/1.1/usersByMobilePhone")
   Observable<AVUser> signupByMobilePhone(@Body JSONObject object);
 
@@ -173,6 +183,10 @@ public interface APIService {
 
   @POST("/1.1/users/{followee}/friendship/{follower}")
   Observable<JSONObject> followUser(@Path("followee") String followee, @Path("follower") String follower,
+                                    @Body Map<String, Object> param);
+
+  @PUT("/1.1/users/{followee}/friendship/{friendId}")
+  Observable<AVFriendship> updateFriendship(@Path("followee") String followee, @Path("friendId") String friendId,
                                     @Body Map<String, Object> param);
 
   @DELETE("/1.1/users/{followee}/friendship/{follower}")

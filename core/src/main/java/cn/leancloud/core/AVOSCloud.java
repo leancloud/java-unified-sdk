@@ -57,6 +57,8 @@ public class AVOSCloud {
     AVObject.registerSubclass(AVUser.class);
     AVObject.registerSubclass(AVFile.class);
     AVObject.registerSubclass(AVInstallation.class);
+    AVObject.registerSubclass(AVFriendshipRequest.class);
+    AVObject.registerSubclass(AVFriendship.class);
 
     applicationId = appId;
     applicationKey = appKey;
