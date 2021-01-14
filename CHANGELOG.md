@@ -2,7 +2,7 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
-## 7.1.0 release
+## 7.1.1 release
 
 #### Break changes
 - None
