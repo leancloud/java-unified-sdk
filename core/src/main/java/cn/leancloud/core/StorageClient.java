@@ -524,8 +524,8 @@ public class StorageClient {
     return wrapObservable(apiService.unfollowUser(followee, follower));
   }
 
-  public Observable<AVFriendship> updateFriendship(String followeeUserid, String friendshipObjectId, Map<String, Object> attr) {
-    return wrapObservable(apiService.updateFriendship(followeeUserid, friendshipObjectId, attr));
+  public Observable<AVFriendship> updateFriendship(String followeeUserid, String friendObjectId, Map<String, Object> attr) {
+    return wrapObservable(apiService.updateFriendship(followeeUserid, friendObjectId, attr));
   }
 
   public Observable<JSONObject> getFollowersAndFollowees(String userId) {

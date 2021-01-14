@@ -185,8 +185,8 @@ public interface APIService {
   Observable<JSONObject> followUser(@Path("followee") String followee, @Path("follower") String follower,
                                     @Body Map<String, Object> param);
 
-  @PUT("/1.1/users/{followee}/friendship/{friendshipId}")
-  Observable<AVFriendship> updateFriendship(@Path("followee") String followee, @Path("friendshipId") String friendshipId,
+  @PUT("/1.1/users/{followee}/friendship/{friendId}")
+  Observable<AVFriendship> updateFriendship(@Path("followee") String followee, @Path("friendId") String friendId,
                                     @Body Map<String, Object> param);
 
   @DELETE("/1.1/users/{followee}/friendship/{follower}")

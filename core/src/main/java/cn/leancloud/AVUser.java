@@ -1056,7 +1056,11 @@ public class AVUser extends AVObject {
     }
     if (null == friendship || StringUtil.isEmpty(friendship.getObjectId())) {
       return Observable.error(ErrorUtils.propagateException(AVException.INVALID_PARAMETER,
-              "friendship request is invalid."));
+              "friendship request(user) is invalid."));
+    }
+    if (null == friendship.getFollowee() || StringUtil.isEmpty(friendship.getFollowee().getObjectId())) {
+      return Observable.error(ErrorUtils.propagateException(AVException.INVALID_PARAMETER,
+              "friendship request(followee) is invalid."));
     }
     JSONObject changedParam = friendship.generateChangedParam();
     if (null == changedParam || changedParam.size() < 1) {
@@ -1064,7 +1068,7 @@ public class AVUser extends AVObject {
     }
     HashMap<String, Object> param = new HashMap<>();
     param.put(PARAM_ATTR_FRIENDSHIP, changedParam);
-    return PaasClient.getStorageClient().updateFriendship(getObjectId(), friendship.getObjectId(), param);
+    return PaasClient.getStorageClient().updateFriendship(getObjectId(), friendship.getFollowee().getObjectId(), param);
   }
 
   /**

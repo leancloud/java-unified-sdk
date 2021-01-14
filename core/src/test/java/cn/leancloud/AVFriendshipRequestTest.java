@@ -232,7 +232,7 @@ public class AVFriendshipRequestTest extends TestCase {
                               return;
                             }
                             try {
-                              AVFriendship friendship = AVObject.createWithoutData(AVFriendship.class, followees.get(0).getObjectId());
+                              AVFriendship friendship = Transformer.transform(followees.get(0), AVFriendship.class);
                               friendship.put("remark", "丐帮帮主");
                               secondUser.updateFriendship(friendship).subscribe(new Observer<AVObject>() {
                                 @Override
