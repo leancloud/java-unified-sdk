@@ -8,6 +8,17 @@ Following is change logs for recently release versions, you can refer to [releas
 - None
 
 #### New features
+- support friendship with request confirmation, see [friendship guide](https://leancloud.cn/docs/leanstorage_friendship_guide.html#hash619192790).
+
+#### Optimization and fixed bugs
+- fixed: msg timestamp decode error with gson.
+
+## 7.1.0 release
+
+#### Break changes
+- None
+
+#### New features
 - None
 
 #### Optimization and fixed bugs
