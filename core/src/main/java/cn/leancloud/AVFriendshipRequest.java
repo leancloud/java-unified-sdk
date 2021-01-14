@@ -4,6 +4,8 @@ import cn.leancloud.annotation.AVClassName;
 import cn.leancloud.utils.ErrorUtils;
 import io.reactivex.Observable;
 
+import java.util.Map;
+
 @AVClassName("_FriendshipRequest")
 public class AVFriendshipRequest extends AVObject {
   public static final String CLASS_NAME = "_FriendshipRequest";
@@ -57,18 +59,22 @@ public class AVFriendshipRequest extends AVObject {
 
   /**
    * accept friend request by current user.
+   *
+   * @param attributes additional attributes for this friend.
+   * @return observable instance
    */
-  public Observable<? extends AVObject> accept() {
+  public Observable<? extends AVObject> accept(Map<String, Object> attributes) {
     AVUser currentUser = AVUser.currentUser();
     if (null == currentUser) {
       return null;
     }
-    return currentUser.acceptFriendshipRequest(this, null);
+    return currentUser.acceptFriendshipRequest(this, attributes);
   }
 
   /**
    * decline friend request by current user.
-   * @return
+   *
+   * @return observable instance
    */
   public Observable<? extends AVObject> decline() {
     AVUser currentUser = AVUser.currentUser();

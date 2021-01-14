@@ -35,6 +35,7 @@ public class AVFriendshipRequestTest extends TestCase {
   protected void setUp() throws Exception {
     testSucceed = false;
     latch = new CountDownLatch(1);
+    AVUser.logOut();
   }
 
   @Override
@@ -50,8 +51,7 @@ public class AVFriendshipRequestTest extends TestCase {
   }
 
   public void testSimpleRequestWithLoginedUser() throws Exception {
-    AVUser.logIn(testUser1UserName, testUser1Password)
-            .subscribe(
+    AVUser.logIn(testUser1UserName, testUser1Password).subscribe(
             new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {
       }
@@ -63,7 +63,7 @@ public class AVFriendshipRequestTest extends TestCase {
 
         AVUser friend = null;
         try {
-          friend = AVUser.createWithoutData(AVUser.class, "5dd73208844bb40074b18fd7");
+          friend = AVUser.createWithoutData(AVUser.class, "5f5048abd67d4e29e52d21c0");
         } catch (AVException e) {
           e.printStackTrace();
         }
@@ -78,6 +78,7 @@ public class AVFriendshipRequestTest extends TestCase {
                   public void onNext(@NotNull final AVFriendshipRequest friendshipRequest) {
                     System.out.println("succeed to create new friend request. result=" + JSON.toJSONString(friendshipRequest));
                     System.out.println("objectId=" + friendshipRequest.getObjectId());
+                    AVUser.becomeWithSessionToken("52g2hsrptizbuyygafbhav4p3");
                     friendshipRequest.accept().subscribe(new Observer<AVObject>() {
                       @Override
                       public void onSubscribe(@NotNull Disposable disposable) {
@@ -130,8 +131,11 @@ public class AVFriendshipRequestTest extends TestCase {
 
                   @Override
                   public void onError(@NotNull Throwable throwable) {
-                    System.out.println("failed to create new friend request. result=");
-                    throwable.printStackTrace();
+                    System.out.println("failed to create new friend request. result=" + throwable.getMessage());
+
+                    if (throwable.getMessage().contains("Friendship already exists.")) {
+                      testSucceed = true;
+                    }
                     latch.countDown();
                   }
 
@@ -148,6 +152,139 @@ public class AVFriendshipRequestTest extends TestCase {
       public void onComplete() {
       }
     });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testLoginedUserDeclineThenAccept() throws Exception {
+    AVUser.logInAnonymously().subscribe(
+            new Observer<AVUser>() {
+              public void onSubscribe(Disposable disposable) {
+              }
+
+              public void onNext(AVUser avUser) {
+                AVUser currentUser = AVUser.getCurrentUser();
+                System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
+                System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
+
+                AVUser friend = null;
+                try {
+                  friend = AVUser.createWithoutData(AVUser.class, "5f5048abd67d4e29e52d21c0");
+                } catch (AVException e) {
+                  e.printStackTrace();
+                }
+                avUser.applyFriendshipInBackground(friend, null)
+                        .subscribe(new Observer<AVFriendshipRequest>() {
+                          @Override
+                          public void onSubscribe(@NotNull Disposable disposable) {
+
+                          }
+
+                          @Override
+                          public void onNext(@NotNull final AVFriendshipRequest friendshipRequest) {
+                            System.out.println("succeed to create new friend request. result=" + JSON.toJSONString(friendshipRequest));
+                            System.out.println("objectId=" + friendshipRequest.getObjectId());
+                            AVUser.becomeWithSessionToken("52g2hsrptizbuyygafbhav4p3");
+                            friendshipRequest.decline().subscribe(new Observer<AVObject>() {
+                              @Override
+                              public void onSubscribe(@NotNull Disposable disposable) {
+
+                              }
+
+                              @Override
+                              public void onNext(@NotNull AVObject avObject) {
+                                System.out.println("succeed to decline new friend request. result=" + avObject);
+                                try {
+                                  System.out.println("sleep 2000 ms...");
+                                  Thread.sleep(2000);
+                                  System.out.println("try to accept friend request again...");
+                                } catch (Exception ex) {
+                                  ex.printStackTrace();
+                                }
+                                friendshipRequest.accept().subscribe(new Observer<AVObject>() {
+                                  @Override
+                                  public void onSubscribe(@NotNull Disposable disposable) {
+
+                                  }
+
+                                  @Override
+                                  public void onNext(@NotNull AVObject avObject) {
+                                    System.out.println("succeed to accept the declined friend request.");
+                                    friendshipRequest.deleteInBackground().subscribe(new Observer<AVNull>() {
+                                      @Override
+                                      public void onSubscribe(@NotNull Disposable disposable) {
+
+                                      }
+
+                                      @Override
+                                      public void onNext(@NotNull AVNull avNull) {
+                                        System.out.println("succeed to delete new friend request.");
+                                        testSucceed = true;
+                                        latch.countDown();
+                                      }
+
+                                      @Override
+                                      public void onError(@NotNull Throwable throwable) {
+                                        System.out.println("failed to delete new friend request.");
+                                        throwable.printStackTrace();
+                                        latch.countDown();
+                                      }
+
+                                      @Override
+                                      public void onComplete() {
+
+                                      }
+                                    });
+                                  }
+
+                                  @Override
+                                  public void onError(@NotNull Throwable throwable) {
+                                    System.out.println("failed to accept the declined friend request.");
+                                    throwable.printStackTrace();
+                                    latch.countDown();
+                                  }
+
+                                  @Override
+                                  public void onComplete() {
+
+                                  }
+                                });
+                              }
+
+                              @Override
+                              public void onError(@NotNull Throwable throwable) {
+                                System.out.println("failed to accept new friend request. result=");
+                                throwable.printStackTrace();
+                                latch.countDown();
+                              }
+
+                              @Override
+                              public void onComplete() {
+
+                              }
+                            });
+                          }
+
+                          @Override
+                          public void onError(@NotNull Throwable throwable) {
+                            System.out.println("failed to create new friend request. result=");
+                            throwable.printStackTrace();
+                            latch.countDown();
+                          }
+
+                          @Override
+                          public void onComplete() {
+                          }
+                        });
+              }
+
+              public void onError(Throwable throwable) {
+                latch.countDown();
+              }
+
+              public void onComplete() {
+              }
+            });
     latch.await();
     assertTrue(testSucceed);
   }
