@@ -16,14 +16,12 @@ import cn.leancloud.utils.ErrorUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSON;
-import cn.leancloud.json.JSONArray;
 import cn.leancloud.json.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Scheduler;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.*;
@@ -375,7 +373,7 @@ public class StorageClient {
     }
     return result.map(new Function<AVObject, AVFriendshipRequest>() {
       @Override
-      public AVFriendshipRequest apply(@NotNull AVObject avObject) throws Exception {
+      public AVFriendshipRequest apply(AVObject avObject) throws Exception {
         return Transformer.transform(avObject, AVFriendshipRequest.class);
       }
     });
@@ -388,7 +386,7 @@ public class StorageClient {
     }
     return result.map(new Function<AVObject, AVFriendshipRequest>() {
       @Override
-      public AVFriendshipRequest apply(@NotNull AVObject avObject) throws Exception {
+      public AVFriendshipRequest apply(AVObject avObject) throws Exception {
         return Transformer.transform(avObject, AVFriendshipRequest.class);
       }
     });
@@ -397,7 +395,7 @@ public class StorageClient {
     Observable<AVObject> result = wrapObservable(apiService.declineFriendshipRequest(request.getObjectId()));
     return result.map(new Function<AVObject, AVFriendshipRequest>() {
       @Override
-      public AVFriendshipRequest apply(@NotNull AVObject avObject) throws Exception {
+      public AVFriendshipRequest apply(AVObject avObject) throws Exception {
         return Transformer.transform(avObject, AVFriendshipRequest.class);
       }
     });

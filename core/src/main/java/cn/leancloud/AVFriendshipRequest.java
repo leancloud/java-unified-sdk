@@ -21,22 +21,6 @@ public class AVFriendshipRequest extends AVObject {
     Pending, Accepted, Declined
   }
 
-  public void setFriend(AVUser user) {
-    put(ATTR_FRIEND, user);
-  }
-
-  public AVUser getFriend() {
-    return getAVObject(ATTR_FRIEND);
-  }
-
-  public AVUser setSourceUser() {
-    return getAVObject(ATTR_USER);
-  }
-
-  public void setSourceUser(AVUser user) {
-    put(ATTR_USER, user);
-  }
-
   public AVFriendshipRequest() {
     super(CLASS_NAME);
   }
@@ -45,16 +29,20 @@ public class AVFriendshipRequest extends AVObject {
     super(other);
   }
 
-  public static AVFriendshipRequest createWithCurrentUser() {
-    AVUser currentUser = AVUser.currentUser();
-    if (null == currentUser) {
-      logger.d("current user is null.");
-      return null;
-    }
-    currentUser.applyFriendshipInBackground(null, null);
-    AVFriendshipRequest request = new AVFriendshipRequest();
-    request.put(ATTR_USER, currentUser);
-    return request;
+  public void setFriend(AVUser user) {
+    put(ATTR_FRIEND, user);
+  }
+
+  public AVUser getFriend() {
+    return getAVObject(ATTR_FRIEND);
+  }
+
+  public AVUser getSourceUser() {
+    return getAVObject(ATTR_USER);
+  }
+
+  public void setSourceUser(AVUser user) {
+    put(ATTR_USER, user);
   }
 
   /**
@@ -66,7 +54,9 @@ public class AVFriendshipRequest extends AVObject {
   public Observable<? extends AVObject> accept(Map<String, Object> attributes) {
     AVUser currentUser = AVUser.currentUser();
     if (null == currentUser) {
-      return null;
+      logger.d("current user is null.");
+      return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
+              "No valid session token, make sure signUp or login has been called."));
     }
     return currentUser.acceptFriendshipRequest(this, attributes);
   }
@@ -79,7 +69,9 @@ public class AVFriendshipRequest extends AVObject {
   public Observable<? extends AVObject> decline() {
     AVUser currentUser = AVUser.currentUser();
     if (null == currentUser) {
-      return null;
+      logger.d("current user is null.");
+      return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
+              "No valid session token, make sure signUp or login has been called."));
     }
     return currentUser.declineFriendshipRequest(this);
   }

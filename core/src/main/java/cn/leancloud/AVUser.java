@@ -21,7 +21,6 @@ import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.*;
@@ -684,7 +683,7 @@ public class AVUser extends AVObject {
   public static <T extends AVUser> Observable<T> becomeWithSessionTokenInBackground(String sessionToken, Class<T> clazz) {
     return PaasClient.getStorageClient().createUserBySession(sessionToken, clazz).map(new Function<T, T>() {
       @Override
-      public T apply(@NotNull T result) throws Exception {
+      public T apply(T result) throws Exception {
         AVUser.changeCurrentUser(result, true);
         return result;
       }
