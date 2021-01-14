@@ -222,17 +222,16 @@ public class AVFriendshipRequestTest extends TestCase {
 
                           @Override
                           public void onNext(@NotNull List<AVFriendshipRequest> tmpRequests) {
-                            AVQuery<AVObject> query = secondUser.followeeQuery();
+                            AVQuery<AVFriendship> query = secondUser.friendshipQuery(false);
                             query.whereEqualTo(AVFriendship.ATTR_FRIEND_STATUS, true);
-                            query.whereEqualTo(AVFriendshipRequest.ATTR_USER, secondUser);
                             query.addDescendingOrder(AVObject.KEY_UPDATED_AT);
-                            List<AVObject> followees = query.find();
+                            List<AVFriendship> followees = query.find();
                             if (followees == null || followees.size() < 1) {
                               latch.countDown();
                               return;
                             }
                             try {
-                              AVFriendship friendship = Transformer.transform(followees.get(0), AVFriendship.class);
+                              AVFriendship friendship = followees.get(0);
                               friendship.put("remark", "丐帮帮主");
                               secondUser.updateFriendship(friendship).subscribe(new Observer<AVObject>() {
                                 @Override

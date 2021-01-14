@@ -1022,6 +1022,31 @@ public class AVUser extends AVObject {
   }
 
   /**
+   * get friendship query of current user.
+   *
+   * @param isFollowerDirection query direction
+   *                            true - query follower of current user(users which followed current user).
+   *                            false - query followee of current user(users which current user followed).
+   * @return query instance
+   */
+  public AVQuery<AVFriendship> friendshipQuery(boolean isFollowerDirection) {
+    String userObjectId = getObjectId();
+    if (StringUtil.isEmpty(userObjectId)) {
+      logger.d("user object id is empty.");
+      return null;
+    }
+    AVQuery<AVFriendship> query = new AVQuery<>(AVFriendship.CLASS_NAME);
+    if (isFollowerDirection) {
+      query.whereEqualTo(AVFriendship.ATTR_FOLLOWEE, AVUser.createWithoutData(CLASS_NAME, userObjectId));
+      query.include(AVFriendship.ATTR_USER);
+    } else {
+      query.whereEqualTo(AVFriendship.ATTR_USER, AVUser.createWithoutData(CLASS_NAME, userObjectId));
+      query.include(AVFriendship.ATTR_FOLLOWEE);
+    }
+    return query;
+  }
+
+  /**
    * apply new friendship to someone.
    *
    * @param friend target user.

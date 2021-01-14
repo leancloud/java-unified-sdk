@@ -10,6 +10,7 @@ public class AVFriendship extends AVObject {
 
   public static final String ATTR_FOLLOWEE = "followee";// user who was followed by other
   public static final String ATTR_FOLLOWER = "follower";// user who followed someone.
+  public static final String ATTR_USER = "user";
   public static final String ATTR_FRIEND_STATUS = "friendStatus";
 
   public AVFriendship() {
