@@ -46,8 +46,6 @@ public class AVFriendshipRequestTest extends TestCase {
   public void testStatusSerializer() throws Exception {
     System.out.println(AVFriendshipRequest.RequestStatus.Accepted.name());
     System.out.println(AVFriendshipRequest.RequestStatus.Accepted.name().toLowerCase());
-    AVFriendshipRequest request = AVFriendshipRequest.createWithCurrentUser();
-    assertTrue(null == request);
   }
 
   public void testSimpleRequestWithLoginedUser() throws Exception {
@@ -79,7 +77,7 @@ public class AVFriendshipRequestTest extends TestCase {
                     System.out.println("succeed to create new friend request. result=" + JSON.toJSONString(friendshipRequest));
                     System.out.println("objectId=" + friendshipRequest.getObjectId());
                     AVUser.becomeWithSessionToken("52g2hsrptizbuyygafbhav4p3");
-                    friendshipRequest.accept().subscribe(new Observer<AVObject>() {
+                    friendshipRequest.accept(null).subscribe(new Observer<AVObject>() {
                       @Override
                       public void onSubscribe(@NotNull Disposable disposable) {
 
@@ -201,7 +199,7 @@ public class AVFriendshipRequestTest extends TestCase {
                                 } catch (Exception ex) {
                                   ex.printStackTrace();
                                 }
-                                friendshipRequest.accept().subscribe(new Observer<AVObject>() {
+                                friendshipRequest.accept(null).subscribe(new Observer<AVObject>() {
                                   @Override
                                   public void onSubscribe(@NotNull Disposable disposable) {
 
@@ -279,6 +277,121 @@ public class AVFriendshipRequestTest extends TestCase {
               }
 
               public void onError(Throwable throwable) {
+                latch.countDown();
+              }
+
+              public void onComplete() {
+              }
+            });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testQueryAllFriendshipRequests() throws Exception {
+    AVUser.logIn(testUser1UserName, testUser1Password).subscribe(
+            new Observer<AVUser>() {
+              public void onSubscribe(Disposable disposable) {
+              }
+
+              public void onNext(AVUser avUser) {
+                AVUser currentUser = AVUser.getCurrentUser();
+                System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
+                System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
+
+                AVUser friend = null;
+                try {
+                  friend = AVUser.createWithoutData(AVUser.class, "5dd7892143c2570074c96ca9");
+                } catch (AVException e) {
+                  e.printStackTrace();
+                }
+                avUser.applyFriendshipInBackground(friend, null).subscribe(new Observer<AVFriendshipRequest>() {
+                  @Override
+                  public void onSubscribe(@NotNull Disposable disposable) {
+
+                  }
+
+                  @Override
+                  public void onNext(@NotNull AVFriendshipRequest avFriendshipRequest) {
+                    AVUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl");
+                    AVUser.currentUser().friendshipRequestQuery(
+                            AVFriendshipRequest.STATUS_DECLINED | AVFriendshipRequest.STATUS_ACCEPTED | AVFriendshipRequest.STATUS_PENDING,
+                            true, true)
+                            .findInBackground()
+                            .subscribe(new Observer<List<AVFriendshipRequest>>() {
+                              @Override
+                              public void onSubscribe(@NotNull Disposable disposable) {
+
+                              }
+
+                              @Override
+                              public void onNext(@NotNull List<AVFriendshipRequest> avFriendshipRequests) {
+                                if (null != avFriendshipRequests && avFriendshipRequests.size() > 0) {
+                                  testSucceed = true;
+                                }
+                                latch.countDown();
+                              }
+
+                              @Override
+                              public void onError(@NotNull Throwable throwable) {
+                                System.out.println();
+                                latch.countDown();
+                              }
+
+                              @Override
+                              public void onComplete() {
+
+                              }
+                            });
+                  }
+
+                  @Override
+                  public void onError(@NotNull Throwable throwable) {
+                    if (throwable.getMessage().contains("Friendship already exists.")) {
+                      AVUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl");
+                      AVUser.currentUser().friendshipRequestQuery(
+                              AVFriendshipRequest.STATUS_DECLINED | AVFriendshipRequest.STATUS_ACCEPTED | AVFriendshipRequest.STATUS_PENDING,
+                              true, true)
+                              .findInBackground()
+                              .subscribe(new Observer<List<AVFriendshipRequest>>() {
+                                @Override
+                                public void onSubscribe(@NotNull Disposable disposable) {
+
+                                }
+
+                                @Override
+                                public void onNext(@NotNull List<AVFriendshipRequest> avFriendshipRequests) {
+                                  if (null != avFriendshipRequests && avFriendshipRequests.size() > 0) {
+                                    testSucceed = true;
+                                  }
+                                  latch.countDown();
+                                }
+
+                                @Override
+                                public void onError(@NotNull Throwable throwable) {
+                                  System.out.println();
+                                  latch.countDown();
+                                }
+
+                                @Override
+                                public void onComplete() {
+
+                                }
+                              });
+                      return;
+                    }
+                    System.out.println();
+                    latch.countDown();
+                  }
+
+                  @Override
+                  public void onComplete() {
+
+                  }
+                });
+              }
+
+              public void onError(Throwable throwable) {
+                System.out.println();
                 latch.countDown();
               }
 
