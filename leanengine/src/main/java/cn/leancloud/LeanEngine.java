@@ -36,6 +36,7 @@ public class LeanEngine {
    * @param applicationId The application id provided in the AVOSCloud dashboard.
    * @param clientKey The client key provided in the AVOSCloud dashboard.
    * @param masterKey The master key provided in the AVOSCloud dashboard.
+   * @param hookKey lean engine hook key.
    */
   public static void initialize(String applicationId, String clientKey, String masterKey, String hookKey) {
     String androidKey = EngineAppConfiguration.getEnvOrProperty(EngineAppConfiguration.SYSTEM_ATTR_ANDX_KEY);

@@ -1030,10 +1030,10 @@ public class AVUser extends AVObject {
   /**
    * get friendship query of current user.
    *
-   * @param isFollowerDirection query direction
+   * @param isFollowerDirection query direction:
    *                            true - query follower of current user(users which followed current user).
    *                            false - query followee of current user(users which current user followed).
-   * @return query instance, null for non-authenticated.
+   * @return query instance, null for non-authenticated user.
    */
   public AVQuery<AVFriendship> friendshipQuery(boolean isFollowerDirection) {
     String userObjectId = getObjectId();
@@ -1116,7 +1116,8 @@ public class AVUser extends AVObject {
    * @return Observable instance to monitor operation result.
    * @notice: attributes is necessary as parameter bcz they are not properties of FriendshipRequest.
    */
-  public Observable<AVFriendshipRequest> acceptFriendshipRequest(AVFriendshipRequest request, Map<String, Object> attributes) {
+  public Observable<AVFriendshipRequest> acceptFriendshipRequest(AVFriendshipRequest request,
+                                                                 Map<String, Object> attributes) {
     if (!checkUserAuthentication(null)) {
       logger.d("current user isn't authenticated.");
       return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
@@ -1158,17 +1159,18 @@ public class AVUser extends AVObject {
    * get query for AVFriendshipRequest.
    *
    * @param status request status. following value can be used individually or combined with `and` operator:
-   *               AVFriendshipRequest.STATUS_PENDING(0x01), request is pending yet.
-   *               AVFriendshipRequest.STATUS_ACCEPTED(0x02), request is accepted by user.
-   *               AVFriendshipRequest.STATUS_DECLINED(0x04), request is declined by user.
-   *               AVFriendshipRequest.STATUS_ANY(0x07), no matter any status, all of requests are wanted by current query.
+   *               AVFriendshipRequest.STATUS_PENDING(0x01) - request is pending yet.
+   *               AVFriendshipRequest.STATUS_ACCEPTED(0x02) - request is accepted by user.
+   *               AVFriendshipRequest.STATUS_DECLINED(0x04) - request is declined by user.
+   *               AVFriendshipRequest.STATUS_ANY(0x07) - no matter status, all of requests are wanted by current query.
    * @param includeTargetUser boolean flag, indicating that need to include target user pointer or not.
    * @param requestToMe boolean flag, indicating all requests are sent to current user or not.
-   *                    True, someone others sent requests to current user.
-   *                    False, current user sent requests to others.
-   * @return AVFriendshipRequest query, null for current user isn't authenticated.
+   *                    true - someone others sent requests to current user.
+   *                    false - current user sent requests to others.
+   * @return AVFriendshipRequest query, null for current user isn't authenticated or status is invlaid.
    */
-  public AVQuery<AVFriendshipRequest> friendshipRequestQuery(int status, boolean includeTargetUser, boolean requestToMe) {
+  public AVQuery<AVFriendshipRequest> friendshipRequestQuery(int status,
+                                                             boolean includeTargetUser, boolean requestToMe) {
     if (!checkUserAuthentication(null)) {
       logger.d("current user isn't authenticated.");
       return null;
