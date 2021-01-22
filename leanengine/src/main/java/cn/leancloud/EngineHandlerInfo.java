@@ -98,8 +98,7 @@ public abstract class EngineHandlerInfo {
       } else {
         for (Annotation an : array) {
           if (an instanceof EngineFunctionParam) {
-            params.add(new EngineFunctionParamInfo(paramTypesArray[index], ((EngineFunctionParam) an)
-                    .value()));
+            params.add(new EngineFunctionParamInfo(paramTypesArray[index], ((EngineFunctionParam) an).value()));
           }
         }
       }
