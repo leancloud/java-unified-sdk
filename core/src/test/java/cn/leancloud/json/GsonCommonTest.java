@@ -17,6 +17,34 @@ public class GsonCommonTest extends TestCase {
     super(name);
   }
 
+  public void testPrimitives() {
+    System.out.println(GsonWrapper.parseObject("test", String.class));
+    System.out.println(GsonWrapper.parseObject("100", Integer.class));
+    System.out.println(GsonWrapper.parseObject("100", Short.class));
+    System.out.println(GsonWrapper.parseObject("19.9", Double.class));
+    System.out.println(GsonWrapper.parseObject("1993472843", Long.class));
+    System.out.println(GsonWrapper.parseObject("false", Boolean.class));
+    System.out.println(GsonWrapper.parseObject("true", Boolean.class));
+//    System.out.println(GsonWrapper.parseObject('t', Byte.class));
+//    System.out.println(GsonWrapper.parseObject('r', Character.class));
+    System.out.println(GsonWrapper.parseObject("12987.83245", Float.class));
+
+    String text = "{\"devices\":[\n" +
+            "\t{\n" +
+            "\t\t\"CURRENT_TEMPERATURE\":\"255.255\",\n" +
+            "\t\t\"STAT_MODE\":\n" +
+            "\t\t\t{\n" +
+            "\t\t\t\"MANUAL_OFF\":true,\n" +
+            "\t\t\t\"TIMECLOCK\":true\n" +
+            "\t\t\t},\n" +
+            "\t\t\"TIMER\":false,\n" +
+            "\t\t\"device\":\"Watering System\"\n" +
+            "\t}\n" +
+            "]}";
+    Object json = GsonWrapper.parseObject(text, Map.class);
+    System.out.println(json.toString());
+  }
+
   public void testDeserializeNestedJson() {
     String text = "{\"devices\":[\n" +
             "\t{\n" +

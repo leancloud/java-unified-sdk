@@ -19,22 +19,22 @@ public class LeanEngineTest extends TestCase {
   public void testRegisterAndParseEngineFunction() throws Exception {
     LeanEngine.register(DummyEngineFunction.class);
     String commonJsonParams = "{\"movie\":\"12 Monkeys\"}";
-    String objectParams = "{\"__type\": \"Object\",\n" +
+    String objectParams = "{\"object\":{\"__type\": \"Object\",\n" +
             "  \"className\": \"Post\",\n" +
             "  \"objectId\": \"55a39634e4b0ed48f0c1845c\",\n" +
             "  \"movie\": \"夏洛特烦恼\",\n" +
             "  \"stars\": 5,\n" +
             "  \"comment\": \"夏洛一梦，笑成麻花\"\n" +
-            "}";
+            "}}";
 
     EngineHandlerInfo commonJsonParamsHandler = LeanEngine.getHandler("averageStars");
     assertTrue(null != commonJsonParamsHandler);
     Object paramObject = commonJsonParamsHandler.parseParams(commonJsonParams);
-    assertTrue(paramObject instanceof Map);
+    assertTrue(paramObject != null);
 
     EngineHandlerInfo objectParamsHandler = LeanEngine.getHandler("dumpObject");
     assertTrue(null != objectParamsHandler);
     paramObject = objectParamsHandler.parseParams(objectParams);
-    assertTrue(paramObject instanceof AVObject);
+    assertTrue(((Object[])paramObject)[0] instanceof AVObject);
   }
 }

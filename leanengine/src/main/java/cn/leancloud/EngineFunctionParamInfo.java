@@ -28,7 +28,7 @@ public class EngineFunctionParamInfo {
 
   public Object parseParams(String content) {
     if (AVObject.class.isAssignableFrom(type)) {
-      return Utils.getParsedObject(JSON.parseObject(content));
+      return Utils.getObjectFrom(JSON.parseObject(content));
     } else {
       if (Map.class.isAssignableFrom(type)) {
         return parseParams((Map) JSON.parseObject(content, type));

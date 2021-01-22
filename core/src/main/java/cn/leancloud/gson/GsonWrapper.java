@@ -8,6 +8,7 @@ import cn.leancloud.sms.AVCaptchaDigest;
 import cn.leancloud.sms.AVCaptchaValidateResult;
 import cn.leancloud.upload.FileUploadToken;
 import com.google.gson.*;
+import com.google.gson.internal.Primitives;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Modifier;
@@ -94,11 +95,22 @@ public class GsonWrapper {
   }
 
   public static <T> T parseObject(String jsonString, Class<T> clazz) {
-    return gson.fromJson(jsonString, clazz);
+    if (clazz.isPrimitive() || String.class.isAssignableFrom(clazz)) {
+      JsonElement element = gson.toJsonTree(jsonString);
+      return gson.fromJson(element, clazz);
+    } else {
+      return gson.fromJson(jsonString, clazz);
+    }
   }
 
   public static <T> T parseObject(String jsonString, Type typeOfT) {
-    return gson.fromJson(jsonString, typeOfT);
+    if (Primitives.isPrimitive(typeOfT)
+            || (typeOfT instanceof Class && String.class.isAssignableFrom((Class)typeOfT))) {
+      JsonElement element = gson.toJsonTree(jsonString, typeOfT);
+      return gson.fromJson(element, typeOfT);
+    } else {
+      return gson.fromJson(jsonString, typeOfT);
+    }
   }
 
   public static <T> T toJavaObject(JsonElement element, Class<T> clazz) {
