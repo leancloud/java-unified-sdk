@@ -23,8 +23,18 @@ public class DummyEngineFunction {
     return 0;
   }
 
-  @EngineFunction("testList")
-  public static int testList(@EngineFunctionParam("object") List<JSONObject> data)
+  @EngineFunction("testStringList")
+  public static int testStringList(@EngineFunctionParam("object") List<String> data)
+          throws AVException {
+    if (null == data) {
+      return -1;
+    }
+    System.out.println(data.toString());
+    return 0;
+  }
+
+  @EngineFunction("testArrayList")
+  public static int testArrayList(@EngineFunctionParam("object") List<JSONObject> data)
           throws AVException {
     if (null == data) {
       return -1;
@@ -42,8 +52,8 @@ public class DummyEngineFunction {
   }
 
   @EngineFunction("testMulti")
-  public static int testMulti(@EngineFunctionParam("param1") String param1,
-                              @EngineFunctionParam("param2") Map<String, Object> param2,
+  public static int testMulti(@EngineFunctionParam("param1") Map<String, Object> param1,
+                              @EngineFunctionParam("param2") String param2,
                               @EngineFunctionParam("param3") List<Object> param3,
                               @EngineFunctionParam("param4") boolean param4,
                               @EngineFunctionParam("param5") Number param5)
