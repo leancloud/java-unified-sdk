@@ -30,6 +30,8 @@ import cn.leancloud.im.v2.callback.AVIMClientCallback;
 import cn.leancloud.im.v2.callback.AVIMClientStatusCallback;
 import cn.leancloud.im.v2.callback.AVIMCommonJsonCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationCallback;
+import cn.leancloud.im.v2.callback.AVIMConversationIterableResult;
+import cn.leancloud.im.v2.callback.AVIMConversationIterableResultCallback;
 import cn.leancloud.im.v2.callback.AVIMMessagesQueryCallback;
 import cn.leancloud.im.v2.callback.AVIMOnlineClientsCallback;
 import cn.leancloud.json.JSON;
@@ -314,15 +316,24 @@ public class AndroidOperationTube implements OperationTube {
           } else if (AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY == op
               || AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY == op) {
             List<String> result = new ArrayList<>();
+            String next = null;
             if (null != intentResult) {
               Object memberList = intentResult.get(Conversation.callbackData);
+              next = (String) intentResult.get(Conversation.callbackIterableNext);
               if (memberList instanceof Collection) {
                 result.addAll((Collection<? extends String>) memberList);
               } else if (memberList instanceof String[]) {
                 result.addAll(Arrays.asList((String[])memberList));
               }
             }
-            callback.internalDone(result, AVIMException.wrapperAVException(error));
+            if (callback instanceof AVIMConversationIterableResultCallback) {
+              AVIMConversationIterableResult iterableResult = new AVIMConversationIterableResult();
+              iterableResult.setMembers(result);
+              iterableResult.setNext(next);
+              callback.internalDone(iterableResult, AVIMException.wrapperAVException(error));
+            } else {
+              callback.internalDone(result, AVIMException.wrapperAVException(error));
+            }
           } else {
             callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
           }

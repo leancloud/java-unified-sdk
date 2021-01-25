@@ -29,6 +29,8 @@ import cn.leancloud.im.v2.AVIMConversationsQuery;
 import cn.leancloud.im.v2.AVIMException;
 import cn.leancloud.im.v2.callback.AVIMConversationCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationCreatedCallback;
+import cn.leancloud.im.v2.callback.AVIMConversationIterableResult;
+import cn.leancloud.im.v2.callback.AVIMConversationIterableResultCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationMemberCountCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationMemberQueryCallback;
 import cn.leancloud.im.v2.callback.AVIMConversationQueryCallback;
@@ -67,54 +69,55 @@ public class MainActivity extends AppCompatActivity {
                   Log.e("member_block", "block member error ", e);
                 } else {
                   Log.d("member_block", successfulClientIds.toString());
-                  conv.queryBlockedMembers(0, 100, new AVIMConversationSimpleResultCallback() {
+                  conv.queryBlockedMembers(100, null, new AVIMConversationIterableResultCallback() {
                     @Override
-                    public void done(List<String> memberIdList, AVIMException e) {
+                    public void done(AVIMConversationIterableResult iterableResult, AVIMException e) {
                       if (null != e) {
                         Log.e("blocked_query", "block member query error ", e);
                       } else {
-                        Log.d("blocked_query", memberIdList.toString());
-                        conv.unblockMembers(Arrays.asList("Yoda"), new AVIMOperationPartiallySucceededCallback() {
-                          @Override
-                          public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
-                            if (null != e) {
-                              Log.e("member_unblock", "unblock member error ", e);
-                            } else {
-                              Log.d("member_unblock", successfulClientIds.toString());
-                              conv.muteMembers(Arrays.asList("Luke"), new AVIMOperationPartiallySucceededCallback() {
-                                @Override
-                                public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
-                                  if (null != e) {
-                                    Log.e("member_mute", "muted member error ", e);
-                                  } else {
-                                    Log.d("member_mute", successfulClientIds.toString());
-                                    conv.queryMutedMembers(0, 100, new AVIMConversationSimpleResultCallback() {
-                                      @Override
-                                      public void done(List<String> memberIdList, AVIMException e) {
-                                        if (null != e) {
-                                          Log.e("muted_query", "muted member query error ", e);
-                                        } else {
-                                          Log.d("muted_query", memberIdList.toString());
-                                          conv.unmuteMembers(Arrays.asList("Luke"), new AVIMOperationPartiallySucceededCallback() {
-                                            @Override
-                                            public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
-                                              if (null != e) {
-                                                Log.e("member_unmute", "unmute member error ", e);
-                                              } else {
-                                                Log.d("member_unmute", successfulClientIds.toString());
-                                              }
-                                            }
-                                          });
-                                        }
-                                      }
-                                    });
-                                  }
-                                }
-                              });
-                            }
-                          }
-                        });
+                        Log.d("blocked_query(items) ", iterableResult.getMembers().toString());
+                        Log.d("blocked_query(hasNext) ", String.valueOf(iterableResult.hasNext()));
                       }
+                      conv.unblockMembers(Arrays.asList("Yoda"), new AVIMOperationPartiallySucceededCallback() {
+                        @Override
+                        public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                          if (null != e) {
+                            Log.e("member_unblock", "unblock member error ", e);
+                          } else {
+                            Log.d("member_unblock", successfulClientIds.toString());
+                            conv.muteMembers(Arrays.asList("Luke"), new AVIMOperationPartiallySucceededCallback() {
+                              @Override
+                              public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                                if (null != e) {
+                                  Log.e("member_mute", "muted member error ", e);
+                                } else {
+                                  Log.d("member_mute", successfulClientIds.toString());
+                                  conv.queryMutedMembers(0, 100, new AVIMConversationSimpleResultCallback() {
+                                    @Override
+                                    public void done(List<String> memberIdList, AVIMException e) {
+                                      if (null != e) {
+                                        Log.e("muted_query", "muted member query error ", e);
+                                      } else {
+                                        Log.d("muted_query", memberIdList.toString());
+                                        conv.unmuteMembers(Arrays.asList("Luke"), new AVIMOperationPartiallySucceededCallback() {
+                                          @Override
+                                          public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                                            if (null != e) {
+                                              Log.e("member_unmute", "unmute member error ", e);
+                                            } else {
+                                              Log.d("member_unmute", successfulClientIds.toString());
+                                            }
+                                          }
+                                        });
+                                      }
+                                    }
+                                  });
+                                }
+                              }
+                            });
+                          }
+                        }
+                      });
                     }
                   });
                 }
