@@ -1453,7 +1453,43 @@ public class AVIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.QUERY_PARAM_LIMIT, limit);
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(),
+            this.client.getClientId(), conversationId,
+            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, callback);
+    if (!ret) {
+      callback.internalDone(null,
+              new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
+  }
+
+  /**
+   * 查询被禁言的成员列表
+   * @param limit     查询结果集上限
+   * @param next      查询结果的起始点
+   * @param callback  结果回调函数
+   */
+  public void queryMutedMembers(int limit, String next, final AVIMConversationIterableResultCallback callback) {
+    if (null == callback) {
+      return;
+    } else if (limit > 100) {
+      callback.internalDone(null, new AVIMException(new IllegalArgumentException("limit is illegal.")));
+      return;
+    }
+    int offset = 0;
+    if (!StringUtil.isEmpty(next)) {
+      try {
+        offset = Integer.valueOf(next);
+      } catch (NumberFormatException ex) {
+        callback.internalDone(null, new AVIMException(new IllegalArgumentException("next is illegal.")));
+        return;
+      }
+    }
+    String conversationId = getConversationId();
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.QUERY_PARAM_LIMIT, limit);
+    params.put(Conversation.QUERY_PARAM_OFFSET, offset);
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(),
+            this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, callback);
     if (!ret) {
       callback.internalDone(null,
@@ -1498,7 +1534,8 @@ public class AVIMConversation {
     String conversationId = getConversationId();
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(),
+            this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_UNBLOCK_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1522,7 +1559,43 @@ public class AVIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.QUERY_PARAM_LIMIT, limit);
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
-    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(),
+            this.client.getClientId(), conversationId,
+            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, callback);
+    if (!ret) {
+      callback.internalDone(null,
+              new AVException(AVException.OPERATION_FORBIDDEN, "couldn't start service in background."));
+    }
+  }
+
+  /**
+   * 查询黑名单的成员列表
+   * @param limit     查询结果集上限
+   * @param next      查询结果的起始点
+   * @param callback  结果回调函数
+   */
+  public void queryBlockedMembers(int limit, String next, final AVIMConversationIterableResultCallback callback) {
+    if (null == callback) {
+      return;
+    } else if (limit > 100) {
+      callback.internalDone(null, new AVIMException(new IllegalArgumentException("limit is illegal.")));
+      return;
+    }
+    int offset = 0;
+    if (!StringUtil.isEmpty(next)) {
+      try {
+        offset = Integer.valueOf(next);
+      } catch (NumberFormatException ex) {
+        callback.internalDone(null, new AVIMException(new IllegalArgumentException("next is illegal.")));
+        return;
+      }
+    }
+    String conversationId = getConversationId();
+    Map<String, Object> params = new HashMap<String, Object>();
+    params.put(Conversation.QUERY_PARAM_LIMIT, limit);
+    params.put(Conversation.QUERY_PARAM_OFFSET, offset);
+    boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(),
+            this.client.getClientId(), conversationId,
             getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, callback);
     if (!ret) {
       callback.internalDone(null,

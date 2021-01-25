@@ -1366,16 +1366,210 @@ public class AVIMConversationTest extends TestCase {
                 countDownLatch.countDown();
               } else {
                 System.out.println("succeed to mute conversation members.");
-                conversation.unmuteMembers(blockMembers, new AVIMOperationPartiallySucceededCallback() {
+                conversation.queryMutedMembers(0, 100, new AVIMConversationSimpleResultCallback() {
                   @Override
-                  public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                  public void done(List<String> memberIdList, AVIMException e) {
                     if (null != e) {
-                      System.out.println("failed to mute conversation members. cause: " + e.getMessage());
+                      System.out.println("failed to queryMutedMembers. cause: " + e.getMessage());
+                      e.printStackTrace();
                     } else {
-                      System.out.println("succeed to unmute conversation members.");
-                      opersationSucceed = true;
+                      System.out.println("succeed to queryMutedMembers.");
                     }
-                    countDownLatch.countDown();
+                    conversation.unmuteMembers(blockMembers, new AVIMOperationPartiallySucceededCallback() {
+                      @Override
+                      public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                        if (null != e) {
+                          System.out.println("failed to mute conversation members. cause: " + e.getMessage());
+                        } else {
+                          System.out.println("succeed to unmute conversation members.");
+                          opersationSucceed = true;
+                        }
+                        countDownLatch.countDown();
+                      }
+                    });
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testMuteConversationMembersV2() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    List<String> members = Arrays.asList("testUser2", "testUser3", "testUser4");
+    final List<String> blockMembers = Arrays.asList("testUser3", "testUser4");
+    client.createConversation(members, "UnitTestConversation", null, false, true, new AVIMConversationCreatedCallback() {
+      @Override
+      public void done(final AVIMConversation conversation, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to create conversation. cause: " + e.getMessage());
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed to create conversation.");
+          conversation.muteMembers(blockMembers, new AVIMOperationPartiallySucceededCallback() {
+            @Override
+            public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+              if (null != e) {
+                System.out.println("failed to mute conversation members. cause: " + e.getMessage());
+                countDownLatch.countDown();
+              } else {
+                System.out.println("succeed to mute conversation members.");
+                conversation.queryMutedMembers(100, null, new AVIMConversationIterableResultCallback() {
+                  @Override
+                  public void done(AVIMConversationIterableResult memberIdList, AVIMException e) {
+                    if (null != e) {
+                      System.out.println("failed to queryMutedMembers. cause: " + e.getMessage());
+                      e.printStackTrace();
+                    } else {
+                      System.out.println("succeed to queryMutedMembers.");
+                    }
+                    conversation.unmuteMembers(blockMembers, new AVIMOperationPartiallySucceededCallback() {
+                      @Override
+                      public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                        if (null != e) {
+                          System.out.println("failed to mute conversation members. cause: " + e.getMessage());
+                        } else {
+                          System.out.println("succeed to unmute conversation members.");
+                          opersationSucceed = true;
+                        }
+                        countDownLatch.countDown();
+                      }
+                    });
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testBlockConversationMembers() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    List<String> members = Arrays.asList("testUser2", "testUser3", "testUser4");
+    final List<String> blockMembers = Arrays.asList("testUser3", "testUser4");
+    client.createConversation(members, "UnitTestConversation", null, false, true, new AVIMConversationCreatedCallback() {
+      @Override
+      public void done(final AVIMConversation conversation, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to create conversation. cause: " + e.getMessage());
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed to create conversation.");
+          conversation.blockMembers(blockMembers, new AVIMOperationPartiallySucceededCallback() {
+            @Override
+            public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+              if (null != e) {
+                System.out.println("failed to mute conversation members. cause: " + e.getMessage());
+                countDownLatch.countDown();
+              } else {
+                System.out.println("succeed to mute conversation members.");
+                conversation.queryBlockedMembers(0, 100, new AVIMConversationSimpleResultCallback() {
+                  @Override
+                  public void done(List<String> memberIdList, AVIMException e) {
+                    if (null != e) {
+                      System.out.println("failed to queryMutedMembers. cause: " + e.getMessage());
+                      e.printStackTrace();
+                    } else {
+                      System.out.println("succeed to queryMutedMembers.");
+                    }
+                    conversation.unblockMembers(blockMembers, new AVIMOperationPartiallySucceededCallback() {
+                      @Override
+                      public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                        if (null != e) {
+                          System.out.println("failed to mute conversation members. cause: " + e.getMessage());
+                        } else {
+                          System.out.println("succeed to unmute conversation members.");
+                          opersationSucceed = true;
+                        }
+                        countDownLatch.countDown();
+                      }
+                    });
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+    });
+    countDownLatch.await();
+    assertTrue(opersationSucceed);
+  }
+
+  public void testBlockConversationMembersV2() throws Exception {
+    client = AVIMClient.getInstance("testUser1");
+    final CountDownLatch tmpCounter = new CountDownLatch(1);
+    client.open(new AVIMClientCallback() {
+      @Override
+      public void done(AVIMClient client, AVIMException e) {
+        tmpCounter.countDown();
+      }
+    });
+    tmpCounter.await();
+    List<String> members = Arrays.asList("testUser2", "testUser3", "testUser4");
+    final List<String> blockMembers = Arrays.asList("testUser3", "testUser4");
+    client.createConversation(members, "UnitTestConversation", null, false, true, new AVIMConversationCreatedCallback() {
+      @Override
+      public void done(final AVIMConversation conversation, AVIMException e) {
+        if (null != e) {
+          System.out.println("failed to create conversation. cause: " + e.getMessage());
+          countDownLatch.countDown();
+        } else {
+          System.out.println("succeed to create conversation.");
+          conversation.blockMembers(blockMembers, new AVIMOperationPartiallySucceededCallback() {
+            @Override
+            public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+              if (null != e) {
+                System.out.println("failed to block conversation members. cause: " + e.getMessage());
+                countDownLatch.countDown();
+              } else {
+                System.out.println("succeed to block conversation members.");
+                conversation.queryBlockedMembers(100, null, new AVIMConversationIterableResultCallback() {
+                  @Override
+                  public void done(AVIMConversationIterableResult memberIdList, AVIMException e) {
+                    if (null != e) {
+                      System.out.println("failed to queryBlockedMembers. cause: " + e.getMessage());
+                      e.printStackTrace();
+                    } else {
+                      System.out.println("succeed to queryBlockedMembers.");
+                    }
+                    conversation.unblockMembers(blockMembers, new AVIMOperationPartiallySucceededCallback() {
+                      @Override
+                      public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                        if (null != e) {
+                          System.out.println("failed to unblock conversation members. cause: " + e.getMessage());
+                        } else {
+                          System.out.println("succeed to unblock conversation members.");
+                          opersationSucceed = true;
+                        }
+                        countDownLatch.countDown();
+                      }
+                    });
                   }
                 });
               }
