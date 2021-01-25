@@ -2,13 +2,13 @@
   <parent>
     <groupId>cn.leancloud</groupId>
     <artifactId>leancloud-sdk</artifactId>
-    <version>7.1.2</version>
+    <version>7.1.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.leancloud</groupId>
   <artifactId>storage-core</artifactId>
   <packaging>jar</packaging>
-  <version>7.1.2</version>
+  <version>7.1.3-SNAPSHOT</version>
   <name>storage core library</name>
   <url>http://maven.apache.org</url>
 
@@ -33,7 +33,7 @@
     <connection>scm:git:https://github.com/leancloud/java-unified-sdk.git</connection>
     <developerConnection>scm:git:git@github.com:leancloud/java-unified-sdk.git</developerConnection>
     <url>http://github.com/leancloud/java-unified-sdk/tree/master</url>
-    <tag>leancloud-sdk-7.1.2</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <distributionManagement>
