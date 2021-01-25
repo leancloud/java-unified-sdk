@@ -8,7 +8,6 @@ import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
 import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.im.v2.*;
-import cn.leancloud.im.v2.callback.AVIMConversationIterableResult;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.session.PendingMessageCache.Message;
