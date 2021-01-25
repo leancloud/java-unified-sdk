@@ -402,6 +402,7 @@ public class DirectlyOperationTube implements OperationTube {
       case CONVERSATION_CREATION:
       case CONVERSATION_SEND_MESSAGE:
       case CONVERSATION_QUERY:
+        // wrapper callback would parse the HashMap result correctly.
         callback.internalDone(resultData, null);
         break;
       case CONVERSATION_MUTED_MEMBER_QUERY:
