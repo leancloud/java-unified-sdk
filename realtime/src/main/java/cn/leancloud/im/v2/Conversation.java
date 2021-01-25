@@ -194,6 +194,7 @@ public interface Conversation {
 
   String callbackExceptionKey = "callbackException";
   String callbackData = "callbackData";
+  String callbackIterableNext = "callbackNext";
   String callbackClientKey = "callbackclient";
   String callbackConversationKey = "callbackconversation";
   String callbackMessageTimeStamp = "callbackMessageTimeStamp";

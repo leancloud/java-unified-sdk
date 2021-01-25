@@ -8,6 +8,7 @@ import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
 import cn.leancloud.im.InternalConfiguration;
 import cn.leancloud.im.v2.*;
+import cn.leancloud.im.v2.callback.AVIMConversationIterableResult;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.session.PendingMessageCache.Message;
@@ -332,12 +333,16 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
       Operation op = session.conversationOperationCache.poll(requestKey);
       if (null != op && op.operation == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()) {
         List<String> result = convCommand.getMList(); // result stored in m field.
+        String next = convCommand.hasNext()? convCommand.getNext() : null;
         String[] resultMembers = new String[null == result? 0 : result.size()];
         if (null != result) {
           result.toArray(resultMembers);
         }
         HashMap<String, Object> bundle = new HashMap<>();
         bundle.put(Conversation.callbackData, resultMembers);
+        if (!StringUtil.isEmpty(next)) {
+          bundle.put(Conversation.callbackIterableNext, next);
+        }
         InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
                 AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, bundle);
       } else {
@@ -469,6 +474,7 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
         LOGGER.w("not found requestKey: " + requestKey);
       } else {
         List<String> result = blacklistCommand.getBlockedPidsList();
+        String next = blacklistCommand.hasNext()? blacklistCommand.getNext() : null;
         String[] resultArray = new String[null == result ? 0: result.size()];
         if (null != result) {
           result.toArray(resultArray);
@@ -476,6 +482,9 @@ public class AVDefaultConnectionListener implements AVConnectionListener {
         String cid = blacklistCommand.getSrcCid();
         HashMap<String, Object> bundle = new HashMap<>();
         bundle.put(Conversation.callbackData, resultArray);
+        if (!StringUtil.isEmpty(next)) {
+          bundle.put(Conversation.callbackIterableNext, next);
+        }
         InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), cid, requestKey,
                 AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, bundle);
       }

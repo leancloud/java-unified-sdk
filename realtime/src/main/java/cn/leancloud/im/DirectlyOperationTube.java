@@ -16,6 +16,7 @@ import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSON;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -401,9 +402,21 @@ public class DirectlyOperationTube implements OperationTube {
       case CONVERSATION_CREATION:
       case CONVERSATION_SEND_MESSAGE:
       case CONVERSATION_QUERY:
+        callback.internalDone(resultData, null);
+        break;
       case CONVERSATION_MUTED_MEMBER_QUERY:
       case CONVERSATION_BLOCKED_MEMBER_QUERY:
-        callback.internalDone(resultData, null);
+        String[] result = (String[])resultData.get(Conversation.callbackData);
+        String next = resultData.containsKey(Conversation.callbackIterableNext)?
+                (String) resultData.get(Conversation.callbackIterableNext) : null;
+        if (callback instanceof AVIMConversationIterableResultCallback) {
+          AVIMConversationIterableResult iterableResult = new AVIMConversationIterableResult();
+          iterableResult.setNext(next);
+          iterableResult.setMembers(Arrays.asList(result));
+          callback.internalDone(iterableResult, null);
+        } else {
+          callback.internalDone(Arrays.asList(result), null);
+        }
         break;
       case CONVERSATION_MESSAGE_QUERY:
         callback.internalDone(resultData.get(Conversation.callbackHistoryMessages), null);

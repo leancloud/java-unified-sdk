@@ -159,8 +159,8 @@ public class BlacklistCommandPacket extends PeerBasedCommandPacket {
     }
     packet.setConversationId(conversationId);
     packet.setOp(op);
-    packet.setLimit(limit);
     packet.setOffset(offset);
+    packet.setLimit(limit);
     packet.setRequestId(requestId);
     return packet;
   }
