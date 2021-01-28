@@ -76,6 +76,8 @@ public class AVUser extends AVObject {
    * 获取当前登录用户
    *
    * @return current user.
+   *
+   * Notice: you SHOULDN'T invoke this method to get current user in lean engine.
    */
   public static AVUser currentUser() {
     return getCurrentUser();
@@ -666,25 +668,116 @@ public class AVUser extends AVObject {
     return PaasClient.getStorageClient().refreshSessionToken(this);
   }
 
+  /**
+   * instantiate AVUser object with sessionToken(synchronized)
+   * @param sessionToken session token
+   * @return AVUser instance.
+   *
+   * this method DOES NOT change AVUser#currentUser, it makes sense for being called in lean engine.
+   */
   public static AVUser becomeWithSessionToken(String sessionToken) {
-    AVUser usr = becomeWithSessionTokenInBackground(sessionToken).blockingFirst();
+    return becomeWithSessionToken(sessionToken, false);
+  }
+
+  /**
+   * instantiate AVUser object with sessionToken(synchronized)
+   * @param sessionToken session token
+   * @param saveToCurrentUser flag indicating whether change current user or not.
+   *                          true - save user to AVUser#currentUser.
+   *                          false - not save.
+   * @return AVUser instance.
+   *
+   */
+  public static AVUser becomeWithSessionToken(String sessionToken, boolean saveToCurrentUser) {
+    AVUser usr = becomeWithSessionTokenInBackground(sessionToken, saveToCurrentUser).blockingFirst();
     return usr;
   }
 
+  /**
+   * instantiate AVUser object with sessionToken(asynchronous)
+   * @param sessionToken session token
+   * @return Observable instance.
+   *
+   * this method DOES NOT change AVUser#currentUser, it makes sense for being called in lean engine.
+   */
   public static Observable<? extends AVUser> becomeWithSessionTokenInBackground(String sessionToken) {
-    return becomeWithSessionTokenInBackground(sessionToken, internalUserClazz());
+    return becomeWithSessionTokenInBackground(sessionToken, false);
   }
 
+  /**
+   * instantiate AVUser object with sessionToken(asynchronous)
+   * @param sessionToken session token
+   * @param saveToCurrentUser flag indicating whether change current user or not.
+   *                          true - save user to AVUser#currentUser.
+   *                          false - not save.
+   * @return Observable instance.
+   *
+   */
+  public static Observable<? extends AVUser> becomeWithSessionTokenInBackground(String sessionToken,
+                                                                                boolean saveToCurrentUser) {
+    return becomeWithSessionTokenInBackground(sessionToken, saveToCurrentUser, internalUserClazz());
+  }
+
+  /**
+   * instantiate AVUser object with sessionToken(synchronized)
+   * @param sessionToken session token
+   * @param clazz class name.
+   * @return AVUser instance.
+   *
+   * this method DOES NOT change AVUser#currentUser, it makes sense for being called in lean engine.
+   */
   public static <T extends AVUser> T becomeWithSessionToken(String sessionToken, Class<T> clazz) {
-    T result = becomeWithSessionTokenInBackground(sessionToken, clazz).blockingFirst();
+    return becomeWithSessionToken(sessionToken, false, clazz);
+  }
+
+  /**
+   * instantiate AVUser object with sessionToken(synchronized)
+   * @param sessionToken session token
+   * @param saveToCurrentUser flag indicating whether change current user or not.
+   *                          true - save user to AVUser#currentUser.
+   *                          false - not save.
+   * @param clazz class name.
+   * @return AVUser instance.
+   *
+   */
+  public static <T extends AVUser> T becomeWithSessionToken(String sessionToken, boolean saveToCurrentUser,
+                                                            Class<T> clazz) {
+    T result = becomeWithSessionTokenInBackground(sessionToken, saveToCurrentUser, clazz).blockingFirst();
     return result;
   }
 
+  /**
+   * instantiate AVUser object with sessionToken(asynchronous)
+   * @param sessionToken session token
+   * @param clazz class name
+   * @param <T> generic type.
+   * @return Observable instance.
+   *
+   * this method DOES NOT change AVUser#currentUser, it makes sense for being called in lean engine.
+   */
   public static <T extends AVUser> Observable<T> becomeWithSessionTokenInBackground(String sessionToken, Class<T> clazz) {
+    return becomeWithSessionTokenInBackground(sessionToken, false, clazz);
+  }
+
+  /**
+   * instantiate AVUser object with sessionToken(asynchronous)
+   * @param sessionToken session token
+   * @param saveToCurrentUser flag indicating whether change current user or not.
+   *                          true - save user to AVUser#currentUser.
+   *                          false - not save.
+   * @param clazz class name
+   * @param <T> generic type
+   * @return Observable instance.
+   */
+  public static <T extends AVUser> Observable<T> becomeWithSessionTokenInBackground(String sessionToken,
+                                                                                    final boolean saveToCurrentUser,
+                                                                                    Class<T> clazz) {
     return PaasClient.getStorageClient().createUserBySession(sessionToken, clazz).map(new Function<T, T>() {
       @Override
       public T apply(T result) throws Exception {
-        AVUser.changeCurrentUser(result, true);
+        if (saveToCurrentUser) {
+          AVUser.changeCurrentUser(result, true);
+        }
         return result;
       }
     });
