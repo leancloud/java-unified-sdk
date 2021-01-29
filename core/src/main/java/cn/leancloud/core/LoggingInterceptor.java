@@ -30,10 +30,10 @@ public class LoggingInterceptor implements Interceptor {
           continue;
         }
 
-//        if (APIService.HEADER_KEY_LC_SESSIONTOKEN.equals(name)) {
-//          sb.append(String.format(CURL_HEADER_FORMAT, name, "{your_session}"));
-//          continue;
-//        }
+        if (APIService.HEADER_KEY_LC_SESSIONTOKEN.equals(name)) {
+          sb.append(String.format(CURL_HEADER_FORMAT, name, "{your_session}"));
+          continue;
+        }
 
         if (RequestPaddingInterceptor.HEADER_KEY_LC_SIGN.equals(name)) {
           sb.append(String.format(CURL_HEADER_FORMAT, RequestPaddingInterceptor.HEADER_KEY_LC_SIGN, "{your_sign}"));
