@@ -2,6 +2,7 @@ package cn.leancloud.core;
 
 import cn.leancloud.*;
 import cn.leancloud.cache.QueryResultCache;
+import cn.leancloud.gson.NumberDeserializerDoubleAsIntFix;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.query.AVQueryResult;
 import cn.leancloud.search.AVSearchResponse;
@@ -690,7 +691,7 @@ public class StorageClient {
           Object resultValue = resultMap.get("result");
           if (enableCache && !StringUtil.isEmpty(cacheKey)) {
             LOGGER.d("cache cloud function result:" + JSON.toJSONString(resultValue));
-            QueryResultCache.getInstance().cacheResult(cacheKey, JSON.toJSONString(resultValue));
+            QueryResultCache.getInstance().cacheResult(cacheKey, JSON.toJSONString(resultMap));
           }
           if (resultValue instanceof Collection) {
             return (T) Utils.getObjectFrom((Collection) resultValue);
@@ -800,11 +801,13 @@ public class StorageClient {
                               return null;
                             }
                             LOGGER.d("found cached function result: " + s);
-                            Object parsedObject = JSON.parse(s);
+                            Object parsedObject = JSON.parseObject(s).get("result");
                             if (parsedObject instanceof Collection) {
                               return (T) Utils.getObjectFrom((Collection) parsedObject);
                             } else if (parsedObject instanceof Map) {
                               return (T) Utils.getObjectFrom((Map) parsedObject);
+                            } else if (parsedObject instanceof Number) {
+                              return (T) NumberDeserializerDoubleAsIntFix.parsePrecisionNumber((Number) parsedObject);
                             } else {
                               return (T) parsedObject;
                             }

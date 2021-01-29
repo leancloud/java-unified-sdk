@@ -238,6 +238,10 @@ public class AVObject {
    * @return the value associated with specified key.
    */
   public Object get(String key) {
+    return internalGet(key);
+  }
+
+  protected Object internalGet(String key) {
     Object value = serverData.get(key);
     ObjectFieldOperation op = operations.get(key);
     if (null != op) {
@@ -557,6 +561,10 @@ public class AVObject {
    */
   public void put(String key, Object value) {
     validFieldName(key);
+    internalPut(key, value);
+  }
+
+  protected void internalPut(String key, Object value) {
     ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Set, key, value);
     addNewOperation(op);
   }
@@ -1438,7 +1446,7 @@ public class AVObject {
     if (!fetchServerData && AppConfiguration.isAutoMergeOperationDataWhenSave()) {
       for (Map.Entry<String, ObjectFieldOperation> entry: operations.entrySet()) {
         String attribute = entry.getKey();
-        Object value = this.get(attribute);
+        Object value = internalGet(attribute);
         if (null == value) {
           this.serverData.remove(attribute);
         } else {

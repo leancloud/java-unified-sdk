@@ -157,20 +157,6 @@ public final class AVFile extends AVObject {
     return super.hashCode();
   }
 
-  private Object internalGet(String key) {
-    Object value = serverData.get(key);
-    ObjectFieldOperation op = operations.get(key);
-    if (null != op) {
-      value = op.apply(value);
-    }
-    return value;
-  }
-
-  private void internalPut(String key, Object value) {
-    ObjectFieldOperation op = OperationBuilder.gBuilder.create(OperationBuilder.OperationType.Set, key, value);
-    addNewOperation(op);
-  }
-
   private void internalPutDirectly(String key, Object value) {
     this.serverData.put(key, value);
   }

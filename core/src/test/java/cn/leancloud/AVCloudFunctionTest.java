@@ -52,15 +52,15 @@ public class AVCloudFunctionTest extends TestCase {
     String name = "currentTime";
     Map<String, Object> param = new HashMap<String, Object>();
     param.put("platform", "android");
-    Observable<HashMap<String, Object>> res = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
-    res.subscribe(new Observer<HashMap<String, Object>>() {
+    Observable<Long> res = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
+    res.subscribe(new Observer<Long>() {
       @Override
       public void onSubscribe(Disposable disposable) {
       }
 
       @Override
-      public void onNext(HashMap<String, Object> jsonObject) {
-        System.out.println("结果 = " + jsonObject);
+      public void onNext(Long result) {
+        System.out.println("结果 = " + result);
       }
 
       @Override
@@ -80,42 +80,42 @@ public class AVCloudFunctionTest extends TestCase {
     final String name = "currentTime";
     final Map<String, Object> param = new HashMap<String, Object>();
     param.put("platform", "android");
-    Observable<Map<String, Object>> res = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.NETWORK_ONLY, 30000);
-    res.subscribe(new Observer<Map<String, Object>>() {
+    Observable<Long> res = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.NETWORK_ONLY, 30000);
+    res.subscribe(new Observer<Long>() {
       @Override
       public void onSubscribe(Disposable disposable) {
       }
 
       @Override
-      public void onNext(Map<String, Object> firstResult) {
+      public void onNext(Long firstResult) {
         System.out.println("第一次结果(NETWORK_ONLY) = " + firstResult);
-        final long firstTs = (Long) firstResult.get("milliseconds");
-        Observable<Map<String, Object>> second = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.NETWORK_ELSE_CACHE, 30000);
-        second.subscribe(new Observer<Map<String, Object>>() {
+        final long firstTs = firstResult;
+        Observable<Long> second = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.NETWORK_ELSE_CACHE, 30000);
+        second.subscribe(new Observer<Long>() {
           @Override
           public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(Map<String, Object> secondResult) {
+          public void onNext(Long secondResult) {
             System.out.println("第二次结果(NETWORK_ELSE_CACHE) = " + secondResult);
-            final long secondTs = (Long) secondResult.get("milliseconds");
+            final long secondTs = (Long) secondResult;
             if (secondTs <= firstTs) {
               System.out.println("the second timestamp is wrong. first-" + firstTs + ", second-" + secondTs);
               latch.countDown();
             } else {
-              Observable<Map<String, Object>> third = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
-              third.subscribe(new Observer<Map<String, Object>>() {
+              Observable<Long> third = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
+              third.subscribe(new Observer<Long>() {
                 @Override
                 public void onSubscribe(Disposable disposable) {
 
                 }
 
                 @Override
-                public void onNext(Map<String, Object> thirdResult) {
+                public void onNext(Long thirdResult) {
                   System.out.println("第三次结果(CACHE_ELSE_NETWORK) = " + thirdResult);
-                  final long thirdTs = (Long) thirdResult.get("milliseconds");
+                  final long thirdTs = (Long) thirdResult;
                   if (secondTs != thirdTs) {
                     System.out.println("the third timestamp is wrong. expected-" + secondTs + ", real-" + thirdTs);
                     latch.countDown();
@@ -125,17 +125,17 @@ public class AVCloudFunctionTest extends TestCase {
                     } catch (Exception ex) {
                       ;
                     }
-                    Observable<Map<String, Object>> fourth = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
-                    fourth.subscribe(new Observer<Map<String, Object>>() {
+                    Observable<Long> fourth = AVCloud.callFunctionWithCacheInBackground(name, param, AVQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
+                    fourth.subscribe(new Observer<Long>() {
                       @Override
                       public void onSubscribe(Disposable disposable) {
 
                       }
 
                       @Override
-                      public void onNext(Map<String, Object> fourthResult) {
+                      public void onNext(Long fourthResult) {
                         System.out.println("第四次结果(CACHE_ELSE_NETWORK) = " + fourthResult);
-                        final long fourthTs = (Long) fourthResult.get("milliseconds");
+                        final long fourthTs = (Long) fourthResult;
                         if (fourthTs <= thirdTs) {
                           System.out.println("the fourth timestamp is wrong. expected-" + secondTs + ", real-" + thirdTs);
                         } else {

@@ -848,7 +848,8 @@ public class AVUserTest extends TestCase {
           public void onError(Throwable throwable) {
             two.abortOperations();
             JSONObject authData = two.getJSONObject("authData");
-            operationSucceed = authData == null;
+            System.out.println("authData in target User: " + authData);
+            operationSucceed = (authData == null || authData.size() < 1);
             latch.countDown();
           }
 
