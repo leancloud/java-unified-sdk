@@ -1043,11 +1043,16 @@ public class AVUser extends AVObject {
    * @return observable instance
    */
   public static Observable<AVNull> requestSMSCodeForUpdatingPhoneNumberInBackground(String mobilePhone, AVSMSOption option) {
+    return requestSMSCodeForUpdatingPhoneNumberInBackground(null, mobilePhone, option);
+  }
+
+  public static Observable<AVNull> requestSMSCodeForUpdatingPhoneNumberInBackground(AVUser asAuthenticatedUser,
+                                                                                    String mobilePhone, AVSMSOption option) {
     if (StringUtil.isEmpty(mobilePhone) || !AVSMS.checkMobilePhoneNumber(mobilePhone)) {
       return Observable.error(new IllegalArgumentException("mobile phone number is empty or invalid"));
     }
     Map<String, Object> param = (null == option)? new HashMap<String, Object>() : option.getOptionMap();
-    return PaasClient.getStorageClient().requestSMSCodeForUpdatingPhoneNumber(mobilePhone, param);
+    return PaasClient.getStorageClient().requestSMSCodeForUpdatingPhoneNumber(asAuthenticatedUser, mobilePhone, param);
   }
 
   /**
@@ -1057,10 +1062,15 @@ public class AVUser extends AVObject {
    * @return observable instance
    */
   public static Observable<AVNull> verifySMSCodeForUpdatingPhoneNumberInBackground(String code, String mobilePhone) {
+    return verifySMSCodeForUpdatingPhoneNumberInBackground(null, code, mobilePhone);
+  }
+
+  public static Observable<AVNull> verifySMSCodeForUpdatingPhoneNumberInBackground(AVUser asAuthenticatedUser,
+                                                                                   String code, String mobilePhone) {
     if (StringUtil.isEmpty(code) || StringUtil.isEmpty(mobilePhone)) {
       return Observable.error(new IllegalArgumentException("code or mobilePhone is empty"));
     }
-    return PaasClient.getStorageClient().verifySMSCodeForUpdatingPhoneNumber(code, mobilePhone);
+    return PaasClient.getStorageClient().verifySMSCodeForUpdatingPhoneNumber(asAuthenticatedUser, code, mobilePhone);
   }
 
   private boolean checkUserAuthentication(final AVCallback callback) {

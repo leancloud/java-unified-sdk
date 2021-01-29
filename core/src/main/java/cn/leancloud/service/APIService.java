@@ -177,13 +177,12 @@ public interface APIService {
   Observable<AVUser> login(@Body JSONObject object);
 
   @PUT("/1.1/users/{objectId}/updatePassword")
-  Observable<AVUser> updatePassword(@Path("objectId") String objectId, @Body JSONObject object);
-
-  @PUT("/1.1/resetPasswordBySmsCode/{smsCode}")
-  Observable<AVNull> resetPasswordBySmsCode(@Path("smsCode") String smsCode, @Body Map<String, String> param);
+  Observable<AVUser> updatePassword(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                    @Path("objectId") String objectId, @Body JSONObject object);
 
   @GET("/1.1/users/me")
-  Observable<AVUser> checkAuthenticated(@QueryMap Map<String, String> query);
+  Observable<AVUser> checkAuthenticated(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                        @QueryMap Map<String, String> query);
 
   @PUT("/1.1/users/{objectId}/refreshSessionToken")
   Observable<AVUser> refreshSessionToken(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
@@ -195,17 +194,20 @@ public interface APIService {
   @POST("/1.1/requestPasswordResetBySmsCode")
   Observable<AVNull> requestResetPasswordBySmsCode(@Body Map<String, String> param);
 
+  @PUT("/1.1/resetPasswordBySmsCode/{smsCode}")
+  Observable<AVNull> resetPasswordBySmsCode(@Path("smsCode") String smsCode, @Body Map<String, String> param);
+
   @POST("/1.1/requestEmailVerify")
   Observable<AVNull> requestEmailVerify(@Body Map<String, String> param);
 
   @POST("/1.1/requestMobilePhoneVerify")
   Observable<AVNull> requestMobilePhoneVerify(@Body Map<String, String> param);
 
-  @POST("/1.1/requestLoginSmsCode")
-  Observable<AVNull> requestLoginSmsCode(@Body Map<String, String> param);
-
   @POST("/1.1/verifyMobilePhone/{verifyCode}")
   Observable<AVNull> verifyMobilePhone(@Path("verifyCode") String verifyCode);
+
+  @POST("/1.1/requestLoginSmsCode")
+  Observable<AVNull> requestLoginSmsCode(@Body Map<String, String> param);
 
   @POST("/1.1/users/{followee}/friendship/{follower}")
   Observable<JSONObject> followUser(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
@@ -284,10 +286,12 @@ public interface APIService {
   Observable<AVNull> verifySMSCode(@Path("code") String code, @Body Map<String, Object> param);
 
   @POST("/1.1/requestChangePhoneNumber")
-  Observable<AVNull> requestSMSCodeForUpdatingPhoneNumber(@Body Map<String, Object> param);
+  Observable<AVNull> requestSMSCodeForUpdatingPhoneNumber(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                                          @Body Map<String, Object> param);
 
   @POST("/1.1/changePhoneNumber")
-  Observable<AVNull> verifySMSCodeForUpdatingPhoneNumber(@Body Map<String, Object> param);
+  Observable<AVNull> verifySMSCodeForUpdatingPhoneNumber(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                                         @Body Map<String, Object> param);
 
   /**
    * FullText Search API

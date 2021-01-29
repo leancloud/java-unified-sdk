@@ -442,7 +442,7 @@ public class StorageClient {
   public Observable<Boolean> checkAuthenticated(String sessionToken) {
     Map<String, String> param = new HashMap<String, String>(1);
     param.put("session_token", sessionToken);
-    Observable<AVUser> apiResult = wrapObservable(apiService.checkAuthenticated(param));
+    Observable<AVUser> apiResult = wrapObservable(apiService.checkAuthenticated(sessionToken, param));
     if (null == apiResult) {
       return Observable.just(false);
     }
@@ -460,7 +460,7 @@ public class StorageClient {
   public <T extends AVUser> Observable<T> createUserBySession(String sessionToken, final Class<T> clazz) {
     Map<String, String> param = new HashMap<String, String>(1);
     param.put("session_token", sessionToken);
-    return apiService.checkAuthenticated(param).map(new Function<AVUser, T>() {
+    return apiService.checkAuthenticated(sessionToken, param).map(new Function<AVUser, T>() {
       public T apply(AVUser avUser) throws Exception {
         if (null == avUser) {
           LOGGER.e("The mapper function returned a null value.");
@@ -542,7 +542,8 @@ public class StorageClient {
     JSONObject param = JSONObject.Builder.create(null);
     param.put("old_password", oldPass);
     param.put("new_password", newPass);
-    return wrapObservable(apiService.updatePassword(user.getObjectId(), param).map(new Function<AVUser, AVNull>() {
+    return wrapObservable(apiService.updatePassword(user.getSessionToken(), user.getObjectId(), param)
+            .map(new Function<AVUser, AVNull>() {
       public AVNull apply(AVUser var1) throws Exception {
         if (null != var1) {
           user.internalChangeSessionToken(var1.getSessionToken());
@@ -841,9 +842,10 @@ public class StorageClient {
     return wrapObservable(apiService.requestSMSCode(param));
   }
 
-  public Observable<AVNull> requestSMSCodeForUpdatingPhoneNumber(String mobilePhone, Map<String, Object> param) {
+  public Observable<AVNull> requestSMSCodeForUpdatingPhoneNumber(AVUser asUser, String mobilePhone, Map<String, Object> param) {
     param.put("mobilePhoneNumber", mobilePhone);
-    return wrapObservable(apiService.requestSMSCodeForUpdatingPhoneNumber(param));
+    String sessionToken = getSessionToken(asUser);
+    return wrapObservable(apiService.requestSMSCodeForUpdatingPhoneNumber(sessionToken, param));
   }
 
   public Observable<AVNull> verifySMSCode(String code, String mobilePhone) {
@@ -855,14 +857,15 @@ public class StorageClient {
     return wrapObservable(apiService.verifySMSCode(code, param));
   }
 
-  public Observable<AVNull> verifySMSCodeForUpdatingPhoneNumber(String code, String mobilePhone) {
+  public Observable<AVNull> verifySMSCodeForUpdatingPhoneNumber(AVUser asUser, String code, String mobilePhone) {
     if (StringUtil.isEmpty(code) || StringUtil.isEmpty(mobilePhone)) {
       return Observable.error(new IllegalArgumentException("code or mobilePhone is empty"));
     }
+    String sessionToken = getSessionToken(asUser);
     Map<String, Object> param = new HashMap<String, Object>(1);
     param.put("mobilePhoneNumber", mobilePhone);
     param.put("code", code);
-    return wrapObservable(apiService.verifySMSCodeForUpdatingPhoneNumber(param));
+    return wrapObservable(apiService.verifySMSCodeForUpdatingPhoneNumber(sessionToken, param));
   }
 
   public Observable<AVSearchResponse> search(final AVUser authenticatedUser, Map<String, String> params) {
