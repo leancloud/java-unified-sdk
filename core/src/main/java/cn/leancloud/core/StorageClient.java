@@ -803,7 +803,19 @@ public class StorageClient {
                               return null;
                             }
                             LOGGER.d("found cached function result: " + s);
-                            Object parsedObject = JSON.parseObject(s).get("result");
+                            Object parsedObject = null;
+                            try {
+                              JSONObject tmpObject = JSON.parseObject(s);
+                              if (null != tmpObject && tmpObject.containsKey("result")) {
+                                parsedObject = tmpObject.get("result");
+                              } else {
+                                // compatible for existing cache data(json).
+                                parsedObject = tmpObject;
+                              }
+                            } catch (Exception exception) {
+                              // compatible for existing cache data(array or primitives).
+                              parsedObject = JSON.parse(s);
+                            }
                             if (parsedObject instanceof Collection) {
                               return (T) Utils.getObjectFrom((Collection) parsedObject);
                             } else if (parsedObject instanceof Map) {

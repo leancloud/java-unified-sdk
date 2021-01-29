@@ -91,7 +91,28 @@ public class GsonWrapper {
 
 
   public static Object parseObject(String jsonString) {
-    return gson.fromJson(jsonString, new TypeToken<Map<String, Object>>(){}.getType());
+    try {
+      return gson.fromJson(jsonString, new TypeToken<Map<String, Object>>() {}.getType());
+    } catch (Exception ex) {
+      // string is not json/map.
+      JsonElement element = gson.toJsonTree(jsonString);
+      if (element.isJsonPrimitive()) {
+        JsonPrimitive jsonPrimitive = element.getAsJsonPrimitive();
+        if (jsonPrimitive.isBoolean()) {
+          return jsonPrimitive.getAsBoolean();
+        } else if (jsonPrimitive.isString()) {
+          return jsonPrimitive.getAsString();
+        } else if (jsonPrimitive.isNumber()) {
+          return NumberDeserializerDoubleAsIntFix.parsePrecisionNumber(jsonPrimitive.getAsNumber());
+        } else {
+          return null;
+        }
+      } else if (element.isJsonArray()) {
+        return element.getAsJsonArray();
+      } else {
+        return null;
+      }
+    }
   }
 
   public static <T> T parseObject(String jsonString, Class<T> clazz) {

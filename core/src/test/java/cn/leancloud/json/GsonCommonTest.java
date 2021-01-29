@@ -2,6 +2,7 @@ package cn.leancloud.json;
 
 import cn.leancloud.AVObject;
 import cn.leancloud.gson.GsonWrapper;
+import cn.leancloud.gson.NumberDeserializerDoubleAsIntFix;
 import cn.leancloud.service.AppAccessEndpoint;
 import cn.leancloud.sms.AVCaptchaDigest;
 import com.google.gson.reflect.TypeToken;
@@ -15,6 +16,38 @@ import java.util.Map;
 public class GsonCommonTest extends TestCase {
   public GsonCommonTest(String name) {
     super(name);
+  }
+
+  private void parseData(String s) {
+    Object parsedObject = null;
+    try {
+      JSONObject tmpObject = JSON.parseObject(s);
+      if (null != tmpObject && tmpObject.containsKey("result")) {
+        parsedObject = tmpObject.get("result");
+      } else {
+        parsedObject = tmpObject;
+      }
+    } catch (Exception exception) {
+      // compatible for existing cache data.
+      parsedObject = JSON.parse(s);
+    }
+    if (parsedObject instanceof Number) {
+      parsedObject = NumberDeserializerDoubleAsIntFix.parsePrecisionNumber((Number) parsedObject);
+    }
+    assertTrue(null != parsedObject);
+    System.out.println(parsedObject);
+  }
+  public void testSinglePrimitives() {
+    String s = "432423423485";
+    parseData(s);
+    s = "String from hello";
+    parseData(s);
+    s = "{'test': true}";
+    parseData(s);
+    s = "{'result': true}";
+    parseData(s);
+    s = "[43243, 433, 2]";
+    parseData(s);
   }
 
   public void testPrimitives() {
