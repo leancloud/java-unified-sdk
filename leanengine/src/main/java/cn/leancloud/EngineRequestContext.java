@@ -64,6 +64,7 @@ public class EngineRequestContext {
 
     Map<String, Object> existingMeta = localMeta.get();
     if (existingMeta != null) {
+      existingMeta.clear();
       existingMeta.putAll(meta);
     } else {
       localMeta.set(meta);

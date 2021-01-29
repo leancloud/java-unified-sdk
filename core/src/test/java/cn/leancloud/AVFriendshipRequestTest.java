@@ -181,7 +181,7 @@ public class AVFriendshipRequestTest extends TestCase {
                           public void onNext(final AVFriendshipRequest friendshipRequest) {
                             System.out.println("succeed to create new friend request. result=" + JSON.toJSONString(friendshipRequest));
                             System.out.println("objectId=" + friendshipRequest.getObjectId());
-                            AVUser.becomeWithSessionToken("52g2hsrptizbuyygafbhav4p3");
+                            AVUser.becomeWithSessionToken("52g2hsrptizbuyygafbhav4p3", true);
                             friendshipRequest.decline().subscribe(new Observer<AVObject>() {
                               @Override
                               public void onSubscribe(Disposable disposable) {
@@ -311,7 +311,7 @@ public class AVFriendshipRequestTest extends TestCase {
 
                   @Override
                   public void onNext(AVFriendshipRequest avFriendshipRequest) {
-                    AVUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl");
+                    AVUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl", true);
                     AVUser.currentUser().friendshipRequestQuery(
                             AVFriendshipRequest.STATUS_ANY,
                             true, true)
@@ -346,7 +346,7 @@ public class AVFriendshipRequestTest extends TestCase {
                   @Override
                   public void onError(Throwable throwable) {
                     if (throwable.getMessage().contains("Friendship already exists.")) {
-                      AVUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl");
+                      AVUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl", true);
                       AVUser.currentUser().friendshipRequestQuery(
                               AVFriendshipRequest.STATUS_ANY,
                               true, true)

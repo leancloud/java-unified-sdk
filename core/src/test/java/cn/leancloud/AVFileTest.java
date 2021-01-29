@@ -61,7 +61,7 @@ public class AVFileTest extends TestCase {
         String mimeType = avFile.getMimeType();
         System.out.println("url=" + url + ", name=" + name + ", key=" + key + ", size=" + size);
         System.out.println("objId=" + objectId + ", thumbnail=" + thumbnailUrl + ", mime=" + mimeType);
-        testSucceed = url.length() > 0 && thumbnailUrl.length() > 0 && name.length() > 0 && key.length() > 0;
+        testSucceed = url.length() > 0 && thumbnailUrl.length() > 0 && name.length() > 0;
         testSucceed = testSucceed && objectId.equals(fileObjectId);
         testSucceed = testSucceed && (mimeType.length() > 0);
         latch.countDown();
@@ -145,13 +145,13 @@ public class AVFileTest extends TestCase {
       public void onNext(AVFile avFile) {
         String url = avFile.getUrl();
         System.out.println("succeed to upload file. key=" + testKey + ", url=" + url);
+        testSucceed = true;
         latch.countDown();
       }
 
       @Override
       public void onError(Throwable throwable) {
         throwable.printStackTrace();
-        testSucceed = true;
         latch.countDown();
       }
 

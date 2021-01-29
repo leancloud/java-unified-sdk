@@ -922,16 +922,27 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return observable instance.
    */
   public Observable<List<T>> findInBackground() {
-    return findInBackground(0);
+    return findInBackground(null);
   }
 
-  protected Observable<List<T>> findInBackground(int explicitLimit) {
+  /**
+   * Execute query in async mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public Observable<List<T>> findInBackground(AVUser asAuthenticatedUser) {
+    return findInBackground(asAuthenticatedUser, 0);
+  }
+
+  protected Observable<List<T>> findInBackground(AVUser asAuthenticatedUser, int explicitLimit) {
     Map<String, String> query = assembleParameters();
     if (explicitLimit > 0) {
       query.put("limit", Integer.toString(explicitLimit));
     }
     LOGGER.d("Query: " + query);
-    return PaasClient.getStorageClient().queryObjects(getClassName(), query, this.cachePolicy, this.maxCacheAge)
+    return PaasClient.getStorageClient().queryObjects(asAuthenticatedUser, getClassName(), query, this.cachePolicy, this.maxCacheAge)
             .map(new Function<List<AVObject>, List<T>>() {
               public List<T> apply(List<AVObject> var1) throws Exception {
                 LOGGER.d("invoke within AVQuery.findInBackground(). resultSize=" + var1.size());
@@ -960,12 +971,25 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return observable instance.
    */
   public Observable<T> getInBackground(String objectId) {
+    return getInBackground(null, objectId);
+  }
+
+  /**
+   * Get Object with specified objectId in async mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param objectId object id.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public Observable<T> getInBackground(AVUser asAuthenticatedUser, String objectId) {
     List<String> include = getInclude();
     String includeKeys = null;
     if (null != include && include.size() > 0) {
       includeKeys = StringUtil.join(",", include);
     }
-    return PaasClient.getStorageClient().fetchObject(getClassName(), objectId, includeKeys).map(new Function<AVObject, T>() {
+    return PaasClient.getStorageClient().fetchObject(asAuthenticatedUser, getClassName(), objectId, includeKeys)
+            .map(new Function<AVObject, T>() {
       public T apply(AVObject avObject) throws Exception {
         if (null == avObject || StringUtil.isEmpty(avObject.getObjectId())) {
           throw new AVException(AVException.OBJECT_NOT_FOUND, "Object is not found.");
@@ -980,8 +1004,19 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return first result.
    */
   public T getFirst() {
+    return getFirst(null);
+  }
+
+  /**
+   * Get first result in blocking mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @return first result.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public T getFirst(AVUser asAuthenticatedUser) {
     try {
-      return getFirstInBackground().blockingFirst();
+      return getFirstInBackground(asAuthenticatedUser).blockingFirst();
     } catch (NoSuchElementException ex) {
       return null;
     }
@@ -992,7 +1027,18 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return observable instance.
    */
   public Observable<T> getFirstInBackground() {
-    return findInBackground(1).flatMap(new Function<List<T>, ObservableSource<T>>() {
+    return getFirstInBackground(null);
+  }
+
+  /**
+   * Get first result in async mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public Observable<T> getFirstInBackground(AVUser asAuthenticatedUser) {
+    return findInBackground(asAuthenticatedUser,1).flatMap(new Function<List<T>, ObservableSource<T>>() {
       @Override
       public ObservableSource<T> apply(List<T> list) throws Exception {
         LOGGER.d("flatMap: " + list);
@@ -1006,7 +1052,18 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return result count.
    */
   public int count() {
-    return countInBackground().blockingFirst();
+    return count(null);
+  }
+
+  /**
+   * Get result count in blocking mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @return result count.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public int count(AVUser asAuthenticatedUser) {
+    return countInBackground(asAuthenticatedUser).blockingFirst();
   }
 
   /**
@@ -1014,17 +1071,38 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return observable instance.
    */
   public Observable<Integer> countInBackground() {
+    return countInBackground(null);
+  }
+
+  /**
+   * Get result count in async mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public Observable<Integer> countInBackground(AVUser asAuthenticatedUser) {
     Map<String, String> query = assembleParameters();
     query.put("count", "1");
     query.put("limit", "0");
-    return PaasClient.getStorageClient().queryCount(getClassName(), query);
+    return PaasClient.getStorageClient().queryCount(asAuthenticatedUser, getClassName(), query);
   }
 
   /**
    * Delete all query result in blocking mode.
    */
   public void deleteAll() {
-    this.deleteAllInBackground().blockingSubscribe();
+    deleteAll(null);
+  }
+
+  /**
+   * Delete all query result in blocking mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public void deleteAll(AVUser asAuthenticatedUser) {
+    this.deleteAllInBackground(asAuthenticatedUser).blockingSubscribe();
   }
 
   /**
@@ -1032,7 +1110,18 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return observable instance.
    */
   public Observable<AVNull> deleteAllInBackground() {
-    return findInBackground().flatMap(new Function<List<T>, ObservableSource<AVNull>>() {
+    return deleteAllInBackground(null);
+  }
+
+  /**
+   * Delete all query result in async mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public Observable<AVNull> deleteAllInBackground(AVUser asAuthenticatedUser) {
+    return findInBackground(asAuthenticatedUser).flatMap(new Function<List<T>, ObservableSource<AVNull>>() {
       @Override
       public ObservableSource<AVNull> apply(List<T> list) {
         return AVObject.deleteAllInBackground(list);
@@ -1062,6 +1151,8 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * Do cloud query in async mode.
    * @param cql cql string
    * @return observable instance.
+   *
+   * @deprecated please call AVCloudQuery#executeInBackground(cql) directly.
    */
   public static Observable<AVCloudQueryResult> doCloudQueryInBackground(String cql) {
     return AVCloudQuery.executeInBackground(cql);
@@ -1072,6 +1163,8 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @param cql cql string
    * @param params query parameters.
    * @return observable instance.
+   *
+   * @deprecated please call AVCloudQuery#executeInBackground(cql, params) directly.
    */
   public static Observable<AVCloudQueryResult> doCloudQueryInBackground(String cql, Object... params) {
     return AVCloudQuery.executeInBackground(cql, params);
@@ -1082,6 +1175,8 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @param cql cql string
    * @param clazz result class.
    * @return observable instance.
+   *
+   * @deprecated please call AVCloudQuery#executeInBackground(cql, clazz) directly.
    */
   public static Observable<AVCloudQueryResult> doCloudQueryInBackground(String cql, Class<? extends AVObject> clazz) {
     return AVCloudQuery.executeInBackground(cql, clazz);
@@ -1093,6 +1188,8 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @param clazz result class.
    * @param params query parameters.
    * @return observable instance.
+   *
+   * @deprecated please call AVCloudQuery#executeInBackground(cql, clazz, params) directly.
    */
   public static Observable<AVCloudQueryResult> doCloudQueryInBackground(String cql, final Class<? extends AVObject> clazz,
                                                                         Object... params) {

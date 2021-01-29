@@ -81,7 +81,7 @@ public class PaasClientTest extends TestCase {
           latch.countDown();
         }
       };
-      storageClient.fetchObject("Student", "5a7a4ac8128fe1003768d2b1", null)
+      storageClient.fetchObject(null, "Student", "5a7a4ac8128fe1003768d2b1", null)
               .subscribe(ObserverBuilder.buildSingleObserver(callback));
       latch.await();
       assertTrue(testSucceed);
@@ -91,7 +91,7 @@ public class PaasClientTest extends TestCase {
 
       JSONObject fileObject = JSONObject.Builder.create(null);
       StorageClient storageClient = PaasClient.getStorageClient();
-      storageClient.newUploadToken(fileObject).subscribe(new Observer<FileUploadToken>() {
+      storageClient.newUploadToken(null, fileObject).subscribe(new Observer<FileUploadToken>() {
         public void onComplete() {
 
         }

@@ -14,16 +14,101 @@ class AVCloudQuery {
   private AVCloudQuery() {
   }
 
+  /**
+   * execute cql query in background.
+   * @param cql cql statement.
+   * @return observable instance.
+   */
   public static Observable<AVCloudQueryResult> executeInBackground(String cql) {
-    return executeInBackground(cql, AVObject.class);
+    return executeInBackground(null, cql);
   }
+
+  /**
+   * execute cql query in background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param cql cql statement.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public static Observable<AVCloudQueryResult> executeInBackground(AVUser asAuthenticatedUser, String cql) {
+    return executeInBackground(asAuthenticatedUser, cql, AVObject.class);
+  }
+
+  /**
+   * execute cql query in background.
+   * @param cql cql statement.
+   * @param params query parameters.
+   * @return observable instance.
+   */
   public static Observable<AVCloudQueryResult> executeInBackground(String cql, Object... params) {
-    return executeInBackground(cql, AVObject.class, params);
+    return executeInBackground(null, cql, params);
   }
+
+  /**
+   * execute cql query in background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param cql cql statement.
+   * @param params query parameters.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public static Observable<AVCloudQueryResult> executeInBackground(AVUser asAuthenticatedUser,
+                                                                   String cql, Object... params) {
+    return executeInBackground(asAuthenticatedUser, cql, AVObject.class, params);
+  }
+
+  /**
+   * execute cql query in background.
+   * @param cql cql statement.
+   * @param clazz result class.
+   * @return observable instance.
+   */
   public static Observable<AVCloudQueryResult> executeInBackground(String cql, Class<? extends AVObject> clazz) {
-    return executeInBackground(cql, clazz, null);
+    return executeInBackground(null, cql, clazz);
   }
+
+  /**
+   * execute cql query in background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param cql cql statement.
+   * @param clazz result class.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public static Observable<AVCloudQueryResult> executeInBackground(AVUser asAuthenticatedUser,
+                                                                   String cql, Class<? extends AVObject> clazz) {
+    return executeInBackground(asAuthenticatedUser, cql, clazz, null);
+  }
+
+  /**
+   * execute cql query in background.
+   * @param cql cql statement.
+   * @param clazz result class.
+   * @param params query parameters.
+   * @param <T> template type.
+   * @return observable instance.
+   */
   public static <T extends AVObject> Observable<AVCloudQueryResult> executeInBackground(String cql, final Class<T> clazz, Object... params) {
+    return executeInBackground(null, cql, clazz, params);
+  }
+
+  /**
+   * execute cql query in background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param cql cql statement.
+   * @param clazz result class.
+   * @param params query parameters.
+   * @param <T> template type.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public static <T extends AVObject> Observable<AVCloudQueryResult> executeInBackground(AVUser asAuthenticatedUser,
+                                                                                        String cql, final Class<T> clazz,
+                                                                                        Object... params) {
     if (StringUtil.isEmpty(cql)) {
       throw new IllegalArgumentException("cql is empty");
     }
@@ -41,7 +126,7 @@ class AVCloudQuery {
     if (!pValue.isEmpty()) {
       p.put("pvalues", AVUtils.jsonStringFromObjectWithNull(pValue));
     }
-    return PaasClient.getStorageClient().cloudQuery(p).map(new Function<AVQueryResult, AVCloudQueryResult>() {
+    return PaasClient.getStorageClient().cloudQuery(asAuthenticatedUser, p).map(new Function<AVQueryResult, AVCloudQueryResult>() {
       public AVCloudQueryResult apply(AVQueryResult avQueryResult) throws Exception {
         AVCloudQueryResult finalResult = new AVCloudQueryResult();
         List<T> rawObjs = new ArrayList(avQueryResult.getCount());

@@ -36,7 +36,7 @@ class RequestUserParser {
                 }
 
                 public void onNext(AVUser avUser) {
-                  AVUser.changeCurrentUser(avUser, true);
+//                  AVUser.changeCurrentUser(avUser, true);
                   req.setAttribute(RequestAuth.USER_KEY, avUser);
                 }
 

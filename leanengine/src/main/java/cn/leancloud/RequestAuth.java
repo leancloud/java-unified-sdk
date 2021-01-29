@@ -24,6 +24,7 @@ class RequestAuth {
   private String prod;
   private String sessionToken;
   private String sign;
+  private String remoteAddress;
 
   public static void auth(HttpServletRequest req) throws UnauthException {
     RequestAuth info = new RequestAuth(req);
@@ -74,6 +75,13 @@ class RequestAuth {
     throw new UnauthException();
   }
 
+  public static RequestAuth getInstance(HttpServletRequest req) {
+    if (null == req) {
+      return null;
+    }
+    return (RequestAuth) req.getAttribute(ATTRIBUTE_KEY);
+  }
+
   private RequestAuth(HttpServletRequest req) {
     if (req.getContentType() != null && req.getContentType().startsWith("text/plain")) {
       // TODO
@@ -96,7 +104,7 @@ class RequestAuth {
       sign = getHeaders(req, "x-lc-sign", "x-avoscloud-request-sign");
 
       // 放在这里只能算是一个side effect
-      String remoteAddress = getHeaders(req, "x-real-ip", "x-forwarded-for");
+      remoteAddress = getHeaders(req, "x-real-ip", "x-forwarded-for");
       if (StringUtil.isEmpty(remoteAddress)) {
         remoteAddress = req.getRemoteAddr();
       }
@@ -137,6 +145,10 @@ class RequestAuth {
 
   public String getSign() {
     return sign;
+  }
+
+  public String getRemoteAddress() {
+    return remoteAddress;
   }
 
   @Override

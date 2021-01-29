@@ -1,6 +1,7 @@
 package cn.leancloud.core;
 
 import cn.leancloud.AVLogger;
+import cn.leancloud.service.APIService;
 import cn.leancloud.utils.LogUtil;
 import okhttp3.*;
 import okio.Buffer;
@@ -29,7 +30,7 @@ public class LoggingInterceptor implements Interceptor {
           continue;
         }
 
-        if (RequestPaddingInterceptor.HEADER_KEY_LC_SESSIONTOKEN.equals(name)) {
+        if (APIService.HEADER_KEY_LC_SESSIONTOKEN.equals(name)) {
           sb.append(String.format(CURL_HEADER_FORMAT, name, "{your_session}"));
           continue;
         }

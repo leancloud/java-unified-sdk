@@ -18,62 +18,77 @@ import java.util.List;
 import java.util.Map;
 
 public interface APIService {
+  String HEADER_KEY_LC_SESSIONTOKEN = "X-LC-Session";
+
   /**
    * Object Operations.
    */
 
   @GET("/1.1/classes/{className}")
-  Observable<List<? extends AVObject>> findObjects(@Path("className") String className);
+  Observable<List<? extends AVObject>> findObjects(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                                   @Path("className") String className);
 
   @GET("/1.1/classes/{className}")
-  Observable<AVQueryResult> queryObjects(@Path("className") String className, @QueryMap Map<String, String> query);
+  Observable<AVQueryResult> queryObjects(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                         @Path("className") String className, @QueryMap Map<String, String> query);
 
   @GET("/1.1/cloudQuery")
-  Observable<AVQueryResult> cloudQuery(@QueryMap Map<String, String> query);
+  Observable<AVQueryResult> cloudQuery(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                       @QueryMap Map<String, String> query);
 
   @GET("/1.1/classes/{className}/{objectId}")
-  Observable<AVObject> fetchObject(@Path("className") String className, @Path("objectId") String objectId);
+  Observable<AVObject> fetchObject(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                   @Path("className") String className, @Path("objectId") String objectId);
 
   @GET("/1.1/classes/{className}/{objectId}")
-  Observable<AVObject> fetchObject(@Path("className") String className, @Path("objectId") String objectId,
+  Observable<AVObject> fetchObject(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                   @Path("className") String className, @Path("objectId") String objectId,
                                    @Query("include") String includeKeys);
 
   @POST("/1.1/classes/{className}")
-  Observable<AVObject> createObject(@Path("className") String className, @Body JSONObject object,
+  Observable<AVObject> createObject(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                    @Path("className") String className, @Body JSONObject object,
                                     @Query("fetchWhenSave") boolean fetchFlag,
                                     @Query("where") JSONObject where);
 
   @PUT("/1.1/classes/{className}/{objectId}")
-  Observable<AVObject> updateObject(@Path("className") String className, @Path("objectId") String objectId,
+  Observable<AVObject> updateObject(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                    @Path("className") String className, @Path("objectId") String objectId,
                                     @Body JSONObject object, @Query("fetchWhenSave") boolean fetchFlag,
                                     @Query("where") JSONObject where);
 
 //  @DELETEWITHBODY("/1.1/classes/{className}/{objectId}")
   @HTTP(method = "DELETE", path = "/1.1/classes/{className}/{objectId}", hasBody = true)
-  Observable<AVNull> deleteObject(@Path("className") String className, @Path("objectId") String objectId,
+  Observable<AVNull> deleteObject(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                  @Path("className") String className, @Path("objectId") String objectId,
                                   @Body Map<String, Object> param);
 
   @POST("/1.1/batch")
-  Observable<List<Map<String, Object>>> batchCreate(@Body JSONObject param);
+  Observable<List<Map<String, Object>>> batchCreate(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                                    @Body JSONObject param);
 
   /**
    * AVInstalltion methods.
    */
 
   @POST("/1.1/{endpointClass}")
-  Observable<AVObject> saveWholeObject(@Path("endpointClass") String endpointClass, @Body JSONObject object,
+  Observable<AVObject> saveWholeObject(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                       @Path("endpointClass") String endpointClass, @Body JSONObject object,
                                        @Query("fetchWhenSave") boolean fetchFlag,
                                        @Query("where") JSONObject where);
   @PUT("/1.1/{endpointClass}/{objectId}")
-  Observable<AVObject> saveWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
+  Observable<AVObject> saveWholeObject(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                       @Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
                                        @Body JSONObject object, @Query("fetchWhenSave") boolean fetchFlag,
                                        @Query("where") JSONObject where);
   @GET("/1.1/{endpointClass}/{objectId}")
-  Observable<AVObject> getWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
+  Observable<AVObject> getWholeObject(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                      @Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
                                       @Query("include") String includeKeys);
 //  @DELETE("/1.1/{endpointClass}/{objectId}")
   @HTTP(method = "DELETE", path = "/1.1/{endpointClass}/{objectId}", hasBody = true)
-  Observable<AVNull> deleteWholeObject(@Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
+  Observable<AVNull> deleteWholeObject(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                       @Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
                                        @Body Map<String, Object> param);
 
   /**
@@ -91,29 +106,35 @@ public interface APIService {
    * otherwise, `__internalId` will become a common field of target instance.
    */
   @POST("/1.1/batch/save")
-  Observable<JSONObject> batchUpdate(@Body JSONObject param);
+  Observable<JSONObject> batchUpdate(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                     @Body JSONObject param);
 
   /**
    * Cloud Functions
    */
   @POST("/1.1/functions/{name}")
-  Observable<Map<String, Object>> cloudFunction(@Path("name") String functionName, @Body Map<String, Object> param);
+  Observable<Map<String, Object>> cloudFunction(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                                @Path("name") String functionName, @Body Map<String, Object> param);
 
   @POST("/1.1/call/{name}")
-  Observable<Map<String, Object>> cloudRPC(@Path("name") String functionName, @Body Object param);
+  Observable<Map<String, Object>> cloudRPC(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                           @Path("name") String functionName, @Body Object param);
 
   /**
    * File Operations.
    */
 
   @POST("/1.1/fileTokens")
-  Observable<FileUploadToken> createUploadToken(@Body JSONObject fileData);
+  Observable<FileUploadToken> createUploadToken(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                                @Body JSONObject fileData);
 
   @POST("/1.1/fileCallback")
-  Call<AVNull> fileCallback(@Body JSONObject result);
+  Call<AVNull> fileCallback(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                            @Body JSONObject result);
 
   @GET("/1.1/files/{objectId}")
-  Observable<AVFile> fetchFile(@Path("objectId") String objectId);
+  Observable<AVFile> fetchFile(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                               @Path("objectId") String objectId);
 
   @GET("/1.1/date")
   Observable<AVDate> currentTimeMillis();
@@ -133,17 +154,21 @@ public interface APIService {
   @POST("/1.1/users")
   Observable<AVUser> signup(@Body JSONObject object, @Query("failOnNotExist") boolean failOnNotExist);
   @GET("/1.1/users")
-  Observable<AVQueryResult> queryUsers(@QueryMap Map<String, String> query);
+  Observable<AVQueryResult> queryUsers(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                       @QueryMap Map<String, String> query);
 
   @POST("/1.1/users/friendshipRequests")
-  Observable<AVObject> applyFriendship(@Body JSONObject param);
+  Observable<AVObject> applyFriendship(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                       @Body JSONObject param);
 
   @PUT("/1.1/users/friendshipRequests/{requestId}/accept")
-  Observable<AVObject> acceptFriendshipRequest(@Path("requestId") String requestId,
+  Observable<AVObject> acceptFriendshipRequest(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                               @Path("requestId") String requestId,
                                                           @Body JSONObject param);
 
   @PUT("/1.1/users/friendshipRequests/{requestId}/decline")
-  Observable<AVObject> declineFriendshipRequest(@Path("requestId") String requestId);
+  Observable<AVObject> declineFriendshipRequest(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                                @Path("requestId") String requestId);
 
   @POST("/1.1/usersByMobilePhone")
   Observable<AVUser> signupByMobilePhone(@Body JSONObject object);
@@ -152,16 +177,16 @@ public interface APIService {
   Observable<AVUser> login(@Body JSONObject object);
 
   @PUT("/1.1/users/{objectId}/updatePassword")
-  Observable<AVUser> updatePassword(@Path("objectId") String objectId, @Body JSONObject object);
-
-  @PUT("/1.1/resetPasswordBySmsCode/{smsCode}")
-  Observable<AVNull> resetPasswordBySmsCode(@Path("smsCode") String smsCode, @Body Map<String, String> param);
+  Observable<AVUser> updatePassword(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                    @Path("objectId") String objectId, @Body JSONObject object);
 
   @GET("/1.1/users/me")
-  Observable<AVUser> checkAuthenticated(@QueryMap Map<String, String> query);
+  Observable<AVUser> checkAuthenticated(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                        @QueryMap Map<String, String> query);
 
   @PUT("/1.1/users/{objectId}/refreshSessionToken")
-  Observable<AVUser> refreshSessionToken(@Path("objectId") String objectId);
+  Observable<AVUser> refreshSessionToken(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                         @Path("objectId") String objectId);
 
   @POST("/1.1/requestPasswordReset")
   Observable<AVNull> requestResetPassword(@Body Map<String, String> param);
@@ -169,64 +194,80 @@ public interface APIService {
   @POST("/1.1/requestPasswordResetBySmsCode")
   Observable<AVNull> requestResetPasswordBySmsCode(@Body Map<String, String> param);
 
+  @PUT("/1.1/resetPasswordBySmsCode/{smsCode}")
+  Observable<AVNull> resetPasswordBySmsCode(@Path("smsCode") String smsCode, @Body Map<String, String> param);
+
   @POST("/1.1/requestEmailVerify")
   Observable<AVNull> requestEmailVerify(@Body Map<String, String> param);
 
   @POST("/1.1/requestMobilePhoneVerify")
   Observable<AVNull> requestMobilePhoneVerify(@Body Map<String, String> param);
 
-  @POST("/1.1/requestLoginSmsCode")
-  Observable<AVNull> requestLoginSmsCode(@Body Map<String, String> param);
-
   @POST("/1.1/verifyMobilePhone/{verifyCode}")
   Observable<AVNull> verifyMobilePhone(@Path("verifyCode") String verifyCode);
 
+  @POST("/1.1/requestLoginSmsCode")
+  Observable<AVNull> requestLoginSmsCode(@Body Map<String, String> param);
+
   @POST("/1.1/users/{followee}/friendship/{follower}")
-  Observable<JSONObject> followUser(@Path("followee") String followee, @Path("follower") String follower,
+  Observable<JSONObject> followUser(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                    @Path("followee") String followee, @Path("follower") String follower,
                                     @Body Map<String, Object> param);
 
   @PUT("/1.1/users/{followee}/friendship/{friendId}")
-  Observable<AVFriendship> updateFriendship(@Path("followee") String followee, @Path("friendId") String friendId,
-                                    @Body Map<String, Object> param);
+  Observable<AVFriendship> updateFriendship(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                            @Path("followee") String followee, @Path("friendId") String friendId,
+                                            @Body Map<String, Object> param);
 
   @DELETE("/1.1/users/{followee}/friendship/{follower}")
-  Observable<JSONObject> unfollowUser(@Path("followee") String followee, @Path("follower") String follower);
+  Observable<JSONObject> unfollowUser(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                      @Path("followee") String followee, @Path("follower") String follower);
 
   @GET("/1.1/users/{userId}/followers")
-  Observable<JSONObject> getFollowers(@Path("userId") String userId);
+  Observable<JSONObject> getFollowers(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                      @Path("userId") String userId);
 
   @GET("/1.1/users/{userId}/followees")
-  Observable<JSONObject> getFollowees(@Path("userId") String userId);
+  Observable<JSONObject> getFollowees(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                      @Path("userId") String userId);
 
   @GET("/1.1/users/{userId}/followersAndFollowees")
-  Observable<JSONObject> getFollowersAndFollowees(@Path("userId") String userId);
+  Observable<JSONObject> getFollowersAndFollowees(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                                  @Path("userId") String userId);
 
   /**
    * Status API
    */
   @POST("/1.1/statuses")
-  Observable<AVStatus> postStatus(@Body Map<String, Object> param);
+  Observable<AVStatus> postStatus(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                  @Body Map<String, Object> param);
 
   @GET("/1.1/statuses/{statusId}")
-  Observable<AVStatus> fetchSingleStatus(@Path("statusId") String statusId);
+  Observable<AVStatus> fetchSingleStatus(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                         @Path("statusId") String statusId);
 
   @GET("/1.1/statuses")
-  Observable<AVQueryResult> fetchStatuses(@QueryMap Map<String, String> query);
+  Observable<AVQueryResult> fetchStatuses(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                          @QueryMap Map<String, String> query);
 
   @DELETE("/1.1/statuses/{statusId}")
-  Observable<AVNull> deleteStatus(@Path("statusId") String statusId);
+  Observable<AVNull> deleteStatus(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                  @Path("statusId") String statusId);
 
   @DELETE("/1.1/subscribe/statuses/inbox")
-  Observable<AVNull> deleteInboxStatus(@QueryMap Map<String, Object> query);
+  Observable<AVNull> deleteInboxStatus(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                       @QueryMap Map<String, Object> query);
 
   @GET("/1.1/subscribe/statuses")
-  Observable<AVQueryResult> queryInbox(@QueryMap Map<String, String> query);
+  Observable<AVQueryResult> queryInbox(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                       @QueryMap Map<String, String> query);
 
   @GET("/1.1/subscribe/statuses/count")
-  Observable<JSONObject> getInboxCount(@QueryMap Map<String, String> query);
+  Observable<JSONObject> getInboxCount(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                       @QueryMap Map<String, String> query);
 
   @POST("/1.1/subscribe/statuses/resetUnreadCount")
-  Observable<AVNull> resetInboxUnreadCount();
+  Observable<AVNull> resetInboxUnreadCount(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken);
 
 
   /**
@@ -245,14 +286,17 @@ public interface APIService {
   Observable<AVNull> verifySMSCode(@Path("code") String code, @Body Map<String, Object> param);
 
   @POST("/1.1/requestChangePhoneNumber")
-  Observable<AVNull> requestSMSCodeForUpdatingPhoneNumber(@Body Map<String, Object> param);
+  Observable<AVNull> requestSMSCodeForUpdatingPhoneNumber(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                                          @Body Map<String, Object> param);
 
   @POST("/1.1/changePhoneNumber")
-  Observable<AVNull> verifySMSCodeForUpdatingPhoneNumber(@Body Map<String, Object> param);
+  Observable<AVNull> verifySMSCodeForUpdatingPhoneNumber(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                                         @Body Map<String, Object> param);
 
   /**
    * FullText Search API
    */
   @GET("/1.1/search/select")
-  Observable<AVSearchResponse> search(@QueryMap Map<String, String> query);
+  Observable<AVSearchResponse> search(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                      @QueryMap Map<String, String> query);
 }
