@@ -296,7 +296,8 @@ public class AVUser extends AVObject {
    * @param <T> template type.
    * @return observable instance.
    */
-  public static <T extends AVUser> Observable<T> signUpOrLoginByMobilePhoneInBackground(String mobilePhoneNumber, String smsCode, Class<T> clazz) {
+  public static <T extends AVUser> Observable<T> signUpOrLoginByMobilePhoneInBackground(String mobilePhoneNumber,
+                                                                                        String smsCode, Class<T> clazz) {
     if (StringUtil.isEmpty(mobilePhoneNumber)) {
       return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "mobilePhoneNumber")));
     }
@@ -322,6 +323,10 @@ public class AVUser extends AVObject {
     return logIn(username, password, internalUserClazz());
   }
 
+  /**
+   * login as anonymous user in background.
+   * @return observable instance.
+   */
   public static Observable<? extends AVUser> logInAnonymously() {
     String anonymousId = UUID.randomUUID().toString().toLowerCase();
     Map<String, Object> param = new HashMap<>();
@@ -373,7 +378,8 @@ public class AVUser extends AVObject {
    * @param <T> template type.
    * @return observable instance.
    */
-  public static <T extends AVUser> Observable<T> loginByMobilePhoneNumber(String mobile, String password, final Class<T> clazz) {
+  public static <T extends AVUser> Observable<T> loginByMobilePhoneNumber(String mobile, String password,
+                                                                          final Class<T> clazz) {
     Map<String, Object> params = createUserMap(null, password, null, mobile, null);
     JSONObject data = JSONObject.Builder.create(params);
     return PaasClient.getStorageClient().logIn(data, clazz);
@@ -474,7 +480,8 @@ public class AVUser extends AVObject {
    * @return observable instance.
    */
   public static Observable<? extends AVUser> loginWithAuthData(final Map<String, Object> authData, final String platform,
-                                                                   final String unionId, final String unionIdPlatform, final boolean asMainAccount) {
+                                                               final String unionId, final String unionIdPlatform,
+                                                               final boolean asMainAccount) {
     return loginWithAuthData(internalUserClazz(), authData, platform, unionId, unionIdPlatform, asMainAccount);
   }
 
@@ -486,7 +493,9 @@ public class AVUser extends AVObject {
    * @param <T> template type.
    * @return observable instance.
    */
-  public static <T extends AVUser> Observable<T> loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData, final String platform) {
+  public static <T extends AVUser> Observable<T> loginWithAuthData(final Class<T> clazz,
+                                                                   final Map<String, Object> authData,
+                                                                   final String platform) {
     if (null == clazz) {
       return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "clazz")));
     }
@@ -522,8 +531,9 @@ public class AVUser extends AVObject {
    * @param <T> template type.
    * @return observable instance.
    */
-  public static <T extends AVUser> Observable<T> loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData, final String platform,
-                                                                   final String unionId, final String unionIdPlatform, final boolean asMainAccount) {
+  public static <T extends AVUser> Observable<T> loginWithAuthData(final Class<T> clazz, final Map<String, Object> authData,
+                                                                   final String platform, final String unionId,
+                                                                   final String unionIdPlatform, final boolean asMainAccount) {
     if (StringUtil.isEmpty(unionId)) {
       return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "unionId")));
     }
@@ -572,6 +582,16 @@ public class AVUser extends AVObject {
     });
   }
 
+  /**
+   * login with auth data.
+   * @param authData auth data.
+   * @param platform platform string.
+   * @param unionId union id.
+   * @param unionIdPlatform the platform which union id is binding with.
+   * @param asMainAccount flag indicating that whether current platform is main account or not.
+   * @param failOnNotExist flag to indicate to exit if failed or not.
+   * @return observable instance.
+   */
   public Observable<AVUser> loginWithAuthData(final Map<String, Object> authData, final String platform,
                                               final String unionId, final String unionIdPlatform,
                                               final boolean asMainAccount, final boolean failOnNotExist) {
@@ -592,6 +612,12 @@ public class AVUser extends AVObject {
     return loginWithAuthData(authData, platform, failOnNotExist);
   }
 
+  /**
+   * associate with third party data.
+   * @param authData auth data.
+   * @param platform platform name.
+   * @return observable instance.
+   */
   public Observable<AVUser> associateWithAuthData(Map<String, Object> authData, String platform) {
     if (null == authData || authData.isEmpty()) {
       return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "authData")));
@@ -609,6 +635,15 @@ public class AVUser extends AVObject {
     return (Observable<AVUser>) saveInBackground(new AVSaveOption().setFetchWhenSave(true));
   }
 
+  /**
+   * associate with third party data.
+   * @param authData auth data.
+   * @param platform platform name.
+   * @param unionId union id.
+   * @param unionIdPlatform the platform which union id is binding with.
+   * @param asMainAccount flag indicating that whether current platform is main account or not.
+   * @return observable instance.
+   */
   public Observable<AVUser> associateWithAuthData(Map<String, Object> authData, String platform, String unionId, String unionIdPlatform,
                                                   boolean asMainAccount) {
     if (null == authData || authData.isEmpty()) {
@@ -628,6 +663,11 @@ public class AVUser extends AVObject {
     return this.associateWithAuthData(authData, platform);
   }
 
+  /**
+   * dissociate with third party data.
+   * @param platform platform name.
+   * @return observable instance.
+   */
   public Observable<AVUser> dissociateWithAuthData(final String platform) {
     if (StringUtil.isEmpty(platform)) {
       return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "platform")));
@@ -655,6 +695,10 @@ public class AVUser extends AVObject {
    * @return observable instance.
    */
 
+  /**
+   * check authenticated status in background.
+   * @return observable instance.
+   */
   public Observable<Boolean> checkAuthenticatedInBackground() {
     String sessionToken = getSessionToken();
     if (StringUtil.isEmpty(sessionToken)) {
@@ -664,6 +708,10 @@ public class AVUser extends AVObject {
     return PaasClient.getStorageClient().checkAuthenticated(sessionToken);
   }
 
+  /**
+   * refresh session token in background.
+   * @return observable instance.
+   */
   public Observable<Boolean> refreshSessionTokenInBackground() {
     return PaasClient.getStorageClient().refreshSessionToken(this);
   }
@@ -783,6 +831,9 @@ public class AVUser extends AVObject {
     });
   }
 
+  /**
+   * user logout.
+   */
   public static void logOut() {
     AVUser.changeCurrentUser(null, true);
   }
@@ -824,7 +875,6 @@ public class AVUser extends AVObject {
     enableAutomatic = true;
   }
 
-  //@JSONField(serialize = false)
   public static boolean isEnableAutomatic() {
     return enableAutomatic;
   }
@@ -841,6 +891,11 @@ public class AVUser extends AVObject {
     return currentUserArchivePath().exists();
   }
 
+  /**
+   * change current user instance.
+   * @param newUser new instance.
+   * @param save flag indicating that whether save current user to cache or not.
+   */
   public static synchronized void changeCurrentUser(AVUser newUser, boolean save) {
     if (AppConfiguration.isIncognitoMode()) {
       // disable current user in incognito mode.
@@ -864,10 +919,20 @@ public class AVUser extends AVObject {
     PaasClient.getStorageClient().setCurrentUser(newUser);
   }
 
+  /**
+   * get current user, null if non-login.
+   * @return user instance.
+   */
   public static AVUser getCurrentUser() {
     return getCurrentUser(internalUserClazz());
   }
 
+  /**
+   * get current user, null if non-login.
+   * @param userClass user object class.
+   * @param <T> template type.
+   * @return user instance.
+   */
   public static <T extends AVUser> T getCurrentUser(Class<T> userClass) {
     if (AppConfiguration.isIncognitoMode()) {
       // disable current user in incognito mode.
@@ -1046,6 +1111,15 @@ public class AVUser extends AVObject {
     return requestSMSCodeForUpdatingPhoneNumberInBackground(null, mobilePhone, option);
   }
 
+  /**
+   * request sms code for updating phone number of current user.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param mobilePhone mobile phone number.
+   * @param option sms option
+   * @return observable instance
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public static Observable<AVNull> requestSMSCodeForUpdatingPhoneNumberInBackground(AVUser asAuthenticatedUser,
                                                                                     String mobilePhone, AVSMSOption option) {
     if (StringUtil.isEmpty(mobilePhone) || !AVSMS.checkMobilePhoneNumber(mobilePhone)) {
@@ -1065,6 +1139,15 @@ public class AVUser extends AVObject {
     return verifySMSCodeForUpdatingPhoneNumberInBackground(null, code, mobilePhone);
   }
 
+  /**
+   * verify sms code for updating phone number of current user.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param code    sms code
+   * @param mobilePhone mobile phone number.
+   * @return observable instance
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public static Observable<AVNull> verifySMSCodeForUpdatingPhoneNumberInBackground(AVUser asAuthenticatedUser,
                                                                                    String code, String mobilePhone) {
     if (StringUtil.isEmpty(code) || StringUtil.isEmpty(mobilePhone)) {
@@ -1085,48 +1168,101 @@ public class AVUser extends AVObject {
   }
 
   /**
-   * follow-relative opersations
-   * @param userObjectId  user objectId.
+   * follow somebody in background.
+   * @param userObjectId  target user objectId.
    * @return observable instance.
    */
   public Observable<JSONObject> followInBackground(String userObjectId) {
     return followInBackground(null, userObjectId);
   }
-  public Observable<JSONObject> followInBackground(AVUser asUser, String userObjectId) {
-    return this.followInBackground(asUser, userObjectId, new HashMap<String, Object>());
+
+  /**
+   * follow somebody in background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param userObjectId target user objectId.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public Observable<JSONObject> followInBackground(AVUser asAuthenticatedUser, String userObjectId) {
+    return this.followInBackground(asAuthenticatedUser, userObjectId, new HashMap<String, Object>());
   }
 
+  /**
+   * follow somebody in background.
+   * @param userObjectId target user objectId.
+   * @param attributes friendship attributes.
+   * @return observable instance.
+   */
   public Observable<JSONObject> followInBackground(String userObjectId, Map<String, Object> attributes) {
     return followInBackground(null, userObjectId, attributes);
   }
-  public Observable<JSONObject> followInBackground(AVUser asUser, String userObjectId, Map<String, Object> attributes) {
+
+  /**
+   * follow somebody in background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param userObjectId target user objectId.
+   * @param attributes friendship attributes.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public Observable<JSONObject> followInBackground(AVUser asAuthenticatedUser, String userObjectId, Map<String, Object> attributes) {
     if (!checkUserAuthentication(null)) {
       return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
               "No valid session token, make sure signUp or login has been called."));
     }
-    return PaasClient.getStorageClient().followUser(asUser, getObjectId(), userObjectId, attributes);
+    return PaasClient.getStorageClient().followUser(asAuthenticatedUser, getObjectId(), userObjectId, attributes);
   }
 
+  /**
+   * unfollow somebody in background.
+   * @param userObjectId target user objectId.
+   * @return observable instance.
+   */
   public Observable<JSONObject> unfollowInBackground(String userObjectId) {
     return unfollowInBackground(null, userObjectId);
   }
 
-  public Observable<JSONObject> unfollowInBackground(AVUser asUser, String userObjectId) {
+  /**
+   * unfollow somebody in background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param userObjectId target user objectId.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public Observable<JSONObject> unfollowInBackground(AVUser asAuthenticatedUser, String userObjectId) {
     if (!checkUserAuthentication(null)) {
       return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
               "No valid session token, make sure signUp or login has been called."));
     }
-    return PaasClient.getStorageClient().unfollowUser(asUser, getObjectId(), userObjectId);
+    return PaasClient.getStorageClient().unfollowUser(asAuthenticatedUser, getObjectId(), userObjectId);
   }
 
+  /**
+   * get follower query.
+   * @return query instance.
+   */
   public AVQuery<AVObject> followerQuery() {
     return AVUser.followerQuery(getObjectId(), AVObject.class);
   }
 
+  /**
+   * get followee query.
+   * @return query instance.
+   */
   public AVQuery<AVObject> followeeQuery() {
     return AVUser.followeeQuery(getObjectId(), AVObject.class);
   }
 
+  /**
+   * get follower query.
+   * @param userObjectId user object id.
+   * @param clazz result class.
+   * @param <T> template type.
+   * @return query instance.
+   */
   public static <T extends AVObject> AVQuery<T> followerQuery(final String userObjectId,
                                                             Class<T> clazz) {
     if (StringUtil.isEmpty(userObjectId)) {
@@ -1138,6 +1274,13 @@ public class AVUser extends AVObject {
     return query;
   }
 
+  /**
+   * get followee query.
+   * @param userObjectId user object id.
+   * @param clazz result class.
+   * @param <T> template type.
+   * @return query instance.
+   */
   public static <T extends AVObject> AVQuery<T> followeeQuery(final String userObjectId, Class<T> clazz) {
     if (StringUtil.isEmpty(userObjectId)) {
       throw new IllegalArgumentException("Blank user objectId");
@@ -1184,6 +1327,15 @@ public class AVUser extends AVObject {
     return applyFriendshipInBackground(null, friend, attributes);
   }
 
+  /**
+   * apply new friendship to someone.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param friend target user.
+   * @param attributes additional attributes.
+   * @return Observable instance to monitor operation result.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public Observable<AVFriendshipRequest> applyFriendshipInBackground(AVUser asAuthenticatedUser,
                                                                      AVUser friend, Map<String, Object> attributes) {
     if (!checkUserAuthentication(null)) {
@@ -1215,6 +1367,14 @@ public class AVUser extends AVObject {
     return updateFriendship(null, friendship);
   }
 
+  /**
+   * update friendship attributes.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param friendship friendship instance.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public Observable<AVFriendship> updateFriendship(AVUser asAuthenticatedUser, AVFriendship friendship) {
     if (!checkUserAuthentication(null)) {
       logger.d("current user isn't authenticated.");
@@ -1251,7 +1411,18 @@ public class AVUser extends AVObject {
                                                                  Map<String, Object> attributes) {
     return acceptFriendshipRequest(null, request, attributes);
   }
-  public Observable<AVFriendshipRequest> acceptFriendshipRequest(AVUser asUser,
+
+  /**
+   * accept a friendship.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param request friendship request.
+   * @param attributes additional attributes.
+   * @return Observable instance to monitor operation result.
+   * @notice: attributes is necessary as parameter bcz they are not properties of FriendshipRequest.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public Observable<AVFriendshipRequest> acceptFriendshipRequest(AVUser asAuthenticatedUser,
                                                                  AVFriendshipRequest request,
                                                                  Map<String, Object> attributes){
     if (!checkUserAuthentication(null)) {
@@ -1269,7 +1440,7 @@ public class AVUser extends AVObject {
       param.put(PARAM_ATTR_FRIENDSHIP, attributes);
     }
     JSONObject jsonObject = JSONObject.Builder.create(param);
-    return PaasClient.getStorageClient().acceptFriendshipRequest(asUser, request, jsonObject);
+    return PaasClient.getStorageClient().acceptFriendshipRequest(asAuthenticatedUser, request, jsonObject);
   }
 
   /**
@@ -1281,7 +1452,15 @@ public class AVUser extends AVObject {
     return declineFriendshipRequest(null, request);
   }
 
-  public Observable<AVFriendshipRequest> declineFriendshipRequest(AVUser asUser, AVFriendshipRequest request) {
+  /**
+   * decline a friendship.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param request friendship request.
+   * @return Observable instance to monitor operation result.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public Observable<AVFriendshipRequest> declineFriendshipRequest(AVUser asAuthenticatedUser, AVFriendshipRequest request) {
     if (!checkUserAuthentication(null)) {
       logger.d("current user isn't authenticated.");
       return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
@@ -1292,7 +1471,7 @@ public class AVUser extends AVObject {
               "friendship request(objectId) is invalid."));
     }
 
-    return PaasClient.getStorageClient().declineFriendshipRequest(asUser, request);
+    return PaasClient.getStorageClient().declineFriendshipRequest(asAuthenticatedUser, request);
   }
 
   /**
@@ -1373,18 +1552,34 @@ public class AVUser extends AVObject {
     }
     return map;
   }
+
+  /**
+   * get follower and followee in background.
+   * @param callback callback handler.
+   *
+   * request authentication with current user.
+   */
   public void getFollowersAndFolloweesInBackground(final FollowersAndFolloweesCallback callback) {
     getFollowersAndFolloweesInBackground(null, callback);
   }
 
-  public void getFollowersAndFolloweesInBackground(AVUser asUser, final FollowersAndFolloweesCallback callback) {
+  /**
+   * get follower and followee in background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param callback callback handler.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public void getFollowersAndFolloweesInBackground(AVUser asAuthenticatedUser,
+                                                   final FollowersAndFolloweesCallback callback) {
     if (null == callback) {
       return;
     }
     if (!checkUserAuthentication(callback)) {
       return;
     }
-    PaasClient.getStorageClient().getFollowersAndFollowees(asUser, getObjectId()).subscribe(new Observer<JSONObject>() {
+    PaasClient.getStorageClient().getFollowersAndFollowees(asAuthenticatedUser, getObjectId())
+            .subscribe(new Observer<JSONObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 

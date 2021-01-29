@@ -30,12 +30,55 @@ public class AVCloud {
    * @return observable instance.
    */
   public static <T> Observable<T> callFunctionInBackground(String name, Map<String, Object> params) {
-    return PaasClient.getStorageClient().callFunction(null, name, Utils.getParsedMap(params));
+    return callFunctionInBackground(null, name, params);
   }
 
+  /**
+   * Call Cloud Function in Background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param name function name.
+   * @param params invoke parameters.
+   * @param <T> template type.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public static <T> Observable<T> callFunctionInBackground(AVUser asAuthenticatedUser,
+                                                           String name, Map<String, Object> params) {
+    return PaasClient.getStorageClient().callFunction(asAuthenticatedUser, name, Utils.getParsedMap(params));
+  }
+
+  /**
+   * call cloud funtion with cache policy.
+   * @param name function name.
+   * @param params parameters.
+   * @param cachePolicy cache policy same as AVQuery.
+   * @param maxCacheAge max age in milliseconds.
+   * @param <T> template type of result.
+   * @return observable instance.
+   */
   public static <T> Observable<T> callFunctionWithCacheInBackground(String name, Map<String, Object> params,
                                                                     AVQuery.CachePolicy cachePolicy, long maxCacheAge) {
-    return PaasClient.getStorageClient().callFunctionWithCachePolicy(name, Utils.getParsedMap(params), cachePolicy, maxCacheAge);
+    return callFunctionWithCacheInBackground(null, name, params, cachePolicy, maxCacheAge);
+  }
+
+  /**
+   * call cloud funtion with cache policy.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param name function name.
+   * @param params parameters.
+   * @param cachePolicy cache policy same as AVQuery.
+   * @param maxCacheAge max age in milliseconds.
+   * @param <T> template type of result.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public static <T> Observable<T> callFunctionWithCacheInBackground(AVUser asAuthenticatedUser,
+                                                                    String name, Map<String, Object> params,
+                                                                    AVQuery.CachePolicy cachePolicy, long maxCacheAge) {
+    return PaasClient.getStorageClient().callFunctionWithCachePolicy(asAuthenticatedUser, name,
+            Utils.getParsedMap(params), cachePolicy, maxCacheAge);
   }
 
   /**
@@ -46,12 +89,54 @@ public class AVCloud {
    * @return observable instance.
    */
   public static <T> Observable<T> callRPCInBackground(String name, Object params) {
-    return PaasClient.getStorageClient().callRPC(null, name, Utils.getParsedObject(params));
+    return callRPCInBackground(null, name, params);
   }
 
+  /**
+   * Call Cloud RPC Function in Background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param name function name.
+   * @param params invoke parameters.
+   * @param <T> template type.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public static <T> Observable<T> callRPCInBackground(AVUser asAuthenticatedUser, String name, Object params) {
+    return PaasClient.getStorageClient().callRPC(asAuthenticatedUser, name, Utils.getParsedObject(params));
+  }
+
+  /**
+   * Call Cloud RPC Function with cache policy in Background.
+   * @param name function name.
+   * @param params invoke parameters.
+   * @param cachePolicy cache policy same as AVQuery
+   * @param maxCacheAge max cache age in milliseconds.
+   * @param <T>template type.
+   * @return observable instance.
+   */
   public static <T> Observable<T> callRPCWithCacheInBackground(String name, Map<String, Object> params,
                                                                AVQuery.CachePolicy cachePolicy, long maxCacheAge) {
-    return PaasClient.getStorageClient().callRPCWithCachePolicy(name, Utils.getParsedMap(params), cachePolicy, maxCacheAge);
+    return callRPCWithCacheInBackground(null, name, params, cachePolicy, maxCacheAge);
+  }
+
+  /**
+   * Call Cloud RPC Function with cache policy in Background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param name function name.
+   * @param params invoke parameters.
+   * @param cachePolicy cache policy same as AVQuery
+   * @param maxCacheAge max cache age in milliseconds.
+   * @param <T>template type.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public static <T> Observable<T> callRPCWithCacheInBackground(AVUser asAuthenticatedUser,
+                                                               String name, Map<String, Object> params,
+                                                               AVQuery.CachePolicy cachePolicy, long maxCacheAge){
+    return PaasClient.getStorageClient().callRPCWithCachePolicy(asAuthenticatedUser,name,
+            Utils.getParsedMap(params), cachePolicy, maxCacheAge);
   }
 
   private AVCloud() {

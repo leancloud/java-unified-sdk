@@ -10,7 +10,6 @@ import java.util.Map;
 public class AVRelation<T extends AVObject> {
   private String key;
 
-  //@JSONField(serialize=false)
   private transient AVObject parent;
 
   private String targetClass;
@@ -97,7 +96,6 @@ public class AVRelation<T extends AVObject> {
    *
    * @return A AVQuery that restricts the results to objects in this relations.
    */
-  //@JSONField(serialize=false)
   public AVQuery<T> getQuery() {
     return this.getQuery(null);
   }
@@ -108,7 +106,6 @@ public class AVRelation<T extends AVObject> {
    * @param clazz The AVObject subclass.
    * @return A AVQuery that restricts the results to objects in this relations.
    */
-  //@JSONField(serialize=false)
   public AVQuery<T> getQuery(Class<T> clazz) {
     if (getParent() == null || StringUtil.isEmpty(getParent().getObjectId())) {
       throw new IllegalStateException("unable to encode an association with an unsaved AVObject");

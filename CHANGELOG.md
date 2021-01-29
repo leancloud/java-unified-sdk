@@ -2,6 +2,24 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 7.2.0 release
+
+#### Break changes
+- AVUser#currentUser doesn't work in lean-engine.
+AVUser#currentUser is a short-cut for use, only working within single thread, so it is not appropriate in lean engine.
+We disable AVUser#currentUser at present, and add many new methods for supporting requests with particular user authentication:
+```
+AVObject#saveInBackground(AVUser asAuthenticatedUser);
+AVQuery#findInBackground(AVUser asAuthenticatedUser);
+``` 
+All these methods should be invoked in lean engine.
+
+#### New features
+- `AVUser#becomeWithSessionToken(String sessionToken, boolean saveToCurrentUser)` was added to change currentUser automatically.
+
+#### Optimization and fixed bugs
+- None
+
 ## 7.1.2 release
 
 #### Break changes

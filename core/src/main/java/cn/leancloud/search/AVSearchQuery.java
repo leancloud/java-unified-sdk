@@ -354,9 +354,21 @@ public class AVSearchQuery<T extends AVObject> {
     return params;
   }
 
+  /**
+   * execute query in background.
+   * @return observable instance.
+   */
   public Observable<List<T>> findInBackground() {
     return this.findInBackground(null);
   }
+
+  /**
+   * execute query in background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public Observable<List<T>> findInBackground(AVUser asAuthenticatedUser) {
     return getSearchResult(asAuthenticatedUser, getParameters(queryString));
   }

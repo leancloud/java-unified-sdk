@@ -33,6 +33,11 @@ public class AVFriendship extends AVObject {
     put(ATTR_FOLLOWER, follower);
   }
 
+  /**
+   * save friendship in backgound.
+   * @param option save option.
+   * @return observable instance.
+   */
   @Override
   public Observable<? extends AVObject> saveInBackground(final AVSaveOption option) {
     AVUser currentUser = AVUser.currentUser();

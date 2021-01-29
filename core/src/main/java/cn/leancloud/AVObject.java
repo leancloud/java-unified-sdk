@@ -14,11 +14,9 @@ import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
 import cn.leancloud.json.JSONArray;
 
-import java.text.DateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.reactivex.Observable;
@@ -502,14 +500,14 @@ public class AVObject {
    * Flag to indicate data is available or not.
    * @return available flag.
    */
-  //@JSONField(serialize = false)
   public boolean isDataAvailable() {
     return !StringUtil.isEmpty(this.objectId) && !this.serverData.isEmpty();
   }
 
-  /**
+  /******************************
    * changable operations.
-   */
+   ******************************/
+
   /**
    * Add attribute.
    * @param key target key.
@@ -943,6 +941,13 @@ public class AVObject {
     return saveInBackground(targetUser);
   }
 
+  /**
+   * Save object in background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public Observable<? extends AVObject> saveInBackground(AVUser asAuthenticatedUser) {
     AVSaveOption option = null;
     if (totallyOverwrite) {
@@ -961,6 +966,14 @@ public class AVObject {
     return saveInBackground(null, option);
   }
 
+  /**
+   * Save object in background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param option save option.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public Observable<? extends AVObject> saveInBackground(final AVUser asAuthenticatedUser, final AVSaveOption option) {
     Map<AVObject, Boolean> markMap = new HashMap<>();
     if (hasCircleReference(markMap)) {
@@ -1008,6 +1021,12 @@ public class AVObject {
     save(null);
   }
 
+  /**
+   * Save in blocking mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public void save(AVUser asAuthenticatedUser) {
     saveInBackground(asAuthenticatedUser).blockingSubscribe();
   }
@@ -1021,6 +1040,14 @@ public class AVObject {
     saveAll(null, objects);
   }
 
+  /**
+   * Save All objects in blocking mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param objects object collection.
+   * @throws AVException error happened.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public static void saveAll(AVUser asAuthenticatedUser, Collection<? extends AVObject> objects) throws AVException {
     saveAllInBackground(asAuthenticatedUser, objects).blockingSubscribe();
   }
@@ -1045,6 +1072,14 @@ public class AVObject {
     return saveAllInBackground(null, objects);
   }
 
+  /**
+   * Save all objects in async mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param objects object collection.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public static Observable<JSONArray> saveAllInBackground(final AVUser asAuthenticatedUser,
                                                           final Collection<? extends AVObject> objects) {
     if (null == objects || objects.isEmpty()) {
@@ -1114,6 +1149,13 @@ public class AVObject {
     saveEventually(null);
   }
 
+  /**
+   * Save eventually.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @throws AVException error happened.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public void saveEventually(final AVUser asAuthenticatedUser) throws AVException {
     if (operations.isEmpty()) {
       return;
@@ -1170,6 +1212,12 @@ public class AVObject {
     deleteEventually(null);
   }
 
+  /**
+   * Delete current object eventually.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public void deleteEventually(final AVUser asAuthenticatedUser) {
     String objectId  = getObjectId();
     if (StringUtil.isEmpty(objectId)) {
@@ -1212,6 +1260,13 @@ public class AVObject {
     return deleteInBackground(null);
   }
 
+  /**
+   * Delete current object in async mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public Observable<AVNull> deleteInBackground(final AVUser asAuthenticatedUser) {
     Map<String, Object> ignoreParam = new HashMap<>();
     if (ignoreHooks.size() > 0) {
@@ -1231,6 +1286,12 @@ public class AVObject {
     delete(null);
   }
 
+  /**
+   * Delete current object in blocking mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public void delete(final AVUser asAuthenticatedUser) {
     deleteInBackground(asAuthenticatedUser).blockingSubscribe();
   }
@@ -1244,6 +1305,14 @@ public class AVObject {
     deleteAll(null, objects);
   }
 
+  /**
+   * Delete all objects in blocking mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param objects object collection.
+   * @throws AVException error happened.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public static void deleteAll(final AVUser asAuthenticatedUser, Collection<? extends AVObject> objects) throws AVException {
     deleteAllInBackground(asAuthenticatedUser, objects).blockingSubscribe();
   }
@@ -1257,6 +1326,14 @@ public class AVObject {
     return deleteAllInBackground(null, objects);
   }
 
+  /**
+   * Delete all objects in async mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param objects object collection.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public static Observable<AVNull> deleteAllInBackground(final AVUser asAuthenticatedUser,
                                                          Collection<? extends AVObject> objects) {
     if (null == objects || objects.isEmpty()) {
@@ -1296,6 +1373,13 @@ public class AVObject {
     refreshInBackground(includeKeys).blockingSubscribe();
   }
 
+  /**
+   * Refresh current object in blocking mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param includeKeys include keys, which object will be return together.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public void refresh(final AVUser asAuthenticatedUser, String includeKeys) {
     refreshInBackground(asAuthenticatedUser, includeKeys).blockingSubscribe();
   }
@@ -1308,6 +1392,13 @@ public class AVObject {
     return refreshInBackground(null, null);
   }
 
+  /**
+   * Refresh current object in async mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public Observable<AVObject> refreshInBackground(final AVUser asAuthenticatedUser) {
     return refreshInBackground(asAuthenticatedUser, null);
   }
@@ -1321,6 +1412,14 @@ public class AVObject {
     return refreshInBackground(null, includeKeys);
   }
 
+  /**
+   * Refresh current object in async mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param includeKeys include keys, which object will be return together.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public Observable<AVObject> refreshInBackground(final AVUser asAuthenticatedUser, final String includeKeys) {
     if (totallyOverwrite) {
       return PaasClient.getStorageClient().getWholeObject(asAuthenticatedUser, this.endpointClassName, getObjectId(), includeKeys)
@@ -1369,7 +1468,19 @@ public class AVObject {
    * @return current object.
    */
   public AVObject fetch(String includeKeys) {
-    refresh(includeKeys);
+    return fetch(null, includeKeys);
+  }
+
+  /**
+   * Fetch current object in blocking mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param includeKeys include keys, which object will be return together.
+   * @return current object.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public AVObject fetch(AVUser asAuthenticatedUser, String includeKeys) {
+    refresh(asAuthenticatedUser, includeKeys);
     return this;
   }
 
@@ -1387,7 +1498,19 @@ public class AVObject {
    * @return observable instance.
    */
   public Observable<AVObject> fetchInBackground(String includeKeys) {
-    return refreshInBackground(includeKeys);
+    return fetchInBackground(null, includeKeys);
+  }
+
+  /**
+   * Fetch current object in async mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param includeKeys include keys, which object will be return together.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public Observable<AVObject> fetchInBackground(AVUser asAuthenticatedUser, String includeKeys) {
+    return refreshInBackground(asAuthenticatedUser, includeKeys);
   }
 
   /**
@@ -1408,10 +1531,22 @@ public class AVObject {
    * @return observable instance.
    */
   public Observable<AVObject> fetchIfNeededInBackground(String includeKeys) {
+    return fetchIfNeededInBackground(null, includeKeys);
+  }
+
+  /**
+   * Fetch current object if needed in async mode.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param includeKeys include keys, which object will be return together.
+   * @return observable instance.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
+  public Observable<AVObject> fetchIfNeededInBackground(AVUser asAuthenticatedUser, String includeKeys) {
     if (!StringUtil.isEmpty(getObjectId()) && this.serverData.size() > 1) {
       return Observable.just(this);
     } else {
-      return refreshInBackground(includeKeys);
+      return refreshInBackground(asAuthenticatedUser, includeKeys);
     }
   }
 
@@ -1470,7 +1605,6 @@ public class AVObject {
    * Get request endpoint.
    * @return endpoint.
    */
-  //@JSONField(serialize = false)
   public String getRequestRawEndpoint() {
     if (StringUtil.isEmpty(getObjectId())) {
       return "/1.1/classes/" + this.getClassName();
@@ -1483,7 +1617,6 @@ public class AVObject {
    * Get request method.
    * @return http method.
    */
-  //@JSONField(serialize = false)
   public String getRequestMethod() {
     if (StringUtil.isEmpty(getObjectId())) {
       return "POST";
@@ -1577,7 +1710,7 @@ public class AVObject {
     }
     // replace leading type name to compatible with v4.x android sdk serialized json string.
     objectString = objectString.replaceAll("^\\{\\s*\"@type\":\\s*\"[A-Za-z\\.]+\",", "{");
-//    objectString = objectString.replaceAll("^\\{\\s*\"@type\":\\s*\"cn.leancloud.AV(Object|Installation|User|Status|Role|File)\",", "{");
+//  objectString = objectString.replaceAll("^\\{\\s*\"@type\":\\s*\"cn.leancloud.AV(Object|Installation|User|Status|Role|File)\",", "{");
 
     // replace old AVObject type name.
     objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVObject\",", "\"@type\":\"cn.leancloud.AVObject\",");

@@ -749,7 +749,8 @@ public class StorageClient {
     return result;
   }
 
-  public <T> Observable<T> callRPCWithCachePolicy(final String name, final Map<String, Object> param,
+  public <T> Observable<T> callRPCWithCachePolicy(final AVUser asAuthenticatedUser,
+                                                  final String name, final Map<String, Object> param,
                                                   final AVQuery.CachePolicy cachePolicy, final long maxCacheAge) {
     final String cacheKey = QueryResultCache.generateCachedKey(name, param);
     return executeCachedQuery(name, param, cachePolicy, maxCacheAge,
@@ -779,14 +780,15 @@ public class StorageClient {
             new QueryExecutor() {
               @Override
               public <T> Observable<T> executor() {
-                return callRPC(null, name, param,
+                return callRPC(asAuthenticatedUser, name, param,
                         cachePolicy != AVQuery.CachePolicy.IGNORE_CACHE && cachePolicy != AVQuery.CachePolicy.NETWORK_ONLY,
                         cacheKey);
               }
             });
   }
 
-  public <T> Observable<T> callFunctionWithCachePolicy(final String name, final Map<String, Object> params,
+  public <T> Observable<T> callFunctionWithCachePolicy(final AVUser asAuthenticatedUser,
+                                                       final String name, final Map<String, Object> params,
                                                        final AVQuery.CachePolicy cachePolicy, final long maxCacheAge) {
     final String cacheKey = QueryResultCache.generateCachedKey(name, params);
     return executeCachedQuery(name, params, cachePolicy, maxCacheAge,
@@ -818,7 +820,7 @@ public class StorageClient {
             new QueryExecutor() {
               @Override
               public <T> Observable<T> executor() {
-                return callFunction(null, name, params,
+                return callFunction(asAuthenticatedUser, name, params,
                         cachePolicy != AVQuery.CachePolicy.IGNORE_CACHE && cachePolicy != AVQuery.CachePolicy.NETWORK_ONLY,
                         cacheKey);
               }

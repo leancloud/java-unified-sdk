@@ -445,6 +445,14 @@ public final class AVFile extends AVObject {
     saveInBackground(null, keepFileName, progressCallback);
   }
 
+  /**
+   * save to cloud in background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param keepFileName whether keep file name in url or not.
+   * @param progressCallback progress callback.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public synchronized void saveInBackground(AVUser asAuthenticatedUser,
                                             boolean keepFileName, final ProgressCallback progressCallback) {
     saveWithProgressCallback(asAuthenticatedUser, keepFileName, progressCallback).subscribe(new Observer<AVFile>() {
@@ -557,6 +565,9 @@ public final class AVFile extends AVObject {
     return saveInBackground(false);
   }
 
+  /**
+   * save to cloud.
+   */
   @Override
   public void save() {
     this.saveInBackground().blockingSubscribe();
@@ -570,6 +581,15 @@ public final class AVFile extends AVObject {
   public Observable<AVFile> saveInBackground(boolean keepFileName) {
     return saveInBackground(null, keepFileName);
   }
+
+  /**
+   * save to cloud in background.
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param keepFileName whether keep file name in url or not.
+   * @return Observable object.
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public Observable<AVFile> saveInBackground(AVUser asAuthenticatedUser, boolean keepFileName) {
     return saveWithProgressCallback(asAuthenticatedUser, keepFileName,null);
   }
@@ -627,7 +647,6 @@ public final class AVFile extends AVObject {
    * @return data stream.
    * @throws Exception for file not found or io problem.
    */
-  //@JSONField(serialize = false)
   public InputStream getDataStream() throws Exception {
     String filePath = "";
     if(!StringUtil.isEmpty(localPath)) {

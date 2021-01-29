@@ -86,6 +86,10 @@ public class AVStatus extends AVObject {
     this.endpointClassName = "statuses";
   }
 
+  /**
+   * constructor from AVObject instance.
+   * @param o object instance
+   */
   public AVStatus(AVObject o) {
     super(o);
   }
@@ -221,6 +225,15 @@ public class AVStatus extends AVObject {
   public static Observable<AVNull> deleteInBackground(AVStatus status) {
     return deleteInBackground(null, status);
   }
+
+  /**
+   * delete status(class method)
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param status instance of AVStatus
+   * @return Observable instance
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public static Observable<AVNull> deleteInBackground(AVUser asAuthenticatedUser, AVStatus status) {
     if (!checkCurrentUserAuthenticated()) {
       return Observable.error(ErrorUtils.sessionMissingException());
@@ -275,6 +288,14 @@ public class AVStatus extends AVObject {
     return getStatusWithIdInBackground(null, statusId);
   }
 
+  /**
+   * fetch status with specified objectId
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @param statusId status id.
+   * @return Observable instance
+   *
+   * in general, this method should be invoked in lean engine.
+   */
   public static Observable<AVStatus> getStatusWithIdInBackground(AVUser asAuthenticatedUser, String statusId) {
     return PaasClient.getStorageClient().fetchStatus(asAuthenticatedUser, statusId);
   }

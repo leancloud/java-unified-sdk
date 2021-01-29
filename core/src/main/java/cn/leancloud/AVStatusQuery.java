@@ -266,6 +266,6 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
     Map<String, String> query = assembleParameters();
     query.put("count", "1");
     query.put("limit", "0");
-    return PaasClient.getStorageClient().getInboxCount(null, query);
+    return PaasClient.getStorageClient().getInboxCount(this.owner, query);
   }
 }
