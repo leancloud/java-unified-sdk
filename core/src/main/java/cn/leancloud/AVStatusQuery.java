@@ -172,12 +172,15 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
     return result;
   }
 
-  @Override
   protected Observable<List<AVStatus>> findInBackground(int explicitLimit) {
-    return internalFindInBackground(explicitLimit, false);
+    return this.findInBackground(null, explicitLimit);
+  }
+  protected Observable<List<AVStatus>> findInBackground(AVUser asAuthenticatedUser, int explicitLimit) {
+    return internalFindInBackground(asAuthenticatedUser, explicitLimit, false);
   }
 
-  private Observable<List<AVStatus>> internalFindInBackground(int explicitLimit, boolean enableIterator) {
+  private Observable<List<AVStatus>> internalFindInBackground(AVUser asAuthenticatedUser,
+                                                              int explicitLimit, boolean enableIterator) {
     if (null == this.owner && null == this.source) {
       return Observable.error(ErrorUtils.illegalArgument("source or owner is null, please initialize correctly."));
     }
@@ -195,7 +198,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
     }
 
     if (null != this.owner) {
-      return PaasClient.getStorageClient().queryInbox(query).map(new Function<List<AVStatus>, List<AVStatus>>() {
+      return PaasClient.getStorageClient().queryInbox(asAuthenticatedUser, query).map(new Function<List<AVStatus>, List<AVStatus>>() {
         @Override
         public List<AVStatus> apply(List<AVStatus> avStatuses) throws Exception {
           if (null == avStatuses || avStatuses.size() < 1) {
@@ -208,7 +211,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
         }
       });
     } else {
-      return PaasClient.getStorageClient().queryStatus(query).map(new Function<List<AVStatus>, List<AVStatus>>() {
+      return PaasClient.getStorageClient().queryStatus(asAuthenticatedUser, query).map(new Function<List<AVStatus>, List<AVStatus>>() {
         @Override
         public List<AVStatus> apply(List<AVStatus> avStatuses) throws Exception {
           if (null == avStatuses || avStatuses.size() < 1) {
@@ -228,7 +231,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
    * @return observable instance.
    */
   public Observable<List<AVStatus>> nextInBackground() {
-    return internalFindInBackground(0, true);
+    return internalFindInBackground(null, 0, true);
   }
 
   /**
@@ -248,7 +251,7 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
     Map<String, String> query = assembleParameters();
     query.put("count", "1");
     query.put("limit", "0");
-    return PaasClient.getStorageClient().queryCount(AVStatus.CLASS_NAME, query);
+    return PaasClient.getStorageClient().queryCount(null, AVStatus.CLASS_NAME, query);
   }
 
   /**
@@ -263,6 +266,6 @@ public class AVStatusQuery extends AVQuery<AVStatus> {
     Map<String, String> query = assembleParameters();
     query.put("count", "1");
     query.put("limit", "0");
-    return PaasClient.getStorageClient().getInboxCount(query);
+    return PaasClient.getStorageClient().getInboxCount(null, query);
   }
 }

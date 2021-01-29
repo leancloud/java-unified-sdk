@@ -39,6 +39,7 @@ public class AppConfiguration {
   private static SystemSetting defaultSetting = new InMemorySetting();
 
   private static boolean enableLocalCache = true;
+  private static boolean incognitoMode = false;
 
   private static ConverterFactory converterFactory = new GSONConverterFactory();
   private static retrofit2.Converter.Factory retrofitConverterFactory = converterFactory.generateRetrofitConverterFactory();
@@ -76,6 +77,14 @@ public class AppConfiguration {
   }
   public static String getUserAgent() {
     return DEFAULT_USER_AGENT;
+  }
+
+  public static void setIncognitoMode(boolean mode) {
+    incognitoMode = mode;
+  }
+
+  public static boolean isIncognitoMode() {
+    return incognitoMode;
   }
 
   public static void setConverterFactory(ConverterFactory cf) {

@@ -10,7 +10,7 @@ import okhttp3.Response;
 import java.io.IOException;
 
 public class RequestPaddingInterceptor implements Interceptor {
-  public static final String HEADER_KEY_LC_SESSIONTOKEN = "X-LC-Session";
+
   public static final String HEADER_KEY_LC_APPID = "X-LC-Id";
   public static final String HEADER_KEY_LC_APPKEY = "X-LC-Key";
   public static final String HEADER_KEY_LC_HOOKKEY = "X-LC-Hook-Key";
@@ -29,16 +29,14 @@ public class RequestPaddingInterceptor implements Interceptor {
 
   public Response intercept(Interceptor.Chain chain) throws IOException {
     Request originalRequest = chain.request();
-    String sessionToken = null == AVUser.getCurrentUser()? "" : AVUser.getCurrentUser().getSessionToken();
-
     okhttp3.Request.Builder builder = originalRequest.newBuilder()
             .header(HEADER_KEY_LC_PROD_MODE, AVCloud.isProductionMode()?"1":"0")
             .header(HEADER_KEY_LC_APPID, AVOSCloud.getApplicationId())
             .header(HEADER_KEY_LC_SIGN, requestSignature.generateSign())
             .header(HEADER_KEY_ACCEPT, DEFAULT_CONTENT_TYPE)
             .header(HEADER_KEY_CONTENT_TYPE, DEFAULT_CONTENT_TYPE)
-            .header(HEADER_KEY_USER_AGENT, AppConfiguration.getUserAgent())
-            .header(HEADER_KEY_LC_SESSIONTOKEN, null == sessionToken ? "":sessionToken);
+            .header(HEADER_KEY_USER_AGENT, AppConfiguration.getUserAgent());
+
     if (!StringUtil.isEmpty(AVOSCloud.getHookKey())) {
       builder = builder.header(HEADER_KEY_LC_HOOKKEY, AVOSCloud.getHookKey());
     }

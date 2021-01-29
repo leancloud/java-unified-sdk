@@ -181,7 +181,7 @@ public final class AVFile extends AVObject {
    * @return observable instance.
    */
   public static Observable<AVFile> withObjectIdInBackground(final String objectId) {
-    return PaasClient.getStorageClient().fetchFile(objectId);
+    return PaasClient.getStorageClient().fetchFile(null, objectId);
   }
 
   /**
@@ -456,7 +456,12 @@ public final class AVFile extends AVObject {
    * @param progressCallback progress callback.
    */
   public synchronized void saveInBackground(boolean keepFileName, final ProgressCallback progressCallback) {
-    saveWithProgressCallback(keepFileName, progressCallback).subscribe(new Observer<AVFile>() {
+    saveInBackground(null, keepFileName, progressCallback);
+  }
+
+  public synchronized void saveInBackground(AVUser asAuthenticatedUser,
+                                            boolean keepFileName, final ProgressCallback progressCallback) {
+    saveWithProgressCallback(asAuthenticatedUser, keepFileName, progressCallback).subscribe(new Observer<AVFile>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
@@ -491,8 +496,9 @@ public final class AVFile extends AVObject {
     saveInBackground(false, progressCallback);
   }
 
-  private Observable<AVFile> directlyCreate(final JSONObject parameters) {
-    return PaasClient.getStorageClient().createObject(this.className, parameters, false, null)
+  private Observable<AVFile> directlyCreate(AVUser asAuthenticatedUser, final JSONObject parameters) {
+    return PaasClient.getStorageClient().createObject(asAuthenticatedUser,
+            this.className, parameters, false, null)
             .map(new Function<AVObject, AVFile>() {
               @Override
               public AVFile apply(AVObject avObject) throws Exception {
@@ -503,18 +509,19 @@ public final class AVFile extends AVObject {
               }});
   }
 
-  private Observable<AVFile> saveWithProgressCallback(boolean keepFileName, final ProgressCallback callback) {
+  private Observable<AVFile> saveWithProgressCallback(final AVUser asAuthenticatedUser,
+                                                      boolean keepFileName, final ProgressCallback callback) {
     JSONObject paramData = generateChangedParam();
 //    final String fileKey = FileUtil.generateFileKey(this.getName(), keepFileName);
 //    paramData.put("key", fileKey);
     paramData.put("__type", "File");
     if (StringUtil.isEmpty(getObjectId())) {
       if (!StringUtil.isEmpty(getUrl())) {
-        return directlyCreate(paramData);
+        return directlyCreate(asAuthenticatedUser, paramData);
       }
       logger.d("createToken params: " + paramData.toJSONString() + ", " + this);
       StorageClient storageClient = PaasClient.getStorageClient();
-      Observable<AVFile> result = storageClient.newUploadToken(paramData)
+      Observable<AVFile> result = storageClient.newUploadToken(asAuthenticatedUser, paramData)
               .map(new Function<FileUploadToken, AVFile>() {
                 public AVFile apply(@NonNull FileUploadToken fileUploadToken) throws Exception {
                   logger.d("[Thread:" + Thread.currentThread().getId() + "]" + fileUploadToken.toString() + ", " + AVFile.this);
@@ -534,7 +541,7 @@ public final class AVFile extends AVObject {
                   completeResult.put("token",fileUploadToken.getToken());
                   logger.d("file upload result: " + completeResult.toJSONString());
                   try {
-                    PaasClient.getStorageClient().fileCallback(completeResult);
+                    PaasClient.getStorageClient().fileCallback(asAuthenticatedUser, completeResult);
                     if (null != exception) {
                       logger.w("failed to invoke fileCallback. cause:", exception);
                       throw exception;
@@ -575,7 +582,10 @@ public final class AVFile extends AVObject {
    * @return Observable object.
    */
   public Observable<AVFile> saveInBackground(boolean keepFileName) {
-    return saveWithProgressCallback(keepFileName,null);
+    return saveInBackground(null, keepFileName);
+  }
+  public Observable<AVFile> saveInBackground(AVUser asAuthenticatedUser, boolean keepFileName) {
+    return saveWithProgressCallback(asAuthenticatedUser, keepFileName,null);
   }
 
   /**

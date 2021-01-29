@@ -842,6 +842,10 @@ public class AVUser extends AVObject {
   }
 
   public static synchronized void changeCurrentUser(AVUser newUser, boolean save) {
+    if (AppConfiguration.isIncognitoMode()) {
+      // disable current user in incognito mode.
+      return;
+    }
     if (null != newUser) {
       newUser.removeOperationForKey(ATTR_PASSWORD);
     }
@@ -865,6 +869,10 @@ public class AVUser extends AVObject {
   }
 
   public static <T extends AVUser> T getCurrentUser(Class<T> userClass) {
+    if (AppConfiguration.isIncognitoMode()) {
+      // disable current user in incognito mode.
+      return null;
+    }
     AVUser user = PaasClient.getStorageClient().getCurrentUser();
     if (null != user && userClass.isAssignableFrom(user.getClass())) {
       return (T) user;
@@ -1072,23 +1080,33 @@ public class AVUser extends AVObject {
    * @return observable instance.
    */
   public Observable<JSONObject> followInBackground(String userObjectId) {
-    return this.followInBackground(userObjectId, new HashMap<String, Object>());
+    return followInBackground(null, userObjectId);
+  }
+  public Observable<JSONObject> followInBackground(AVUser asUser, String userObjectId) {
+    return this.followInBackground(asUser, userObjectId, new HashMap<String, Object>());
   }
 
   public Observable<JSONObject> followInBackground(String userObjectId, Map<String, Object> attributes) {
+    return followInBackground(null, userObjectId, attributes);
+  }
+  public Observable<JSONObject> followInBackground(AVUser asUser, String userObjectId, Map<String, Object> attributes) {
     if (!checkUserAuthentication(null)) {
       return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
               "No valid session token, make sure signUp or login has been called."));
     }
-    return PaasClient.getStorageClient().followUser(getObjectId(), userObjectId, attributes);
+    return PaasClient.getStorageClient().followUser(asUser, getObjectId(), userObjectId, attributes);
   }
 
   public Observable<JSONObject> unfollowInBackground(String userObjectId) {
+    return unfollowInBackground(null, userObjectId);
+  }
+
+  public Observable<JSONObject> unfollowInBackground(AVUser asUser, String userObjectId) {
     if (!checkUserAuthentication(null)) {
       return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
               "No valid session token, make sure signUp or login has been called."));
     }
-    return PaasClient.getStorageClient().unfollowUser(getObjectId(), userObjectId);
+    return PaasClient.getStorageClient().unfollowUser(asUser, getObjectId(), userObjectId);
   }
 
   public AVQuery<AVObject> followerQuery() {
@@ -1153,6 +1171,11 @@ public class AVUser extends AVObject {
    * @return Observable instance to monitor operation result.
    */
   public Observable<AVFriendshipRequest> applyFriendshipInBackground(AVUser friend, Map<String, Object> attributes) {
+    return applyFriendshipInBackground(null, friend, attributes);
+  }
+
+  public Observable<AVFriendshipRequest> applyFriendshipInBackground(AVUser asAuthenticatedUser,
+                                                                     AVUser friend, Map<String, Object> attributes) {
     if (!checkUserAuthentication(null)) {
       logger.d("current user isn't authenticated.");
       return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
@@ -1169,7 +1192,7 @@ public class AVUser extends AVObject {
       param.put(PARAM_ATTR_FRIENDSHIP, attributes);
     }
     JSONObject jsonObject = JSONObject.Builder.create(param);
-    return PaasClient.getStorageClient().applyFriendshipRequest(jsonObject);
+    return PaasClient.getStorageClient().applyFriendshipRequest(asAuthenticatedUser, jsonObject);
   }
 
   /**
@@ -1179,6 +1202,10 @@ public class AVUser extends AVObject {
    * @return observable instance.
    */
   public Observable<AVFriendship> updateFriendship(AVFriendship friendship) {
+    return updateFriendship(null, friendship);
+  }
+
+  public Observable<AVFriendship> updateFriendship(AVUser asAuthenticatedUser, AVFriendship friendship) {
     if (!checkUserAuthentication(null)) {
       logger.d("current user isn't authenticated.");
       return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
@@ -1199,7 +1226,8 @@ public class AVUser extends AVObject {
     }
     HashMap<String, Object> param = new HashMap<>();
     param.put(PARAM_ATTR_FRIENDSHIP, changedParam);
-    return PaasClient.getStorageClient().updateFriendship(getObjectId(), friendship.getFollowee().getObjectId(), param);
+    return PaasClient.getStorageClient().updateFriendship(asAuthenticatedUser,
+            getObjectId(), friendship.getFollowee().getObjectId(), param);
   }
 
   /**
@@ -1211,6 +1239,11 @@ public class AVUser extends AVObject {
    */
   public Observable<AVFriendshipRequest> acceptFriendshipRequest(AVFriendshipRequest request,
                                                                  Map<String, Object> attributes) {
+    return acceptFriendshipRequest(null, request, attributes);
+  }
+  public Observable<AVFriendshipRequest> acceptFriendshipRequest(AVUser asUser,
+                                                                 AVFriendshipRequest request,
+                                                                 Map<String, Object> attributes){
     if (!checkUserAuthentication(null)) {
       logger.d("current user isn't authenticated.");
       return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
@@ -1226,7 +1259,7 @@ public class AVUser extends AVObject {
       param.put(PARAM_ATTR_FRIENDSHIP, attributes);
     }
     JSONObject jsonObject = JSONObject.Builder.create(param);
-    return PaasClient.getStorageClient().acceptFriendshipRequest(request, jsonObject);
+    return PaasClient.getStorageClient().acceptFriendshipRequest(asUser, request, jsonObject);
   }
 
   /**
@@ -1235,6 +1268,10 @@ public class AVUser extends AVObject {
    * @return Observable instance to monitor operation result.
    */
   public Observable<AVFriendshipRequest> declineFriendshipRequest(AVFriendshipRequest request) {
+    return declineFriendshipRequest(null, request);
+  }
+
+  public Observable<AVFriendshipRequest> declineFriendshipRequest(AVUser asUser, AVFriendshipRequest request) {
     if (!checkUserAuthentication(null)) {
       logger.d("current user isn't authenticated.");
       return Observable.error(ErrorUtils.propagateException(AVException.SESSION_MISSING,
@@ -1245,7 +1282,7 @@ public class AVUser extends AVObject {
               "friendship request(objectId) is invalid."));
     }
 
-    return PaasClient.getStorageClient().declineFriendshipRequest(request);
+    return PaasClient.getStorageClient().declineFriendshipRequest(asUser, request);
   }
 
   /**
@@ -1327,13 +1364,17 @@ public class AVUser extends AVObject {
     return map;
   }
   public void getFollowersAndFolloweesInBackground(final FollowersAndFolloweesCallback callback) {
+    getFollowersAndFolloweesInBackground(null, callback);
+  }
+
+  public void getFollowersAndFolloweesInBackground(AVUser asUser, final FollowersAndFolloweesCallback callback) {
     if (null == callback) {
       return;
     }
     if (!checkUserAuthentication(callback)) {
       return;
     }
-    PaasClient.getStorageClient().getFollowersAndFollowees(getObjectId()).subscribe(new Observer<JSONObject>() {
+    PaasClient.getStorageClient().getFollowersAndFollowees(asUser, getObjectId()).subscribe(new Observer<JSONObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 

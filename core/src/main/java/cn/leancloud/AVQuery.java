@@ -922,16 +922,19 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return observable instance.
    */
   public Observable<List<T>> findInBackground() {
-    return findInBackground(0);
+    return findInBackground(null);
+  }
+  public Observable<List<T>> findInBackground(AVUser asUser) {
+    return findInBackground(asUser, 0);
   }
 
-  protected Observable<List<T>> findInBackground(int explicitLimit) {
+  protected Observable<List<T>> findInBackground(AVUser asUser, int explicitLimit) {
     Map<String, String> query = assembleParameters();
     if (explicitLimit > 0) {
       query.put("limit", Integer.toString(explicitLimit));
     }
     LOGGER.d("Query: " + query);
-    return PaasClient.getStorageClient().queryObjects(getClassName(), query, this.cachePolicy, this.maxCacheAge)
+    return PaasClient.getStorageClient().queryObjects(asUser, getClassName(), query, this.cachePolicy, this.maxCacheAge)
             .map(new Function<List<AVObject>, List<T>>() {
               public List<T> apply(List<AVObject> var1) throws Exception {
                 LOGGER.d("invoke within AVQuery.findInBackground(). resultSize=" + var1.size());
@@ -960,12 +963,16 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return observable instance.
    */
   public Observable<T> getInBackground(String objectId) {
+    return getInBackground(null, objectId);
+  }
+  public Observable<T> getInBackground(AVUser asAuthenticatedUser, String objectId) {
     List<String> include = getInclude();
     String includeKeys = null;
     if (null != include && include.size() > 0) {
       includeKeys = StringUtil.join(",", include);
     }
-    return PaasClient.getStorageClient().fetchObject(getClassName(), objectId, includeKeys).map(new Function<AVObject, T>() {
+    return PaasClient.getStorageClient().fetchObject(asAuthenticatedUser, getClassName(), objectId, includeKeys)
+            .map(new Function<AVObject, T>() {
       public T apply(AVObject avObject) throws Exception {
         if (null == avObject || StringUtil.isEmpty(avObject.getObjectId())) {
           throw new AVException(AVException.OBJECT_NOT_FOUND, "Object is not found.");
@@ -980,8 +987,11 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return first result.
    */
   public T getFirst() {
+    return getFirst(null);
+  }
+  public T getFirst(AVUser asAuthenticatedUser) {
     try {
-      return getFirstInBackground().blockingFirst();
+      return getFirstInBackground(asAuthenticatedUser).blockingFirst();
     } catch (NoSuchElementException ex) {
       return null;
     }
@@ -992,7 +1002,10 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return observable instance.
    */
   public Observable<T> getFirstInBackground() {
-    return findInBackground(1).flatMap(new Function<List<T>, ObservableSource<T>>() {
+    return getFirstInBackground(null);
+  }
+  public Observable<T> getFirstInBackground(AVUser asAuthenticatedUser) {
+    return findInBackground(asAuthenticatedUser,1).flatMap(new Function<List<T>, ObservableSource<T>>() {
       @Override
       public ObservableSource<T> apply(List<T> list) throws Exception {
         LOGGER.d("flatMap: " + list);
@@ -1006,7 +1019,11 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return result count.
    */
   public int count() {
-    return countInBackground().blockingFirst();
+    return count(null);
+  }
+
+  public int count(AVUser asAuthenticatedUser) {
+    return countInBackground(asAuthenticatedUser).blockingFirst();
   }
 
   /**
@@ -1014,17 +1031,24 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return observable instance.
    */
   public Observable<Integer> countInBackground() {
+    return countInBackground(null);
+  }
+
+  public Observable<Integer> countInBackground(AVUser asAuthenticatedUser) {
     Map<String, String> query = assembleParameters();
     query.put("count", "1");
     query.put("limit", "0");
-    return PaasClient.getStorageClient().queryCount(getClassName(), query);
+    return PaasClient.getStorageClient().queryCount(asAuthenticatedUser, getClassName(), query);
   }
 
   /**
    * Delete all query result in blocking mode.
    */
   public void deleteAll() {
-    this.deleteAllInBackground().blockingSubscribe();
+    deleteAll(null);
+  }
+  public void deleteAll(AVUser asAuthenticatedUser) {
+    this.deleteAllInBackground(asAuthenticatedUser).blockingSubscribe();
   }
 
   /**
@@ -1032,7 +1056,10 @@ public class AVQuery<T extends AVObject> implements Cloneable {
    * @return observable instance.
    */
   public Observable<AVNull> deleteAllInBackground() {
-    return findInBackground().flatMap(new Function<List<T>, ObservableSource<AVNull>>() {
+    return deleteAllInBackground(null);
+  }
+  public Observable<AVNull> deleteAllInBackground(AVUser asAuthenticatedUser) {
+    return findInBackground(asAuthenticatedUser).flatMap(new Function<List<T>, ObservableSource<AVNull>>() {
       @Override
       public ObservableSource<AVNull> apply(List<T> list) {
         return AVObject.deleteAllInBackground(list);

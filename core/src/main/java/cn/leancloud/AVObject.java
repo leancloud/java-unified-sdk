@@ -834,7 +834,7 @@ public class AVObject {
   protected void onDataSynchronized() {
   }
 
-  private Observable<? extends AVObject> saveSelfOperations(AVSaveOption option) {
+  private Observable<? extends AVObject> saveSelfOperations(AVUser asAuthenticatedUser, AVSaveOption option) {
     final boolean needFetch = (null != option) ? option.fetchWhenSave : isFetchWhenSave();
 
     if (null != option && null != option.matchQuery) {
@@ -853,7 +853,7 @@ public class AVObject {
       logger.w("Caution: batch mode will ignore fetchWhenSave flag and matchQuery.");
       if (StringUtil.isEmpty(currentObjectId)) {
         logger.d("request payload: " + paramData.toJSONString());
-        return PaasClient.getStorageClient().batchSave(paramData).map(new Function<List<Map<String, Object>>, AVObject>() {
+        return PaasClient.getStorageClient().batchSave(asAuthenticatedUser, paramData).map(new Function<List<Map<String, Object>>, AVObject>() {
           public AVObject apply(List<Map<String, Object>> object) throws Exception {
             if (null != object && !object.isEmpty()) {
               logger.d("batchSave result: " + object.toString());
@@ -868,7 +868,7 @@ public class AVObject {
           }
         });
       } else {
-        return PaasClient.getStorageClient().batchUpdate(paramData).map(new Function<JSONObject, AVObject>() {
+        return PaasClient.getStorageClient().batchUpdate(asAuthenticatedUser, paramData).map(new Function<JSONObject, AVObject>() {
           public AVObject apply(JSONObject object) throws Exception {
             if (null != object) {
               logger.d("batchUpdate result: " + object.toJSONString());
@@ -889,7 +889,8 @@ public class AVObject {
         whereCondition = JSONObject.Builder.create(whereConditionMap);
       }
       if (totallyOverwrite) {
-        return PaasClient.getStorageClient().saveWholeObject(this.getClass(), endpointClassName, currentObjectId,
+        return PaasClient.getStorageClient().saveWholeObject(asAuthenticatedUser,
+                this.getClass(), endpointClassName, currentObjectId,
                 paramData, needFetch, whereCondition)
                 .map(new Function<AVObject, AVObject>() {
           @Override
@@ -900,7 +901,8 @@ public class AVObject {
           }
         });
       } else if (StringUtil.isEmpty(currentObjectId)) {
-        return PaasClient.getStorageClient().createObject(this.className, paramData, needFetch, whereCondition)
+        return PaasClient.getStorageClient().createObject(asAuthenticatedUser,
+                this.className, paramData, needFetch, whereCondition)
                 .map(new Function<AVObject, AVObject>() {
                   @Override
                   public AVObject apply(AVObject avObject) throws Exception {
@@ -910,7 +912,8 @@ public class AVObject {
                   }
                 });
       } else {
-        return PaasClient.getStorageClient().saveObject(this.className, getObjectId(), paramData, needFetch, whereCondition)
+        return PaasClient.getStorageClient().saveObject(asAuthenticatedUser,
+                this.className, getObjectId(), paramData, needFetch, whereCondition)
                 .map(new Function<AVObject, AVObject>() {
                   @Override
                   public AVObject apply(AVObject avObject) throws Exception {
@@ -928,12 +931,17 @@ public class AVObject {
    * @return observable instance.
    */
   public Observable<? extends AVObject> saveInBackground() {
+    AVUser targetUser = null;
+    return saveInBackground(targetUser);
+  }
+
+  public Observable<? extends AVObject> saveInBackground(AVUser asAuthenticatedUser) {
     AVSaveOption option = null;
     if (totallyOverwrite) {
       option = new AVSaveOption();
       option.setFetchWhenSave(true);
     }
-    return saveInBackground(option);
+    return saveInBackground(asAuthenticatedUser, option);
   }
 
   /**
@@ -942,6 +950,10 @@ public class AVObject {
    * @return observable instance.
    */
   public Observable<? extends AVObject> saveInBackground(final AVSaveOption option) {
+    return saveInBackground(null, option);
+  }
+
+  public Observable<? extends AVObject> saveInBackground(final AVUser asAuthenticatedUser, final AVSaveOption option) {
     Map<AVObject, Boolean> markMap = new HashMap<>();
     if (hasCircleReference(markMap)) {
       return Observable.error(new AVException(AVException.CIRCLE_REFERENCE, "Found a circular dependency when saving."));
@@ -953,10 +965,10 @@ public class AVObject {
       public Observable<? extends AVObject> apply(List<AVObject> objects) throws Exception {
         logger.d("First, try to execute save operations in thread: " + Thread.currentThread());
         for (AVObject o: objects) {
-          o.save();
+          o.save(asAuthenticatedUser);
         }
         logger.d("Second, save object itself...");
-        return saveSelfOperations(option);
+        return saveSelfOperations(asAuthenticatedUser, option);
       }
     });
   }
@@ -985,7 +997,11 @@ public class AVObject {
    * Save in blocking mode.
    */
   public void save() {
-    saveInBackground().blockingSubscribe();
+    save(null);
+  }
+
+  public void save(AVUser asAuthenticatedUser) {
+    saveInBackground(asAuthenticatedUser).blockingSubscribe();
   }
 
   /**
@@ -994,7 +1010,11 @@ public class AVObject {
    * @throws AVException error happened.
    */
   public static void saveAll(Collection<? extends AVObject> objects) throws AVException {
-    saveAllInBackground(objects).blockingSubscribe();
+    saveAll(null, objects);
+  }
+
+  public static void saveAll(AVUser asAuthenticatedUser, Collection<? extends AVObject> objects) throws AVException {
+    saveAllInBackground(asAuthenticatedUser, objects).blockingSubscribe();
   }
 
   private static Observable<List<AVFile>> extractSaveAheadFiles(Collection<? extends AVObject> objects) {
@@ -1014,6 +1034,11 @@ public class AVObject {
    * @return observable instance.
    */
   public static Observable<JSONArray> saveAllInBackground(final Collection<? extends AVObject> objects) {
+    return saveAllInBackground(null, objects);
+  }
+
+  public static Observable<JSONArray> saveAllInBackground(final AVUser asAuthenticatedUser,
+                                                          final Collection<? extends AVObject> objects) {
     if (null == objects || objects.isEmpty()) {
       JSONArray emptyResult = JSONArray.Builder.create(null);
       return Observable.just(emptyResult);
@@ -1031,7 +1056,7 @@ public class AVObject {
         logger.d("begin to save objects with batch mode...");
         if (null != avFiles && !avFiles.isEmpty()) {
           for (AVFile file : avFiles) {
-            file.save();
+            file.save(asAuthenticatedUser);
           }
         }
         JSONArray requests = JSONArray.Builder.create(null);
@@ -1046,7 +1071,7 @@ public class AVObject {
 
         JSONObject requestTotal = JSONObject.Builder.create(null);
         requestTotal.put("requests", requests);
-        return PaasClient.getStorageClient().batchSave(requestTotal).map(new Function<List<Map<String, Object>>, JSONArray>() {
+        return PaasClient.getStorageClient().batchSave(asAuthenticatedUser, requestTotal).map(new Function<List<Map<String, Object>>, JSONArray>() {
           public JSONArray apply(List<Map<String, Object>> batchResults) throws Exception {
 
             JSONArray result = JSONArray.Builder.create(null);
@@ -1078,6 +1103,10 @@ public class AVObject {
    * @throws AVException error happened.
    */
   public void saveEventually() throws AVException {
+    saveEventually(null);
+  }
+
+  public void saveEventually(final AVUser asAuthenticatedUser) throws AVException {
     if (operations.isEmpty()) {
       return;
     }
@@ -1089,7 +1118,7 @@ public class AVObject {
     NetworkingDetector detector = AppConfiguration.getGlobalNetworkingDetector();
     if (null != detector && detector.isConnected()) {
       // network is fine, try to save object;
-      this.saveInBackground().subscribe(new Observer<AVObject>() {
+      this.saveInBackground(asAuthenticatedUser).subscribe(new Observer<AVObject>() {
         @Override
         public void onSubscribe(Disposable disposable) {
 
@@ -1130,6 +1159,10 @@ public class AVObject {
    * Delete current object eventually.
    */
   public void deleteEventually() {
+    deleteEventually(null);
+  }
+
+  public void deleteEventually(final AVUser asAuthenticatedUser) {
     String objectId  = getObjectId();
     if (StringUtil.isEmpty(objectId)) {
       logger.w("objectId is empty, you couldn't delete a persistent object.");
@@ -1137,7 +1170,7 @@ public class AVObject {
     }
     NetworkingDetector detector = AppConfiguration.getGlobalNetworkingDetector();
     if (null != detector && detector.isConnected()) {
-      this.deleteInBackground().subscribe(new Observer<AVNull>() {
+      this.deleteInBackground(asAuthenticatedUser).subscribe(new Observer<AVNull>() {
         @Override
         public void onSubscribe(Disposable disposable) {
 
@@ -1168,21 +1201,30 @@ public class AVObject {
    * @return observable instance.
    */
   public Observable<AVNull> deleteInBackground() {
+    return deleteInBackground(null);
+  }
+
+  public Observable<AVNull> deleteInBackground(final AVUser asAuthenticatedUser) {
     Map<String, Object> ignoreParam = new HashMap<>();
     if (ignoreHooks.size() > 0) {
       ignoreParam.put(KEY_IGNORE_HOOKS, ignoreHooks);
     }
     if (totallyOverwrite) {
-      return PaasClient.getStorageClient().deleteWholeObject(this.endpointClassName, getObjectId(), ignoreParam);
+      return PaasClient.getStorageClient().deleteWholeObject(asAuthenticatedUser,
+              this.endpointClassName, getObjectId(), ignoreParam);
     }
-    return PaasClient.getStorageClient().deleteObject(this.className, getObjectId(), ignoreParam);
+    return PaasClient.getStorageClient().deleteObject(asAuthenticatedUser, this.className, getObjectId(), ignoreParam);
   }
 
   /**
    * Delete current object in blocking mode.
    */
   public void delete() {
-    deleteInBackground().blockingSubscribe();
+    delete(null);
+  }
+
+  public void delete(final AVUser asAuthenticatedUser) {
+    deleteInBackground(asAuthenticatedUser).blockingSubscribe();
   }
 
   /**
@@ -1191,7 +1233,11 @@ public class AVObject {
    * @throws AVException error happened.
    */
   public static void deleteAll(Collection<? extends AVObject> objects) throws AVException {
-    deleteAllInBackground(objects).blockingSubscribe();
+    deleteAll(null, objects);
+  }
+
+  public static void deleteAll(final AVUser asAuthenticatedUser, Collection<? extends AVObject> objects) throws AVException {
+    deleteAllInBackground(asAuthenticatedUser, objects).blockingSubscribe();
   }
 
   /**
@@ -1200,6 +1246,11 @@ public class AVObject {
    * @return observable instance.
    */
   public static Observable<AVNull> deleteAllInBackground(Collection<? extends AVObject> objects) {
+    return deleteAllInBackground(null, objects);
+  }
+
+  public static Observable<AVNull> deleteAllInBackground(final AVUser asAuthenticatedUser,
+                                                         Collection<? extends AVObject> objects) {
     if (null == objects || objects.isEmpty()) {
       return Observable.just(AVNull.getINSTANCE());
     }
@@ -1219,7 +1270,7 @@ public class AVObject {
         return Observable.error(new IllegalArgumentException("The objects class name must be the same."));
       }
     }
-    return PaasClient.getStorageClient().deleteObject(className, sb.toString(), ignoreParams);
+    return PaasClient.getStorageClient().deleteObject(asAuthenticatedUser, className, sb.toString(), ignoreParams);
   }
 
   /**
@@ -1237,12 +1288,20 @@ public class AVObject {
     refreshInBackground(includeKeys).blockingSubscribe();
   }
 
+  public void refresh(final AVUser asAuthenticatedUser, String includeKeys) {
+    refreshInBackground(asAuthenticatedUser, includeKeys).blockingSubscribe();
+  }
+
   /**
    * Refresh current object in async mode.
    * @return observable instance.
    */
   public Observable<AVObject> refreshInBackground() {
-    return refreshInBackground(null);
+    return refreshInBackground(null, null);
+  }
+
+  public Observable<AVObject> refreshInBackground(final AVUser asAuthenticatedUser) {
+    return refreshInBackground(asAuthenticatedUser, null);
   }
 
   /**
@@ -1251,8 +1310,12 @@ public class AVObject {
    * @return observable instance.
    */
   public Observable<AVObject> refreshInBackground(final String includeKeys) {
+    return refreshInBackground(null, includeKeys);
+  }
+
+  public Observable<AVObject> refreshInBackground(final AVUser asAuthenticatedUser, final String includeKeys) {
     if (totallyOverwrite) {
-      return PaasClient.getStorageClient().getWholeObject(this.endpointClassName, getObjectId(), includeKeys)
+      return PaasClient.getStorageClient().getWholeObject(asAuthenticatedUser, this.endpointClassName, getObjectId(), includeKeys)
               .map(new Function<AVObject, AVObject>() {
                 @Override
                 public AVObject apply(AVObject avObject) throws Exception {
@@ -1263,7 +1326,7 @@ public class AVObject {
                 }
               });
     }
-    return PaasClient.getStorageClient().fetchObject(this.className, getObjectId(), includeKeys)
+    return PaasClient.getStorageClient().fetchObject(asAuthenticatedUser, this.className, getObjectId(), includeKeys)
             .map(new Function<AVObject, AVObject>() {
               public AVObject apply(AVObject avObject) throws Exception {
                 if (StringUtil.isEmpty(includeKeys)) {

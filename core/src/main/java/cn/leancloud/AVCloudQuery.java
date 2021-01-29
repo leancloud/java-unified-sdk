@@ -15,15 +15,31 @@ class AVCloudQuery {
   }
 
   public static Observable<AVCloudQueryResult> executeInBackground(String cql) {
-    return executeInBackground(cql, AVObject.class);
+    return executeInBackground(null, cql);
+  }
+  public static Observable<AVCloudQueryResult> executeInBackground(AVUser asAuthenticatedUser, String cql) {
+    return executeInBackground(asAuthenticatedUser, cql, AVObject.class);
   }
   public static Observable<AVCloudQueryResult> executeInBackground(String cql, Object... params) {
-    return executeInBackground(cql, AVObject.class, params);
+    return executeInBackground(null, cql, params);
+  }
+  public static Observable<AVCloudQueryResult> executeInBackground(AVUser asAuthenticatedUser,
+                                                                   String cql, Object... params) {
+    return executeInBackground(asAuthenticatedUser, cql, AVObject.class, params);
   }
   public static Observable<AVCloudQueryResult> executeInBackground(String cql, Class<? extends AVObject> clazz) {
-    return executeInBackground(cql, clazz, null);
+    return executeInBackground(null, cql, clazz);
+  }
+  public static Observable<AVCloudQueryResult> executeInBackground(AVUser asAuthenticatedUser,
+                                                                   String cql, Class<? extends AVObject> clazz) {
+    return executeInBackground(asAuthenticatedUser, cql, clazz, null);
   }
   public static <T extends AVObject> Observable<AVCloudQueryResult> executeInBackground(String cql, final Class<T> clazz, Object... params) {
+    return executeInBackground(null, cql, clazz, params);
+  }
+  public static <T extends AVObject> Observable<AVCloudQueryResult> executeInBackground(AVUser asAuthenticatedUser,
+                                                                                        String cql, final Class<T> clazz,
+                                                                                        Object... params) {
     if (StringUtil.isEmpty(cql)) {
       throw new IllegalArgumentException("cql is empty");
     }
@@ -41,7 +57,7 @@ class AVCloudQuery {
     if (!pValue.isEmpty()) {
       p.put("pvalues", AVUtils.jsonStringFromObjectWithNull(pValue));
     }
-    return PaasClient.getStorageClient().cloudQuery(p).map(new Function<AVQueryResult, AVCloudQueryResult>() {
+    return PaasClient.getStorageClient().cloudQuery(asAuthenticatedUser, p).map(new Function<AVQueryResult, AVCloudQueryResult>() {
       public AVCloudQueryResult apply(AVQueryResult avQueryResult) throws Exception {
         AVCloudQueryResult finalResult = new AVCloudQueryResult();
         List<T> rawObjs = new ArrayList(avQueryResult.getCount());

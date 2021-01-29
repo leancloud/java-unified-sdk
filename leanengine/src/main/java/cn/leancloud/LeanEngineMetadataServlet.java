@@ -24,7 +24,7 @@ public class LeanEngineMetadataServlet extends HttpServlet {
       throws ServletException, IOException {
     try {
       RequestAuth.auth(req);
-      RequestAuth auth = (RequestAuth) req.getAttribute(RequestAuth.ATTRIBUTE_KEY);
+      RequestAuth auth = RequestAuth.getInstance(req);
       if (auth == null || StringUtil.isEmpty(auth.getMasterKey())) {
         throw new UnauthException();
       }

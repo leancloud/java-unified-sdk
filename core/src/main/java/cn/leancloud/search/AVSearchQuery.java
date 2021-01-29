@@ -2,6 +2,7 @@ package cn.leancloud.search;
 
 import cn.leancloud.AVLogger;
 import cn.leancloud.AVObject;
+import cn.leancloud.AVUser;
 import cn.leancloud.Transformer;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.utils.AVUtils;
@@ -354,11 +355,14 @@ public class AVSearchQuery<T extends AVObject> {
   }
 
   public Observable<List<T>> findInBackground() {
-    return getSearchResult(getParameters(queryString));
+    return this.findInBackground(null);
+  }
+  public Observable<List<T>> findInBackground(AVUser asAuthenticatedUser) {
+    return getSearchResult(asAuthenticatedUser, getParameters(queryString));
   }
 
-  protected Observable<List<T>> getSearchResult(Map<String, String> params) {
-    return PaasClient.getStorageClient().search(params).map(new Function<AVSearchResponse, List<T>>() {
+  protected Observable<List<T>> getSearchResult(AVUser asAuthenticatedUser, Map<String, String> params) {
+    return PaasClient.getStorageClient().search(asAuthenticatedUser, params).map(new Function<AVSearchResponse, List<T>>() {
       @Override
       public List<T> apply(AVSearchResponse result) throws Exception {
         return processContent(result);

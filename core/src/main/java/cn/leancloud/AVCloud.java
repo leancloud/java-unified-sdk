@@ -30,7 +30,7 @@ public class AVCloud {
    * @return observable instance.
    */
   public static <T> Observable<T> callFunctionInBackground(String name, Map<String, Object> params) {
-    return PaasClient.getStorageClient().callFunction(name, Utils.getParsedMap(params));
+    return PaasClient.getStorageClient().callFunction(null, name, Utils.getParsedMap(params));
   }
 
   public static <T> Observable<T> callFunctionWithCacheInBackground(String name, Map<String, Object> params,
@@ -46,7 +46,7 @@ public class AVCloud {
    * @return observable instance.
    */
   public static <T> Observable<T> callRPCInBackground(String name, Object params) {
-    return PaasClient.getStorageClient().callRPC(name, Utils.getParsedObject(params));
+    return PaasClient.getStorageClient().callRPC(null, name, Utils.getParsedObject(params));
   }
 
   public static <T> Observable<T> callRPCWithCacheInBackground(String name, Map<String, Object> params,

@@ -87,12 +87,14 @@ public class StorageClient {
     return date;
   }
 
-  public Observable<? extends AVObject> fetchObject(final String className, String objectId, String includeKeys) {
+  public Observable<? extends AVObject> fetchObject(final AVUser authenticatedUser,
+                                                    final String className, String objectId, String includeKeys) {
     Observable<AVObject> object = null;
+    String authenticatedSession = getSessionToken(authenticatedUser);
     if (StringUtil.isEmpty(includeKeys)) {
-      object = wrapObservable(apiService.fetchObject(className, objectId));
+      object = wrapObservable(apiService.fetchObject(authenticatedSession, className, objectId));
     } else {
-      object = wrapObservable(apiService.fetchObject(className, objectId, includeKeys));
+      object = wrapObservable(apiService.fetchObject(authenticatedSession, className, objectId, includeKeys));
     }
     if (null == object) {
       return object;
@@ -108,15 +110,29 @@ public class StorageClient {
     return QueryResultCache.getInstance().hasCachedResult(className, query, maxAgeInMilliseconds);
   }
 
-  private Observable<AVQueryResult> queryRemoteServer(String className, final Map<String, String> query) {
+  private String getSessionToken(AVUser avUser) {
+    if (null == avUser) {
+      if (AppConfiguration.isIncognitoMode() || null == AVUser.currentUser()) {
+        return "";
+      } else {
+        return AVUser.currentUser().getSessionToken();
+      }
+    }
+    return avUser.getSessionToken();
+  }
+
+  private Observable<AVQueryResult> queryRemoteServer(final AVUser authenticatedUser,
+                                                      String className, final Map<String, String> query) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
     if (AVUser.CLASS_NAME.equalsIgnoreCase(className)) {
-      return wrapObservable(apiService.queryUsers(query));
+      return wrapObservable(apiService.queryUsers(authenticatedSession, query));
     } else {
-      return wrapObservable(apiService.queryObjects(className, query));
+      return wrapObservable(apiService.queryObjects(authenticatedSession, className, query));
     }
   }
 
-  public Observable<List<AVObject>> queryObjects(final String className, final Map<String, String> query,
+  public Observable<List<AVObject>> queryObjects(final AVUser authenticatedUser,
+                                                 final String className, final Map<String, String> query,
                                                  AVQuery.CachePolicy cachePolicy, final long maxAgeInMilliseconds) {
     final String cacheKey = QueryResultCache.generateKeyForQueryCondition(className, query);
     Observable<List<AVObject>> result = null;
@@ -134,7 +150,7 @@ public class StorageClient {
                   public ObservableSource<? extends List<AVObject>> apply(Throwable throwable) throws Exception {
                     LOGGER.d("failed to query local cache, cause: " + throwable.getMessage() + ", try to query networking");
 
-                    return queryRemoteServer(className, query)
+                    return queryRemoteServer(authenticatedUser, className, query)
                             .map(new Function<AVQueryResult, List<AVObject>>() {
                               public List<AVObject> apply(AVQueryResult o) throws Exception {
                                 o.setClassName(className);
@@ -151,7 +167,7 @@ public class StorageClient {
                 });
         break;
       case NETWORK_ELSE_CACHE:
-        queryResult =  queryRemoteServer(className, query);
+        queryResult =  queryRemoteServer(authenticatedUser, className, query);
         if (null != queryResult) {
           result = queryResult.map(new Function<AVQueryResult, List<AVObject>>() {
             public List<AVObject> apply(AVQueryResult o) throws Exception {
@@ -176,7 +192,7 @@ public class StorageClient {
         break;
       case IGNORE_CACHE:
       default:
-        queryResult = queryRemoteServer(className, query);
+        queryResult = queryRemoteServer(authenticatedUser, className, query);
         if (null != queryResult) {
           result = queryResult.map(new Function<AVQueryResult, List<AVObject>>() {
             public List<AVObject> apply(AVQueryResult o) throws Exception {
@@ -196,12 +212,14 @@ public class StorageClient {
     return result;
   }
 
-  public Observable<AVQueryResult> cloudQuery(Map<String, String> query) {
-    return wrapObservable(apiService.cloudQuery(query));
+  public Observable<AVQueryResult> cloudQuery(final AVUser authenticatedUser, Map<String, String> query) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.cloudQuery(authenticatedSession, query));
   }
 
-  public Observable<Integer> queryCount(final String className, Map<String, String> query) {
-    Observable<AVQueryResult> queryResult = this.queryRemoteServer(className, query);
+  public Observable<Integer> queryCount(final AVUser authenticatedUser,
+                                        final String className, Map<String, String> query) {
+    Observable<AVQueryResult> queryResult = this.queryRemoteServer(authenticatedUser, className, query);
     if (null == queryResult) {
       return null;
     }
@@ -213,17 +231,17 @@ public class StorageClient {
     });
   }
 
-  public Observable<AVNull> deleteObject(final String className, String objectId, Map<String, Object> param) {
-    return wrapObservable(apiService.deleteObject(className, objectId, param));
+  public Observable<AVNull> deleteObject(final AVUser authenticatedUser,
+                                         final String className, String objectId, Map<String, Object> param) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.deleteObject(authenticatedSession, className, objectId, param));
   }
 
-//  private JsonObject getJsonObject(JSONObject data) {
-//    return null == data? null:data.getRawObject();
-//  }
-
-  public Observable<? extends AVObject> createObject(final String className, JSONObject data, boolean fetchFlag,
+  public Observable<? extends AVObject> createObject(final AVUser authenticatedUser,
+                                                     final String className, JSONObject data, boolean fetchFlag,
                                                      JSONObject where) {
-    Observable<AVObject> object = wrapObservable(apiService.createObject(className, data, fetchFlag,
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    Observable<AVObject> object = wrapObservable(apiService.createObject(authenticatedSession, className, data, fetchFlag,
             where));
     if (null == object) {
       return null;
@@ -236,9 +254,11 @@ public class StorageClient {
     });
   }
 
-  public Observable<? extends AVObject> saveObject(final String className, String objectId, JSONObject data,
+  public Observable<? extends AVObject> saveObject(final AVUser authenticatedUser,
+                                                   final String className, String objectId, JSONObject data,
                                                    boolean fetchFlag, JSONObject where) {
-    Observable<AVObject> object = wrapObservable(apiService.updateObject(className, objectId, data,
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    Observable<AVObject> object = wrapObservable(apiService.updateObject(authenticatedSession, className, objectId, data,
             fetchFlag, where));
     if (null == object) {
       return null;
@@ -251,15 +271,17 @@ public class StorageClient {
     });
   }
 
-  public <E extends AVObject> Observable<E> saveWholeObject(final Class<E> clazz, final String endpointClass,
+  public <E extends AVObject> Observable<E> saveWholeObject(final AVUser authenticatedUser,
+                                                            final Class<E> clazz, final String endpointClass,
                                                             String objectId,
                                                             JSONObject object, boolean fetchFlag, JSONObject where) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
     Observable<AVObject> result = null;
     if (StringUtil.isEmpty(objectId)) {
-      result = wrapObservable(apiService.saveWholeObject(endpointClass, object, fetchFlag, where));
+      result = wrapObservable(apiService.saveWholeObject(authenticatedSession, endpointClass, object, fetchFlag, where));
     } else {
-      result = wrapObservable(apiService.saveWholeObject(endpointClass, objectId, object, fetchFlag,
-              where));
+      result = wrapObservable(apiService.saveWholeObject(authenticatedSession, endpointClass, objectId, object,
+              fetchFlag, where));
     }
 
     if (null == result) {
@@ -273,16 +295,21 @@ public class StorageClient {
     });
   }
 
-  public Observable<AVObject> getWholeObject(final String endpointClass, String objectId, String includeKeys) {
-    return wrapObservable(apiService.getWholeObject(endpointClass, objectId, includeKeys));
+  public Observable<AVObject> getWholeObject(final AVUser authenticatedUser,
+                                             final String endpointClass, String objectId, String includeKeys) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.getWholeObject(authenticatedSession, endpointClass, objectId, includeKeys));
   }
 
-  public Observable<AVNull> deleteWholeObject(final String endpointClass, String objectId, Map<String, Object> param) {
-    return wrapObservable(apiService.deleteWholeObject(endpointClass, objectId, param));
+  public Observable<AVNull> deleteWholeObject(final AVUser authenticatedUser,
+                                              final String endpointClass, String objectId, Map<String, Object> param) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.deleteWholeObject(authenticatedSession, endpointClass, objectId, param));
   }
 
-  public Observable<AVFile> fetchFile(String objectId) {
-    Observable<AVFile> object = wrapObservable(apiService.fetchFile(objectId));
+  public Observable<AVFile> fetchFile(final AVUser authenticatedUser, String objectId) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    Observable<AVFile> object = wrapObservable(apiService.fetchFile(authenticatedSession, objectId));
     if (null == object) {
       return null;
     }
@@ -294,28 +321,33 @@ public class StorageClient {
     });
   }
 
-  public Observable<FileUploadToken> newUploadToken(JSONObject fileData) {
-    return wrapObservableInBackground(apiService.createUploadToken(fileData));
+  public Observable<FileUploadToken> newUploadToken(final AVUser authenticatedUser, JSONObject fileData) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservableInBackground(apiService.createUploadToken(authenticatedSession, fileData));
   }
 
-  public void fileCallback(JSONObject result) throws IOException {
-    apiService.fileCallback(result).execute();
+  public void fileCallback(final AVUser authenticatedUser, JSONObject result) throws IOException {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    apiService.fileCallback(authenticatedSession, result).execute();
     return;
   }
 
-  public Observable<List<Map<String, Object>>> batchSave(JSONObject parameter) {
+  public Observable<List<Map<String, Object>>> batchSave(final AVUser authenticatedUser, JSONObject parameter) {
     // resposne is:
     // [{"success":{"updatedAt":"2018-03-30T06:21:08.052Z","objectId":"5abd026d9f54540038791715"}},
     //  {"success":{"updatedAt":"2018-03-30T06:21:08.092Z","objectId":"5abd026d9f54540038791715"}},
     //  {"success":{"updatedAt":"2018-03-30T06:21:08.106Z","objectId":"5abd026d9f54540038791715"}}]
-    Observable<List<Map<String, Object>>> result = wrapObservable(apiService.batchCreate(parameter));
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    Observable<List<Map<String, Object>>> result = wrapObservable(apiService.batchCreate(authenticatedSession,
+            parameter));
     return result;
   }
 
-  public Observable<JSONObject> batchUpdate(JSONObject parameter) {
+  public Observable<JSONObject> batchUpdate(final AVUser authenticatedUser, JSONObject parameter) {
     // response is:
     // {"5abd026d9f54540038791715":{"updatedAt":"2018-03-30T06:21:46.084Z","objectId":"5abd026d9f54540038791715"}}
-    Observable<JSONObject> result = wrapObservable(apiService.batchUpdate(parameter));
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    Observable<JSONObject> result = wrapObservable(apiService.batchUpdate(authenticatedSession, parameter));
     return result;
   }
 
@@ -366,8 +398,9 @@ public class StorageClient {
     });
   }
 
-  public Observable<AVFriendshipRequest> applyFriendshipRequest(final JSONObject data) {
-    Observable<AVObject> result = wrapObservable(apiService.applyFriendship(data));
+  public Observable<AVFriendshipRequest> applyFriendshipRequest(final AVUser authenticatedUser, final JSONObject data) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    Observable<AVObject> result = wrapObservable(apiService.applyFriendship(authenticatedSession, data));
     if (null == result) {
       return null;
     }
@@ -379,8 +412,11 @@ public class StorageClient {
     });
   }
 
-  public Observable<AVFriendshipRequest> acceptFriendshipRequest(AVFriendshipRequest request, JSONObject param) {
-    Observable<AVObject> result = wrapObservable(apiService.acceptFriendshipRequest(request.getObjectId(), param));
+  public Observable<AVFriendshipRequest> acceptFriendshipRequest(final AVUser authenticatedUser,
+                                                                 AVFriendshipRequest request, JSONObject param) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    Observable<AVObject> result = wrapObservable(apiService.acceptFriendshipRequest(authenticatedSession,
+            request.getObjectId(), param));
     if (null == result) {
       return null;
     }
@@ -391,8 +427,10 @@ public class StorageClient {
       }
     });
   }
-  public Observable<AVFriendshipRequest> declineFriendshipRequest(AVFriendshipRequest request) {
-    Observable<AVObject> result = wrapObservable(apiService.declineFriendshipRequest(request.getObjectId()));
+  public Observable<AVFriendshipRequest> declineFriendshipRequest(final AVUser authenticatedUser,
+                                                                  AVFriendshipRequest request) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    Observable<AVObject> result = wrapObservable(apiService.declineFriendshipRequest(authenticatedSession, request.getObjectId()));
     return result.map(new Function<AVObject, AVFriendshipRequest>() {
       @Override
       public AVFriendshipRequest apply(AVObject avObject) throws Exception {
@@ -434,7 +472,7 @@ public class StorageClient {
   }
 
   public Observable<Boolean> refreshSessionToken(final AVUser user) {
-    return wrapObservable(apiService.refreshSessionToken(user.getObjectId()).map(new Function<AVUser, Boolean>() {
+    return wrapObservable(apiService.refreshSessionToken(user.getSessionToken(), user.getObjectId()).map(new Function<AVUser, Boolean>() {
       public Boolean apply(AVUser avUser) throws Exception {
         if (null != avUser && !StringUtil.isEmpty(avUser.getSessionToken())) {
           user.internalChangeSessionToken(avUser.getSessionToken());
@@ -514,32 +552,43 @@ public class StorageClient {
     }));
   }
 
-  public Observable<JSONObject> followUser(String followee, String follower, Map<String, Object> attr) {
-    return wrapObservable(apiService.followUser(followee, follower, attr));
+  public Observable<JSONObject> followUser(final AVUser authenticatedUser,
+                                           String followee, String follower, Map<String, Object> attr) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.followUser(authenticatedSession, followee, follower, attr));
   }
 
-  public Observable<JSONObject> unfollowUser(String followee, String follower) {
-    return wrapObservable(apiService.unfollowUser(followee, follower));
+  public Observable<JSONObject> unfollowUser(final AVUser authenticatedUser,
+                                             String followee, String follower) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.unfollowUser(authenticatedSession, followee, follower));
   }
 
-  public Observable<AVFriendship> updateFriendship(String followeeUserid, String friendObjectId, Map<String, Object> attr) {
-    return wrapObservable(apiService.updateFriendship(followeeUserid, friendObjectId, attr));
+  public Observable<AVFriendship> updateFriendship(final AVUser authenticatedUser,
+                                                   String followeeUserid, String friendObjectId, Map<String, Object> attr) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.updateFriendship(authenticatedSession, followeeUserid, friendObjectId, attr));
   }
 
-  public Observable<JSONObject> getFollowersAndFollowees(String userId) {
-    return wrapObservable(apiService.getFollowersAndFollowees(userId));
+  public Observable<JSONObject> getFollowersAndFollowees(final AVUser authenticatedUser, String userId) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.getFollowersAndFollowees(authenticatedSession, userId));
   }
 
-  public Observable<AVStatus> postStatus(Map<String, Object> param) {
-    return wrapObservable(apiService.postStatus(param));
+  public Observable<AVStatus> postStatus(final AVUser authenticatedUser, Map<String, Object> param) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.postStatus(authenticatedSession, param));
   }
 
-  public Observable<AVStatus> fetchStatus(String objectId) {
-    return wrapObservable(apiService.fetchSingleStatus(objectId));
+  public Observable<AVStatus> fetchStatus(final AVUser authenticatedUser, String objectId) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.fetchSingleStatus(authenticatedSession, objectId));
   }
 
-  public Observable<List<AVStatus>> queryStatus(Map<String, String> param) {
-    return wrapObservable(apiService.fetchStatuses(param).map(new Function<AVQueryResult, List<AVStatus>>() {
+  public Observable<List<AVStatus>> queryStatus(final AVUser authenticatedUser, Map<String, String> param) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.fetchStatuses(authenticatedSession, param)
+            .map(new Function<AVQueryResult, List<AVStatus>>() {
       @Override
       public List<AVStatus> apply(AVQueryResult o) throws Exception {
         if (null == o) {
@@ -555,8 +604,10 @@ public class StorageClient {
     }));
   }
 
-  public Observable<List<AVStatus>> queryInbox(Map<String, String> param) {
-    return wrapObservable(apiService.queryInbox(param).map(new Function<AVQueryResult, List<AVStatus>>() {
+  public Observable<List<AVStatus>> queryInbox(final AVUser authenticatedUser, Map<String, String> param) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.queryInbox(authenticatedSession, param)
+            .map(new Function<AVQueryResult, List<AVStatus>>() {
       @Override
       public List<AVStatus> apply(AVQueryResult o) throws Exception {
         if (null == o) {
@@ -572,24 +623,29 @@ public class StorageClient {
     }));
   }
 
-  public Observable<JSONObject> getInboxCount(Map<String, String> param) {
-    return wrapObservable(apiService.getInboxCount(param));
+  public Observable<JSONObject> getInboxCount(final AVUser authenticatedUser, Map<String, String> param) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.getInboxCount(authenticatedSession, param));
   }
 
-  public Observable<AVNull> deleteStatus(String statusId) {
-    return wrapObservable(apiService.deleteStatus(statusId));
+  public Observable<AVNull> deleteStatus(final AVUser authenticatedUser, String statusId) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.deleteStatus(authenticatedSession, statusId));
   }
 
-  public Observable<AVNull> deleteInboxStatus(Map<String, Object> param) {
-    return wrapObservable(apiService.deleteInboxStatus(param));
+  public Observable<AVNull> deleteInboxStatus(final AVUser authenticatedUser, Map<String, Object> param) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.deleteInboxStatus(authenticatedSession, param));
   }
 
-  public <T> Observable<T> callRPC(String name, Object param) {
-    return callRPC(name, param, false, null);
+  public <T> Observable<T> callRPC(final AVUser authenticatedUser, String name, Object param) {
+    return callRPC(authenticatedUser, name, param, false, null);
   }
 
-  <T> Observable<T> callRPC(final String name, final Object param, final boolean enableCache, final String cacheKey) {
-    Observable<Map<String, ?>> cloudCall =  wrapObservable(apiService.cloudRPC(name, param));
+  <T> Observable<T> callRPC(final AVUser authenticatedUser,
+                            final String name, final Object param, final boolean enableCache, final String cacheKey) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    Observable<Map<String, ?>> cloudCall =  wrapObservable(apiService.cloudRPC(authenticatedSession, name, param));
     if (null == cloudCall) {
       return null;
     }
@@ -616,12 +672,14 @@ public class StorageClient {
     });
   }
 
-  public <T> Observable<T> callFunction(String name, Map<String, Object> params) {
-    return callFunction(name, params, false, null);
+  public <T> Observable<T> callFunction(final AVUser authenticatedUser, String name, Map<String, Object> params) {
+    return callFunction(authenticatedUser, name, params, false, null);
   }
 
-  <T> Observable<T> callFunction(String name, Map<String, Object> params, final boolean enableCache, final String cacheKey) {
-    Observable<Map<String, ?>> cloudCall = wrapObservable(apiService.cloudFunction(name, params));
+  <T> Observable<T> callFunction(final AVUser authenticatedUser,
+                                 String name, Map<String, Object> params, final boolean enableCache, final String cacheKey) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    Observable<Map<String, ?>> cloudCall = wrapObservable(apiService.cloudFunction(authenticatedSession, name, params));
     if (null == cloudCall) {
       return null;
     }
@@ -719,7 +777,7 @@ public class StorageClient {
             new QueryExecutor() {
               @Override
               public <T> Observable<T> executor() {
-                return callRPC(name, param,
+                return callRPC(null, name, param,
                         cachePolicy != AVQuery.CachePolicy.IGNORE_CACHE && cachePolicy != AVQuery.CachePolicy.NETWORK_ONLY,
                         cacheKey);
               }
@@ -756,7 +814,7 @@ public class StorageClient {
             new QueryExecutor() {
               @Override
               public <T> Observable<T> executor() {
-                return callFunction(name, params,
+                return callFunction(null, name, params,
                         cachePolicy != AVQuery.CachePolicy.IGNORE_CACHE && cachePolicy != AVQuery.CachePolicy.NETWORK_ONLY,
                         cacheKey);
               }
@@ -807,7 +865,8 @@ public class StorageClient {
     return wrapObservable(apiService.verifySMSCodeForUpdatingPhoneNumber(param));
   }
 
-  public Observable<AVSearchResponse> search(Map<String, String> params) {
-    return wrapObservable(apiService.search(params));
+  public Observable<AVSearchResponse> search(final AVUser authenticatedUser, Map<String, String> params) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.search(authenticatedSession, params));
   }
 }
