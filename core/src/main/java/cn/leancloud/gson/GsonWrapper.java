@@ -63,10 +63,6 @@ public class GsonWrapper {
                           TypeToken.get(AVCaptchaValidateResult.class)))
           .registerTypeAdapter(new TypeToken<Map<String, Object>>(){}.getType(),  new MapDeserializerDoubleAsIntFix())
           .registerTypeAdapter(Map.class,  new MapDeserializerDoubleAsIntFix())
-          .registerTypeAdapter(new TypeToken<Number>(){}.getType(),  new NumberDeserializerDoubleAsIntFix())
-          .registerTypeAdapter(Number.class,  new NumberDeserializerDoubleAsIntFix())
-          .registerTypeAdapter(new TypeToken<Double>(){}.getType(),  new NumberDeserializerDoubleAsIntFix())
-          .registerTypeAdapter(Double.class,  new NumberDeserializerDoubleAsIntFix())
           .create();
 
   public static Gson getGsonInstance() {
