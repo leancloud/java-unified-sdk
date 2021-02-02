@@ -573,6 +573,10 @@ public final class AVFile extends AVObject {
     this.saveInBackground().blockingSubscribe();
   }
 
+  public void save(AVUser asAuthenticatedUser) {
+    this.saveInBackground(asAuthenticatedUser, false).blockingSubscribe();
+  }
+
   /**
    * save to cloud backend.
    * @param keepFileName whether keep file name in url or not.
