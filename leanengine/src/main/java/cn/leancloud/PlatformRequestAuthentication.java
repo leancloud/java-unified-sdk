@@ -10,14 +10,13 @@ import cn.leancloud.utils.StringUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-class RequestAuth {
+class PlatformRequestAuthentication {
 
-  private static final Logger logger = LogManager.getLogger(RequestAuth.class);
+  private static final Logger logger = LogManager.getLogger(PlatformRequestAuthentication.class);
   static final String ANDROID_AFFILIATED_SUFFIX = "ax-sig-1";
   static final String SIGN_MASTERKEY_SUFFIX = "master";
 
-  public static final String ATTRIBUTE_KEY = "requestAuth";
-  public static final String USER_KEY = "authUser";
+
   private String appId;
   private String appKey;
   private String masterKey;
@@ -26,11 +25,11 @@ class RequestAuth {
   private String sign;
   private String remoteAddress;
 
-  public static void auth(HttpServletRequest req) throws UnauthException {
-    RequestAuth info = new RequestAuth(req);
+  public static void validate(HttpServletRequest req) throws UnauthException {
+    PlatformRequestAuthentication info = parse(req);
     logger.debug("request auth: {}", info);
 
-    if (info.getAppId() == null) {
+    if (null == info || info.getAppId() == null) {
       throw new UnauthException();
     }
 
@@ -42,7 +41,7 @@ class RequestAuth {
         // 只有masterKey时才能获取metaData
         req.setAttribute("authMasterKey", true);
       }
-      req.setAttribute(ATTRIBUTE_KEY, info);
+      req.setAttribute(EngineRequestContext.ATTRIBUTE_KEY_AUTHENTICATION, info);
       return;
     }
     if (info.getSign() != null) {
@@ -58,7 +57,7 @@ class RequestAuth {
         if (!StringUtil.isEmpty(androidKey)) {
           String computedSign = GeneralRequestSignature.requestSign(androidKey, Long.parseLong(ts), ANDROID_AFFILIATED_SUFFIX);
           if (info.getSign().equals(computedSign)) {
-            req.setAttribute(ATTRIBUTE_KEY, info);
+            req.setAttribute(EngineRequestContext.ATTRIBUTE_KEY_AUTHENTICATION, info);
             return;
           }
         }
@@ -67,7 +66,7 @@ class RequestAuth {
         String computedSign =
                 GeneralRequestSignature.requestSign(Long.parseLong(ts), useMasterKey);
         if (info.getSign().equals(computedSign)) {
-          req.setAttribute(ATTRIBUTE_KEY, info);
+          req.setAttribute(EngineRequestContext.ATTRIBUTE_KEY_AUTHENTICATION, info);
           return;
         }
       }
@@ -75,45 +74,51 @@ class RequestAuth {
     throw new UnauthException();
   }
 
-  public static RequestAuth getInstance(HttpServletRequest req) {
+  public static PlatformRequestAuthentication getInstance(HttpServletRequest req) {
     if (null == req) {
       return null;
     }
-    return (RequestAuth) req.getAttribute(ATTRIBUTE_KEY);
+    return (PlatformRequestAuthentication) req.getAttribute(EngineRequestContext.ATTRIBUTE_KEY_AUTHENTICATION);
   }
 
-  private RequestAuth(HttpServletRequest req) {
+  private static PlatformRequestAuthentication parse(HttpServletRequest req) {
+    if (null == req) {
+      return null;
+    }
     if (req.getContentType() != null && req.getContentType().startsWith("text/plain")) {
-      // TODO
+      return null;
     } else {
-      appId = getHeaders(req, "x-lc-id", "x-avoscloud-application-id", "x-uluru-application-id");
-      appKey =
+      String appId = getHeaders(req, "x-lc-id", "x-avoscloud-application-id", "x-uluru-application-id");
+      String appKey =
           getHeaders(req, "x-lc-key", "x-avoscloud-application-key", "x-uluru-application-key");
-      masterKey = getHeaders(req, "x-avoscloud-master-key", "x-uluru-master-key");
+      String masterKey = getHeaders(req, "x-avoscloud-master-key", "x-uluru-master-key");
       if (appKey != null && appKey.indexOf(",master") > 0) {
         masterKey = appKey.substring(0, appKey.indexOf(",master"));
         appKey = null;
       }
-      prod = getHeaders(req, "x-lc-prod", "x-avoscloud-application-production",
+      String prod = getHeaders(req, "x-lc-prod", "x-avoscloud-application-production",
           "x-uluru-application-production");
       if ("false".equals(prod)) {
         prod = "0";
       }
-      sessionToken =
+      String sessionToken =
           getHeaders(req, "x-lc-session", "x-uluru-session-token", "x-avoscloud-session-token");
-      sign = getHeaders(req, "x-lc-sign", "x-avoscloud-request-sign");
+      String sign = getHeaders(req, "x-lc-sign", "x-avoscloud-request-sign");
 
       // 放在这里只能算是一个side effect
-      remoteAddress = getHeaders(req, "x-real-ip", "x-forwarded-for");
+      String remoteAddress = getHeaders(req, "x-real-ip", "x-forwarded-for");
       if (StringUtil.isEmpty(remoteAddress)) {
         remoteAddress = req.getRemoteAddr();
       }
+      PlatformRequestAuthentication requestAuthentication = new PlatformRequestAuthentication(appId, appKey, masterKey,
+              prod, sessionToken, sign, remoteAddress);
       EngineRequestContext.setSessionToken(sessionToken);
       EngineRequestContext.setRemoteAddress(remoteAddress);
+      return requestAuthentication;
     }
   }
 
-  private String getHeaders(HttpServletRequest req, String... headers) {
+  private static String getHeaders(HttpServletRequest req, String... headers) {
     for (String header : headers) {
       String result = req.getHeader(header);
       if (result != null) {
@@ -121,6 +126,17 @@ class RequestAuth {
       }
     }
     return null;
+  }
+
+  public PlatformRequestAuthentication(String appId, String appKey, String masterKey, String prod, String sessionToken,
+                                       String sign, String remoteAddress) {
+    this.appId = appId;
+    this.appKey = appKey;
+    this.masterKey = masterKey;
+    this.prod = prod;
+    this.sessionToken = sessionToken;
+    this.sign = sign;
+    this.remoteAddress = remoteAddress;
   }
 
   public String getAppId() {

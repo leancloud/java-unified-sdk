@@ -8,6 +8,9 @@ import junit.framework.TestSuite;
 import java.util.LinkedList;
 import java.util.List;
 
+import static cn.leancloud.AVUserTest.PASSWORD;
+import static cn.leancloud.AVUserTest.USERNAME;
+
 public class FileUnitTest extends TestCase {
   public FileUnitTest(String name) {
     super(name);
@@ -28,6 +31,17 @@ public class FileUnitTest extends TestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
     System.out.println("exit tearDown()");
+  }
+
+  public void testSaveWithSpecifiedUser() throws Exception {
+    AVUser user = AVUser.logIn(USERNAME, PASSWORD).blockingFirst();
+    System.out.println("current sessionToken: " + user.getSessionToken());
+    AVFile avFile = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    avFile.save(user);
+    assertFalse(avFile.getObjectId().isEmpty());
+    avFile = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    avFile.saveInBackground(user, false).blockingFirst();
+    assertFalse(avFile.getObjectId().isEmpty());
   }
 
   public void testUploadDownloadAssociateFile() throws Exception {

@@ -1,9 +1,6 @@
 package cn.leancloud.impl;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVUser;
-import cn.leancloud.AVException;
-import cn.leancloud.AVUserCookieSign;
+import cn.leancloud.*;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.json.JSON;
 
@@ -46,12 +43,15 @@ public class DefaultAVUserCookieSign implements AVUserCookieSign {
     if (cookie != null) {
       String userInfoStr = new String(Base64.getDecoder().decode(cookie.getValue()));
       Map<String, Object> userInfo = JSON.parseObject(userInfoStr, Map.class);
+      System.out.println("decode user Map: " + userInfoStr);
       if (userInfo.containsKey(UID) && userInfo.containsKey(SESSION_TOKEN)) {
         AVUser user;
+        String userObjectId = (String) userInfo.get(UID);
         try {
-          user = AVUser.createWithoutData(AVUser.class, (String) userInfo.get(UID));
+          user = AVUser.createWithoutData(AVUser.class, userObjectId);
           Map<String, Object> value = new HashMap<String, Object>();
           value.put(AVUser.ATTR_SESSION_TOKEN, userInfo.get(SESSION_TOKEN));
+          value.put(AVObject.KEY_OBJECT_ID, userObjectId);
           user.resetServerData(value);
           return user;
         } catch (AVException e) {

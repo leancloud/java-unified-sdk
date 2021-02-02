@@ -23,8 +23,8 @@ public class LeanEngineMetadataServlet extends HttpServlet {
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
     try {
-      RequestAuth.auth(req);
-      RequestAuth auth = RequestAuth.getInstance(req);
+      PlatformRequestAuthentication.validate(req);
+      PlatformRequestAuthentication auth = PlatformRequestAuthentication.getInstance(req);
       if (auth == null || StringUtil.isEmpty(auth.getMasterKey())) {
         throw new UnauthException();
       }

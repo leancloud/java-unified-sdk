@@ -42,7 +42,7 @@ public class CloudCodeServlet extends HttpServlet {
       throws ServletException, IOException {
     setAllowOriginHeader(req, resp);
     try {
-      RequestAuth.auth(req);
+      PlatformRequestAuthentication.validate(req);
     } catch (UnauthException e) {
       e.resp(resp);
       return;

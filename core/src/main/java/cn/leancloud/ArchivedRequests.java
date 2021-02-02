@@ -78,9 +78,13 @@ public class ArchivedRequests {
     int opCount = 0;
     int opLimit = objects.size() > 5 ? 5 : objects.size();
     Iterator<AVObject> iterator = objects.iterator();
+    List<AVObject> opTargets = new ArrayList<>(opLimit);
     while(opCount < opLimit && iterator.hasNext()) {
-      final AVObject obj = iterator.next();
+      AVObject obj = iterator.next();
       opCount++;
+      opTargets.add(obj);
+    }
+    for (final AVObject obj: opTargets) {
       if (isDelete) {
         obj.deleteInBackground().subscribe(new Observer<AVNull>() {
           @Override

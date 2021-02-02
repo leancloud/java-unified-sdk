@@ -503,6 +503,10 @@ public final class AVFile extends AVObject {
               }});
   }
 
+  private boolean isSavingExternalFile() {
+    return StringUtil.isEmpty(getObjectId()) && !StringUtil.isEmpty(getUrl());
+  }
+
   private Observable<AVFile> saveWithProgressCallback(final AVUser asAuthenticatedUser,
                                                       boolean keepFileName, final ProgressCallback callback) {
     JSONObject paramData = generateChangedParam();
@@ -574,6 +578,15 @@ public final class AVFile extends AVObject {
   }
 
   /**
+   * save to cloud
+   * @param asAuthenticatedUser explicit user for request authentication.
+   *
+   */
+  public void save(AVUser asAuthenticatedUser) {
+    this.saveInBackground(asAuthenticatedUser, false).blockingSubscribe();
+  }
+
+  /**
    * save to cloud backend.
    * @param keepFileName whether keep file name in url or not.
    * @return Observable object.
@@ -582,6 +595,33 @@ public final class AVFile extends AVObject {
     return saveInBackground(null, keepFileName);
   }
 
+  /**
+   * Save eventually(not supported).
+   * @throws AVException exception happened.
+   *
+   * Because that file size is too big, cache the entire data will cost much disk capacity,
+   * so we don't support this method at present.
+   */
+  public void saveEventually() throws AVException {
+    saveEventually(null);
+  }
+
+  /**
+   * Save eventually(not supported).
+   * @param asAuthenticatedUser explicit user for request authentication.
+   * @throws AVException exception happened.
+   *
+   * Because that file size is too big, cache the entire data will cost much disk capacity,
+   * so we don't support this method at present.
+   */
+  public void saveEventually(final AVUser asAuthenticatedUser) throws AVException {
+    if (isSavingExternalFile()) {
+      super.saveEventually(asAuthenticatedUser);
+    } else {
+      throw new UnsupportedOperationException("AVFile#saveEventually is not allowed," +
+              " please save the binary data to temp store and try to save in future.");
+    }
+  }
   /**
    * save to cloud in background.
    * @param asAuthenticatedUser explicit user for request authentication.
