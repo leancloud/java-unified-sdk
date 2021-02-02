@@ -524,6 +524,20 @@ public class AVFileTest extends TestCase {
     assertTrue(length > 0);
   }
 
+  public void testSaveEventuallyWithWifi() throws Exception {
+    File currentFile = new File("./20160704174809.jpeg");
+    AVFile file = new AVFile("20160704174809.jpeg", currentFile);
+    try {
+      file.saveEventually();
+      fail("it should be not allowed to save local file eventually.");
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    file = new AVFile("thumbnail", "http://file.everydaydiary.luyunxinchen.cn/437K25F9DpoWnJcJgbQECCV994ntJKpCGGudo6af.png");
+    file.saveEventually();
+    Thread.sleep(20000);
+  }
+
   public void testGetDataStreamWithLocalFileUnderAsyncMode() throws Exception {
     File currentFile = new File("./20160704174809.jpeg");
     AVFile file = new AVFile("20160704174809.jpeg", currentFile);
