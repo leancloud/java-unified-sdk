@@ -8,6 +8,8 @@ import java.util.Map;
 /**
  * 在云代码函数中获取请求相关的额外属性
  *
+ * @author lbt05
+ *
  */
 public class EngineRequestContext {
   public static final String ATTRIBUTE_KEY_AUTHENTICATION = "requestAuth";

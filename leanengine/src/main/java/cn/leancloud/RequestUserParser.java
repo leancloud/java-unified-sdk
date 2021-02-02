@@ -16,7 +16,9 @@ import io.reactivex.disposables.Disposable;
  * 
  * @author lbt05
  *
+ * This class is deprecated since 7.2.1
  */
+@Deprecated
 class RequestUserParser {
   private static AVLogger LOGGER = LogUtil.getLogger(RequestUserParser.class);
 

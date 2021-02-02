@@ -14,9 +14,9 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebFilter(filterName = "requestUserAuthenticationFilter", urlPatterns = {"/*"})
-public class RequestUserAuthenticationFilter implements Filter {
-  private static AVLogger LOGGER = LogUtil.getLogger(RequestUserAuthenticationFilter.class);
+@WebFilter(filterName = "requestAuthenticationFilter", urlPatterns = {"/*"})
+public class RequestAuthenticationFilter implements Filter {
+  private static AVLogger LOGGER = LogUtil.getLogger(RequestAuthenticationFilter.class);
 
   public void init(FilterConfig filterConfig) throws ServletException {}
 

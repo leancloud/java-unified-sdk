@@ -53,7 +53,6 @@ public class DefaultAVUserCookieSign implements AVUserCookieSign {
           value.put(AVUser.ATTR_SESSION_TOKEN, userInfo.get(SESSION_TOKEN));
           value.put(AVObject.KEY_OBJECT_ID, userObjectId);
           user.resetServerData(value);
-          System.out.println("decode user instance: " + user.toJSONString());
           return user;
         } catch (AVException e) {
           LOGGER.w(e);
