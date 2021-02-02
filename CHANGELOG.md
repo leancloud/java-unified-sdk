@@ -2,6 +2,19 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 7.2.1 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- fixed: AVFile#save(asUser) would call super#save(asUser), binary data does not been uploaded.
+- refactor user authentication mechanism in lean engine, make it workable for both cloud-code and server login in customized servlet. 
+- deprecated RequestUserParser class, instead of invoking AVUser#becomeWithSessionToken directly.
+
 ## 7.2.0 release
 
 #### Break changes
