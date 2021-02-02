@@ -58,7 +58,7 @@ public class LeanEngine {
     Map<String, String> affiliatedKeys = null;
     if (!StringUtil.isEmpty(androidxKey)) {
       affiliatedKeys = new HashMap<>();
-      affiliatedKeys.put(RequestAuth.ANDROID_AFFILIATED_SUFFIX, androidxKey);
+      affiliatedKeys.put(PlatformRequestAuthentication.ANDROID_AFFILIATED_SUFFIX, androidxKey);
     }
     appConf = EngineAppConfiguration.instance(applicationId, clientKey, masterKey, affiliatedKeys);
     appRouter = new EnvFirstAppRouter();
@@ -189,8 +189,8 @@ public class LeanEngine {
     if (null == affiliatedKeys) {
       return null;
     }
-    if (affiliatedKeys.containsKey(RequestAuth.ANDROID_AFFILIATED_SUFFIX)) {
-      return affiliatedKeys.get(RequestAuth.ANDROID_AFFILIATED_SUFFIX);
+    if (affiliatedKeys.containsKey(PlatformRequestAuthentication.ANDROID_AFFILIATED_SUFFIX)) {
+      return affiliatedKeys.get(PlatformRequestAuthentication.ANDROID_AFFILIATED_SUFFIX);
     } else {
       return null;
     }

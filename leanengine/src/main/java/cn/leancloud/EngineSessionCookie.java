@@ -31,11 +31,12 @@ public class EngineSessionCookie {
     this.sign = sign;
   }
 
-  protected void parseCookie(HttpServletRequest req, HttpServletResponse response) {
+  protected AVUser parseCookie(HttpServletRequest req, HttpServletResponse response) {
     this.responseHolder.set(response);
     this.requestHolder.set(req);
+    AVUser user = null;
     if (sign.validateCookieSign(req)) {
-      AVUser user = sign.decodeUser(req);
+      user = sign.decodeUser(req);
       if (fetchUser && user != null && !user.isDataAvailable()) {
         try {
           user.fetch();
@@ -43,18 +44,16 @@ public class EngineSessionCookie {
           e.printStackTrace();
         }
       }
-      if (user != null) {
-        AVUser.changeCurrentUser(user, true);
-      }
     }
+    return user;
   }
 
-  public void wrappCookie(boolean inResponse) {
+  public void wrapCookie(boolean inResponse) {
     if (inResponse) {
       HttpServletResponse resp = responseHolder.get();
       HttpServletRequest req = requestHolder.get();
       if (resp != null) {
-        AVUser u = AVUser.getCurrentUser();
+        AVUser u = EngineRequestContext.getAuthenticatedUser();
         String host = null;
         try {
           URL requestURL = new URL(req.getRequestURL().toString());

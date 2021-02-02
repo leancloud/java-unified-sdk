@@ -14,21 +14,23 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebFilter(filterName = "requestUserAuthFilter", urlPatterns = {"/*"})
-public class RequestUserAuthFilter implements Filter {
-  private static AVLogger LOGGER = LogUtil.getLogger(RequestUserAuthFilter.class);
+@WebFilter(filterName = "requestUserAuthenticationFilter", urlPatterns = {"/*"})
+public class RequestUserAuthenticationFilter implements Filter {
+  private static AVLogger LOGGER = LogUtil.getLogger(RequestUserAuthenticationFilter.class);
 
   public void init(FilterConfig filterConfig) throws ServletException {}
 
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
     try {
-      AVUser.changeCurrentUser(null, false);
       EngineRequestContext.clean();
       EngineSessionCookie sessionCookie = LeanEngine.getSessionCookie();
       if (sessionCookie != null && request instanceof HttpServletRequest
           && response instanceof HttpServletResponse) {
-        sessionCookie.parseCookie((HttpServletRequest) request, (HttpServletResponse) response);
+        AVUser requestUser = sessionCookie.parseCookie((HttpServletRequest) request, (HttpServletResponse) response);
+        if (null != requestUser) {
+          EngineRequestContext.setAuthenticatedUser(requestUser);
+        }
       }
     } catch (Exception e) {
       LOGGER.w(e);

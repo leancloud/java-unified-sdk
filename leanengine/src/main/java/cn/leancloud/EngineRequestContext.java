@@ -7,15 +7,16 @@ import java.util.Map;
 
 /**
  * 在云代码函数中获取请求相关的额外属性
- * 
- * @author lbt05
  *
  */
 public class EngineRequestContext {
+  public static final String ATTRIBUTE_KEY_AUTHENTICATION = "requestAuth";
+  public static final String ATTRIBUTE_KEY_SESSION_TOKEN = "userSessionToken";
 
   private static final String UPDATED_KEYS = "_updatedKeys";
   private static final String REMOTE_ADDRESS = "_remoteAddress";
   private static final String SESSION_TOKEN = "_sessionToken";
+  private static final String AUTHENTICATED_USER = "_authenticatedUser";
   private static final String BEFORE_KEYS = "__before";
   private static final String AFTER_KEYS = "__after";
   static ThreadLocal<Map<String, Object>> localMeta = new ThreadLocal<Map<String, Object>>();
@@ -79,8 +80,32 @@ public class EngineRequestContext {
     put(SESSION_TOKEN, sessionToken);
   }
 
+  /**
+   * get authenticated user's session token of current request.
+   * @return session token
+   *
+   * keep it just for compatible with old code.
+   */
   public static String getSessionToken() {
     return (String) get(SESSION_TOKEN);
+  }
+
+  /**
+   * set current authenticated user.
+   * @param currentUser current user.
+   */
+  public static void setAuthenticatedUser(AVUser currentUser) {
+    put(AUTHENTICATED_USER, currentUser);
+  }
+
+  /**
+   * get authenticated user of current request.
+   * @return AVUser instance
+   *
+   * keep it just for compatible with old code.
+   */
+  public static AVUser getAuthenticatedUser() {
+    return (AVUser) get(AUTHENTICATED_USER);
   }
 
   public static void clean() {

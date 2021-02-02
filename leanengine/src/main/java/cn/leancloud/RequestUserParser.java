@@ -21,11 +21,11 @@ class RequestUserParser {
   private static AVLogger LOGGER = LogUtil.getLogger(RequestUserParser.class);
 
   public static void parse(final HttpServletRequest req) {
-    if (req.getAttribute(RequestAuth.ATTRIBUTE_KEY) == null) {
+    if (req.getAttribute(EngineRequestContext.ATTRIBUTE_KEY_AUTHENTICATION) == null) {
       return;
     }
     String sessionToken =
-        ((RequestAuth) req.getAttribute(RequestAuth.ATTRIBUTE_KEY)).getSessionToken();
+        ((PlatformRequestAuthentication) req.getAttribute(EngineRequestContext.ATTRIBUTE_KEY_AUTHENTICATION)).getSessionToken();
     if (sessionToken != null && !StringUtil.isEmpty(sessionToken)) {
       Map<String, String> header = new HashMap<String, String>();
       header.put("X-LC-Session", sessionToken);
@@ -37,7 +37,7 @@ class RequestUserParser {
 
                 public void onNext(AVUser avUser) {
 //                  AVUser.changeCurrentUser(avUser, true);
-                  req.setAttribute(RequestAuth.USER_KEY, avUser);
+                  req.setAttribute(EngineRequestContext.ATTRIBUTE_KEY_SESSION_TOKEN, avUser);
                 }
 
                 public void onError(Throwable throwable) {
