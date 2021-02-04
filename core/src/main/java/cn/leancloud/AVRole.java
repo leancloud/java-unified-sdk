@@ -11,11 +11,9 @@ public class AVRole extends AVObject {
 
   public AVRole() {
     super(CLASS_NAME);
-    totallyOverwrite = true;
   }
   public AVRole(String name) {
     super(CLASS_NAME);
-    totallyOverwrite = true;
     put(ATTR_NAME, name);
   }
   public AVRole(String name, AVACL acl) {
