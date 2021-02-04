@@ -276,7 +276,11 @@ public class AVIMConversation {
     if (null == allList) {
       return new ArrayList<>();
     }
-    return Collections.unmodifiableList(allList);
+    List<String> result = new ArrayList<>(allList.size());
+    for (String m: allList) {
+      result.add(m);
+    }
+    return result;
   }
 
   protected void setMembers(List<String> m) {

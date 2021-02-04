@@ -11,6 +11,19 @@ Following is change logs for recently release versions, you can refer to [releas
 - None
 
 #### Optimization and fixed bugs
+- fixed: can't update Role bcz totallyOverwrite flag is incorrect.
+- AVIMConversation#getMembers() deeply copy member list for avoiding concurrent exception in flutter.
+
+
+## 7.2.1 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
 - fixed: AVFile#save(asUser) would call super#save(asUser), binary data does not been uploaded.
 - refactor user authentication mechanism in lean engine, make it workable for both cloud-code and server login in customized servlet. 
 - deprecated RequestUserParser class, instead of invoking AVUser#becomeWithSessionToken directly.
