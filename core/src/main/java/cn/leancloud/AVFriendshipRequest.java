@@ -52,7 +52,7 @@ public class AVFriendshipRequest extends AVObject {
    * @param attributes additional attributes for this friend.
    * @return observable instance
    *
-   * @notice: attributes is necessary as parameter bcz they are not properties of FriendshipRequest.
+   * notice: attributes is necessary as parameter bcz they are not properties of FriendshipRequest.
    */
   public Observable<? extends AVObject> accept(Map<String, Object> attributes) {
     AVUser currentUser = AVUser.currentUser();

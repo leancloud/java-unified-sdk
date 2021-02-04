@@ -125,10 +125,10 @@ public class GsonObject extends JSONObject{
 
   /**
    * get object value with specified key.
-   * @param key
-   * @param type
-   * @param <T>
-   * @return
+   * @param key attr key
+   * @param type attr type
+   * @param <T> generic type
+   * @return attr value
    *
    * @since 1.8
    */

@@ -785,6 +785,7 @@ public class AVUser extends AVObject {
    *                          true - save user to AVUser#currentUser.
    *                          false - not save.
    * @param clazz class name.
+   * @param <T> template.
    * @return AVUser instance.
    *
    */
@@ -1405,7 +1406,7 @@ public class AVUser extends AVObject {
    * @param request friendship request.
    * @param attributes additional attributes.
    * @return Observable instance to monitor operation result.
-   * @notice: attributes is necessary as parameter bcz they are not properties of FriendshipRequest.
+   * notice: attributes is necessary as parameter bcz they are not properties of FriendshipRequest.
    */
   public Observable<AVFriendshipRequest> acceptFriendshipRequest(AVFriendshipRequest request,
                                                                  Map<String, Object> attributes) {
@@ -1418,7 +1419,7 @@ public class AVUser extends AVObject {
    * @param request friendship request.
    * @param attributes additional attributes.
    * @return Observable instance to monitor operation result.
-   * @notice: attributes is necessary as parameter bcz they are not properties of FriendshipRequest.
+   * notice: attributes is necessary as parameter bcz they are not properties of FriendshipRequest.
    *
    * in general, this method should be invoked in lean engine.
    */
