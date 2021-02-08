@@ -432,15 +432,15 @@ public class PushService extends Service {
 
   /**
    * create Notification channel.
-   * @param context
-   * @param channelId
-   * @param channelName
-   * @param description
-   * @param importance
-   * @param enableLights
-   * @param lightColor
-   * @param enableVibration
-   * @param vibrationPattern
+   * @param context context instance.
+   * @param channelId channel id.
+   * @param channelName channel name.
+   * @param description The description of the channel.
+   * @param importance The importance of the channel.
+   * @param enableLights flag indicating enable lights or not.
+   * @param lightColor light color.
+   * @param enableVibration flag indicating enable vibration or not.
+   * @param vibrationPattern vibration pattern.
    */
   @TargetApi(Build.VERSION_CODES.O)
   public static void createNotificationChannel(Context context, String channelId, String channelName,
