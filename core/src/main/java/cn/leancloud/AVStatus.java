@@ -223,7 +223,7 @@ public class AVStatus extends AVObject {
    * @return Observable instance
    */
   public static Observable<AVNull> deleteInBackground(AVStatus status) {
-    return deleteInBackground(null, status);
+    return deleteInBackground(AVUser.currentUser(), status);
   }
 
   /**
@@ -235,11 +235,11 @@ public class AVStatus extends AVObject {
    * in general, this method should be invoked in lean engine.
    */
   public static Observable<AVNull> deleteInBackground(AVUser asAuthenticatedUser, AVStatus status) {
-    if (!checkCurrentUserAuthenticated()) {
+    if (!checkUserAuthenticated(asAuthenticatedUser)) {
       return Observable.error(ErrorUtils.sessionMissingException());
     }
 
-    String currentUserObjectId = AVUser.currentUser().getObjectId();
+    String currentUserObjectId = asAuthenticatedUser.getObjectId();
 
     AVObject source = null;
     Object sourceObject = status.get(ATTR_SOURCE);
@@ -367,14 +367,14 @@ public class AVStatus extends AVObject {
   }
 
   private Observable<AVStatus> sendInBackground(String inboxType, AVQuery query) {
-    return sendInBackground(null, inboxType, query);
+    return sendInBackground(AVUser.currentUser(), inboxType, query);
   }
 
   private Observable<AVStatus> sendInBackground(AVUser asAuthenticatedUser, String inboxType, AVQuery query) {
-    if (!checkCurrentUserAuthenticated()) {
+    if (!checkUserAuthenticated(asAuthenticatedUser)) {
       return Observable.error(ErrorUtils.sessionMissingException());
     }
-    setSource(AVUser.currentUser());
+    setSource(asAuthenticatedUser);
 
     Map<String, Object> param = new HashMap<>();
     param.put("data", this.serverData);
@@ -449,6 +449,14 @@ public class AVStatus extends AVObject {
 
   private static boolean checkCurrentUserAuthenticated() {
     AVUser currentUser = AVUser.getCurrentUser();
+    if (null != currentUser && currentUser.isAuthenticated()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private static boolean checkUserAuthenticated(AVUser currentUser) {
     if (null != currentUser && currentUser.isAuthenticated()) {
       return true;
     } else {
