@@ -268,7 +268,7 @@ public class AVStatus extends AVObject {
       if (INVALID_MESSAGE_ID == messageId) {
         return Observable.error(ErrorUtils.invalidObjectIdException());
       } else {
-        String ownerString = JSON.toJSONString(Utils.mapFromAVObject(AVUser.currentUser(), false));
+        String ownerString = JSON.toJSONString(Utils.mapFromAVObject(asAuthenticatedUser, false));
         Map<String, Object> params = new HashMap<>();
         params.put(ATTR_MESSAGE_ID, String.valueOf(messageId));
         params.put(ATTR_INBOX_TYPE, status.getInboxType());
@@ -449,11 +449,7 @@ public class AVStatus extends AVObject {
 
   private static boolean checkCurrentUserAuthenticated() {
     AVUser currentUser = AVUser.getCurrentUser();
-    if (null != currentUser && currentUser.isAuthenticated()) {
-      return true;
-    } else {
-      return false;
-    }
+    return checkUserAuthenticated(currentUser);
   }
 
   private static boolean checkUserAuthenticated(AVUser currentUser) {
