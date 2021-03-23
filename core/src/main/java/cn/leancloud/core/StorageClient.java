@@ -461,7 +461,8 @@ public class StorageClient {
   public <T extends AVUser> Observable<T> createUserBySession(String sessionToken, final Class<T> clazz) {
     Map<String, String> param = new HashMap<String, String>(1);
     param.put("session_token", sessionToken);
-    return apiService.checkAuthenticated(sessionToken, param).map(new Function<AVUser, T>() {
+    Observable<AVUser> result = wrapObservable(apiService.checkAuthenticated(sessionToken, param));
+    return result.map(new Function<AVUser, T>() {
       public T apply(AVUser avUser) throws Exception {
         if (null == avUser) {
           LOGGER.e("The mapper function returned a null value.");
