@@ -286,6 +286,11 @@ public class UserDemoActivity extends DemoBaseActivity {
     });
   }
 
+  public void testBecomeWithSessionToken() {
+    AVUser user = AVUser.becomeWithSessionToken("thisisa fake session token");
+    log("succeed to initiate user with a fake session token: " + user);
+  }
+
   public void testAnonymousUserLogin() {
     AVUser.logInAnonymously()
         .subscribe(ObserverBuilder.buildSingleObserver(new LogInCallback<AVUser>() {
