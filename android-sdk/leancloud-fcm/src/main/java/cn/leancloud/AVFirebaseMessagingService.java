@@ -35,14 +35,28 @@ public class AVFirebaseMessagingService extends FirebaseMessagingService {
       return;
     }
     LOGGER.d("received message from: " + remoteMessage.getFrom() + ", payload: " + data.toString());
+
+    if (remoteMessage.getNotification() == null) {
+      LOGGER.e("Require alert content.");
+      return;
+    }
+    String title = remoteMessage.getNotification().getTitle();
+    String alert = remoteMessage.getNotification().getBody();
+
     try {
       JSONObject jsonObject = JSON.parseObject(data.get("payload"));
       if (null != jsonObject) {
         String channel = jsonObject.getString("_channel");
         String action = jsonObject.getString("action");
 
+        if (!StringUtil.isEmpty(title)) {
+          jsonObject.put("title", title);
+        }
+        if (!StringUtil.isEmpty(alert)) {
+          jsonObject.put("alert", alert);
+        }
         AndroidNotificationManager androidNotificationManager = AndroidNotificationManager.getInstance();
-        androidNotificationManager.processGcmMessage(channel, action, jsonObject.toJSONString());
+        androidNotificationManager.processFcmMessage(channel, action, jsonObject.toJSONString());
       }
     } catch (Exception ex) {
       LOGGER.e("failed to parse push data.", ex);
