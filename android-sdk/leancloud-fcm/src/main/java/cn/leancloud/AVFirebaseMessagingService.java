@@ -37,7 +37,6 @@ public class AVFirebaseMessagingService extends FirebaseMessagingService {
     LOGGER.d("received message from: " + remoteMessage.getFrom() + ", payload: " + data.toString());
 
     if (remoteMessage.getNotification() == null) {
-      LOGGER.e("Require alert content.");
       return;
     }
     String title = remoteMessage.getNotification().getTitle();
