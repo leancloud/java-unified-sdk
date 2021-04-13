@@ -233,14 +233,17 @@ public class AndroidNotificationManager extends AVNotificationManager {
   }
 
   /**
-   * 处理 GCM 的透传消息
+   * 处理 FCM 的透传消息
    * @param channel
    * @param action
    * @param message
    */
-  public void processGcmMessage(String channel, String action, String message) {
-    if (channel == null || !containsDefaultPushCallback(channel)) {
-      channel = AVOSCloud.getApplicationId();
+  public void processFcmMessage(String channel, String action, String message) {
+    if (!StringUtil.isEmpty(message)) {
+      if (channel == null || !containsDefaultPushCallback(channel)) {
+        channel = AVOSCloud.getApplicationId();
+      }
+
       if (action != null) {
         sendBroadcast(channel, message, action);
       } else {
