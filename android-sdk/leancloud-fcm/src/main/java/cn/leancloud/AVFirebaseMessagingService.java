@@ -1,5 +1,7 @@
 package cn.leancloud;
 
+import cn.leancloud.callback.SaveCallback;
+import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
 
@@ -8,9 +10,9 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
-import cn.leancloud.push.AVPushMessageListener;
 import cn.leancloud.push.AndroidNotificationManager;
 import cn.leancloud.utils.LogUtil;
+import cn.leancloud.utils.StringUtil;
 
 /**
  * Created by fengjunwen on 2018/8/28.
@@ -18,6 +20,7 @@ import cn.leancloud.utils.LogUtil;
 
 public class AVFirebaseMessagingService extends FirebaseMessagingService {
   private final static AVLogger LOGGER = LogUtil.getLogger(AVFirebaseMessagingService.class);
+  private final String VENDOR = "fcm";
 
   /**
    * FCM 有两种消息：通知消息与数据消息。
@@ -60,6 +63,42 @@ public class AVFirebaseMessagingService extends FirebaseMessagingService {
     } catch (Exception ex) {
       LOGGER.e("failed to parse push data.", ex);
     }
+  }
+
+  @Override
+  public void onNewToken(String token) {
+    LOGGER.d("refreshed token: " + token);
+
+    // If you want to send messages to this application instance or
+    // manage this apps subscriptions on the server side, send the
+    // FCM registration token to your app server.
+    sendRegistrationToServer(token);
+  }
+
+  private void sendRegistrationToServer(String refreshedToken) {
+    if (StringUtil.isEmpty(refreshedToken)) {
+      return;
+    }
+    AVInstallation installation = AVInstallation.getCurrentInstallation();
+    if (!VENDOR.equals(installation.getString(AVInstallation.VENDOR))) {
+      installation.put(AVInstallation.VENDOR, VENDOR);
+    }
+    if (!refreshedToken.equals(installation.getString(AVInstallation.REGISTRATION_ID))) {
+      installation.put(AVInstallation.REGISTRATION_ID, refreshedToken);
+    }
+    installation.saveInBackground().subscribe(
+      ObserverBuilder.buildSingleObserver(new SaveCallback() {
+      @Override
+      public void done(AVException e) {
+        if (null != e) {
+          LOGGER.e("failed to update installation.", e);
+        } else {
+          LOGGER.d("succeed to update installation.");
+        }
+      }
+    }));
+
+    LOGGER.d("FCM registration success! registrationId=" + refreshedToken);
   }
 
   @Override
