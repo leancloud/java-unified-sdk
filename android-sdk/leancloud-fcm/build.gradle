@@ -60,15 +60,11 @@ dependencies {
     implementation("cn.leancloud:realtime-core:${rootProject.ext.sdkVersion}")
 
     // Import the BoM for the Firebase platform
-    implementation platform('com.google.firebase:firebase-bom:26.7.0')
+    implementation platform('com.google.firebase:firebase-bom:27.0.0')
 
     // Declare the dependencies for the Firebase Cloud Messaging and Analytics libraries
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-messaging'
-//    implementation 'com.google.firebase:firebase-core:15.0.2'
-//    implementation 'com.google.firebase:firebase-iid:15.0.2'
-//    implementation 'com.google.firebase:firebase-messaging:15.0.2'
-//    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 
     implementation 'androidx.appcompat:appcompat:1.0.0'
     testImplementation 'junit:junit:4.12'

@@ -92,6 +92,7 @@ public class AVMixPushManager {
 
     if (!isXiaomiPhone()) {
       printErrorLog("register error, current device is not a xiaomi phone!");
+      return;
     }
 
     if (!checkXiaomiManifest(context)) {
