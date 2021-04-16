@@ -15,7 +15,7 @@
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="cn.leancloud.qJnLgVRA9mnzVSw4Ho3HtIaI-gzGzoHsz" />
+            <data android:scheme="cn.leancloud.qjnlgvra9mnzvsw4ho3htiai-gzgzohsz" />
             <data android:host="leancloud" />
             <data android:pathPrefix="/classes/Reply/" />
             </intent-filter>

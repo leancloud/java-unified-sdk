@@ -2,12 +2,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.huawei.agconnect'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion "28.0.3"
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
 
     defaultConfig {
-        minSdkVersion 17
-        targetSdkVersion 26
+        minSdkVersion 19
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
@@ -61,7 +61,7 @@ dependencies {
 
     implementation("cn.leancloud:realtime-core:${rootProject.ext.sdkVersion}")
 
-    implementation 'com.huawei.hms:push:4.0.2.300'
+    implementation 'com.huawei.hms:push:5.1.1.301'
 
     implementation 'androidx.appcompat:appcompat:1.0.0'
     testImplementation 'junit:junit:4.12'
