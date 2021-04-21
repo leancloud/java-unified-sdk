@@ -26,6 +26,7 @@ public class AVHMSMessageService extends HmsMessageService {
    *
    * @param remoteMessage
    */
+  @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
     try {
       AndroidNotificationManager androidNotificationManager = AndroidNotificationManager.getInstance();
@@ -46,9 +47,6 @@ public class AVHMSMessageService extends HmsMessageService {
     }
   }
 
-  public void onDeletedMessages() {
-  }
-
   /**
    * 服务端更新token回调方法。
    * 参考文档：https://developer.huawei.com/consumer/cn/doc/development/HMS-References/push-HmsMessageService-cls#onMessageReceived
@@ -59,6 +57,7 @@ public class AVHMSMessageService extends HmsMessageService {
    *
    * @param token
    */
+  @Override
   public void onNewToken(String token) {
     updateAVInstallation(token);
   }
@@ -67,6 +66,7 @@ public class AVHMSMessageService extends HmsMessageService {
    * 申请token失败回调方法
    * @param exception
    */
+  @Override
   public void onTokenError(Exception exception) {
     LOGGER.w("failed to apply token. cause: " + exception.getMessage());
   }
