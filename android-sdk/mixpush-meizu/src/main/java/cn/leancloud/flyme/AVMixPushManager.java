@@ -137,11 +137,7 @@ public class AVMixPushManager {
   private static boolean checkFlymeManifest(Context context) {
     boolean result = false;
     try {
-      result = AVManifestUtils.checkPermission(context, android.Manifest.permission.INTERNET)
-          && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE)
-          && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE)
-          && AVManifestUtils.checkPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-          && AVManifestUtils.checkReceiver(context, flymePushReceiverClazz);
+      result = AVManifestUtils.checkReceiver(context, flymePushReceiverClazz);
     } catch (Exception e) {
       LOGGER.d(e.getMessage());
     }
