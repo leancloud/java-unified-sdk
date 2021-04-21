@@ -210,10 +210,6 @@ public class AVMixPushManager {
     boolean result = false;
     try {
       result = AVManifestUtils.checkPermission(context, android.Manifest.permission.INTERNET)
-          && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_NETWORK_STATE)
-          && AVManifestUtils.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)
-          && AVManifestUtils.checkPermission(context, android.Manifest.permission.READ_PHONE_STATE)
-          && AVManifestUtils.checkService(context, HmsMsgService.class)
           && AVManifestUtils.checkService(context, hwMessageServiceClazz);
     } catch (Exception e) {
       LOGGER.d(e.getMessage());
