@@ -5,7 +5,7 @@ import android.content.Intent;
 
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
-import cn.leancloud.flyme.AVMixPushManager;
+import cn.leancloud.flyme.LCMixPushManager;
 import cn.leancloud.push.AndroidNotificationManager;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.utils.LogUtil;
@@ -14,32 +14,32 @@ import cn.leancloud.utils.LogUtil;
  * Created by wli on 2017/2/14.
  */
 
-public class AVFlymePushMessageReceiver extends com.meizu.cloud.pushsdk.MzPushMessageReceiver {
-  private final static AVLogger LOGGER = LogUtil.getLogger(AVFlymePushMessageReceiver.class);
+public class LCFlymePushMessageReceiver extends com.meizu.cloud.pushsdk.MzPushMessageReceiver {
+  private final static LCLogger LOGGER = LogUtil.getLogger(LCFlymePushMessageReceiver.class);
   private static final String AV_MIXPUSH_FLYME_NOTIFICATION_ACTION = "com.avos.avoscloud.flyme_notification_action";
 
   private final String FLYME_VERDOR = "mz";
 
   private void updateAVInstallation(String flymePushId) {
     if (!StringUtil.isEmpty(flymePushId)) {
-      AVInstallation installation = AVInstallation.getCurrentInstallation();
+      LCInstallation installation = LCInstallation.getCurrentInstallation();
 
-      if (!FLYME_VERDOR.equals(installation.getString(AVInstallation.VENDOR))) {
-        installation.put(AVInstallation.VENDOR, FLYME_VERDOR);
+      if (!FLYME_VERDOR.equals(installation.getString(LCInstallation.VENDOR))) {
+        installation.put(LCInstallation.VENDOR, FLYME_VERDOR);
       }
-      if (!flymePushId.equals(installation.getString(AVInstallation.REGISTRATION_ID))) {
-        installation.put(AVInstallation.REGISTRATION_ID, flymePushId);
+      if (!flymePushId.equals(installation.getString(LCInstallation.REGISTRATION_ID))) {
+        installation.put(LCInstallation.REGISTRATION_ID, flymePushId);
       }
 
-      String localProfile = installation.getString(AVMixPushManager.MIXPUSH_PROFILE);
+      String localProfile = installation.getString(LCMixPushManager.MIXPUSH_PROFILE);
       localProfile = (null != localProfile ? localProfile : "");
-      if (!localProfile.equals(AVMixPushManager.flymeDeviceProfile)) {
-        installation.put(AVMixPushManager.MIXPUSH_PROFILE, AVMixPushManager.flymeDeviceProfile);
+      if (!localProfile.equals(LCMixPushManager.flymeDeviceProfile)) {
+        installation.put(LCMixPushManager.MIXPUSH_PROFILE, LCMixPushManager.flymeDeviceProfile);
       }
 
       installation.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
         @Override
-        public void done(AVException e) {
+        public void done(LCException e) {
           if (null != e) {
             LOGGER.e("update installation error!", e);
           } else {
@@ -143,8 +143,8 @@ public class AVFlymePushMessageReceiver extends com.meizu.cloud.pushsdk.MzPushMe
   @Override
   public void onUpdateNotificationBuilder(com.meizu.cloud.pushsdk.notification.PushNotificationBuilder pushNotificationBuilder) {
     //重要,详情参考应用小图标自定设置
-    if (AVMixPushManager.flymeMStatusBarIcon != 0) {
-      pushNotificationBuilder.setmStatusbarIcon(AVMixPushManager.flymeMStatusBarIcon);
+    if (LCMixPushManager.flymeMStatusBarIcon != 0) {
+      pushNotificationBuilder.setmStatusbarIcon(LCMixPushManager.flymeMStatusBarIcon);
     }
   }
 

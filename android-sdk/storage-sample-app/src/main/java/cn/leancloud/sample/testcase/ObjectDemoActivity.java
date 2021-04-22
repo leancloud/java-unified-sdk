@@ -12,7 +12,7 @@ import java.util.Random;
 
 import cn.leancloud.AVFile;
 import cn.leancloud.AVObject;
-import cn.leancloud.AVParcelableObject;
+import cn.leancloud.LCParcelableObject;
 import cn.leancloud.AVQuery;
 import cn.leancloud.AVSaveOption;
 import cn.leancloud.sample.DemoBaseActivity;
@@ -162,9 +162,9 @@ public class ObjectDemoActivity extends DemoBaseActivity {
   public void testObjectIntent() throws AVException {
     Student student = getFirstStudent();
     Intent intent = new Intent();
-    intent.putExtra("student", new AVParcelableObject(student));
+    intent.putExtra("student", new LCParcelableObject(student));
 
-    AVParcelableObject intentStudent = intent.getParcelableExtra("student");
+    LCParcelableObject intentStudent = intent.getParcelableExtra("student");
     log("通过 intent 传递了对象 " + intentStudent);
   }
 

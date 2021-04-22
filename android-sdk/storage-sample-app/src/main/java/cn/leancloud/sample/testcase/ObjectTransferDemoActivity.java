@@ -2,11 +2,11 @@ package cn.leancloud.sample.testcase;
 
 import android.content.Intent;
 
+import cn.leancloud.LCParcelableObject;
 import cn.leancloud.json.JSON;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVObject;
-import cn.leancloud.AVParcelableObject;
 import cn.leancloud.AVQuery;
 import cn.leancloud.sample.DemoBaseActivity;
 
@@ -28,7 +28,7 @@ public class ObjectTransferDemoActivity extends DemoBaseActivity {
     System.out.println("sender: " + student.toJSONString());
     System.out.println("sender objectId:" + student.getObjectId());
 
-    AVParcelableObject parcelableObject = new AVParcelableObject(student);
+    LCParcelableObject parcelableObject = new LCParcelableObject(student);
     Intent intent = new Intent(this, ObjectTransferTargetActivity.class);
     intent.putExtra("attached", parcelableObject);
     this.startActivity(intent);

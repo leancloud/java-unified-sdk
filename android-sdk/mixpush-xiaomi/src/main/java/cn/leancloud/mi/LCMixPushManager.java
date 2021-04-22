@@ -3,17 +3,17 @@ package cn.leancloud.mi;
 import android.content.Context;
 import android.os.Build;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVManifestUtils;
-import cn.leancloud.AVMiPushMessageReceiver;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LCManifestUtils;
+import cn.leancloud.LCMiPushMessageReceiver;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
 /**
  * Created by wli on 16/6/27.
  */
-public class AVMixPushManager {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVMixPushManager.class);
+public class LCMixPushManager {
+  private static final LCLogger LOGGER = LogUtil.getLogger(LCMixPushManager.class);
 
   public static final String MIXPUSH_PROFILE = "deviceProfile";
 
@@ -21,7 +21,7 @@ public class AVMixPushManager {
    * 小米推送的 deviceProfile
    */
   public static String miDeviceProfile = "";
-  public static Class miPushReceiverClazz = AVMiPushMessageReceiver.class;
+  public static Class miPushReceiverClazz = LCMiPushMessageReceiver.class;
 
   /**
    * 注册小米推送
@@ -136,7 +136,7 @@ public class AVMixPushManager {
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey,
                                         String profile, boolean isInternationalVendor, Class customizedReceiver) {
-    AVMiPushMessageReceiver.setInternationalVendor(isInternationalVendor);
+    LCMiPushMessageReceiver.setInternationalVendor(isInternationalVendor);
     registerXiaomiPush(context, miAppId, miAppKey, profile, customizedReceiver);
   }
 
@@ -149,7 +149,7 @@ public class AVMixPushManager {
 
   private static boolean checkXiaomiManifest(Context context) {
     try {
-      return AVManifestUtils.checkReceiver(context, miPushReceiverClazz);
+      return LCManifestUtils.checkReceiver(context, miPushReceiverClazz);
     } catch (Exception e) {
       LOGGER.d(e.getMessage());
     }

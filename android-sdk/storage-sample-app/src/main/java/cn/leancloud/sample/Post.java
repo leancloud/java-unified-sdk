@@ -2,16 +2,16 @@ package cn.leancloud.sample;
 
 import java.util.List;
 
-import cn.leancloud.AVObject;
-import cn.leancloud.AVRelation;
-import cn.leancloud.annotation.AVClassName;
+import cn.leancloud.LCObject;
+import cn.leancloud.LCRelation;
+import cn.leancloud.annotation.LCClassName;
 
 /**
  * Created by fengjunwen on 2018/5/10.
  */
 
-@AVClassName("Post")
-public class Post extends AVObject {
+@LCClassName("Post")
+public class Post extends LCObject {
 
   public static final String CONTENT = "content";
   public static final String AUTHOR = "author";
@@ -46,11 +46,11 @@ public class Post extends AVObject {
     put(LIKES, likes);
   }
 
-  public AVRelation<Student> getRewardStudents() {
+  public LCRelation<Student> getRewardStudents() {
     return getRelation(REWARDS);
   }
 
-  public void setRewardStudents(AVRelation<Student> rewardStudents) {
+  public void setRewardStudents(LCRelation<Student> rewardStudents) {
     put(REWARDS, rewardStudents);
   }
 }

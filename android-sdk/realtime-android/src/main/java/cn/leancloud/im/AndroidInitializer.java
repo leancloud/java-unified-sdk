@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Build;
 
 import cn.leancloud.AVLogger;
-import cn.leancloud.AVOSCloud;
+import cn.leancloud.LeanCloud;
 import cn.leancloud.internal.ThreadModel.MainThreadChecker;
 import cn.leancloud.internal.ThreadModel.ThreadShuttle;
 import cn.leancloud.livequery.AVLiveQueryEventHandler;
@@ -55,7 +55,7 @@ public class AndroidInitializer {
     ThreadShuttle shuttle = new ThreadShuttle() {
       @Override
       public void launch(Runnable runnable) {
-        AVOSCloud.getHandler().post(runnable);
+        LeanCloud.getHandler().post(runnable);
       }
     };
     LOGGER.i("[LeanCloud] initialize mainThreadChecker and threadShuttle within AVIMEventHandler.");

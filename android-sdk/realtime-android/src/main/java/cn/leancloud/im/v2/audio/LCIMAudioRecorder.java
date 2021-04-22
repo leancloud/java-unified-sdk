@@ -5,7 +5,7 @@ import android.media.MediaRecorder;
 import java.io.File;
 import java.io.IOException;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
@@ -13,8 +13,8 @@ import cn.leancloud.utils.StringUtil;
  * Created by fengjunwen on 2017/8/25.
  */
 
-public class AVIMAudioRecorder {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVIMAudioRecorder.class);
+public class LCIMAudioRecorder {
+  private static final LCLogger LOGGER = LogUtil.getLogger(LCIMAudioRecorder.class);
   public interface RecordEventListener {
     /**
      * invoke after recording finished.
@@ -38,7 +38,7 @@ public class AVIMAudioRecorder {
   private long startRecordTime = 0l;
   private RecordEventListener listener = null;
 
-  public AVIMAudioRecorder(String path, RecordEventListener listener) {
+  public LCIMAudioRecorder(String path, RecordEventListener listener) {
     if (StringUtil.isEmpty(path)) {
       throw new IllegalArgumentException("local path is empty.");
     }

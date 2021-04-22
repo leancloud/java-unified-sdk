@@ -5,11 +5,11 @@ import android.content.Context;
 
 import java.util.List;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVInstallation;
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVOSCloud;
-import cn.leancloud.callback.AVCallback;
+import cn.leancloud.LCException;
+import cn.leancloud.LCInstallation;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LeanCloud;
+import cn.leancloud.callback.LCCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.utils.LogUtil;
@@ -18,8 +18,8 @@ import cn.leancloud.utils.StringUtil;
 /**
  * Created by wli on 16/6/27.
  */
-public class AVMixPushManager {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVMixPushManager.class);
+public class LCMixPushManager {
+  private static final LCLogger LOGGER = LogUtil.getLogger(LCMixPushManager.class);
 
   public static final String MIXPUSH_PROFILE = "deviceProfile";
 
@@ -34,7 +34,7 @@ public class AVMixPushManager {
    * @param application application
    */
   public static boolean registerVIVOPush(Application application) {
-    return AVMixPushManager.registerVIVOPush(application, "");
+    return LCMixPushManager.registerVIVOPush(application, "");
   }
 
   /**
@@ -57,13 +57,13 @@ public class AVMixPushManager {
   /**
    * turn off VIVO push.
    */
-  public static void turnOffVIVOPush(final AVCallback<Boolean> callback) {
-    com.vivo.push.PushClient.getInstance(AVOSCloud.getContext()).turnOffPush(new com.vivo.push.IPushActionListener() {
+  public static void turnOffVIVOPush(final LCCallback<Boolean> callback) {
+    com.vivo.push.PushClient.getInstance(LeanCloud.getContext()).turnOffPush(new com.vivo.push.IPushActionListener() {
       public void onStateChanged(int state) {
         if (null == callback) {
-          AVException exception = null;
+          LCException exception = null;
           if (0 != state) {
-            exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
+            exception = new LCException(LCException.UNKNOWN, "VIVO server internal error, state=" + state);
           }
           callback.internalDone(null == exception, exception);
         }
@@ -74,13 +74,13 @@ public class AVMixPushManager {
   /**
    * turn on VIVO push.
    */
-  public static void turnOnVIVOPush(final AVCallback<Boolean> callback) {
-    com.vivo.push.PushClient.getInstance(AVOSCloud.getContext()).turnOnPush(new com.vivo.push.IPushActionListener() {
+  public static void turnOnVIVOPush(final LCCallback<Boolean> callback) {
+    com.vivo.push.PushClient.getInstance(LeanCloud.getContext()).turnOnPush(new com.vivo.push.IPushActionListener() {
       public void onStateChanged(int state) {
         if (null == callback) {
-          AVException exception = null;
+          LCException exception = null;
           if (0 != state) {
-            exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
+            exception = new LCException(LCException.UNKNOWN, "VIVO server internal error, state=" + state);
           }
           callback.internalDone(null == exception, exception);
         }
@@ -109,18 +109,18 @@ public class AVMixPushManager {
    * @param alias
    * @param callback
    */
-  public static void bindVIVOAlias(Context context, String alias, final AVCallback<Boolean> callback) {
+  public static void bindVIVOAlias(Context context, String alias, final LCCallback<Boolean> callback) {
     if (null == context) {
       if (null != callback) {
-        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
+        callback.internalDone(false, new LCException(LCException.VALIDATION_ERROR, "context is null"));
       }
     } else {
       com.vivo.push.PushClient.getInstance(context).bindAlias(alias, new com.vivo.push.IPushActionListener() {
         public void onStateChanged(int state) {
           if (null == callback) {
-            AVException exception = null;
+            LCException exception = null;
             if (0 != state) {
-              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
+              exception = new LCException(LCException.UNKNOWN, "VIVO server internal error, state=" + state);
             }
             callback.internalDone(null == exception, exception);
           }
@@ -136,18 +136,18 @@ public class AVMixPushManager {
    * @param alias
    * @param callback
    */
-  public static void unbindVIVOAlias(Context context, String alias, final AVCallback<Boolean> callback) {
+  public static void unbindVIVOAlias(Context context, String alias, final LCCallback<Boolean> callback) {
     if (null == context) {
       if (null != callback) {
-        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
+        callback.internalDone(false, new LCException(LCException.VALIDATION_ERROR, "context is null"));
       }
     } else {
       com.vivo.push.PushClient.getInstance(context).unBindAlias(alias, new com.vivo.push.IPushActionListener() {
         public void onStateChanged(int state) {
           if (null == callback) {
-            AVException exception = null;
+            LCException exception = null;
             if (0 != state) {
-              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
+              exception = new LCException(LCException.UNKNOWN, "VIVO server internal error, state=" + state);
             }
             callback.internalDone(null == exception, exception);
           }
@@ -176,18 +176,18 @@ public class AVMixPushManager {
    * @param topic
    * @param callback
    */
-  public static void setVIVOTopic(Context context, String topic, final AVCallback<Boolean> callback) {
+  public static void setVIVOTopic(Context context, String topic, final LCCallback<Boolean> callback) {
     if (null == context) {
       if (null != callback) {
-        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
+        callback.internalDone(false, new LCException(LCException.VALIDATION_ERROR, "context is null"));
       }
     } else {
       com.vivo.push.PushClient.getInstance(context).setTopic(topic, new com.vivo.push.IPushActionListener() {
         public void onStateChanged(int state) {
           if (null == callback) {
-            AVException exception = null;
+            LCException exception = null;
             if (0 != state) {
-              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
+              exception = new LCException(LCException.UNKNOWN, "VIVO server internal error, state=" + state);
             }
             callback.internalDone(null == exception, exception);
           }
@@ -202,18 +202,18 @@ public class AVMixPushManager {
    * @param alias
    * @param callback
    */
-  public static void delVIVOTopic(Context context, String alias, final AVCallback<Boolean> callback) {
+  public static void delVIVOTopic(Context context, String alias, final LCCallback<Boolean> callback) {
     if (null == context) {
       if (null != callback) {
-        callback.internalDone(false, new AVException(AVException.VALIDATION_ERROR, "context is null"));
+        callback.internalDone(false, new LCException(LCException.VALIDATION_ERROR, "context is null"));
       }
     } else {
       com.vivo.push.PushClient.getInstance(context).delTopic(alias, new com.vivo.push.IPushActionListener() {
         public void onStateChanged(int state) {
           if (null == callback) {
-            AVException exception = null;
+            LCException exception = null;
             if (0 != state) {
-              exception = new AVException(AVException.UNKNOWN, "VIVO server internal error, state=" + state);
+              exception = new LCException(LCException.UNKNOWN, "VIVO server internal error, state=" + state);
             }
             callback.internalDone(null == exception, exception);
           }
@@ -240,13 +240,13 @@ public class AVMixPushManager {
    * 取消成功后，消息会通过 LeanCloud websocket 发送
    */
   public static void unRegisterMixPush() {
-    AVInstallation installation = AVInstallation.getCurrentInstallation();
-    String vendor = installation.getString(AVInstallation.VENDOR);
+    LCInstallation installation = LCInstallation.getCurrentInstallation();
+    String vendor = installation.getString(LCInstallation.VENDOR);
     if (!StringUtil.isEmpty(vendor)) {
-      installation.put(AVInstallation.VENDOR, "lc");
+      installation.put(LCInstallation.VENDOR, "lc");
       installation.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
         @Override
-        public void done(AVException e) {
+        public void done(LCException e) {
           if (null != e) {
             printErrorLog("unRegisterMixPush error!");
           } else {

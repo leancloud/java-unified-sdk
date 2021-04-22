@@ -7,7 +7,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.HashMap;
 
-import cn.leancloud.AVOSCloud;
+import cn.leancloud.LeanCloud;
 import cn.leancloud.im.v2.Conversation;
 import cn.leancloud.livequery.AVLiveQuery;
 import cn.leancloud.utils.StringUtil;
@@ -58,8 +58,8 @@ public class IntentUtil {
       if (null != result) {
         callbackIntent.putExtra(CALLBACK_RESULT_KEY, result);
       }
-      if (AVOSCloud.getContext() != null) {
-        LocalBroadcastManager.getInstance(AVOSCloud.getContext()).sendBroadcast(callbackIntent);
+      if (LeanCloud.getContext() != null) {
+        LocalBroadcastManager.getInstance(LeanCloud.getContext()).sendBroadcast(callbackIntent);
       }
     }
   }
@@ -69,8 +69,8 @@ public class IntentUtil {
     if (null != throwable) {
       callbackIntent.putExtra(Conversation.callbackExceptionKey, throwable);
     }
-    if (AVOSCloud.getContext() != null) {
-      LocalBroadcastManager.getInstance(AVOSCloud.getContext()).sendBroadcast(callbackIntent);
+    if (LeanCloud.getContext() != null) {
+      LocalBroadcastManager.getInstance(LeanCloud.getContext()).sendBroadcast(callbackIntent);
     }
   }
 
@@ -93,8 +93,8 @@ public class IntentUtil {
       if (null != bundle) {
         callbackIntent.putExtras(bundle);
       }
-      if (AVOSCloud.getContext() != null) {
-        LocalBroadcastManager.getInstance(AVOSCloud.getContext()).sendBroadcast(callbackIntent);
+      if (LeanCloud.getContext() != null) {
+        LocalBroadcastManager.getInstance(LeanCloud.getContext()).sendBroadcast(callbackIntent);
       }
     }
   }

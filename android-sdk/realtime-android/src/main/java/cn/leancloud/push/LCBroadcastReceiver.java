@@ -4,15 +4,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.utils.LogUtil;
 
 /**
  * Created by fengjunwen on 2018/7/3.
  */
 
-public class AVBroadcastReceiver extends BroadcastReceiver {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVBroadcastReceiver.class);
+public class LCBroadcastReceiver extends BroadcastReceiver {
+  private static final LCLogger LOGGER = LogUtil.getLogger(LCBroadcastReceiver.class);
 
   @Override
   public void onReceive(Context context, Intent intent) {

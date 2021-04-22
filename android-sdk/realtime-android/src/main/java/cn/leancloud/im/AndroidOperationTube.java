@@ -16,7 +16,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import cn.leancloud.AVException;
 import cn.leancloud.AVInstallation;
 import cn.leancloud.AVLogger;
-import cn.leancloud.AVOSCloud;
+import cn.leancloud.LeanCloud;
 import cn.leancloud.callback.AVCallback;
 import cn.leancloud.codec.MDFive;
 import cn.leancloud.im.v2.AVIMClient;
@@ -61,7 +61,7 @@ public class AndroidOperationTube implements OperationTube {
     LOGGER.d("openClient. clientId:" + clientId + ", tag:" + tag + ", callback:" + callback);
     BroadcastReceiver receiver = null;
     if (callback != null) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           LOGGER.d("openClient get response. error:" + error);
@@ -76,7 +76,7 @@ public class AndroidOperationTube implements OperationTube {
   public boolean queryClientStatus(AVConnectionManager connectionManager, String clientId, final AVIMClientStatusCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           AVIMClientStatus status = null;
@@ -94,7 +94,7 @@ public class AndroidOperationTube implements OperationTube {
   public boolean closeClient(AVConnectionManager connectionManager, final String self, final AVIMClientCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           AVIMClient client = AVIMClient.getInstance(self);
@@ -108,7 +108,7 @@ public class AndroidOperationTube implements OperationTube {
   public boolean renewSessionToken(AVConnectionManager connectionManager, String clientId, final AVIMClientCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           callback.internalDone(null, AVIMException.wrapperAVException(error));
@@ -124,7 +124,7 @@ public class AndroidOperationTube implements OperationTube {
 
     BroadcastReceiver receiver = null;
     if (callback != null) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           if (error != null) {
@@ -159,7 +159,7 @@ public class AndroidOperationTube implements OperationTube {
     }
     BroadcastReceiver receiver = null;
     if (null != callback) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
@@ -174,7 +174,7 @@ public class AndroidOperationTube implements OperationTube {
                                     final Map<String, Object> param, final AVIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
 
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
@@ -190,7 +190,7 @@ public class AndroidOperationTube implements OperationTube {
                                          Conversation.AVIMOperation operation, final AVIMConversationCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
 
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
@@ -206,7 +206,7 @@ public class AndroidOperationTube implements OperationTube {
   public boolean queryConversations(AVConnectionManager connectionManager, final String clientId, final String queryString, final AVIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
 
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
@@ -232,7 +232,7 @@ public class AndroidOperationTube implements OperationTube {
                              final AVIMMessageOption messageOption, final AVIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
@@ -247,7 +247,7 @@ public class AndroidOperationTube implements OperationTube {
                                final AVIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
@@ -262,7 +262,7 @@ public class AndroidOperationTube implements OperationTube {
                                final AVIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
@@ -283,7 +283,7 @@ public class AndroidOperationTube implements OperationTube {
                                final Conversation.AVIMOperation operation, final AVIMMessagesQueryCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           List<AVIMMessage> msg = (null == intentResult) ?
@@ -301,7 +301,7 @@ public class AndroidOperationTube implements OperationTube {
                                 Conversation.AVIMOperation op, final AVCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           if (AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY == op) {
@@ -354,7 +354,7 @@ public class AndroidOperationTube implements OperationTube {
   public boolean loginLiveQuery(AVConnectionManager connectionManager, String subscriptionId, final AVLiveQuerySubscribeCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
-      receiver = new AVIMBaseBroadcastReceiver(callback) {
+      receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           if (null != callback) {
@@ -363,7 +363,7 @@ public class AndroidOperationTube implements OperationTube {
         }
       };
     }
-    if (AVOSCloud.getContext() == null) {
+    if (LeanCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
       if (null != callback) {
         callback.internalDone(new AVException(AVException.OTHER_CAUSE,
@@ -372,14 +372,14 @@ public class AndroidOperationTube implements OperationTube {
       return false;
     }
     int requestId = WindTalker.getNextIMRequestId();
-    LocalBroadcastManager.getInstance(AVOSCloud.getContext()).registerReceiver(receiver,
+    LocalBroadcastManager.getInstance(LeanCloud.getContext()).registerReceiver(receiver,
         new IntentFilter(AVLiveQuery.LIVEQUERY_PRIFIX + requestId));
     try {
-      Intent i = new Intent(AVOSCloud.getContext(), PushService.class);
+      Intent i = new Intent(LeanCloud.getContext(), PushService.class);
       i.setAction(AVLiveQuery.ACTION_LIVE_QUERY_LOGIN);
       i.putExtra(AVLiveQuery.SUBSCRIBE_ID, subscriptionId);
       i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
-      AVOSCloud.getContext().startService(IntentUtil.setupIntentFlags(i));
+      LeanCloud.getContext().startService(IntentUtil.setupIntentFlags(i));
     } catch (Exception ex) {
       LOGGER.e("failed to start PushServer. cause: " + ex.getMessage());
       return false;
@@ -390,10 +390,10 @@ public class AndroidOperationTube implements OperationTube {
   protected boolean sendClientCMDToPushService(String clientId, String dataAsString, BroadcastReceiver receiver,
                                                AVIMOperation operation) {
 
-    if (AVOSCloud.getContext() == null) {
+    if (LeanCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
-      if (null != receiver && receiver instanceof AVIMBaseBroadcastReceiver) {
-        ((AVIMBaseBroadcastReceiver)receiver).execute(new HashMap<>(),
+      if (null != receiver && receiver instanceof LCIMBaseBroadcastReceiver) {
+        ((LCIMBaseBroadcastReceiver)receiver).execute(new HashMap<>(),
             new AVException(AVException.OTHER_CAUSE, "root Context is null, please initialize at first."));
       }
       return false;
@@ -401,10 +401,10 @@ public class AndroidOperationTube implements OperationTube {
     int requestId = WindTalker.getNextIMRequestId();
 
     if (receiver != null) {
-      LocalBroadcastManager.getInstance(AVOSCloud.getContext()).registerReceiver(receiver,
+      LocalBroadcastManager.getInstance(LeanCloud.getContext()).registerReceiver(receiver,
           new IntentFilter(operation.getOperation() + requestId));
     }
-    Intent i = new Intent(AVOSCloud.getContext(), PushService.class);
+    Intent i = new Intent(LeanCloud.getContext(), PushService.class);
     i.setAction(Conversation.AV_CONVERSATION_INTENT_ACTION);
     if (!StringUtil.isEmpty(dataAsString)) {
       i.putExtra(Conversation.INTENT_KEY_DATA, dataAsString);
@@ -414,7 +414,7 @@ public class AndroidOperationTube implements OperationTube {
     i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
     i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
     try {
-      AVOSCloud.getContext().startService(IntentUtil.setupIntentFlags(i));
+      LeanCloud.getContext().startService(IntentUtil.setupIntentFlags(i));
     } catch (Exception ex) {
       LOGGER.e("failed to startService. cause: " + ex.getMessage());
       return false;
@@ -426,10 +426,10 @@ public class AndroidOperationTube implements OperationTube {
                                                String dataAsString, final AVIMMessage message,
                                                final AVIMMessageOption option, final AVIMOperation operation,
                                                BroadcastReceiver receiver) {
-    if (AVOSCloud.getContext() == null) {
+    if (LeanCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
-      if (null != receiver && receiver instanceof AVIMBaseBroadcastReceiver) {
-        ((AVIMBaseBroadcastReceiver)receiver).execute(new HashMap<>(),
+      if (null != receiver && receiver instanceof LCIMBaseBroadcastReceiver) {
+        ((LCIMBaseBroadcastReceiver)receiver).execute(new HashMap<>(),
             new AVException(AVException.OTHER_CAUSE, "root Context is null, please initialize at first."));
       }
       return false;
@@ -437,10 +437,10 @@ public class AndroidOperationTube implements OperationTube {
 
     int requestId = WindTalker.getNextIMRequestId();
     if (null != receiver) {
-      LocalBroadcastManager.getInstance(AVOSCloud.getContext()).registerReceiver(receiver,
+      LocalBroadcastManager.getInstance(LeanCloud.getContext()).registerReceiver(receiver,
           new IntentFilter(operation.getOperation() + requestId));
     }
-    Intent i = new Intent(AVOSCloud.getContext(), PushService.class);
+    Intent i = new Intent(LeanCloud.getContext(), PushService.class);
     i.setAction(Conversation.AV_CONVERSATION_INTENT_ACTION);
     if (!StringUtil.isEmpty(dataAsString)) {
       i.putExtra(Conversation.INTENT_KEY_DATA, dataAsString);
@@ -457,7 +457,7 @@ public class AndroidOperationTube implements OperationTube {
     i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
     i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
     try {
-      AVOSCloud.getContext().startService(IntentUtil.setupIntentFlags(i));
+      LeanCloud.getContext().startService(IntentUtil.setupIntentFlags(i));
     } catch (Exception ex) {
       LOGGER.e("failed to startService. cause: " + ex.getMessage());
       return false;
@@ -469,20 +469,20 @@ public class AndroidOperationTube implements OperationTube {
                                                 final AVIMMessage message, final AVIMMessage message2,
                                                 final AVIMOperation operation,
                                                 BroadcastReceiver receiver) {
-    if (AVOSCloud.getContext() == null) {
+    if (LeanCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
-      if (null != receiver && receiver instanceof AVIMBaseBroadcastReceiver) {
-        ((AVIMBaseBroadcastReceiver)receiver).execute(new HashMap<>(),
+      if (null != receiver && receiver instanceof LCIMBaseBroadcastReceiver) {
+        ((LCIMBaseBroadcastReceiver)receiver).execute(new HashMap<>(),
             new AVException(AVException.OTHER_CAUSE, "root Context is null, please initialize at first."));
       }
       return false;
     }
     int requestId = WindTalker.getNextIMRequestId();
     if (null != receiver) {
-      LocalBroadcastManager.getInstance(AVOSCloud.getContext()).registerReceiver(receiver,
+      LocalBroadcastManager.getInstance(LeanCloud.getContext()).registerReceiver(receiver,
           new IntentFilter(operation.getOperation() + requestId));
     }
-    Intent i = new Intent(AVOSCloud.getContext(), PushService.class);
+    Intent i = new Intent(LeanCloud.getContext(), PushService.class);
     i.setAction(Conversation.AV_CONVERSATION_INTENT_ACTION);
 
     if (null != message) {
@@ -497,7 +497,7 @@ public class AndroidOperationTube implements OperationTube {
     i.putExtra(Conversation.INTENT_KEY_OPERATION, operation.getCode());
     i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
     try {
-      AVOSCloud.getContext().startService(IntentUtil.setupIntentFlags(i));
+      LeanCloud.getContext().startService(IntentUtil.setupIntentFlags(i));
     } catch (Exception ex) {
       LOGGER.e("failed to startService. cause: " + ex.getMessage());
       return false;

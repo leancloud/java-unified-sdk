@@ -8,19 +8,19 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVOSCloud;
-import cn.leancloud.callback.AVCallback;
+import cn.leancloud.LCException;
+import cn.leancloud.LeanCloud;
+import cn.leancloud.callback.LCCallback;
 import cn.leancloud.im.v2.Conversation;
 
 /**
  * Created by fengjunwen on 2018/8/7.
  */
 
-public abstract class AVIMBaseBroadcastReceiver extends BroadcastReceiver {
-  AVCallback callback;
+public abstract class LCIMBaseBroadcastReceiver extends BroadcastReceiver {
+  LCCallback callback;
 
-  public AVIMBaseBroadcastReceiver(AVCallback callback) {
+  public LCIMBaseBroadcastReceiver(LCCallback callback) {
     this.callback = callback;
   }
 
@@ -33,12 +33,12 @@ public abstract class AVIMBaseBroadcastReceiver extends BroadcastReceiver {
       }
       HashMap<String, Object> result = (HashMap<String, Object>) intent.getSerializableExtra(IntentUtil.CALLBACK_RESULT_KEY);
       execute(result, error);
-      if (AVOSCloud.getContext() != null) {
-        LocalBroadcastManager.getInstance(AVOSCloud.getContext()).unregisterReceiver(this);
+      if (LeanCloud.getContext() != null) {
+        LocalBroadcastManager.getInstance(LeanCloud.getContext()).unregisterReceiver(this);
       }
     } catch (Exception e) {
       if (callback != null) {
-        callback.internalDone(null, new AVException(e));
+        callback.internalDone(null, new LCException(e));
       }
     }
   }

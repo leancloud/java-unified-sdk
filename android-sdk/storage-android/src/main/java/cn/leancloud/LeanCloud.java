@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 
 import cn.leancloud.cache.AndroidSystemSetting;
 
-import cn.leancloud.callback.AVCallback;
+import cn.leancloud.callback.LCCallback;
 import cn.leancloud.core.AppRouter;
 import cn.leancloud.core.RequestPaddingInterceptor;
 import cn.leancloud.internal.ThreadModel;
@@ -23,7 +23,7 @@ import cn.leancloud.utils.StringUtil;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
+public class LeanCloud extends cn.leancloud.core.LeanCloud {
   private static Context context = null;
   protected static Handler handler = null;
 
@@ -32,7 +32,7 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
   }
 
   public static void setContext(Context context) {
-    AVOSCloud.context = context;
+    LeanCloud.context = context;
   }
 
   public static Handler getHandler() {
@@ -64,11 +64,11 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
     ThreadModel.ThreadShuttle shuttle = new ThreadModel.ThreadShuttle() {
       @Override
       public void launch(Runnable runnable) {
-        AVOSCloud.getHandler().post(runnable);
+        LeanCloud.getHandler().post(runnable);
       }
     };
-    AVCallback.setMainThreadChecker(checker, shuttle);
-    final AVLogger logger = LogUtil.getLogger(AVOSCloud.class);
+    LCCallback.setMainThreadChecker(checker, shuttle);
+    final LCLogger logger = LogUtil.getLogger(LeanCloud.class);
     logger.i("[LeanCloud] initialize mainThreadChecker and threadShuttle within AVCallback.");
 
     String appIdPrefix = StringUtil.isEmpty(appId) ? "" : appId.substring(0, 8);
@@ -95,7 +95,7 @@ public class AVOSCloud extends cn.leancloud.core.AVOSCloud {
       }
     });
 
-    cn.leancloud.core.AVOSCloud.initialize(appId, appKey);
+    cn.leancloud.core.LeanCloud.initialize(appId, appKey);
 
     try {
       Class androidInit = context.getClassLoader().loadClass("cn.leancloud.im.AndroidInitializer");

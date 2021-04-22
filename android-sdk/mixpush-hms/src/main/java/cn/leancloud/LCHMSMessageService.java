@@ -6,18 +6,18 @@ import com.huawei.hms.push.RemoteMessage;
 
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
-import cn.leancloud.hms.AVMixPushManager;
+import cn.leancloud.hms.LCMixPushManager;
 import cn.leancloud.push.AndroidNotificationManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
-public class AVHMSMessageService extends HmsMessageService {
-  static final AVLogger LOGGER = LogUtil.getLogger(AVHMSMessageService.class);
+public class LCHMSMessageService extends HmsMessageService {
+  static final LCLogger LOGGER = LogUtil.getLogger(LCHMSMessageService.class);
 
   static final String MIXPUSH_PRIFILE = "deviceProfile";
   static final String VENDOR = "HMS";
 
-  public AVHMSMessageService() {
+  public LCHMSMessageService() {
     super();
   }
 
@@ -75,24 +75,24 @@ public class AVHMSMessageService extends HmsMessageService {
     if (StringUtil.isEmpty(hwToken)) {
       return;
     }
-    AVInstallation installation = AVInstallation.getCurrentInstallation();
-    if (!VENDOR.equals(installation.getString(AVInstallation.VENDOR))) {
-      installation.put(AVInstallation.VENDOR, VENDOR);
+    LCInstallation installation = LCInstallation.getCurrentInstallation();
+    if (!VENDOR.equals(installation.getString(LCInstallation.VENDOR))) {
+      installation.put(LCInstallation.VENDOR, VENDOR);
     }
-    if (!hwToken.equals(installation.getString(AVInstallation.REGISTRATION_ID))) {
-      installation.put(AVInstallation.REGISTRATION_ID, hwToken);
+    if (!hwToken.equals(installation.getString(LCInstallation.REGISTRATION_ID))) {
+      installation.put(LCInstallation.REGISTRATION_ID, hwToken);
     }
     String localProfile = installation.getString(MIXPUSH_PRIFILE);
     if (null == localProfile) {
       localProfile = "";
     }
-    if (!localProfile.equals(AVMixPushManager.hwDeviceProfile)) {
-      installation.put(AVMixPushManager.MIXPUSH_PROFILE, AVMixPushManager.hwDeviceProfile);
+    if (!localProfile.equals(LCMixPushManager.hwDeviceProfile)) {
+      installation.put(LCMixPushManager.MIXPUSH_PROFILE, LCMixPushManager.hwDeviceProfile);
     }
 
     installation.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
       @Override
-      public void done(AVException e) {
+      public void done(LCException e) {
         if (null != e) {
           LOGGER.e("update installation error!", e);
         } else {

@@ -21,6 +21,7 @@ import android.os.Message;
 import android.os.SystemClock;
 import androidx.core.app.ActivityCompat;
 
+import cn.leancloud.LeanCloud;
 import cn.leancloud.json.JSON;
 
 import java.util.Arrays;
@@ -33,7 +34,6 @@ import java.util.TimerTask;
 import cn.leancloud.AVException;
 import cn.leancloud.AVInstallation;
 import cn.leancloud.AVLogger;
-import cn.leancloud.AVOSCloud;
 import cn.leancloud.AVObject;
 import cn.leancloud.callback.AVCallback;
 import cn.leancloud.core.AppConfiguration;
@@ -80,8 +80,8 @@ public class PushService extends Service {
   static int foregroundIdentifier = 0;
   static Notification foregroundNotification = null;
 
-  AVConnectivityReceiver connectivityReceiver;
-  AVShutdownReceiver shutdownReceiver;
+  LCConnectivityReceiver connectivityReceiver;
+  LCShutdownReceiver shutdownReceiver;
   DirectlyOperationTube directlyOperationTube;
   private Timer cleanupTimer = new Timer();
 
@@ -112,7 +112,7 @@ public class PushService extends Service {
       }
     }).start();
 
-    connectivityReceiver = new AVConnectivityReceiver(new AVConnectivityListener() {
+    connectivityReceiver = new LCConnectivityReceiver(new LCConnectivityListener() {
       private volatile boolean connectionEstablished = false;
 
       @Override
@@ -165,7 +165,7 @@ public class PushService extends Service {
       LOGGER.w("failed to register CONNECTIVITY receiver. cause: " + ex.getMessage());
     }
 
-    shutdownReceiver = new AVShutdownReceiver(new AVShutdownListener() {
+    shutdownReceiver = new LCShutdownReceiver(new LCShutdownListener() {
       @Override
       public void onShutdown(Context context) {
         connectionManager.cleanup();
@@ -254,7 +254,7 @@ public class PushService extends Service {
       if (isAutoWakeUp && Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
         try {
           LOGGER.i("Let's try to wake PushService again");
-          Intent i = new Intent(AVOSCloud.getContext(), PushService.class);
+          Intent i = new Intent(LeanCloud.getContext(), PushService.class);
           i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
           startService(i);
         } catch (Exception ex) {
@@ -330,8 +330,8 @@ public class PushService extends Service {
       manager.addDefaultPushCallback(channel, cls.getName());
 
       // set default push callback if it's not exist yet
-      if (manager.getDefaultPushCallback(AVOSCloud.getApplicationId()) == null) {
-        manager.addDefaultPushCallback(AVOSCloud.getApplicationId(), cls.getName());
+      if (manager.getDefaultPushCallback(LeanCloud.getApplicationId()) == null) {
+        manager.addDefaultPushCallback(LeanCloud.getApplicationId(), cls.getName());
       }
     }
   }
@@ -391,7 +391,7 @@ public class PushService extends Service {
                                             java.lang.Class<? extends android.app.Activity> cls) {
     LOGGER.d("setDefaultPushCallback cls=" + cls.getName());
     startServiceIfRequired(context, cls);
-    AVPushMessageListener.getInstance().getNotificationManager().addDefaultPushCallback(AVOSCloud.getApplicationId(), cls.getName());
+    AVPushMessageListener.getInstance().getNotificationManager().addDefaultPushCallback(LeanCloud.getApplicationId(), cls.getName());
   }
 
   /**
@@ -562,7 +562,7 @@ public class PushService extends Service {
         LOGGER.d( "Start service");
         try {
           Intent intent = new Intent(context, PushService.class);
-          intent.putExtra(AV_PUSH_SERVICE_APPLICATION_ID, AVOSCloud.getApplicationId());
+          intent.putExtra(AV_PUSH_SERVICE_APPLICATION_ID, LeanCloud.getApplicationId());
           if (cls != null) {
             intent.putExtra(AV_PUSH_SERVICE_DEFAULT_CALLBACK, cls.getName());
           }

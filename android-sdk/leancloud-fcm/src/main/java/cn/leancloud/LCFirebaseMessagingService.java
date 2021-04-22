@@ -18,8 +18,8 @@ import cn.leancloud.utils.StringUtil;
  * Created by fengjunwen on 2018/8/28.
  */
 
-public class AVFirebaseMessagingService extends FirebaseMessagingService {
-  private final static AVLogger LOGGER = LogUtil.getLogger(AVFirebaseMessagingService.class);
+public class LCFirebaseMessagingService extends FirebaseMessagingService {
+  private final static LCLogger LOGGER = LogUtil.getLogger(LCFirebaseMessagingService.class);
   private final String VENDOR = "fcm";
 
   /**
@@ -79,17 +79,17 @@ public class AVFirebaseMessagingService extends FirebaseMessagingService {
     if (StringUtil.isEmpty(refreshedToken)) {
       return;
     }
-    AVInstallation installation = AVInstallation.getCurrentInstallation();
-    if (!VENDOR.equals(installation.getString(AVInstallation.VENDOR))) {
-      installation.put(AVInstallation.VENDOR, VENDOR);
+    LCInstallation installation = LCInstallation.getCurrentInstallation();
+    if (!VENDOR.equals(installation.getString(LCInstallation.VENDOR))) {
+      installation.put(LCInstallation.VENDOR, VENDOR);
     }
-    if (!refreshedToken.equals(installation.getString(AVInstallation.REGISTRATION_ID))) {
-      installation.put(AVInstallation.REGISTRATION_ID, refreshedToken);
+    if (!refreshedToken.equals(installation.getString(LCInstallation.REGISTRATION_ID))) {
+      installation.put(LCInstallation.REGISTRATION_ID, refreshedToken);
     }
     installation.saveInBackground().subscribe(
       ObserverBuilder.buildSingleObserver(new SaveCallback() {
       @Override
-      public void done(AVException e) {
+      public void done(LCException e) {
         if (null != e) {
           LOGGER.e("failed to update installation.", e);
         } else {

@@ -3,9 +3,9 @@ package cn.leancloud.sample;
 import android.app.Application;
 import android.os.StrictMode;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVOSCloud;
-import cn.leancloud.AVObject;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LeanCloud;
+import cn.leancloud.LCObject;
 
 /**
  * Created by fengjunwen on 2018/3/22.
@@ -26,9 +26,9 @@ public class DemoApplication extends Application {
         .build());
 
     super.onCreate();
-    AVObject.registerSubclass(Post.class);
-    AVObject.registerSubclass(Student.class);
-    AVObject.registerSubclass(Armor.class);
-    AVOSCloud.setLogLevel(AVLogger.Level.DEBUG);
+    LCObject.registerSubclass(Post.class);
+    LCObject.registerSubclass(Student.class);
+    LCObject.registerSubclass(Armor.class);
+    LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
   }
 }

@@ -15,8 +15,8 @@ import cn.leancloud.utils.StringUtil;
  * 判断 AndroidManifest 中的各种注册条件
  */
 
-public class AVManifestUtils {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVManifestUtils.class);
+public class LCManifestUtils {
+  private static final LCLogger LOGGER = LogUtil.getLogger(LCManifestUtils.class);
 
   /**
    * 判断 Mainifest 中是否包含对应到 permission

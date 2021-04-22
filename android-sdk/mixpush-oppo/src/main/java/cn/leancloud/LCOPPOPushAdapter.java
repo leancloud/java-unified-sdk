@@ -1,7 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.convertor.ObserverBuilder;
-import cn.leancloud.oppo.AVMixPushManager;
+import cn.leancloud.oppo.LCMixPushManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.callback.SaveCallback;
@@ -10,28 +10,28 @@ import cn.leancloud.callback.SaveCallback;
  * OPPO推送暂时只支持通知栏消息的推送。消息下发到OS系统模块并由系统通知模块展示，在用户点击通知前，不启动应用。
  * 参考：https://open.oppomobile.com/wiki/doc#id=10196
  */
-public class AVOPPOPushAdapter implements com.heytap.msp.push.callback.ICallBackResultService {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVOPPOPushAdapter.class);
+public class LCOPPOPushAdapter implements com.heytap.msp.push.callback.ICallBackResultService {
+  private static final LCLogger LOGGER = LogUtil.getLogger(LCOPPOPushAdapter.class);
   private static final String VENDOR_OPPO = "oppo";
 
-  private void updateAVInstallation(String registerId) {
+  private void updateLCInstallation(String registerId) {
     if (!StringUtil.isEmpty(registerId)) {
-      AVInstallation installation = AVInstallation.getCurrentInstallation();
+      LCInstallation installation = LCInstallation.getCurrentInstallation();
 
-      if (!VENDOR_OPPO.equals(installation.getString(AVInstallation.VENDOR))) {
-        installation.put(AVInstallation.VENDOR, VENDOR_OPPO);
+      if (!VENDOR_OPPO.equals(installation.getString(LCInstallation.VENDOR))) {
+        installation.put(LCInstallation.VENDOR, VENDOR_OPPO);
       }
-      if (!registerId.equals(installation.getString(AVInstallation.REGISTRATION_ID))) {
-        installation.put(AVInstallation.REGISTRATION_ID, registerId);
+      if (!registerId.equals(installation.getString(LCInstallation.REGISTRATION_ID))) {
+        installation.put(LCInstallation.REGISTRATION_ID, registerId);
       }
-      String localProfile = installation.getString(AVMixPushManager.MIXPUSH_PROFILE);
+      String localProfile = installation.getString(LCMixPushManager.MIXPUSH_PROFILE);
       localProfile = (null != localProfile ? localProfile : "");
-      if (!localProfile.equals(AVMixPushManager.oppoDeviceProfile)) {
-        installation.put(AVMixPushManager.MIXPUSH_PROFILE, AVMixPushManager.oppoDeviceProfile);
+      if (!localProfile.equals(LCMixPushManager.oppoDeviceProfile)) {
+        installation.put(LCMixPushManager.MIXPUSH_PROFILE, LCMixPushManager.oppoDeviceProfile);
       }
       installation.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
         @Override
-        public void done(AVException e) {
+        public void done(LCException e) {
           if (null != e) {
             LOGGER.e("update installation error!", e);
           } else {
@@ -51,7 +51,7 @@ public class AVOPPOPushAdapter implements com.heytap.msp.push.callback.ICallBack
       LOGGER.e("oppo register id is empty.");
       return;
     }
-    updateAVInstallation(registerID);
+    updateLCInstallation(registerID);
   }
 
   public void onUnRegister(int responseCode) {

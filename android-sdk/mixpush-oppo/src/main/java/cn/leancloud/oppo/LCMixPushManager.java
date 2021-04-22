@@ -3,10 +3,10 @@ package cn.leancloud.oppo;
 import android.content.Context;
 import java.util.List;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVInstallation;
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVOPPOPushAdapter;
+import cn.leancloud.LCException;
+import cn.leancloud.LCInstallation;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LCOPPOPushAdapter;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.utils.LogUtil;
@@ -17,8 +17,8 @@ import com.heytap.msp.push.HeytapPushManager;
 /**
  * Created by wli on 16/6/27.
  */
-public class AVMixPushManager {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVMixPushManager.class);
+public class LCMixPushManager {
+  private static final LCLogger LOGGER = LogUtil.getLogger(LCMixPushManager.class);
 
   public static final String MIXPUSH_PROFILE = "deviceProfile";
 
@@ -38,7 +38,7 @@ public class AVMixPushManager {
    * @return
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
-                                         AVOPPOPushAdapter callback) {
+                                         LCOPPOPushAdapter callback) {
     if (null == context || StringUtil.isEmpty(appKey) || StringUtil.isEmpty(appSecret)) {
       LOGGER.e("invalid parameter. context=" + context + ", appKey=" + appKey);
       return false;
@@ -63,7 +63,7 @@ public class AVMixPushManager {
    * @return
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
-                                         String profile, AVOPPOPushAdapter callback) {
+                                         String profile, LCOPPOPushAdapter callback) {
     oppoDeviceProfile = profile;
     return registerOppoPush(context, appKey, appSecret, callback);
   }
@@ -195,13 +195,13 @@ public class AVMixPushManager {
    * 取消成功后，消息会通过 LeanCloud websocket 发送
    */
   public static void unRegisterMixPush() {
-    AVInstallation installation = AVInstallation.getCurrentInstallation();
-    String vendor = installation.getString(AVInstallation.VENDOR);
+    LCInstallation installation = LCInstallation.getCurrentInstallation();
+    String vendor = installation.getString(LCInstallation.VENDOR);
     if (!StringUtil.isEmpty(vendor)) {
-      installation.put(AVInstallation.VENDOR, "lc");
+      installation.put(LCInstallation.VENDOR, "lc");
       installation.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
         @Override
-        public void done(AVException e) {
+        public void done(LCException e) {
           if (null != e) {
             printErrorLog("unRegisterMixPush error!");
           } else {

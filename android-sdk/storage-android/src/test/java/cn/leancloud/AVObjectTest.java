@@ -11,9 +11,9 @@ import org.junit.Test;
 @RunWith(MockitoJUnitRunner.class)
 public class AVObjectTest {
   public AVObjectTest() {
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    LeanCloud.setRegion(LeanCloud.REGION.NorthChina);
+    LeanCloud.setLogLevel(AVLogger.Level.VERBOSE);
+    LeanCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
   }
 
   protected void setUp() throws Exception {

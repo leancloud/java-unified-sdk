@@ -1,13 +1,13 @@
 package cn.leancloud.flyme;
 
-import android.Manifest;
 import android.content.Context;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVFlymePushMessageReceiver;
-import cn.leancloud.AVInstallation;
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVManifestUtils;
+import cn.leancloud.LCException;
+import cn.leancloud.LCFlymePushMessageReceiver;
+import cn.leancloud.LCInstallation;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LCInstallation;
+import cn.leancloud.LCManifestUtils;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.utils.LogUtil;
@@ -16,8 +16,8 @@ import cn.leancloud.utils.StringUtil;
 /**
  * Created by wli on 16/6/27.
  */
-public class AVMixPushManager {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVMixPushManager.class);
+public class LCMixPushManager {
+  private static final LCLogger LOGGER = LogUtil.getLogger(LCMixPushManager.class);
 
   public static final String MIXPUSH_PROFILE = "deviceProfile";
 
@@ -26,7 +26,7 @@ public class AVMixPushManager {
    */
   public static String flymeDeviceProfile = "";
   public static int flymeMStatusBarIcon = 0;
-  static Class flymePushReceiverClazz = AVFlymePushMessageReceiver.class;
+  static Class flymePushReceiverClazz = LCFlymePushMessageReceiver.class;
 
   /**
    * 注册魅族推送
@@ -117,13 +117,13 @@ public class AVMixPushManager {
    * 取消成功后，消息会通过 LeanCloud websocket 发送
    */
   public static void unRegisterMixPush() {
-    AVInstallation installation = AVInstallation.getCurrentInstallation();
-    String vendor = installation.getString(AVInstallation.VENDOR);
+    LCInstallation installation = LCInstallation.getCurrentInstallation();
+    String vendor = installation.getString(LCInstallation.VENDOR);
     if (!StringUtil.isEmpty(vendor)) {
-      installation.put(AVInstallation.VENDOR, "lc");
+      installation.put(LCInstallation.VENDOR, "lc");
       installation.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
         @Override
-        public void done(AVException e) {
+        public void done(LCException e) {
           if (null != e) {
             printErrorLog("unRegisterMixPush error!");
           } else {
@@ -137,7 +137,7 @@ public class AVMixPushManager {
   private static boolean checkFlymeManifest(Context context) {
     boolean result = false;
     try {
-      result = AVManifestUtils.checkReceiver(context, flymePushReceiverClazz);
+      result = LCManifestUtils.checkReceiver(context, flymePushReceiverClazz);
     } catch (Exception e) {
       LOGGER.d(e.getMessage());
     }

@@ -6,22 +6,22 @@ import android.os.Parcelable;
 import cn.leancloud.utils.LogUtil;
 
 
-public class AVParcelableObject implements Parcelable {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVParcelableObject.class);
-  private AVObject instance = null;
+public class LCParcelableObject implements Parcelable {
+  private static final LCLogger LOGGER = LogUtil.getLogger(LCParcelableObject.class);
+  private LCObject instance = null;
 
-  public AVParcelableObject(AVObject object) {
+  public LCParcelableObject(LCObject object) {
     this.instance = object;
   }
 
-  public AVParcelableObject() {
+  public LCParcelableObject() {
     super();
   }
 //  public AVParcelableObject(Parcel in) {
 //    instance = CREATOR.createFromParcel(in);
 //  }
 
-  public AVObject object() {
+  public LCObject object() {
     return this.instance;
   }
 
@@ -38,9 +38,9 @@ public class AVParcelableObject implements Parcelable {
     LOGGER.d("writeToParcel with archivedContent: " + archivedContent);
   }
 
-  public static transient final Creator<AVParcelableObject> CREATOR = AVObjectCreator.instance;
+  public static transient final Creator<LCParcelableObject> CREATOR = AVObjectCreator.instance;
 
-  public static class AVObjectCreator implements Creator<AVParcelableObject> {
+  public static class AVObjectCreator implements Creator<LCParcelableObject> {
     public static AVObjectCreator instance = new AVObjectCreator();
 
     private AVObjectCreator() {
@@ -48,17 +48,17 @@ public class AVParcelableObject implements Parcelable {
     }
 
     @Override
-    public AVParcelableObject createFromParcel(Parcel parcel) {
+    public LCParcelableObject createFromParcel(Parcel parcel) {
       String className = parcel.readString();
       String content = parcel.readString();
       LOGGER.d("createFromParcel with archivedContent: " + content + ", className: " + className);
-      AVObject rawObject = ArchivedRequests.parseAVObject(content);
-      return new AVParcelableObject(Transformer.transform(rawObject, className));
+      LCObject rawObject = ArchivedRequests.parseAVObject(content);
+      return new LCParcelableObject(Transformer.transform(rawObject, className));
     }
 
     @Override
-    public AVParcelableObject[] newArray(int i) {
-      return new AVParcelableObject[i];
+    public LCParcelableObject[] newArray(int i) {
+      return new LCParcelableObject[i];
     }
   }
 

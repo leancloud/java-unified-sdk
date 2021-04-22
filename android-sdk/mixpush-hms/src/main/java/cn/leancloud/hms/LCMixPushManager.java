@@ -11,14 +11,13 @@ import com.huawei.hmf.tasks.OnCompleteListener;
 import com.huawei.hmf.tasks.Task;
 import com.huawei.hms.aaid.HmsInstanceId;
 import com.huawei.hms.push.HmsMessaging;
-import com.huawei.hms.support.api.push.service.HmsMsgService;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVHMSMessageService;
-import cn.leancloud.AVInstallation;
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVManifestUtils;
-import cn.leancloud.callback.AVCallback;
+import cn.leancloud.LCException;
+import cn.leancloud.LCHMSMessageService;
+import cn.leancloud.LCInstallation;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LCManifestUtils;
+import cn.leancloud.callback.LCCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.utils.LogUtil;
@@ -27,8 +26,8 @@ import cn.leancloud.utils.StringUtil;
 /**
  * Created by wli on 16/6/27.
  */
-public class AVMixPushManager {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVMixPushManager.class);
+public class LCMixPushManager {
+  private static final LCLogger LOGGER = LogUtil.getLogger(LCMixPushManager.class);
 
   public static final String MIXPUSH_PROFILE = "deviceProfile";
 
@@ -36,7 +35,7 @@ public class AVMixPushManager {
    * 华为推送的 deviceProfile
    */
   public static String hwDeviceProfile = "";
-  static Class hwMessageServiceClazz = AVHMSMessageService.class;
+  static Class hwMessageServiceClazz = LCHMSMessageService.class;
 
   /**
    * 初始化方法，建议在 Application onCreate 里面调用
@@ -119,7 +118,7 @@ public class AVMixPushManager {
           try {
             String token = HmsInstanceId.getInstance(activity).getToken(huaweiAppId, HmsMessaging.DEFAULT_TOKEN_SCOPE);
             LOGGER.d("found HMS appId: " + huaweiAppId + ", token: " + token);
-            AVHMSMessageService.updateAVInstallation(token);
+            LCHMSMessageService.updateAVInstallation(token);
           } catch (Exception ex) {
             LOGGER.w("failed to get hms token. cause: " + ex.getMessage());
           }
@@ -129,7 +128,7 @@ public class AVMixPushManager {
       try {
         String token = HmsInstanceId.getInstance(activity).getToken(huaweiAppId, HmsMessaging.DEFAULT_TOKEN_SCOPE);
         LOGGER.d("found HMS appId: " + huaweiAppId + ", token: " + token);
-        AVHMSMessageService.updateAVInstallation(token);
+        LCHMSMessageService.updateAVInstallation(token);
       } catch (Exception ex) {
         LOGGER.w("failed to get hms token. cause: " + ex.getMessage());
       }
@@ -143,14 +142,14 @@ public class AVMixPushManager {
    * @param context context
    * @param callback callback function
    */
-  public static void turnOnHMSPush(Context context, AVCallback<Void> callback) {
+  public static void turnOnHMSPush(Context context, LCCallback<Void> callback) {
     HmsMessaging.getInstance(context).turnOnPush().addOnCompleteListener(new OnCompleteListener<Void>() {
       @Override
       public void onComplete(Task<Void> task) {
         if (task.isSuccessful()) {
           callback.internalDone(null);
         } else {
-          callback.internalDone(new AVException(task.getException()));
+          callback.internalDone(new LCException(task.getException()));
         }
       }
     });
@@ -162,14 +161,14 @@ public class AVMixPushManager {
    * @param context context
    * @param callback callback function
    */
-  public static void turnOffHMSPush(Context context, AVCallback<Void> callback) {
+  public static void turnOffHMSPush(Context context, LCCallback<Void> callback) {
     HmsMessaging.getInstance(context).turnOffPush().addOnCompleteListener(new OnCompleteListener<Void>() {
       @Override
       public void onComplete(Task<Void> task) {
         if (task.isSuccessful()) {
           callback.internalDone(null);
         } else {
-          callback.internalDone(new AVException(task.getException()));
+          callback.internalDone(new LCException(task.getException()));
         }
       }
     });
@@ -180,13 +179,13 @@ public class AVMixPushManager {
    * 取消成功后，消息会通过 LeanCloud websocket 发送
    */
   public static void unRegisterMixPush() {
-    AVInstallation installation = AVInstallation.getCurrentInstallation();
-    String vendor = installation.getString(AVInstallation.VENDOR);
+    LCInstallation installation = LCInstallation.getCurrentInstallation();
+    String vendor = installation.getString(LCInstallation.VENDOR);
     if (!StringUtil.isEmpty(vendor)) {
-      installation.put(AVInstallation.VENDOR, "lc");
+      installation.put(LCInstallation.VENDOR, "lc");
       installation.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
         @Override
-        public void done(AVException e) {
+        public void done(LCException e) {
           if (null != e) {
             printErrorLog("unRegisterMixPush error!");
           } else {
@@ -209,8 +208,8 @@ public class AVMixPushManager {
   private static boolean checkHuaweiManifest(Context context) {
     boolean result = false;
     try {
-      result = AVManifestUtils.checkPermission(context, android.Manifest.permission.INTERNET)
-          && AVManifestUtils.checkService(context, hwMessageServiceClazz);
+      result = LCManifestUtils.checkPermission(context, android.Manifest.permission.INTERNET)
+          && LCManifestUtils.checkService(context, hwMessageServiceClazz);
     } catch (Exception e) {
       LOGGER.d(e.getMessage());
     }

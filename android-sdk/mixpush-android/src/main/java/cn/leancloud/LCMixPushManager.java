@@ -6,7 +6,7 @@ import android.content.Context;
 
 import java.util.List;
 
-import cn.leancloud.callback.AVCallback;
+import cn.leancloud.callback.LCCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.utils.LogUtil;
@@ -15,8 +15,8 @@ import cn.leancloud.utils.StringUtil;
 /**
  * Created by wli on 16/6/27.
  */
-public class AVMixPushManager {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVMixPushManager.class);
+public class LCMixPushManager {
+  private static final LCLogger LOGGER = LogUtil.getLogger(LCMixPushManager.class);
 
   /**
    * 注册小米推送
@@ -27,7 +27,7 @@ public class AVMixPushManager {
    * @param miAppKey 小米 appKey
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey) {
-    cn.leancloud.mi.AVMixPushManager.registerXiaomiPush(context, miAppId, miAppKey);
+    cn.leancloud.mi.LCMixPushManager.registerXiaomiPush(context, miAppId, miAppKey);
   }
 
   /**
@@ -41,7 +41,7 @@ public class AVMixPushManager {
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey,
                                         Class customizedReceiver) {
-    cn.leancloud.mi.AVMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, customizedReceiver);
+    cn.leancloud.mi.LCMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, customizedReceiver);
   }
 
   /**
@@ -54,7 +54,7 @@ public class AVMixPushManager {
    * @param profile  小米推送配置
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey, String profile) {
-    cn.leancloud.mi.AVMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, profile);
+    cn.leancloud.mi.LCMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, profile);
   }
 
   /**
@@ -69,7 +69,7 @@ public class AVMixPushManager {
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey, String profile,
                                         Class customizedReceiver) {
-    cn.leancloud.mi.AVMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, profile, customizedReceiver);
+    cn.leancloud.mi.LCMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, profile, customizedReceiver);
   }
 
   /**
@@ -84,7 +84,7 @@ public class AVMixPushManager {
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey,
                                         String profile, boolean isInternationalVendor) {
-    cn.leancloud.mi.AVMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, profile, isInternationalVendor);
+    cn.leancloud.mi.LCMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, profile, isInternationalVendor);
   }
 
   /**
@@ -100,7 +100,7 @@ public class AVMixPushManager {
    */
   public static void registerXiaomiPush(Context context, String miAppId, String miAppKey,
                                         String profile, boolean isInternationalVendor, Class customizedReceiver) {
-    cn.leancloud.mi.AVMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, profile,
+    cn.leancloud.mi.LCMixPushManager.registerXiaomiPush(context, miAppId, miAppKey, profile,
         isInternationalVendor, customizedReceiver);
   }
 
@@ -110,7 +110,7 @@ public class AVMixPushManager {
    * @param application 应用实例
    */
   public static void registerHMSPush(Application application) {
-    cn.leancloud.hms.AVMixPushManager.registerHMSPush(application);
+    cn.leancloud.hms.LCMixPushManager.registerHMSPush(application);
   }
 
   /**
@@ -120,11 +120,11 @@ public class AVMixPushManager {
    * @param profile 华为推送配置
    */
   public static void registerHMSPush(Application application, String profile) {
-    cn.leancloud.hms.AVMixPushManager.registerHMSPush(application, profile);
+    cn.leancloud.hms.LCMixPushManager.registerHMSPush(application, profile);
   }
 
   public static void registerHMSPush(Application application, String profile, Class customMessageServiceClazz) {
-    cn.leancloud.hms.AVMixPushManager.registerHMSPush(application, profile, customMessageServiceClazz);
+    cn.leancloud.hms.LCMixPushManager.registerHMSPush(application, profile, customMessageServiceClazz);
   }
 
   /**
@@ -137,7 +137,7 @@ public class AVMixPushManager {
    * @param activity activity
    */
   public static void connectHMS(Activity activity) {
-    cn.leancloud.hms.AVMixPushManager.connectHMS(activity);
+    cn.leancloud.hms.LCMixPushManager.connectHMS(activity);
   }
 
   /**
@@ -151,7 +151,7 @@ public class AVMixPushManager {
    * @param huaweiAppId huawei app id
    */
   public static void connectHMS(Activity activity, String huaweiAppId) {
-    cn.leancloud.hms.AVMixPushManager.connectHMS(activity, huaweiAppId);
+    cn.leancloud.hms.LCMixPushManager.connectHMS(activity, huaweiAppId);
   }
 
   /**
@@ -160,8 +160,8 @@ public class AVMixPushManager {
    * @param context context
    * @param callback callback function
    */
-  public static void turnOnHMSPush(Context context, AVCallback<Void> callback) {
-    cn.leancloud.hms.AVMixPushManager.turnOnHMSPush(context, callback);
+  public static void turnOnHMSPush(Context context, LCCallback<Void> callback) {
+    cn.leancloud.hms.LCMixPushManager.turnOnHMSPush(context, callback);
   }
 
   /**
@@ -170,8 +170,8 @@ public class AVMixPushManager {
    * @param context context
    * @param callback callback function
    */
-  public static void turnOffHMSPush(Context context, AVCallback<Void> callback) {
-    cn.leancloud.hms.AVMixPushManager.turnOffHMSPush(context, callback);
+  public static void turnOffHMSPush(Context context, LCCallback<Void> callback) {
+    cn.leancloud.hms.LCMixPushManager.turnOffHMSPush(context, callback);
   }
 
   /**
@@ -185,7 +185,7 @@ public class AVMixPushManager {
    */
   public static boolean registerFlymePush(Context context, String flymeId, String flymeKey,
                                           String profile) {
-    return cn.leancloud.flyme.AVMixPushManager.registerFlymePush(context, flymeId, flymeKey, profile);
+    return cn.leancloud.flyme.LCMixPushManager.registerFlymePush(context, flymeId, flymeKey, profile);
   }
 
   /**
@@ -200,7 +200,7 @@ public class AVMixPushManager {
    */
   public static boolean registerFlymePush(Context context, String flymeId, String flymeKey,
                                           String profile, Class customizedReceiver) {
-    return cn.leancloud.flyme.AVMixPushManager.registerFlymePush(context, flymeId, flymeKey,
+    return cn.leancloud.flyme.LCMixPushManager.registerFlymePush(context, flymeId, flymeKey,
         profile, customizedReceiver);
   }
 
@@ -213,7 +213,7 @@ public class AVMixPushManager {
    *         false - register failed
    */
   public static boolean registerFlymePush(Context context, String flymeId, String flymeKey) {
-    return cn.leancloud.flyme.AVMixPushManager.registerFlymePush(context, flymeId, flymeKey);
+    return cn.leancloud.flyme.LCMixPushManager.registerFlymePush(context, flymeId, flymeKey);
   }
 
   /**
@@ -227,7 +227,7 @@ public class AVMixPushManager {
    */
   public static boolean registerFlymePush(Context context, String flymeId, String flymeKey,
                                           Class customizedReceiver) {
-    return cn.leancloud.flyme.AVMixPushManager.registerFlymePush(context, flymeId, flymeKey,
+    return cn.leancloud.flyme.LCMixPushManager.registerFlymePush(context, flymeId, flymeKey,
         customizedReceiver);
   }
 
@@ -237,7 +237,7 @@ public class AVMixPushManager {
    * @param icon icon resource id.
    */
   public static void setFlymeMStatusbarIcon(int icon) {
-    cn.leancloud.flyme.AVMixPushManager.setFlymeMStatusbarIcon(icon);
+    cn.leancloud.flyme.LCMixPushManager.setFlymeMStatusbarIcon(icon);
   }
 
   /**
@@ -249,7 +249,7 @@ public class AVMixPushManager {
    * @param application application
    */
   public static boolean registerVIVOPush(Application application) {
-    return cn.leancloud.vivo.AVMixPushManager.registerVIVOPush(application);
+    return cn.leancloud.vivo.LCMixPushManager.registerVIVOPush(application);
   }
 
   /**
@@ -257,21 +257,21 @@ public class AVMixPushManager {
    * @param application application
    */
   public static boolean registerVIVOPush(Application application, String profile) {
-    return cn.leancloud.vivo.AVMixPushManager.registerVIVOPush(application, profile);
+    return cn.leancloud.vivo.LCMixPushManager.registerVIVOPush(application, profile);
   }
 
   /**
    * turn off VIVO push.
    */
-  public static void turnOffVIVOPush(final AVCallback<Boolean> callback) {
-    cn.leancloud.vivo.AVMixPushManager.turnOffVIVOPush(callback);
+  public static void turnOffVIVOPush(final LCCallback<Boolean> callback) {
+    cn.leancloud.vivo.LCMixPushManager.turnOffVIVOPush(callback);
   }
 
   /**
    * turn on VIVO push.
    */
-  public static void turnOnVIVOPush(final AVCallback<Boolean> callback) {
-    cn.leancloud.vivo.AVMixPushManager.turnOnVIVOPush(callback);
+  public static void turnOnVIVOPush(final LCCallback<Boolean> callback) {
+    cn.leancloud.vivo.LCMixPushManager.turnOnVIVOPush(callback);
   }
 
   /**
@@ -281,7 +281,7 @@ public class AVMixPushManager {
    * @return
    */
   public static boolean isSupportVIVOPush(Context context) {
-    return cn.leancloud.vivo.AVMixPushManager.isSupportVIVOPush(context);
+    return cn.leancloud.vivo.LCMixPushManager.isSupportVIVOPush(context);
   }
 
   /**
@@ -291,8 +291,8 @@ public class AVMixPushManager {
    * @param alias
    * @param callback
    */
-  public static void bindVIVOAlias(Context context, String alias, final AVCallback<Boolean> callback) {
-    cn.leancloud.vivo.AVMixPushManager.bindVIVOAlias(context, alias, callback);
+  public static void bindVIVOAlias(Context context, String alias, final LCCallback<Boolean> callback) {
+    cn.leancloud.vivo.LCMixPushManager.bindVIVOAlias(context, alias, callback);
   }
 
   /**
@@ -302,8 +302,8 @@ public class AVMixPushManager {
    * @param alias
    * @param callback
    */
-  public static void unbindVIVOAlias(Context context, String alias, final AVCallback<Boolean> callback) {
-    cn.leancloud.vivo.AVMixPushManager.unbindVIVOAlias(context, alias, callback);
+  public static void unbindVIVOAlias(Context context, String alias, final LCCallback<Boolean> callback) {
+    cn.leancloud.vivo.LCMixPushManager.unbindVIVOAlias(context, alias, callback);
   }
 
   /**
@@ -313,7 +313,7 @@ public class AVMixPushManager {
    * @return
    */
   public static String getVIVOAlias(Context context) {
-    return cn.leancloud.vivo.AVMixPushManager.getVIVOAlias(context);
+    return cn.leancloud.vivo.LCMixPushManager.getVIVOAlias(context);
   }
 
   /**
@@ -323,8 +323,8 @@ public class AVMixPushManager {
    * @param topic
    * @param callback
    */
-  public static void setVIVOTopic(Context context, String topic, final AVCallback<Boolean> callback) {
-    cn.leancloud.vivo.AVMixPushManager.setVIVOTopic(context, topic, callback);
+  public static void setVIVOTopic(Context context, String topic, final LCCallback<Boolean> callback) {
+    cn.leancloud.vivo.LCMixPushManager.setVIVOTopic(context, topic, callback);
   }
 
   /**
@@ -333,8 +333,8 @@ public class AVMixPushManager {
    * @param alias
    * @param callback
    */
-  public static void delVIVOTopic(Context context, String alias, final AVCallback<Boolean> callback) {
-    cn.leancloud.vivo.AVMixPushManager.delVIVOTopic(context, alias, callback);
+  public static void delVIVOTopic(Context context, String alias, final LCCallback<Boolean> callback) {
+    cn.leancloud.vivo.LCMixPushManager.delVIVOTopic(context, alias, callback);
   }
 
   /**
@@ -343,7 +343,7 @@ public class AVMixPushManager {
    * @return
    */
   public static List<String> getVIVOTopics(Context context) {
-    return cn.leancloud.vivo.AVMixPushManager.getVIVOTopics(context);
+    return cn.leancloud.vivo.LCMixPushManager.getVIVOTopics(context);
   }
 
   /**
@@ -360,8 +360,8 @@ public class AVMixPushManager {
    * @return
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
-                                         AVOPPOPushAdapter callback) {
-    return cn.leancloud.oppo.AVMixPushManager.registerOppoPush(context, appKey, appSecret, callback);
+                                         LCOPPOPushAdapter callback) {
+    return cn.leancloud.oppo.LCMixPushManager.registerOppoPush(context, appKey, appSecret, callback);
   }
 
   /**
@@ -375,8 +375,8 @@ public class AVMixPushManager {
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
                                          String profile,
-                                         AVOPPOPushAdapter callback) {
-    return cn.leancloud.oppo.AVMixPushManager.registerOppoPush(context, appKey, appSecret, profile, callback);
+                                         LCOPPOPushAdapter callback) {
+    return cn.leancloud.oppo.LCMixPushManager.registerOppoPush(context, appKey, appSecret, profile, callback);
   }
 
 
@@ -387,21 +387,21 @@ public class AVMixPushManager {
    * @return
    */
   public static boolean isSupportOppoPush(Context context) {
-    return cn.leancloud.oppo.AVMixPushManager.isSupportOppoPush(context);
+    return cn.leancloud.oppo.LCMixPushManager.isSupportOppoPush(context);
   }
 
   /**
    * pause oppo push
    */
   public static void pauseOppoPush() {
-    cn.leancloud.oppo.AVMixPushManager.pauseOppoPush();
+    cn.leancloud.oppo.LCMixPushManager.pauseOppoPush();
   }
 
   /**
    * resume oppo push
    */
   public static void resumeOppoPush() {
-    cn.leancloud.oppo.AVMixPushManager.resumeOppoPush();
+    cn.leancloud.oppo.LCMixPushManager.resumeOppoPush();
   }
 
   /**
@@ -414,7 +414,7 @@ public class AVMixPushManager {
    */
   public static void setOppoPushTime(List<Integer> weekDays, int startHour, int startMinute,
                                      int endHour, int endMinute) {
-    cn.leancloud.oppo.AVMixPushManager.setOppoPushTime(weekDays, startHour, startMinute, endHour, endMinute);
+    cn.leancloud.oppo.LCMixPushManager.setOppoPushTime(weekDays, startHour, startMinute, endHour, endMinute);
   }
 
   /**
@@ -422,7 +422,7 @@ public class AVMixPushManager {
    * @param aliases
    */
   public static void setOppoAliases(List<String> aliases) {
-    cn.leancloud.oppo.AVMixPushManager.setOppoAliases(aliases);
+    cn.leancloud.oppo.LCMixPushManager.setOppoAliases(aliases);
   }
 
   /**
@@ -430,14 +430,14 @@ public class AVMixPushManager {
    * @param alias
    */
   public static void unsetOppoAlias(String alias) {
-    cn.leancloud.oppo.AVMixPushManager.unsetOppoAlias(alias);
+    cn.leancloud.oppo.LCMixPushManager.unsetOppoAlias(alias);
   }
 
   /**
    * get oppo aliases.
    */
   public static void getOppoAliases() {
-    cn.leancloud.oppo.AVMixPushManager.getOppoAliases();
+    cn.leancloud.oppo.LCMixPushManager.getOppoAliases();
   }
 
   /**
@@ -445,7 +445,7 @@ public class AVMixPushManager {
    * @param account
    */
   public static void setOppoUserAccount(String account) {
-    cn.leancloud.oppo.AVMixPushManager.setOppoUserAccount(account);
+    cn.leancloud.oppo.LCMixPushManager.setOppoUserAccount(account);
   }
 
   /**
@@ -453,14 +453,14 @@ public class AVMixPushManager {
    * @param accounts
    */
   public static void unsetOppoUserAccouts(List<String> accounts) {
-    cn.leancloud.oppo.AVMixPushManager.unsetOppoUserAccouts(accounts);
+    cn.leancloud.oppo.LCMixPushManager.unsetOppoUserAccouts(accounts);
   }
 
   /**
    * get oppo push accounts.
    */
   public static void getOppoUserAccounts() {
-    cn.leancloud.oppo.AVMixPushManager.getOppoUserAccounts();
+    cn.leancloud.oppo.LCMixPushManager.getOppoUserAccounts();
   }
 
   /**
@@ -468,7 +468,7 @@ public class AVMixPushManager {
    * @param tags
    */
   public static void setOppoTags(List<String> tags) {
-    cn.leancloud.oppo.AVMixPushManager.setOppoTags(tags);
+    cn.leancloud.oppo.LCMixPushManager.setOppoTags(tags);
   }
 
   /**
@@ -476,28 +476,28 @@ public class AVMixPushManager {
    * @param tags
    */
   public static void unsetOppoTags(List<String> tags) {
-    cn.leancloud.oppo.AVMixPushManager.unsetOppoTags(tags);
+    cn.leancloud.oppo.LCMixPushManager.unsetOppoTags(tags);
   }
 
   /**
    * retrieve oppo push tags.
    */
   public static void getOppoTags() {
-    cn.leancloud.oppo.AVMixPushManager.getOppoTags();
+    cn.leancloud.oppo.LCMixPushManager.getOppoTags();
   }
 
   /**
    * get oppo push status
    */
   public static void getOppoPushStatus() {
-    cn.leancloud.oppo.AVMixPushManager.getOppoPushStatus();
+    cn.leancloud.oppo.LCMixPushManager.getOppoPushStatus();
   }
 
   /**
    * get oppo notification status.
    */
   public static void getOppoNotificationStatus() {
-    cn.leancloud.oppo.AVMixPushManager.getOppoNotificationStatus();
+    cn.leancloud.oppo.LCMixPushManager.getOppoNotificationStatus();
   }
 
   /**
@@ -505,13 +505,13 @@ public class AVMixPushManager {
    * 取消成功后，消息会通过 LeanCloud websocket 发送
    */
   public static void unRegisterMixPush() {
-    AVInstallation installation = AVInstallation.getCurrentInstallation();
-    String vendor = installation.getString(AVInstallation.VENDOR);
+    LCInstallation installation = LCInstallation.getCurrentInstallation();
+    String vendor = installation.getString(LCInstallation.VENDOR);
     if (!StringUtil.isEmpty(vendor)) {
-      installation.put(AVInstallation.VENDOR, "lc");
+      installation.put(LCInstallation.VENDOR, "lc");
       installation.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
         @Override
-        public void done(AVException e) {
+        public void done(LCException e) {
           if (null != e) {
             printErrorLog("unRegisterMixPush error!");
           } else {

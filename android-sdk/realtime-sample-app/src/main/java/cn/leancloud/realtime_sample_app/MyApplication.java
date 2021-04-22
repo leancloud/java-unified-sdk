@@ -1,21 +1,14 @@
 package cn.leancloud.realtime_sample_app;
 
 import android.app.Application;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.StrictMode;
 
-import androidx.core.app.NotificationCompat;
-import cn.leancloud.AVInstallation;
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVOSCloud;
-import cn.leancloud.AVObject;
-import cn.leancloud.im.v2.AVIMClient;
-import cn.leancloud.im.v2.AVIMClientEventHandler;
+import cn.leancloud.LCInstallation;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LeanCloud;
+import cn.leancloud.LCObject;
+import cn.leancloud.im.v2.LCIMClient;
+import cn.leancloud.im.v2.LCIMClientEventHandler;
 import cn.leancloud.push.PushService;
 import cn.leancloud.utils.LogUtil;
 import io.reactivex.Observer;
@@ -26,7 +19,7 @@ import io.reactivex.disposables.Disposable;
  */
 
 public class MyApplication extends Application {
-  private static final AVLogger LOGGER = LogUtil.getLogger(MyApplication.class);
+  private static final LCLogger LOGGER = LogUtil.getLogger(MyApplication.class);
 
   private static final String APPID = "dYRQ8YfHRiILshUnfFJu2eQM-gzGzoHsz";
   private static final String APPKEY = "ye24iIK6ys8IvaISMC4Bs5WK";
@@ -47,37 +40,37 @@ public class MyApplication extends Application {
 
     super.onCreate();
 
-    AVOSCloud.setLogLevel(AVLogger.Level.DEBUG);
-    AVOSCloud.initialize(this, APPID, APPKEY, APP_SERVER_HOST);
+    LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
+    LeanCloud.initialize(this, APPID, APPKEY, APP_SERVER_HOST);
 
-    AVIMClient.setClientEventHandler(new AVIMClientEventHandler() {
+    LCIMClient.setClientEventHandler(new LCIMClientEventHandler() {
       @Override
-      public void onConnectionPaused(AVIMClient client) {
+      public void onConnectionPaused(LCIMClient client) {
         System.out.println("============ CONNECTION PAUSED ============");
       }
 
       @Override
-      public void onConnectionResume(AVIMClient client) {
+      public void onConnectionResume(LCIMClient client) {
         System.out.println("============ CONNECTION RESUMED ============");
       }
 
       @Override
-      public void onClientOffline(AVIMClient client, int code) {
+      public void onClientOffline(LCIMClient client, int code) {
         System.out.println("============ CLIENT OFFLINE ============");
       }
     });
 
     LOGGER.d("onCreate in thread:" + this.getMainLooper().getThread().getId());
 
-    AVInstallation currentInstallation = AVInstallation.getCurrentInstallation();
-    currentInstallation.saveInBackground().subscribe(new Observer<AVObject>() {
+    LCInstallation currentInstallation = LCInstallation.getCurrentInstallation();
+    currentInstallation.saveInBackground().subscribe(new Observer<LCObject>() {
       @Override
       public void onSubscribe(Disposable d) {
 
       }
 
       @Override
-      public void onNext(AVObject avObject) {
+      public void onNext(LCObject avObject) {
         LOGGER.d("saveInstallation response in thread:" + Thread.currentThread().getId());
         System.out.println("succeed to save Installation. result: " + avObject);
       }

@@ -15,63 +15,63 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.codec.Base64Decoder;
 import cn.leancloud.im.DatabaseDelegate;
 import cn.leancloud.json.JSON;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_ATTRIBUTE;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_BREAKPOINT;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_CONVERSATION_ID;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_CONVERSATION_READAT;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_CONVRESATION_DELIVEREDAT;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_CONV_LASTMESSAGE_INNERTYPE;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_CONV_MENTIONED;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_CONV_SYSTEM;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_CONV_TEMP;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_CONV_TEMP_TTL;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_CREATEDAT;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_CREATOR;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_DEDUPLICATED_TOKEN;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_FROM_PEER_ID;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_INSTANCEDATA;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_LASTMESSAGE;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_LM;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_MEMBERS;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_MESSAGE_DELIVEREDAT;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_MESSAGE_READAT;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_MESSAGE_UPDATEAT;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_MSG_INNERTYPE;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_MSG_MENTION_ALL;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_MSG_MENTION_LIST;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_PAYLOAD;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_STATUS;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_TIMESTAMP;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_TRANSIENT;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_UNREAD_COUNT;
-import static cn.leancloud.im.v2.AVIMMessageStorage.COLUMN_UPDATEDAT;
-import static cn.leancloud.im.v2.AVIMMessageStorage.CONVERSATION_TABLE;
-import static cn.leancloud.im.v2.AVIMMessageStorage.DB_NAME_PREFIX;
-import static cn.leancloud.im.v2.AVIMMessageStorage.INTEGER;
-import static cn.leancloud.im.v2.AVIMMessageStorage.MESSAGE_INNERTYPE_BIN;
-import static cn.leancloud.im.v2.AVIMMessageStorage.MESSAGE_TABLE;
-import static cn.leancloud.im.v2.AVIMMessageStorage.NUMBERIC;
-import static cn.leancloud.im.v2.AVIMMessageStorage.TEXT;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_ATTRIBUTE;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_BREAKPOINT;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_CONVERSATION_ID;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_CONVERSATION_READAT;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_CONVRESATION_DELIVEREDAT;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_CONV_LASTMESSAGE_INNERTYPE;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_CONV_MENTIONED;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_CONV_SYSTEM;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_CONV_TEMP;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_CONV_TEMP_TTL;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_CREATEDAT;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_CREATOR;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_DEDUPLICATED_TOKEN;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_FROM_PEER_ID;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_INSTANCEDATA;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_LASTMESSAGE;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_LM;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_MEMBERS;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_MESSAGE_DELIVEREDAT;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_MESSAGE_READAT;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_MESSAGE_UPDATEAT;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_MSG_INNERTYPE;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_MSG_MENTION_ALL;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_MSG_MENTION_LIST;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_PAYLOAD;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_STATUS;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_TIMESTAMP;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_TRANSIENT;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_UNREAD_COUNT;
+import static cn.leancloud.im.v2.LCIMMessageStorage.COLUMN_UPDATEDAT;
+import static cn.leancloud.im.v2.LCIMMessageStorage.CONVERSATION_TABLE;
+import static cn.leancloud.im.v2.LCIMMessageStorage.DB_NAME_PREFIX;
+import static cn.leancloud.im.v2.LCIMMessageStorage.INTEGER;
+import static cn.leancloud.im.v2.LCIMMessageStorage.MESSAGE_INNERTYPE_BIN;
+import static cn.leancloud.im.v2.LCIMMessageStorage.MESSAGE_TABLE;
+import static cn.leancloud.im.v2.LCIMMessageStorage.NUMBERIC;
+import static cn.leancloud.im.v2.LCIMMessageStorage.TEXT;
 
 /**
  * Created by fengjunwen on 2018/8/9.
  */
 
 public class AndroidDatabaseDelegate implements DatabaseDelegate {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AndroidDatabaseDelegate.class);
+  private static final LCLogger LOGGER = LogUtil.getLogger(AndroidDatabaseDelegate.class);
 
   static class DBHelper extends SQLiteOpenHelper {
     static final String MESSAGE_CREATE_SQL =
         "CREATE TABLE IF NOT EXISTS " + MESSAGE_TABLE + " ("
             + COLUMN_CONVERSATION_ID + " VARCHAR(32) NOT NULL, "
-            + AVIMMessageStorage.COLUMN_MESSAGE_ID + " VARCHAR(32) NOT NULL, "
+            + LCIMMessageStorage.COLUMN_MESSAGE_ID + " VARCHAR(32) NOT NULL, "
             + COLUMN_TIMESTAMP + " NUMBERIC, "
             + COLUMN_FROM_PEER_ID + " TEXT NOT NULL, "
             + COLUMN_MESSAGE_DELIVEREDAT + " NUMBERIC, "
@@ -85,17 +85,17 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
             + COLUMN_MSG_MENTION_LIST + " TEXT NULL, "
             + COLUMN_MSG_INNERTYPE + " INTEGER default 0, "
             + "PRIMARY KEY(" + COLUMN_CONVERSATION_ID + ","
-            + AVIMMessageStorage.COLUMN_MESSAGE_ID + ")) ";
+            + LCIMMessageStorage.COLUMN_MESSAGE_ID + ")) ";
 
     static final String MESSAGE_UNIQUE_INDEX_SQL =
-        "CREATE UNIQUE INDEX IF NOT EXISTS " + AVIMMessageStorage.MESSAGE_INDEX + " on "
+        "CREATE UNIQUE INDEX IF NOT EXISTS " + LCIMMessageStorage.MESSAGE_INDEX + " on "
             + MESSAGE_TABLE + " (" + COLUMN_CONVERSATION_ID
-            + ", " + COLUMN_TIMESTAMP + ", " + AVIMMessageStorage.COLUMN_MESSAGE_ID + ") ";
+            + ", " + COLUMN_TIMESTAMP + ", " + LCIMMessageStorage.COLUMN_MESSAGE_ID + ") ";
 
     static final String CONVERSATION_CREATE_SQL = "CREATE TABLE IF NOT EXISTS "
         + CONVERSATION_TABLE + " ("
         + COLUMN_CONVERSATION_ID + " VARCHAR(32) NOT NULL,"
-        + AVIMMessageStorage.COLUMN_EXPIREAT + " NUMBERIC,"
+        + LCIMMessageStorage.COLUMN_EXPIREAT + " NUMBERIC,"
         + COLUMN_ATTRIBUTE + " BLOB,"
         + COLUMN_INSTANCEDATA + " BLOB,"
         + COLUMN_UPDATEDAT + " VARCHAR(32),"
@@ -116,7 +116,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
         + "PRIMARY KEY(" + COLUMN_CONVERSATION_ID + "))";
 
     public DBHelper(Context context, String clientId) {
-      super(context, getDatabasePath(clientId), null, AVIMMessageStorage.DB_VERSION);
+      super(context, getDatabasePath(clientId), null, LCIMMessageStorage.DB_VERSION);
     }
 
     private static String getDatabasePath(String clientId) {
@@ -187,7 +187,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
       try {
         if (!columnExists(db, MESSAGE_TABLE, COLUMN_DEDUPLICATED_TOKEN)) {
           db.execSQL(getAddColumnSql(MESSAGE_TABLE,
-              COLUMN_DEDUPLICATED_TOKEN, AVIMMessageStorage.VARCHAR32));
+              COLUMN_DEDUPLICATED_TOKEN, LCIMMessageStorage.VARCHAR32));
         }
       } catch (Exception ex) {
         LOGGER.w("failed to execute upgrade instrument. cause: " + ex.getMessage());
@@ -209,7 +209,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
       try {
         if (!columnExists(db, CONVERSATION_TABLE, COLUMN_INSTANCEDATA)) {
           db.execSQL(getAddColumnSql(CONVERSATION_TABLE, COLUMN_INSTANCEDATA,
-              AVIMMessageStorage.BLOB));
+              LCIMMessageStorage.BLOB));
         }
       } catch (Exception ex) {
         LOGGER.w("failed to execute upgrade instrument. cause: " + ex.getMessage());
@@ -383,9 +383,9 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
     return DatabaseUtils.longForQuery(db, query, selectionArgs);
   }
 
-  public AVIMMessageStorage.MessageQueryResult queryMessages(String[] columns, String selection, String[] selectionArgs,
+  public LCIMMessageStorage.MessageQueryResult queryMessages(String[] columns, String selection, String[] selectionArgs,
                                                              String groupBy, String having, String orderBy, String limit) {
-    List<AVIMMessage> resultMessage = new ArrayList<>();
+    List<LCIMMessage> resultMessage = new ArrayList<>();
     List<Boolean> resultBreakpoint = new ArrayList<>();
     try {
       SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -394,7 +394,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
 
       if (cursor.moveToFirst()) {
         while (!cursor.isAfterLast()) {
-          AVIMMessage message = createMessageFromCursor(cursor);
+          LCIMMessage message = createMessageFromCursor(cursor);
           breakpoint = cursor.getInt(cursor.getColumnIndex(COLUMN_BREAKPOINT)) != 0;
           resultMessage.add(message);
           resultBreakpoint.add(breakpoint);
@@ -406,14 +406,14 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
       LOGGER.w("failed to execute message query. cause: " + e.getMessage());
     }
 
-    AVIMMessageStorage.MessageQueryResult result = new AVIMMessageStorage.MessageQueryResult();
+    LCIMMessageStorage.MessageQueryResult result = new LCIMMessageStorage.MessageQueryResult();
     result.messages = resultMessage;
     result.breakpoints = resultBreakpoint;
     return result;
   }
 
-  private AVIMMessage createMessageFromCursor(Cursor cursor) {
-    String mid = cursor.getString(cursor.getColumnIndex(AVIMMessageStorage.COLUMN_MESSAGE_ID));
+  private LCIMMessage createMessageFromCursor(Cursor cursor) {
+    String mid = cursor.getString(cursor.getColumnIndex(LCIMMessageStorage.COLUMN_MESSAGE_ID));
     long timestamp = cursor.getLong(cursor.getColumnIndex(COLUMN_TIMESTAMP));
     String cid = cursor.getString(cursor.getColumnIndex(COLUMN_CONVERSATION_ID));
     String from = cursor.getString(cursor.getColumnIndex(COLUMN_FROM_PEER_ID));
@@ -427,36 +427,36 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
     String mentionListStr = cursor.getString(cursor.getColumnIndex(COLUMN_MSG_MENTION_LIST));
     int innerType = cursor.getInt(cursor.getColumnIndex(COLUMN_MSG_INNERTYPE));
 
-    AVIMMessage message = null;
+    LCIMMessage message = null;
     if (innerType == MESSAGE_INNERTYPE_BIN) {
-      message = new AVIMBinaryMessage(cid, from, timestamp, deliveredAt, readAt);
-      ((AVIMBinaryMessage)message).setBytes(payload);
+      message = new LCIMBinaryMessage(cid, from, timestamp, deliveredAt, readAt);
+      ((LCIMBinaryMessage)message).setBytes(payload);
     } else {
-      message = new AVIMMessage(cid, from, timestamp, deliveredAt, readAt);
+      message = new LCIMMessage(cid, from, timestamp, deliveredAt, readAt);
       message.setContent(new String(payload));
     }
     message.setMessageId(mid);
     message.setUniqueToken(uniqueToken);
-    message.setMessageStatus(AVIMMessage.AVIMMessageStatus.getMessageStatus(status));
+    message.setMessageStatus(LCIMMessage.AVIMMessageStatus.getMessageStatus(status));
     message.setUpdateAt(updateAt);
     message.setMentionAll( mentionAll == 1);
     message.setCurrentClient(this.clientId);
     if (!StringUtil.isEmpty(mentionListStr)) {
       message.setMentionListString(mentionListStr);
     }
-    return AVIMMessageManager.parseTypedMessage(message);
+    return LCIMMessageManager.parseTypedMessage(message);
   }
 
-  public List<AVIMConversation> queryConversations(String[] columns, String selection, String[] selectionArgs,
+  public List<LCIMConversation> queryConversations(String[] columns, String selection, String[] selectionArgs,
                                             String groupBy, String having, String orderBy, String limit) {
-    List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
+    List<LCIMConversation> conversations = new LinkedList<LCIMConversation>();
     try {
       SQLiteDatabase db = dbHelper.getReadableDatabase();
       Cursor cursor = db.query(CONVERSATION_TABLE, columns, selection, selectionArgs, groupBy, having,
           orderBy, limit);
       if (cursor.moveToFirst()) {
         while (!cursor.isAfterLast()) {
-          AVIMConversation conversation = parseConversationFromCursor(cursor);
+          LCIMConversation conversation = parseConversationFromCursor(cursor);
           conversations.add(conversation);
           cursor.moveToNext();
         }
@@ -468,14 +468,14 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
     return conversations;
   }
 
-  public List<AVIMConversation> rawQueryConversations(String sql, String[] selectionArgs) {
-    List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
+  public List<LCIMConversation> rawQueryConversations(String sql, String[] selectionArgs) {
+    List<LCIMConversation> conversations = new LinkedList<LCIMConversation>();
     try {
       SQLiteDatabase db = dbHelper.getReadableDatabase();
       Cursor cursor = db.rawQuery(sql, selectionArgs);
       if (cursor.moveToFirst()) {
         while (!cursor.isAfterLast()) {
-          AVIMConversation conversation = parseConversationFromCursor(cursor);
+          LCIMConversation conversation = parseConversationFromCursor(cursor);
           conversations.add(conversation);
           cursor.moveToNext();
         }
@@ -489,7 +489,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
     return conversations;
   }
 
-  private AVIMConversation parseConversationFromCursor(Cursor cursor) {
+  private LCIMConversation parseConversationFromCursor(Cursor cursor) {
     String conversationId = cursor.getString(cursor.getColumnIndex(COLUMN_CONVERSATION_ID));
     String createdAt = cursor.getString(cursor.getColumnIndex(COLUMN_CREATEDAT));
     String updatedAt = cursor.getString(cursor.getColumnIndex(COLUMN_UPDATEDAT));
@@ -511,17 +511,17 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
     int system = cursor.getInt(cursor.getColumnIndex(COLUMN_CONV_SYSTEM));
     int temporary = cursor.getInt(cursor.getColumnIndex(COLUMN_CONV_TEMP));
 
-    AVIMConversation conversation = null;
+    LCIMConversation conversation = null;
     if (temporary > 0) {
-      conversation = new AVIMTemporaryConversation(AVIMClient.getInstance(clientId), conversationId);
+      conversation = new LCIMTemporaryConversation(LCIMClient.getInstance(clientId), conversationId);
       long tempExpiredAt = cursor.getLong(cursor.getColumnIndex(COLUMN_CONV_TEMP_TTL));
       conversation.setTemporaryExpiredat(tempExpiredAt);
     } else if (system > 0) {
-      conversation = new AVIMServiceConversation(AVIMClient.getInstance(clientId), conversationId);
+      conversation = new LCIMServiceConversation(LCIMClient.getInstance(clientId), conversationId);
     } else if (transientValue > 0) {
-      conversation = new AVIMChatRoom(AVIMClient.getInstance(clientId), conversationId);
+      conversation = new LCIMChatRoom(LCIMClient.getInstance(clientId), conversationId);
     } else {
-      conversation = new AVIMConversation(AVIMClient.getInstance(clientId), conversationId);
+      conversation = new LCIMConversation(LCIMClient.getInstance(clientId), conversationId);
     }
 
     try {
@@ -545,10 +545,10 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
       }
 
       if (lastMessageInnerType != MESSAGE_INNERTYPE_BIN) {
-        AVIMMessage msg = JSON.parseObject(lastMessage, AVIMMessage.class);
+        LCIMMessage msg = JSON.parseObject(lastMessage, LCIMMessage.class);
         conversation.lastMessage = msg;
       } else {
-        AVIMBinaryMessage binaryMsg = new AVIMBinaryMessage(conversationId, null);// don't care who sent message.
+        LCIMBinaryMessage binaryMsg = new LCIMBinaryMessage(conversationId, null);// don't care who sent message.
         binaryMsg.setBytes(Base64Decoder.decodeToBytes(lastMessage));
         conversation.lastMessage = binaryMsg;
       }

@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import cn.leancloud.AVException;
-import cn.leancloud.AVOSCloud;
+import cn.leancloud.LeanCloud;
 import cn.leancloud.AVObject;
 import cn.leancloud.AVQuery;
 import cn.leancloud.AVRelation;
@@ -191,7 +191,7 @@ public class QueryDemoActivity extends DemoBaseActivity {
 
   public void testLastModifyEnabled() throws AVException {
     // 应该放在 Application 的 onCreate 中，开启全局省流量模式
-    AVOSCloud.setLastModifyEnabled(true);
+    LeanCloud.setLastModifyEnabled(true);
 
     Student student = getFirstStudent();
 
@@ -207,7 +207,7 @@ public class QueryDemoActivity extends DemoBaseActivity {
 
   public void testLastModifyEnabled2() throws AVException {
     // 应该放在 Application 的 onCreate 中，开启全局省流量模式
-    AVOSCloud.setLastModifyEnabled(true);
+    LeanCloud.setLastModifyEnabled(true);
 
     AVQuery<Student> q = AVQuery.getQuery(Student.class);
     q.limit(5);

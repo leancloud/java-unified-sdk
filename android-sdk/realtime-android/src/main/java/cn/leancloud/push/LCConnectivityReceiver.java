@@ -15,11 +15,11 @@ import cn.leancloud.utils.LogUtil;
  * Created by fengjunwen on 2018/7/3.
  */
 
-public class AVConnectivityReceiver extends BroadcastReceiver {
-  private final AVConnectivityListener listener;
+public class LCConnectivityReceiver extends BroadcastReceiver {
+  private final LCConnectivityListener listener;
   private boolean connectivityBroken = false;
 
-  public AVConnectivityReceiver(AVConnectivityListener listener) {
+  public LCConnectivityReceiver(LCConnectivityListener listener) {
     this.listener = listener;
   }
 
@@ -34,7 +34,7 @@ public class AVConnectivityReceiver extends BroadcastReceiver {
     }
     int hasPermission = ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE);
     if (PackageManager.PERMISSION_GRANTED != hasPermission) {
-      LogUtil.getLogger(AVConnectivityReceiver.class).w("android.Manifest.permission.ACCESS_NETWORK_STATE is not granted.");
+      LogUtil.getLogger(LCConnectivityReceiver.class).w("android.Manifest.permission.ACCESS_NETWORK_STATE is not granted.");
       return;
     }
 

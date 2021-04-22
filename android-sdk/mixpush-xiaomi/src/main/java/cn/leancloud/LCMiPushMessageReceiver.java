@@ -12,7 +12,7 @@ import java.util.List;
 
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
-import cn.leancloud.mi.AVMixPushManager;
+import cn.leancloud.mi.LCMixPushManager;
 import cn.leancloud.push.AndroidNotificationManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -21,8 +21,8 @@ import cn.leancloud.utils.StringUtil;
  * Created by wli on 16/6/22.
  * 该回调运行在非 UI 线程
  */
-public class AVMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageReceiver {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AVMiPushMessageReceiver.class);
+public class LCMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageReceiver {
+  private static final LCLogger LOGGER = LogUtil.getLogger(LCMiPushMessageReceiver.class);
   private static final String AV_MIXPUSH_MI_NOTIFICATION_ACTION = "com.avos.avoscloud.mi_notification_action";
   private static final String AV_MIXPUSH_MI_NOTIFICATION_ARRIVED_ACTION = "com.avos.avoscloud.mi_notification_arrived_action";
   public static final String VENDOR_XIAOMI = "mi";
@@ -39,22 +39,22 @@ public class AVMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
 
   private void updateAVInstallation(String miRegId) {
     if (!StringUtil.isEmpty(miRegId)) {
-      AVInstallation installation = AVInstallation.getCurrentInstallation();
+      LCInstallation installation = LCInstallation.getCurrentInstallation();
 
-      if (!defaultVendor.equals(installation.getString(AVInstallation.VENDOR))) {
-        installation.put(AVInstallation.VENDOR, defaultVendor);
+      if (!defaultVendor.equals(installation.getString(LCInstallation.VENDOR))) {
+        installation.put(LCInstallation.VENDOR, defaultVendor);
       }
-      if (!miRegId.equals(installation.getString(AVInstallation.REGISTRATION_ID))) {
-        installation.put(AVInstallation.REGISTRATION_ID, miRegId);
+      if (!miRegId.equals(installation.getString(LCInstallation.REGISTRATION_ID))) {
+        installation.put(LCInstallation.REGISTRATION_ID, miRegId);
       }
-      String localProfile = installation.getString(AVMixPushManager.MIXPUSH_PROFILE);
+      String localProfile = installation.getString(LCMixPushManager.MIXPUSH_PROFILE);
       localProfile = (null != localProfile ? localProfile : "");
-      if (!localProfile.equals(AVMixPushManager.miDeviceProfile)) {
-        installation.put(AVMixPushManager.MIXPUSH_PROFILE, AVMixPushManager.miDeviceProfile);
+      if (!localProfile.equals(LCMixPushManager.miDeviceProfile)) {
+        installation.put(LCMixPushManager.MIXPUSH_PROFILE, LCMixPushManager.miDeviceProfile);
       }
       installation.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
         @Override
-        public void done(AVException e) {
+        public void done(LCException e) {
           if (null != e) {
             LOGGER.e("update installation error!", e);
           } else {

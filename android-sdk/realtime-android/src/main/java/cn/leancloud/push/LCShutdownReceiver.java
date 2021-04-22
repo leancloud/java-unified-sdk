@@ -8,10 +8,10 @@ import android.content.Intent;
  * Created by fengjunwen on 2018/7/3.
  */
 
-public class AVShutdownReceiver extends BroadcastReceiver {
-  private AVShutdownListener listener;
+public class LCShutdownReceiver extends BroadcastReceiver {
+  private LCShutdownListener listener;
 
-  public AVShutdownReceiver(AVShutdownListener listener) {
+  public LCShutdownReceiver(LCShutdownListener listener) {
     this.listener = listener;
   }
 
