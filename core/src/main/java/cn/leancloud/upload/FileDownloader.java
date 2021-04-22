@@ -1,7 +1,7 @@
 package cn.leancloud.upload;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCException;
+import cn.leancloud.LCLogger;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -14,16 +14,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 public class FileDownloader {
-  private static final AVLogger gLogger = LogUtil.getLogger(FileDownloader.class);
+  private static final LCLogger gLogger = LogUtil.getLogger(FileDownloader.class);
 
   private static final int READ_BUF_SIZE = 1024*8;
 
-  public AVException execute(final String url, File localFile) {
+  public LCException execute(final String url, File localFile) {
     if (StringUtil.isEmpty(url)) {
-      return new AVException(new IllegalArgumentException("url is null"));
+      return new LCException(new IllegalArgumentException("url is null"));
     }
     if (localFile.exists()) {
-      return new AVException(new FileNotFoundException("local file is not existed."));
+      return new LCException(new FileNotFoundException("local file is not existed."));
     }
     return downloadFileFromNetwork(url, localFile);
   }
@@ -36,9 +36,9 @@ public class FileDownloader {
             .build();
   }
 
-  private AVException downloadFileFromNetwork(final String url, File cacheFile) {
+  private LCException downloadFileFromNetwork(final String url, File cacheFile) {
 
-    AVException errors = null;
+    LCException errors = null;
     Request.Builder requestBuilder = new Request.Builder();
     requestBuilder.url(url);
 
@@ -63,7 +63,7 @@ public class FileDownloader {
             }
           } catch (Exception e) {
             gLogger.w(e);
-            errors = new AVException(e);
+            errors = new LCException(e);
           } finally {
             try {
               data.close();
@@ -81,11 +81,11 @@ public class FileDownloader {
           gLogger.w("failed to lock writeLocker, skip to save network streaming to local cache.");
         }
       } else {
-        errors = new AVException(statusCode, "status code is invalid");
+        errors = new LCException(statusCode, "status code is invalid");
         gLogger.w(errors);
       }
     } catch (IOException ex) {
-      errors = new AVException(ex);
+      errors = new LCException(ex);
     }
     return errors;
   }

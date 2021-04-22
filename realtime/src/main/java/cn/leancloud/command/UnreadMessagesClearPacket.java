@@ -1,7 +1,7 @@
 package cn.leancloud.command;
 
 import cn.leancloud.Messages;
-import cn.leancloud.im.v2.AVIMClient;
+import cn.leancloud.im.v2.LCIMClient;
 import cn.leancloud.utils.StringUtil;
 
 public class UnreadMessagesClearPacket extends PeerBasedCommandPacket {
@@ -52,7 +52,7 @@ public class UnreadMessagesClearPacket extends PeerBasedCommandPacket {
   public static UnreadMessagesClearPacket getUnreadClearPacket(String peerId,
                                                                String conversationId, String messageId, long timeStamp, int requestId) {
     UnreadMessagesClearPacket packet = new UnreadMessagesClearPacket();
-    if (AVIMClient.getClientsCount() > 1) {
+    if (LCIMClient.getClientsCount() > 1) {
       // peerId is necessary only for more than 1 clients loggined.
       packet.setPeerId(peerId);
     }

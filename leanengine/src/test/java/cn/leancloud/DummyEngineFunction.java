@@ -8,14 +8,14 @@ import java.util.Map;
 public class DummyEngineFunction {
   @EngineFunction("averageStars")
   public static float getAverageStars(@EngineFunctionParam("movie") String movie)
-          throws AVException {
+          throws LCException {
     System.out.println("want to get average stars for movie: " + movie);
     return 3.0f;
   }
 
   @EngineFunction("dumpObject")
-  public static int dumpObject(@EngineFunctionParam("object") AVObject data)
-          throws AVException {
+  public static int dumpObject(@EngineFunctionParam("object") LCObject data)
+          throws LCException {
     if (null == data) {
       return -1;
     }
@@ -25,7 +25,7 @@ public class DummyEngineFunction {
 
   @EngineFunction("testStringList")
   public static int testStringList(@EngineFunctionParam("object") List<String> data)
-          throws AVException {
+          throws LCException {
     if (null == data) {
       return -1;
     }
@@ -35,7 +35,7 @@ public class DummyEngineFunction {
 
   @EngineFunction("testArrayList")
   public static int testArrayList(@EngineFunctionParam("object") List<JSONObject> data)
-          throws AVException {
+          throws LCException {
     if (null == data) {
       return -1;
     }
@@ -47,7 +47,7 @@ public class DummyEngineFunction {
   public static int testNumbers(@EngineFunctionParam("param1") int param1,@EngineFunctionParam("param2") long param2,
                                 @EngineFunctionParam("param3") double param3,@EngineFunctionParam("param4") float param4,
                                 @EngineFunctionParam("param5") Number param5)
-          throws AVException {
+          throws LCException {
     return 0;
   }
 
@@ -57,7 +57,7 @@ public class DummyEngineFunction {
                               @EngineFunctionParam("param3") List<Object> param3,
                               @EngineFunctionParam("param4") boolean param4,
                               @EngineFunctionParam("param5") Number param5)
-          throws AVException {
+          throws LCException {
     return 0;
   }
 }

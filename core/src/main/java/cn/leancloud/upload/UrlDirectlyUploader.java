@@ -1,17 +1,17 @@
 package cn.leancloud.upload;
 
-import cn.leancloud.AVException;
+import cn.leancloud.LCException;
 import cn.leancloud.callback.ProgressCallback;
-import cn.leancloud.AVFile;
+import cn.leancloud.LCFile;
 
 public class UrlDirectlyUploader extends HttpClientUploader {
-  public UrlDirectlyUploader(AVFile avFile,
+  public UrlDirectlyUploader(LCFile avFile,
                              ProgressCallback progressCallback) {
     super(avFile, progressCallback);
   }
 
-  public AVException execute() {
-    return new AVException(new UnsupportedOperationException("UrlDirectlyUploader is deprecated."));
+  public LCException execute() {
+    return new LCException(new UnsupportedOperationException("UrlDirectlyUploader is deprecated."));
   }
 
 

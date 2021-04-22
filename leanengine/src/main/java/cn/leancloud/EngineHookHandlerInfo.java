@@ -16,10 +16,10 @@ public class EngineHookHandlerInfo extends EngineHandlerInfo {
   @Override
   public Object parseParams(String requestBody) throws InvalidParameterException {
     Map<String, Object> hookParams = JSON.parseObject(requestBody, Map.class);
-    AVObject param = null;
+    LCObject param = null;
     EngineFunctionParamInfo paramInfo = methodParameterList.get(0);
-    if (AVUser.class.isAssignableFrom(paramInfo.type)) {
-      param = new AVUser();
+    if (LCUser.class.isAssignableFrom(paramInfo.type)) {
+      param = new LCUser();
     } else {
       param = Transformer.objectFromClassName(hookClass);
     }
@@ -38,10 +38,10 @@ public class EngineHookHandlerInfo extends EngineHandlerInfo {
       objectMapping.remove("className");
 
       // deal with updates within hook function.
-      if (result instanceof AVObject) {
-        Set<String> keys = ((AVObject)result).operations.keySet();
+      if (result instanceof LCObject) {
+        Set<String> keys = ((LCObject)result).operations.keySet();
         for (String key : keys) {
-          Object value = ((AVObject)result).get(key);
+          Object value = ((LCObject)result).get(key);
           if (null == value) {
             objectMapping.remove(key);
           } else {

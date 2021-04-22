@@ -1,10 +1,10 @@
 package cn.leancloud.im;
 
-import cn.leancloud.im.v2.AVIMClient;
-import cn.leancloud.im.v2.AVIMClientEventHandler;
+import cn.leancloud.im.v2.LCIMClient;
+import cn.leancloud.im.v2.LCIMClientEventHandler;
 
-public class DummyClientEventHandler extends AVIMClientEventHandler {
-  public void onConnectionPaused(AVIMClient client) {
+public class DummyClientEventHandler extends LCIMClientEventHandler {
+  public void onConnectionPaused(LCIMClient client) {
     System.out.println("onConnectionPaused. client=" + client.getClientId());
   }
 
@@ -15,7 +15,7 @@ public class DummyClientEventHandler extends AVIMClientEventHandler {
    * @param client
    */
 
-  public void onConnectionResume(AVIMClient client) {
+  public void onConnectionResume(LCIMClient client) {
     System.out.println("onConnectionResume. client=" + client.getClientId());
   }
 
@@ -27,7 +27,7 @@ public class DummyClientEventHandler extends AVIMClientEventHandler {
    * @param code 状态码说明被踢下线的具体原因
    */
 
-  public void onClientOffline(AVIMClient client, int code) {
+  public void onClientOffline(LCIMClient client, int code) {
     System.out.println("onClientOffline. client=" + client.getClientId() + ", code=" + code);
   }
 

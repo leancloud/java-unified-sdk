@@ -1,6 +1,6 @@
 package cn.leancloud.session;
 
-import cn.leancloud.im.AVIMOptions;
+import cn.leancloud.im.LCIMOptions;
 import cn.leancloud.util.WeakConcurrentHashMap;
 
 import java.util.List;
@@ -8,11 +8,11 @@ import java.util.List;
 public class RequestStormSuppression {
   private static volatile RequestStormSuppression _instance = null;
   interface RequestCallback {
-    void done(AVIMOperationQueue.Operation operation);
+    void done(IMOperationQueue.Operation operation);
   }
 
 //  ConcurrentMap<String, List<AVIMOperationQueue.Operation>> operations = new ConcurrentHashMap<>();
-  WeakConcurrentHashMap<String, AVIMOperationQueue.Operation> operations = null;
+  WeakConcurrentHashMap<String, IMOperationQueue.Operation> operations = null;
 
   public static RequestStormSuppression getInstance() {
     if (null == _instance) {
@@ -26,18 +26,18 @@ public class RequestStormSuppression {
   }
 
   private RequestStormSuppression() {
-    long expiryInMillis = AVIMOptions.getGlobalOptions().getTimeoutInSecs() * 1000;
+    long expiryInMillis = LCIMOptions.getGlobalOptions().getTimeoutInSecs() * 1000;
     if (expiryInMillis < 1000) {
       expiryInMillis = 10000;
     }
     operations = new WeakConcurrentHashMap<>(expiryInMillis);
   }
 
-  String getCacheKey(AVIMOperationQueue.Operation operation) {
+  String getCacheKey(IMOperationQueue.Operation operation) {
     return String.format("%s/%d/%s", operation.sessionId, operation.operation, operation.identifier);
   }
 
-  public boolean postpone(AVIMOperationQueue.Operation operation) {
+  public boolean postpone(IMOperationQueue.Operation operation) {
     if (null == operation) {
       return false;
     }
@@ -58,19 +58,19 @@ public class RequestStormSuppression {
     operations.clear();
   }
 
-  public void release(AVIMOperationQueue.Operation operation, RequestCallback callback) {
+  public void release(IMOperationQueue.Operation operation, RequestCallback callback) {
     if (null == operation) {
       return;
     }
     String cachedKey = getCacheKey(operation);
-    List<AVIMOperationQueue.Operation> cachedOperations = null;
+    List<IMOperationQueue.Operation> cachedOperations = null;
     synchronized (this) {
       if (operations.containsKey(cachedKey)) {
         cachedOperations = operations.remove(cachedKey);
       }
     }
     if (null != cachedOperations && null != callback) {
-      for (AVIMOperationQueue.Operation op : cachedOperations) {
+      for (IMOperationQueue.Operation op : cachedOperations) {
         callback.done(op);
       }
     }

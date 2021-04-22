@@ -14,7 +14,7 @@ public class AVSubUserTest extends TestCase {
   private boolean operationSucceed = false;
   public AVSubUserTest(String name) {
     super(name);
-    AVUser.alwaysUseSubUserClass(SubUser.class);
+    LCUser.alwaysUseSubUserClass(SubUser.class);
     Configure.initializeRuntime();
   }
 
@@ -38,12 +38,12 @@ public class AVSubUserTest extends TestCase {
     user.setUsername("jfeng");
     user.setPassword("FER$@$@#Ffwe");
     final CountDownLatch latch = new CountDownLatch(1);
-    user.signUpInBackground().subscribe(new Observer<AVUser>() {
+    user.signUpInBackground().subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
 
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println(JSON.toJSONString(avUser));
         operationSucceed = true;
         latch.countDown();
@@ -65,16 +65,16 @@ public class AVSubUserTest extends TestCase {
 
   public void testLogin() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    LCUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("onNext. result=" + JSON.toJSONString(avUser));
         operationSucceed = avUser instanceof SubUser;
 
-        AVUser currentUser = AVUser.getCurrentUser();
+        LCUser currentUser = LCUser.getCurrentUser();
         System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
         System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
@@ -96,14 +96,14 @@ public class AVSubUserTest extends TestCase {
 
   public void testAnonymousLogin() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
+    LCUser.logInAnonymously().subscribe(new Observer<LCUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("onNext. result=" + avUser.toString());
         operationSucceed = avUser instanceof SubUser;
         latch.countDown();
@@ -125,15 +125,15 @@ public class AVSubUserTest extends TestCase {
 
   public void testQueryUser() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVQuery<? extends AVUser> query = AVUser.getQuery();
-    query.findInBackground().subscribe(new Observer<List<? extends AVUser>>() {
+    LCQuery<? extends LCUser> query = LCUser.getQuery();
+    query.findInBackground().subscribe(new Observer<List<? extends LCUser>>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(List<? extends AVUser> avUsers) {
+      public void onNext(List<? extends LCUser> avUsers) {
         operationSucceed = true;
         latch.countDown();
       }
@@ -154,15 +154,15 @@ public class AVSubUserTest extends TestCase {
 
   public void testCurrentUserWithNew() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    LCUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("onNext. result=" + avUser.toString());
-        AVUser.changeCurrentUser(avUser, true);
-        AVUser u = AVUser.getCurrentUser();
+        LCUser.changeCurrentUser(avUser, true);
+        LCUser u = LCUser.getCurrentUser();
         operationSucceed = avUser.equals(u);
         latch.countDown();
       }
@@ -180,8 +180,8 @@ public class AVSubUserTest extends TestCase {
   }
 
   public void testCurrentUserWithCached() throws Exception {
-    AVUser.changeCurrentUser(null, true);
-    AVUser current = AVUser.getCurrentUser();
+    LCUser.changeCurrentUser(null, true);
+    LCUser current = LCUser.getCurrentUser();
     assertNull(current);
   }
 
@@ -216,12 +216,12 @@ public class AVSubUserTest extends TestCase {
 
   public void testCheckAuthenticatedTrue() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    LCUser.logIn("jfeng", "FER$@$@#Ffwe").subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         avUser.checkAuthenticatedInBackground().subscribe(new Observer<Boolean>() {
           public void onSubscribe(Disposable disposable) {
 

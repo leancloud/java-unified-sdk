@@ -1,6 +1,6 @@
 package cn.leancloud;
 
-import cn.leancloud.types.AVNull;
+import cn.leancloud.types.LCNull;
 import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -37,7 +37,7 @@ public class FollowAndStatusTest extends TestCase {
   protected void tearDown() throws Exception {
     latch = null;
 
-    AVUser current = AVUser.currentUser();
+    LCUser current = LCUser.currentUser();
     if (null != current) {
       current.logOut();
     }
@@ -49,14 +49,14 @@ public class FollowAndStatusTest extends TestCase {
 //    user.setUsername("jfeng");
 //    user.setPassword("FER$@$@#Ffwe");
     final CountDownLatch userLatch = new CountDownLatch(1);
-    AVUser.logIn(username, password).subscribe(new Observer<AVUser>() {
+    LCUser.logIn(username, password).subscribe(new Observer<LCUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         userLatch.countDown();
       }
 
@@ -74,17 +74,17 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testPostStatusWithoutLoginedUser() throws Exception {
-    AVUser.currentUser().logOut();
+    LCUser.currentUser().logOut();
 
-    AVStatus status = AVStatus.createStatus("", "just a test");
-    status.sendToFollowersInBackground().subscribe(new Observer<AVStatus>() {
+    LCStatus status = LCStatus.createStatus("", "just a test");
+    status.sendToFollowersInBackground().subscribe(new Observer<LCStatus>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVStatus avNull) {
+      public void onNext(LCStatus avNull) {
         latch.countDown();
       }
 
@@ -105,15 +105,15 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testPostPrivateStatus() throws Exception {
-    AVStatus status = AVStatus.createStatus("", "just a test");
-    status.sendPrivatelyInBackground("notExistedUSer").subscribe(new Observer<AVStatus>() {
+    LCStatus status = LCStatus.createStatus("", "just a test");
+    status.sendPrivatelyInBackground("notExistedUSer").subscribe(new Observer<LCStatus>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVStatus avStatus) {
+      public void onNext(LCStatus avStatus) {
         testSucceed = true;
         System.out.println(avStatus.getObjectId());
         System.out.println(avStatus.getCreatedAtString());
@@ -136,17 +136,17 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testPostStatusToSpecificUsers() throws Exception {
-    AVStatus status = AVStatus.createStatus("", "just a test");
-    AVQuery userQuery = AVUser.getQuery();
+    LCStatus status = LCStatus.createStatus("", "just a test");
+    LCQuery userQuery = LCUser.getQuery();
     userQuery.whereEqualTo("objectId", "anotherNotExistedUser");
-    status.sendToUsersInBackground("test", userQuery).subscribe(new Observer<AVStatus>() {
+    status.sendToUsersInBackground("test", userQuery).subscribe(new Observer<LCStatus>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVStatus avStatus) {
+      public void onNext(LCStatus avStatus) {
         testSucceed = true;
         System.out.println(avStatus.getObjectId());
         System.out.println(avStatus.getCreatedAtString());
@@ -169,15 +169,15 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testPostStatusWithLoginedUser() throws Exception {
-    AVStatus status = AVStatus.createStatus("", "just a test");
-    status.sendToFollowersInBackground().subscribe(new Observer<AVStatus>() {
+    LCStatus status = LCStatus.createStatus("", "just a test");
+    status.sendToFollowersInBackground().subscribe(new Observer<LCStatus>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVStatus avStatus) {
+      public void onNext(LCStatus avStatus) {
         testSucceed = true;
         System.out.println(avStatus.getObjectId());
         System.out.println(avStatus.getCreatedAtString());
@@ -200,24 +200,24 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testStatusQueryWithoutLogin() throws Exception {
-    AVUser currentUser = AVUser.currentUser();
+    LCUser currentUser = LCUser.currentUser();
     final String currentUserObjectId = currentUser.getObjectId();
     currentUser.logOut();
 
-    AVStatus.statusQuery(AVObject.createWithoutData(AVUser.class, currentUserObjectId))
+    LCStatus.statusQuery(LCObject.createWithoutData(LCUser.class, currentUserObjectId))
             .findInBackground()
-            .subscribe(new Observer<List<AVStatus>>() {
+            .subscribe(new Observer<List<LCStatus>>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(List<AVStatus> avStatuses) {
+      public void onNext(List<LCStatus> avStatuses) {
         testSucceed = true;
-        for (AVStatus status: avStatuses) {
+        for (LCStatus status: avStatuses) {
           System.out.println(status);
-          if (AVStatus.INBOX_TYPE.PRIVATE.toString().equals(status.getInboxType())) {
+          if (LCStatus.INBOX_TYPE.PRIVATE.toString().equals(status.getInboxType())) {
             testSucceed = false;
           }
         }
@@ -240,21 +240,21 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testStatusQuery() throws Exception {
-    AVUser currentUser = AVUser.currentUser();
-    AVStatus.statusQuery(currentUser)
+    LCUser currentUser = LCUser.currentUser();
+    LCStatus.statusQuery(currentUser)
             .findInBackground()
-            .subscribe(new Observer<List<AVStatus>>() {
+            .subscribe(new Observer<List<LCStatus>>() {
               @Override
               public void onSubscribe(Disposable disposable) {
 
               }
 
               @Override
-              public void onNext(List<AVStatus> avStatuses) {
+              public void onNext(List<LCStatus> avStatuses) {
                 testSucceed = true;
-                for (AVStatus status: avStatuses) {
+                for (LCStatus status: avStatuses) {
                   System.out.println(status);
-                  if (AVStatus.INBOX_TYPE.PRIVATE.toString().equals(status.getInboxType())) {
+                  if (LCStatus.INBOX_TYPE.PRIVATE.toString().equals(status.getInboxType())) {
                     testSucceed = false;
                   }
                 }
@@ -278,8 +278,8 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testStatusCountQuery() throws Exception {
-    AVUser currentUser = AVUser.currentUser();
-    AVStatus.statusQuery(currentUser).countInBackground().subscribe(new Observer<Integer>() {
+    LCUser currentUser = LCUser.currentUser();
+    LCStatus.statusQuery(currentUser).countInBackground().subscribe(new Observer<Integer>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
@@ -306,8 +306,8 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testInboxCountQuery() throws Exception {
-    AVUser currentUser = AVUser.currentUser();
-    AVStatus.inboxQuery(currentUser, AVStatus.INBOX_TYPE.TIMELINE.toString()).countInBackground().subscribe(new Observer<Integer>() {
+    LCUser currentUser = LCUser.currentUser();
+    LCStatus.inboxQuery(currentUser, LCStatus.INBOX_TYPE.TIMELINE.toString()).countInBackground().subscribe(new Observer<Integer>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
@@ -335,21 +335,21 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testInboxQueryWithoutLogin() throws Exception {
-    AVUser currentUser = AVUser.currentUser();
+    LCUser currentUser = LCUser.currentUser();
     final String currentUserObjectId = currentUser.getObjectId();
     currentUser.logOut();
 
-    AVUser owner = AVObject.createWithoutData(AVUser.class, currentUserObjectId);
-    AVStatus.inboxQuery(owner, AVStatus.INBOX_TYPE.PRIVATE.toString())
+    LCUser owner = LCObject.createWithoutData(LCUser.class, currentUserObjectId);
+    LCStatus.inboxQuery(owner, LCStatus.INBOX_TYPE.PRIVATE.toString())
             .findInBackground()
-            .subscribe(new Observer<List<AVStatus>>() {
+            .subscribe(new Observer<List<LCStatus>>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(List<AVStatus> avStatuses) {
+      public void onNext(List<LCStatus> avStatuses) {
         latch.countDown();
       }
 
@@ -370,16 +370,16 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testInboxQueryWithEmptyResult() throws Exception {
-    AVStatus.inboxQuery(AVUser.currentUser(), AVStatus.INBOX_TYPE.PRIVATE.toString())
+    LCStatus.inboxQuery(LCUser.currentUser(), LCStatus.INBOX_TYPE.PRIVATE.toString())
             .findInBackground()
-            .subscribe(new Observer<List<AVStatus>>() {
+            .subscribe(new Observer<List<LCStatus>>() {
               @Override
               public void onSubscribe(Disposable disposable) {
 
               }
 
               @Override
-              public void onNext(List<AVStatus> avStatuses) {
+              public void onNext(List<LCStatus> avStatuses) {
                 testSucceed = true;
                 latch.countDown();
               }
@@ -400,21 +400,21 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testInboxQueryWithResults() throws Exception {
-    AVStatus.inboxQuery(AVUser.currentUser(), AVStatus.INBOX_TYPE.TIMELINE.toString())
+    LCStatus.inboxQuery(LCUser.currentUser(), LCStatus.INBOX_TYPE.TIMELINE.toString())
             .findInBackground()
-            .subscribe(new Observer<List<AVStatus>>() {
+            .subscribe(new Observer<List<LCStatus>>() {
               @Override
               public void onSubscribe(Disposable disposable) {
 
               }
 
               @Override
-              public void onNext(List<AVStatus> avStatuses) {
+              public void onNext(List<LCStatus> avStatuses) {
                 testSucceed = true;
-                for (AVStatus status: avStatuses) {
+                for (LCStatus status: avStatuses) {
                   System.out.println(status);
                   System.out.println(status.getInboxType());
-                  if (AVStatus.INBOX_TYPE.PRIVATE.toString().equals(status.getInboxType())) {
+                  if (LCStatus.INBOX_TYPE.PRIVATE.toString().equals(status.getInboxType())) {
                     testSucceed = false;
                   }
                 }
@@ -437,12 +437,12 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testInboxQueryCountWithoutLogin() throws Exception {
-    AVUser currentUser = AVUser.currentUser();
+    LCUser currentUser = LCUser.currentUser();
     final String currentUserObjectId = currentUser.getObjectId();
     currentUser.logOut();
 
-    AVUser owner = AVObject.createWithoutData(AVUser.class, currentUserObjectId);
-    AVStatus.inboxQuery(owner, AVStatus.INBOX_TYPE.PRIVATE.toString())
+    LCUser owner = LCObject.createWithoutData(LCUser.class, currentUserObjectId);
+    LCStatus.inboxQuery(owner, LCStatus.INBOX_TYPE.PRIVATE.toString())
             .unreadCountInBackground()
             .subscribe(new Observer<JSONObject>() {
               @Override
@@ -472,7 +472,7 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testInboxQueryCountWithResults() throws Exception {
-    AVStatus.inboxQuery(AVUser.currentUser(), AVStatus.INBOX_TYPE.TIMELINE.toString())
+    LCStatus.inboxQuery(LCUser.currentUser(), LCStatus.INBOX_TYPE.TIMELINE.toString())
             .unreadCountInBackground()
             .subscribe(new Observer<JSONObject>() {
       @Override
@@ -505,28 +505,28 @@ public class FollowAndStatusTest extends TestCase {
 
   public void testDeleteStatusAsSource() throws Exception {
     // delete source status
-    final AVStatus status = AVStatus.createStatus("", "just a test from testDeleteStatusAsSource");
-    AVQuery userQuery = AVUser.getQuery();
+    final LCStatus status = LCStatus.createStatus("", "just a test from testDeleteStatusAsSource");
+    LCQuery userQuery = LCUser.getQuery();
     userQuery.whereEqualTo("objectId", "anotherNotExistedUser");
-    status.sendToUsersInBackground("test", userQuery).subscribe(new Observer<AVStatus>() {
+    status.sendToUsersInBackground("test", userQuery).subscribe(new Observer<LCStatus>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVStatus avStatus) {
+      public void onNext(LCStatus avStatus) {
         System.out.println(avStatus.getObjectId());
         System.out.println(avStatus.getCreatedAtString());
         status.setObjectId(avStatus.getObjectId());
-        status.deleteInBackground().subscribe(new Observer<AVNull>() {
+        status.deleteInBackground().subscribe(new Observer<LCNull>() {
           @Override
           public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(AVNull avNull) {
+          public void onNext(LCNull LCNull) {
             testSucceed = true;
             latch.countDown();
           }
@@ -561,41 +561,41 @@ public class FollowAndStatusTest extends TestCase {
 
   public void testDeleteStatusAsOwner() throws Exception {
     // delete status from inbox
-    AVStatus status = AVStatus.createStatus("", "just a test from testDeleteStatusAsOwner at " + new Date());
-    status.sendToFollowersInBackground().subscribe(new Observer<AVStatus>() {
+    LCStatus status = LCStatus.createStatus("", "just a test from testDeleteStatusAsOwner at " + new Date());
+    status.sendToFollowersInBackground().subscribe(new Observer<LCStatus>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(final AVStatus avStatus) {
+      public void onNext(final LCStatus avStatus) {
         System.out.println(avStatus);
         System.out.println("change login user and try to query inbox status...");
         try {
           userLogin("jfeng001", AVUserFollowshipTest.DEFAULT_PASSWD);
-          AVStatus.inboxQuery(AVUser.currentUser(), AVStatus.INBOX_TYPE.TIMELINE.toString())
+          LCStatus.inboxQuery(LCUser.currentUser(), LCStatus.INBOX_TYPE.TIMELINE.toString())
                   .findInBackground()
-                  .subscribe(new Observer<List<AVStatus>>() {
+                  .subscribe(new Observer<List<LCStatus>>() {
             @Override
             public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(List<AVStatus> avStatuses) {
+            public void onNext(List<LCStatus> avStatuses) {
               if (null == avStatuses || avStatuses.size() < 1) {
                 System.out.println("unfortunately, new user has no inbox status, test failed.");
                 latch.countDown();
               }
-              avStatuses.get(0).deleteInBackground().subscribe(new Observer<AVNull>() {
+              avStatuses.get(0).deleteInBackground().subscribe(new Observer<LCNull>() {
                 @Override
                 public void onSubscribe(Disposable disposable) {
 
                 }
 
                 @Override
-                public void onNext(AVNull avNull) {
+                public void onNext(LCNull LCNull) {
                   testSucceed = true;
                   latch.countDown();
                 }
@@ -646,30 +646,30 @@ public class FollowAndStatusTest extends TestCase {
   }
 
   public void testStatusQueryPagination() throws Exception {
-    String jfengObjectId = AVUser.currentUser().getObjectId();
+    String jfengObjectId = LCUser.currentUser().getObjectId();
     System.out.println("follower-jfeng001 login...");
     userLogin("jfeng001", AVUserFollowshipTest.DEFAULT_PASSWD);
-    AVUser jfeng001 = AVUser.currentUser();
+    LCUser jfeng001 = LCUser.currentUser();
     System.out.println("follower-jfeng001 follow jfeng...");
     jfeng001.followInBackground(jfengObjectId).blockingFirst();
 
     System.out.println("jfeng login...");
     userLogin("jfeng", AVUserFollowshipTest.DEFAULT_PASSWD);
-    AVUser jfeng = AVUser.currentUser();
+    LCUser jfeng = LCUser.currentUser();
 
     int pageSize = 50;
     System.out.println("jfeng send status to followers...");
     for(int i = 0; i < 200; i++) {
-      AVStatus status = AVStatus.createStatus("", "just a test, index=" + i);
+      LCStatus status = LCStatus.createStatus("", "just a test, index=" + i);
       final CountDownLatch tmpLatch = new CountDownLatch(1);
-      status.sendToFollowersInBackground().subscribe(new Observer<AVStatus>() {
+      status.sendToFollowersInBackground().subscribe(new Observer<LCStatus>() {
         @Override
         public void onSubscribe(Disposable disposable) {
 
         }
 
         @Override
-        public void onNext(AVStatus avStatus) {
+        public void onNext(LCStatus avStatus) {
           System.out.println("publish status: " + avStatus);
           tmpLatch.countDown();
         }
@@ -688,11 +688,11 @@ public class FollowAndStatusTest extends TestCase {
     }
 
     System.out.println("try to query status for user:jfeng....");
-    final List<AVStatus> ownedStatuses = new ArrayList<>();
+    final List<LCStatus> ownedStatuses = new ArrayList<>();
 
-    AVStatusQuery statusQuery = AVStatus.statusQuery(jfeng);
+    LCStatusQuery statusQuery = LCStatus.statusQuery(jfeng);
     statusQuery.setPageSize(pageSize);
-    List<AVStatus> tmpResult = statusQuery.find();
+    List<LCStatus> tmpResult = statusQuery.find();
     System.out.println("statusQuery first round result: " + tmpResult.size());
     assertTrue(null != tmpResult && tmpResult.size() > 0);
     ownedStatuses.addAll(tmpResult);
@@ -713,18 +713,18 @@ public class FollowAndStatusTest extends TestCase {
     System.out.println("follower-jfeng001 login...");
     userLogin("jfeng001", AVUserFollowshipTest.DEFAULT_PASSWD);
 
-    List<AVStatus> inboxStatuses = new ArrayList<>();
+    List<LCStatus> inboxStatuses = new ArrayList<>();
 
-    System.out.println("jfeng001 objectId: " + AVUser.currentUser().getObjectId());
+    System.out.println("jfeng001 objectId: " + LCUser.currentUser().getObjectId());
     System.out.println("try to query inbox for user:follower-jfeng001....");
 
-    statusQuery = AVStatus.inboxQuery(AVUser.currentUser(), AVStatus.INBOX_TYPE.TIMELINE.toString());
+    statusQuery = LCStatus.inboxQuery(LCUser.currentUser(), LCStatus.INBOX_TYPE.TIMELINE.toString());
     statusQuery.setPageSize(pageSize);
     tmpResult = statusQuery.find();
     inboxStatuses.addAll(tmpResult);
     System.out.println("inboxQuery first round result: " + tmpResult.size());
     assertTrue(null != tmpResult && tmpResult.size() > 0);
-    for (AVStatus s: tmpResult) {
+    for (LCStatus s: tmpResult) {
       System.out.println("INBOX STATUS: " + s.toJSONString());
     }
 
@@ -735,7 +735,7 @@ public class FollowAndStatusTest extends TestCase {
       if (null != tmpResult) {
         System.out.println("inboxQuery next round result: " + tmpResult.size());
         inboxStatuses.addAll(tmpResult);
-        for (AVStatus s: tmpResult) {
+        for (LCStatus s: tmpResult) {
           System.out.println("INBOX STATUS: " + s.toJSONString());
         }
       }
@@ -746,7 +746,7 @@ public class FollowAndStatusTest extends TestCase {
 
     System.out.println("follower-jfeng001 delete inbox status, count: " + inboxStatuses.size() + "...");
     int inboxDeleteError = 0;
-    for (AVStatus sts : inboxStatuses) {
+    for (LCStatus sts : inboxStatuses) {
       try {
         sts.deleteInBackground().blockingFirst();
       } catch(Exception ex) {
@@ -759,7 +759,7 @@ public class FollowAndStatusTest extends TestCase {
     userLogin("jfeng", AVUserFollowshipTest.DEFAULT_PASSWD);
     System.out.println("jfeng delete owned status, count:" + ownedStatuses.size() + "...");
     int ownedDeleteError = 0;
-    for (AVStatus sts : ownedStatuses) {
+    for (LCStatus sts : ownedStatuses) {
       try {
         sts.deleteInBackground().blockingFirst();
       } catch (Exception ex) {

@@ -1,13 +1,13 @@
 package cn.leancloud.im;
 
-import cn.leancloud.AVException;
+import cn.leancloud.LCException;
 import cn.leancloud.im.SignatureFactory.SignatureException;
 
 public abstract class SignatureCallback {
 
   public abstract Signature computeSignature() throws SignatureException;
 
-  public abstract void onSignatureReady(Signature sig, AVException e);
+  public abstract void onSignatureReady(Signature sig, LCException e);
 
   /**
    * 是否使用缓存的signature

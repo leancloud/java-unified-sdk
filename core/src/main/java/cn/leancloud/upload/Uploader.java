@@ -1,9 +1,9 @@
 package cn.leancloud.upload;
 
-import cn.leancloud.AVException;
+import cn.leancloud.LCException;
 
 public interface Uploader {
-  AVException execute();
+  LCException execute();
 
   void publishProgress(int percentage);
 

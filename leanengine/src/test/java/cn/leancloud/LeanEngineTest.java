@@ -1,6 +1,6 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.LeanCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.logging.Log4jAdapter;
 import junit.framework.TestCase;
@@ -12,9 +12,9 @@ public class LeanEngineTest extends TestCase {
   public LeanEngineTest(String name) {
     super(name);
     AppConfiguration.setLogAdapter(new Log4jAdapter());
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    LeanCloud.setRegion(LeanCloud.REGION.NorthChina);
+    LeanCloud.setLogLevel(LCLogger.Level.VERBOSE);
+    LeanCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
   }
 
   public void testRegisterAndParseEngineFunction() throws Exception {
@@ -36,7 +36,7 @@ public class LeanEngineTest extends TestCase {
     handlerInfo = LeanEngine.getHandler("dumpObject");
     assertTrue(null != handlerInfo);
     paramObject = handlerInfo.parseParams(objectParams);
-    assertTrue(((Object[])paramObject)[0] instanceof AVObject);
+    assertTrue(((Object[])paramObject)[0] instanceof LCObject);
 
     commonJsonParams = "{\"object\":[\"objectId\",\"55a39634e4b0ed48f0c1845c\",\"夏洛一梦，笑成麻花\"]}";
     handlerInfo = LeanEngine.getHandler("testStringList");

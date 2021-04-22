@@ -1,6 +1,6 @@
 package cn.leancloud.upload;
 
-import cn.leancloud.utils.AVUtils;
+import cn.leancloud.utils.LCUtils;
 
 public class FileUploadToken {
   private String bucket = null;
@@ -94,17 +94,17 @@ public class FileUploadToken {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     FileUploadToken that = (FileUploadToken) o;
-    return AVUtils.equals(bucket, that.bucket) &&
-            AVUtils.equals(objectId, that.objectId) &&
-            AVUtils.equals(uploadUrl, that.uploadUrl) &&
-            AVUtils.equals(provider, that.provider) &&
-            AVUtils.equals(token, that.token) &&
-            AVUtils.equals(url, that.url) &&
-            AVUtils.equals(key, that.key);
+    return LCUtils.equals(bucket, that.bucket) &&
+            LCUtils.equals(objectId, that.objectId) &&
+            LCUtils.equals(uploadUrl, that.uploadUrl) &&
+            LCUtils.equals(provider, that.provider) &&
+            LCUtils.equals(token, that.token) &&
+            LCUtils.equals(url, that.url) &&
+            LCUtils.equals(key, that.key);
   }
 
   @Override
   public int hashCode() {
-    return AVUtils.hash(bucket, objectId, uploadUrl, provider, token, url, key);
+    return LCUtils.hash(bucket, objectId, uploadUrl, provider, token, url, key);
   }
 }

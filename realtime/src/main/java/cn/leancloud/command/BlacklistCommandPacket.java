@@ -2,7 +2,7 @@ package cn.leancloud.command;
 
 import cn.leancloud.Messages;
 import cn.leancloud.im.Signature;
-import cn.leancloud.im.v2.AVIMClient;
+import cn.leancloud.im.v2.LCIMClient;
 import cn.leancloud.utils.StringUtil;
 
 import java.util.List;
@@ -136,7 +136,7 @@ public class BlacklistCommandPacket extends PeerBasedCommandPacket {
                                                                  String op, List<String> members,
                                                                  Signature signature, int requestId) {
     BlacklistCommandPacket packet = new BlacklistCommandPacket();
-    if (AVIMClient.getClientsCount() > 1) {
+    if (LCIMClient.getClientsCount() > 1) {
       packet.setPeerId(selfId);
     }
     packet.setConversationId(conversationId);
@@ -154,7 +154,7 @@ public class BlacklistCommandPacket extends PeerBasedCommandPacket {
   public static BlacklistCommandPacket genBlacklistCommandPacket(String selfId, String conversationId, String op,
                                                                  int offset, int limit, int requestId) {
     BlacklistCommandPacket packet = new BlacklistCommandPacket();
-    if (AVIMClient.getClientsCount() > 1) {
+    if (LCIMClient.getClientsCount() > 1) {
       packet.setPeerId(selfId);
     }
     packet.setConversationId(conversationId);

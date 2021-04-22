@@ -5,12 +5,11 @@ import cn.leancloud.codec.MDFive;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.network.NetworkingDetector;
 import cn.leancloud.ops.BaseOperation;
-import cn.leancloud.types.AVNull;
+import cn.leancloud.types.LCNull;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
 import cn.leancloud.json.JSON;
-import cn.leancloud.json.TypeReference;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -19,7 +18,7 @@ import java.io.File;
 import java.util.*;
 
 public class ArchivedRequests {
-  private static final AVLogger logger = LogUtil.getLogger(ArchivedRequests.class);
+  private static final LCLogger logger = LogUtil.getLogger(ArchivedRequests.class);
   private static final String ATTR_METHOD = "method";
   private static final String METHOD_DELETE = "Delete";
   private static final String METHOD_SAVE = "Save";
@@ -34,8 +33,8 @@ public class ArchivedRequests {
     }
     return instance;
   }
-  private Map<String, AVObject> saveObjects = new HashMap<>();
-  private Map<String, AVObject> deleteObjects = new HashMap<>();
+  private Map<String, LCObject> saveObjects = new HashMap<>();
+  private Map<String, LCObject> deleteObjects = new HashMap<>();
   private Timer timer = null;
 
   private ArchivedRequests() {
@@ -70,28 +69,28 @@ public class ArchivedRequests {
     timer.schedule(task, 10000, 15000);
   }
 
-  private void sendArchivedRequest(final Map<String, AVObject> collection, final boolean isDelete) {
+  private void sendArchivedRequest(final Map<String, LCObject> collection, final boolean isDelete) {
     if (null == collection || collection.isEmpty()) {
       return;
     }
-    Collection<AVObject> objects = collection.values();
+    Collection<LCObject> objects = collection.values();
     int opCount = 0;
     int opLimit = objects.size() > 5 ? 5 : objects.size();
-    Iterator<AVObject> iterator = objects.iterator();
-    List<AVObject> opTargets = new ArrayList<>(opLimit);
+    Iterator<LCObject> iterator = objects.iterator();
+    List<LCObject> opTargets = new ArrayList<>(opLimit);
     while(opCount < opLimit && iterator.hasNext()) {
-      AVObject obj = iterator.next();
+      LCObject obj = iterator.next();
       opCount++;
       opTargets.add(obj);
     }
-    for (final AVObject obj: opTargets) {
+    for (final LCObject obj: opTargets) {
       if (isDelete) {
-        obj.deleteInBackground().subscribe(new Observer<AVNull>() {
+        obj.deleteInBackground().subscribe(new Observer<LCNull>() {
           @Override
           public void onSubscribe(Disposable disposable) { }
 
           @Override
-          public void onNext(AVNull avNull) {
+          public void onNext(LCNull LCNull) {
             collection.remove(obj.internalId());
             File archivedFile = getArchivedFile(obj, isDelete);
             boolean ret = PersistenceUtil.sharedInstance().forceDeleteFile(archivedFile);
@@ -111,12 +110,12 @@ public class ArchivedRequests {
           public void onComplete() { }
         });
       } else {
-        obj.saveInBackground().subscribe(new Observer<AVObject>() {
+        obj.saveInBackground().subscribe(new Observer<LCObject>() {
           @Override
           public void onSubscribe(Disposable disposable) { }
 
           @Override
-          public void onNext(AVObject avObject) {
+          public void onNext(LCObject LCObject) {
             collection.remove(obj.internalId());
             File archivedFile = getArchivedFile(obj, isDelete);
             boolean ret = PersistenceUtil.sharedInstance().forceDeleteFile(archivedFile);
@@ -139,7 +138,7 @@ public class ArchivedRequests {
     }
   }
 
-  public void saveEventually(AVObject object) {
+  public void saveEventually(LCObject object) {
     if (null == object) {
       return;
     }
@@ -147,7 +146,7 @@ public class ArchivedRequests {
     saveObjects.put(object.internalId(), object);
   }
 
-  public void deleteEventually(AVObject object) {
+  public void deleteEventually(LCObject object) {
     if (null == object) {
       return;
     }
@@ -155,18 +154,18 @@ public class ArchivedRequests {
     deleteObjects.put(object.internalId(), object);
   }
 
-  private File getArchivedFile(AVObject object, boolean isDelete) {
+  private File getArchivedFile(LCObject object, boolean isDelete) {
     String fileName = getArchiveRequestFileName(object);
     return new File(AppConfiguration.getCommandCacheDir(), fileName);
   }
 
-  private void saveArchivedRequest(AVObject object, boolean isDelete) {
+  private void saveArchivedRequest(LCObject object, boolean isDelete) {
     String content = getArchiveContent(object, isDelete);
     File targetFile = getArchivedFile(object, isDelete);
     PersistenceUtil.sharedInstance().saveContentToFile(content, targetFile);
   }
 
-  public static String getArchiveContent(AVObject object, boolean isDelete) {
+  public static String getArchiveContent(LCObject object, boolean isDelete) {
     Map<String, String> content = new HashMap<>(3);
     content.put(ATTR_METHOD, isDelete ? METHOD_DELETE : METHOD_SAVE);
     content.put(ATTR_INTERNAL_ID, object.internalId());
@@ -180,7 +179,7 @@ public class ArchivedRequests {
     if (null == file) {
       return;
     }
-    if (!AVObject.verifyInternalId(file.getName())) {
+    if (!LCObject.verifyInternalId(file.getName())) {
       logger.d("ignore invalid file. " + file.getAbsolutePath());
       return;
     }
@@ -192,7 +191,7 @@ public class ArchivedRequests {
     try {
       Map<String, String> contentMap = JSON.parseObject(content, Map.class);
       String method = contentMap.get(ATTR_METHOD);
-      AVObject resultObj = parseAVObject(contentMap);
+      LCObject resultObj = parseAVObject(contentMap);
       logger.d("get archived request. method=" + method + ", object=" + resultObj.toString());
       if (METHOD_SAVE.equalsIgnoreCase(method)) {
         saveObjects.put(resultObj.internalId(), resultObj);
@@ -205,17 +204,17 @@ public class ArchivedRequests {
   }
 
   // just for serializer test.
-  protected static AVObject parseAVObject(String content) {
+  protected static LCObject parseAVObject(String content) {
     Map<String, String> contentMap = JSON.parseObject(content, Map.class);
     return parseAVObject(contentMap);
   }
 
-  private static AVObject parseAVObject(Map<String, String> contentMap) {
+  private static LCObject parseAVObject(Map<String, String> contentMap) {
     String internalId = contentMap.get(ATTR_INTERNAL_ID);
     String objectJSON = contentMap.get(ATTR_OBJECT);
     String operationJSON = contentMap.get(ATTR_OPERATION);
 
-    AVObject resultObj = AVObject.parseAVObject(objectJSON);
+    LCObject resultObj = LCObject.parseAVObject(objectJSON);
     if (!StringUtil.isEmpty(internalId) && !internalId.equals(resultObj.getObjectId())) {
       resultObj.setUuid(internalId);
     }
@@ -228,7 +227,7 @@ public class ArchivedRequests {
     return resultObj;
   }
 
-  private static String getArchiveRequestFileName(AVObject object) {
+  private static String getArchiveRequestFileName(LCObject object) {
     if (StringUtil.isEmpty(object.getObjectId())) {
       return object.internalId();
     } else {

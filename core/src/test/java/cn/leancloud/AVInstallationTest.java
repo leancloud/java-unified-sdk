@@ -1,7 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.cache.PersistenceUtil;
-import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.LeanCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.json.JSON;
 import io.reactivex.Observer;
@@ -26,10 +26,10 @@ public class AVInstallationTest extends TestCase {
   }
 
   public void testCreateInstallation() {
-    AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
+    LCInstallation currentInstall = LCInstallation.getCurrentInstallation();
     assertTrue(currentInstall != null);
 
-    AVInstallation install = new AVInstallation();
+    LCInstallation install = new LCInstallation();
     assertTrue(install.getInstallationId().length() > 0);
     assertTrue(install.getInstallationId().equals(currentInstall.getInstallationId()));
   }
@@ -37,18 +37,18 @@ public class AVInstallationTest extends TestCase {
   public void testAddUnique() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     testSucceed = false;
-    final AVInstallation install = new AVInstallation();
+    final LCInstallation install = new LCInstallation();
     install.addUnique("channels", "User-001");
     install.addUnique("channels", "User-001");
     install.addUnique("channels", "User-002");
-    install.saveInBackground().subscribe(new Observer<AVObject>() {
+    install.saveInBackground().subscribe(new Observer<LCObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVObject avObject) {
+      public void onNext(LCObject LCObject) {
         testSucceed = install.getList("channels").size() == 2;
         latch.countDown();
       }
@@ -70,29 +70,29 @@ public class AVInstallationTest extends TestCase {
   public void testUnsubscribe() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     testSucceed = false;
-    final AVInstallation install = new AVInstallation();
+    final LCInstallation install = new LCInstallation();
     install.addUnique("channels", "User-001");
     install.addUnique("channels", "User-001");
     install.addUnique("channels", "User-002");
     install.addUnique("channels", "User-001");
     install.addUnique("channels", "User-002");
-    install.saveInBackground().subscribe(new Observer<AVObject>() {
+    install.saveInBackground().subscribe(new Observer<LCObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVObject avObject) {
+      public void onNext(LCObject LCObject) {
         install.removeAll("channels", Arrays.asList("User-001"));
-        install.saveInBackground().subscribe(new Observer<AVObject>() {
+        install.saveInBackground().subscribe(new Observer<LCObject>() {
           @Override
           public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(AVObject avObject) {
+          public void onNext(LCObject LCObject) {
             testSucceed = install.getList("channels").size() == 1
                     && install.getList("channels").get(0).equals("User-002");
             latch.countDown();
@@ -125,21 +125,21 @@ public class AVInstallationTest extends TestCase {
 
   public void testCreateInstallationFromOldVersionCache() {
     String json = "{ \"@type\":\"com.avos.avoscloud.AVInstallation\",\"objectId\":\"0qYaOiU08hqm8bgpDk4CrTXXBs1NPtSs\",\"updatedAt\":null,\"createdAt\":\"2018-12-28T03:16:19.239Z\",\"className\":\"_Installation\",\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"deviceType\":\"android\",\"timeZone\":\"Asia/Shanghai\",\"installationId\":\"fd6605e9a1679d355457ad5c37fc99b3\"}}";
-    AVInstallation installation = (AVInstallation) AVObject.parseAVObject(json);
+    LCInstallation installation = (LCInstallation) LCObject.parseAVObject(json);
     assertTrue(installation.getInstallationId().equals("fd6605e9a1679d355457ad5c37fc99b3"));
     assertTrue(installation.getObjectId().equals("0qYaOiU08hqm8bgpDk4CrTXXBs1NPtSs"));
 
     String newJsonString = JSON.toJSONString(installation);
-    AVInstallation tmp = (AVInstallation) AVObject.parseAVObject(newJsonString);
+    LCInstallation tmp = (LCInstallation) LCObject.parseAVObject(newJsonString);
     assertTrue(tmp.getInstallationId().equals("fd6605e9a1679d355457ad5c37fc99b3"));
     assertTrue(tmp.getObjectId().equals("0qYaOiU08hqm8bgpDk4CrTXXBs1NPtSs"));
   }
 
   public void testDeserializedFromOldVersionCache() throws Exception {
     String json = "{ \"@type\":\"com.avos.avoscloud.AVInstallation\",\"objectId\":\"wYtTtsc5jnd0tXX8hQQa8oBekQXHBUIG\",\"updatedAt\":null,\"createdAt\":\"2018-12-28T06:37:33.258Z\",\"className\":\"_Installation\",\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"deviceType\":\"android\",\"timeZone\":\"Asia/Shanghai\",\"installationId\":\"007394934f6a1336718c90e196ef8a64\"}}";
-    File installationFile = new File(AppConfiguration.getImportantFileDir(), AVOSCloud.getSimplifiedAppId() + AVInstallation.INSTALLATION);
+    File installationFile = new File(AppConfiguration.getImportantFileDir(), LeanCloud.getSimplifiedAppId() + LCInstallation.INSTALLATION);
     PersistenceUtil.sharedInstance().saveContentToFile(json, installationFile);
-    AVInstallation installation = (AVInstallation) AVObject.parseAVObject(json);
+    LCInstallation installation = (LCInstallation) LCObject.parseAVObject(json);
     System.out.println(installation.toString());
     assertTrue(null != installation);
     assertTrue(installation.getInstallationId().equals("007394934f6a1336718c90e196ef8a64"));
@@ -148,15 +148,15 @@ public class AVInstallationTest extends TestCase {
     final CountDownLatch latch = new CountDownLatch(1);
     testSucceed = false;
 
-    installation.saveInBackground().subscribe(new Observer<AVObject>() {
+    installation.saveInBackground().subscribe(new Observer<LCObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVObject avObject) {
-        testSucceed = avObject.getObjectId().equals("wYtTtsc5jnd0tXX8hQQa8oBekQXHBUIG");
+      public void onNext(LCObject LCObject) {
+        testSucceed = LCObject.getObjectId().equals("wYtTtsc5jnd0tXX8hQQa8oBekQXHBUIG");
         latch.countDown();
       }
 
@@ -176,13 +176,13 @@ public class AVInstallationTest extends TestCase {
     assertTrue(testSucceed);
   }
   public void testSaveInstallation() throws Exception {
-    AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
+    LCInstallation currentInstall = LCInstallation.getCurrentInstallation();
     currentInstall.saveInBackground().blockingFirst();
     Thread.sleep(100);
   }
 
   public void testSaveInstallationWithCustomProp() {
-    AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
+    LCInstallation currentInstall = LCInstallation.getCurrentInstallation();
     currentInstall.put("chan", "Chan");
     currentInstall.addAll("course", Arrays.asList("Artist"));
     currentInstall.saveInBackground().blockingFirst();
@@ -195,20 +195,20 @@ public class AVInstallationTest extends TestCase {
   public void testSaveWithPointerAndDate() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     testSucceed = false;
-    AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
+    LCInstallation currentInstall = LCInstallation.getCurrentInstallation();
     currentInstall.put("date", new Date());
 
-    AVUser user = AVObject.createWithoutData(AVUser.class, "5dd73208844bb40074b18fd7");
+    LCUser user = LCObject.createWithoutData(LCUser.class, "5dd73208844bb40074b18fd7");
     currentInstall.put("user", user);
 
-    currentInstall.saveInBackground().subscribe(new Observer<AVObject>() {
+    currentInstall.saveInBackground().subscribe(new Observer<LCObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVObject avObject) {
+      public void onNext(LCObject LCObject) {
         testSucceed = true;
         latch.countDown();
       }
@@ -230,25 +230,25 @@ public class AVInstallationTest extends TestCase {
   public void testUpdateWithPointerAndArray() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     testSucceed = false;
-    AVInstallation currentInstall = AVInstallation.getCurrentInstallation();
+    LCInstallation currentInstall = LCInstallation.getCurrentInstallation();
     currentInstall.fetch("user");
-    AVUser user = currentInstall.getAVObject("user");
+    LCUser user = currentInstall.getAVObject("user");
     if (null != user) {
       assertEquals(user.getUsername(), "jfeng");
     } else {
-      user = AVObject.createWithoutData(AVUser.class, "5dd73208844bb40074b18fd7");
+      user = LCObject.createWithoutData(LCUser.class, "5dd73208844bb40074b18fd7");
       currentInstall.put("user", user);
     }
     currentInstall.put("channel", Arrays.asList("Public", "People", "Open"));
     currentInstall.saveInBackground()
-            .subscribe(new Observer<AVObject>() {
+            .subscribe(new Observer<LCObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVObject avObject) {
+      public void onNext(LCObject LCObject) {
         testSucceed = true;
         latch.countDown();
       }

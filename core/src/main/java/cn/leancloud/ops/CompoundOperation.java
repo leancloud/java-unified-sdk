@@ -1,6 +1,6 @@
 package cn.leancloud.ops;
 
-import cn.leancloud.AVObject;
+import cn.leancloud.LCObject;
 
 import java.util.*;
 
@@ -20,7 +20,7 @@ public class CompoundOperation extends BaseOperation {
   }
 
   @Override
-  public boolean checkCircleReference(Map<AVObject, Boolean> markMap) {
+  public boolean checkCircleReference(Map<LCObject, Boolean> markMap) {
     boolean result = false;
     for (ObjectFieldOperation op : operations) {
       result = result || op.checkCircleReference(markMap);
@@ -40,7 +40,7 @@ public class CompoundOperation extends BaseOperation {
     return this;
   }
 
-  public List<Map<String, Object>> encodeRestOp(AVObject parent) {
+  public List<Map<String, Object>> encodeRestOp(LCObject parent) {
     List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
     if (null == parent) {
       return result;

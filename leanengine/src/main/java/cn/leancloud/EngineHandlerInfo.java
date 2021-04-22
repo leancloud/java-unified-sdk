@@ -18,7 +18,7 @@ import cn.leancloud.json.JSONObject;
 
 public abstract class EngineHandlerInfo {
 
-  private static final AVLogger LOGGER = LogUtil.getLogger(EngineHandlerInfo.class);
+  private static final LCLogger LOGGER = LogUtil.getLogger(EngineHandlerInfo.class);
 
   static final String OBJECT = "object";
   static final String USER = "user";
@@ -108,8 +108,8 @@ public abstract class EngineHandlerInfo {
 
   public static EngineHandlerInfo getEngineHandlerInfo(Method method, EngineHook hook) {
     List<EngineFunctionParamInfo> params = new LinkedList<EngineFunctionParamInfo>();
-    params.add(new EngineFunctionParamInfo("_User".equals(hook.className()) ? AVUser.class
-        : AVObject.class, OBJECT));
+    params.add(new EngineFunctionParamInfo("_User".equals(hook.className()) ? LCUser.class
+        : LCObject.class, OBJECT));
     if (EngineHookType.beforeUpdate.equals(hook.type())) {
       return new BeforeUpdateHookHandlerInfo(EndpointParser.getInternalEndpoint(hook.className(),
           hook.type()), method, params, null, hook.className());

@@ -1,8 +1,8 @@
 package cn.leancloud.ops;
 
-import cn.leancloud.AVObject;
+import cn.leancloud.LCObject;
 import cn.leancloud.Configure;
-import cn.leancloud.annotation.AVClassName;
+import cn.leancloud.annotation.LCClassName;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.json.JSONObject;
 import io.reactivex.Scheduler;
@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 public class AddOperationTests extends TestCase {
-  @AVClassName("Student")
-  private static class Student extends AVObject {
+  @LCClassName("Student")
+  private static class Student extends LCObject {
     ;
   }
   public AddOperationTests(String testName) {

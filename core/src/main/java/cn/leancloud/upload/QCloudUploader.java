@@ -1,9 +1,9 @@
 package cn.leancloud.upload;
 
-import cn.leancloud.AVException;
+import cn.leancloud.LCException;
 import cn.leancloud.callback.ProgressCallback;
 import cn.leancloud.codec.SHA1;
-import cn.leancloud.AVFile;
+import cn.leancloud.LCFile;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
@@ -36,7 +36,7 @@ public class QCloudUploader extends HttpClientUploader {
   private String uploadUrl;
   private String token;
 
-  QCloudUploader(AVFile avFile, String token, String uploadUrl, ProgressCallback progressCallback) {
+  QCloudUploader(LCFile avFile, String token, String uploadUrl, ProgressCallback progressCallback) {
     super(avFile, progressCallback);
 
     this.fileKey = avFile.getKey();
@@ -46,7 +46,7 @@ public class QCloudUploader extends HttpClientUploader {
 
   private static final int DEFAULT_SLICE_LEN = 512 * 1024;
 
-  public AVException execute() {
+  public LCException execute() {
     try {
       byte[] bytes = avFile.getData();
       int sliceCount =
@@ -56,7 +56,7 @@ public class QCloudUploader extends HttpClientUploader {
       if (sliceCount > 1) {
         JSONObject result = uploadControlSlice(token, uploadUrl, bytes);
         if (null == result) {
-          return new AVException(new RuntimeException("Exception during file upload"));
+          return new LCException(new RuntimeException("Exception during file upload"));
         }
         if (result.containsKey(PARAM_ACCESS_URL)) {
           return null;
@@ -77,19 +77,19 @@ public class QCloudUploader extends HttpClientUploader {
                   bytes, sliceOffset, sessionId, progressCalculator, null).upload();
         }
         if (sliceOffset < sliceCount) {
-          return new AVException(AVException.OTHER_CAUSE, "failed to upload slice.");
+          return new LCException(LCException.OTHER_CAUSE, "failed to upload slice.");
         }
       } else {
         uploadFile(bytes);
       }
     } catch (Exception e) {
-      return new AVException(e);
+      return new LCException(e);
     }
 
     return null;
   }
 
-  private void uploadFile(byte[] bytes) throws AVException {
+  private void uploadFile(byte[] bytes) throws LCException {
 
     try {
       fileSha = SHA1.compute(bytes);
@@ -120,12 +120,12 @@ public class QCloudUploader extends HttpClientUploader {
       Request request = requestBuilder.build();
       Response response = executeWithRetry(request, RETRY_TIMES);
       if (response.code() != 200) {
-        throw new AVException(AVException.OTHER_CAUSE,
+        throw new LCException(LCException.OTHER_CAUSE,
                 StringUtil.stringFromBytes(response.body().bytes()));
       }
     } catch (Exception e) {
 
-      throw new AVException("Exception during file upload", e);
+      throw new LCException("Exception during file upload", e);
     }
   }
 
@@ -148,7 +148,7 @@ public class QCloudUploader extends HttpClientUploader {
   }
 
   private JSONObject uploadControlSlice(String token, String url, byte[] wholeFile)
-          throws AVException {
+          throws LCException {
     MultipartBody.Builder builder = new MultipartBody.Builder();
     try {
       String fileSha = SHA1.compute(wholeFile);
@@ -175,7 +175,7 @@ public class QCloudUploader extends HttpClientUploader {
         return parseSliceUploadResponse(StringUtil.stringFromBytes(responseBody));
       }
     } catch (Exception e) {
-      throw new AVException(AVException.OTHER_CAUSE, "Upload file failure");
+      throw new LCException(LCException.OTHER_CAUSE, "Upload file failure");
     }
     return null;
   }

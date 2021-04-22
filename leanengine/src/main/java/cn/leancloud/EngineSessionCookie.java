@@ -6,35 +6,35 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cn.leancloud.impl.DefaultAVUserCookieSign;
+import cn.leancloud.impl.DefaultLCUserCookieSign;
 import cn.leancloud.utils.LogUtil;
 
 public class EngineSessionCookie {
-  private static AVLogger LOGGER = LogUtil.getLogger(EngineSessionCookie.class);
+  private static LCLogger LOGGER = LogUtil.getLogger(EngineSessionCookie.class);
   boolean fetchUser;
 
   ThreadLocal<HttpServletResponse> responseHolder = new ThreadLocal<HttpServletResponse>();
   ThreadLocal<HttpServletRequest> requestHolder = new ThreadLocal<HttpServletRequest>();
 
-  AVUserCookieSign sign;
+  LCUserCookieSign sign;
 
   public EngineSessionCookie(String secret, int maxAge, boolean fetchUser) {
-    this(new DefaultAVUserCookieSign(secret, maxAge), fetchUser);
+    this(new DefaultLCUserCookieSign(secret, maxAge), fetchUser);
   }
 
   public EngineSessionCookie(String secret, String sessionKey, int maxAge, boolean fetchUser) {
-    this(new DefaultAVUserCookieSign(secret, sessionKey, maxAge), fetchUser);
+    this(new DefaultLCUserCookieSign(secret, sessionKey, maxAge), fetchUser);
   }
 
-  public EngineSessionCookie(AVUserCookieSign sign, boolean fetchUser) {
+  public EngineSessionCookie(LCUserCookieSign sign, boolean fetchUser) {
     this.fetchUser = fetchUser;
     this.sign = sign;
   }
 
-  protected AVUser parseCookie(HttpServletRequest req, HttpServletResponse response) {
+  protected LCUser parseCookie(HttpServletRequest req, HttpServletResponse response) {
     this.responseHolder.set(response);
     this.requestHolder.set(req);
-    AVUser user = null;
+    LCUser user = null;
     if (sign.validateCookieSign(req)) {
       user = sign.decodeUser(req);
       if (fetchUser && user != null && !user.isDataAvailable()) {
@@ -53,7 +53,7 @@ public class EngineSessionCookie {
       HttpServletResponse resp = responseHolder.get();
       HttpServletRequest req = requestHolder.get();
       if (resp != null) {
-        AVUser u = EngineRequestContext.getAuthenticatedUser();
+        LCUser u = EngineRequestContext.getAuthenticatedUser();
         String host = null;
         try {
           URL requestURL = new URL(req.getRequestURL().toString());

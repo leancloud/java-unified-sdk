@@ -1,12 +1,11 @@
 package cn.leancloud.convertor;
 
-import cn.leancloud.AVStatus;
-import cn.leancloud.AVUser;
+import cn.leancloud.*;
+import cn.leancloud.LCUser;
 import cn.leancloud.callback.*;
-import cn.leancloud.AVException;
-import cn.leancloud.AVObject;
-import cn.leancloud.query.AVCloudQueryResult;
-import cn.leancloud.types.AVNull;
+import cn.leancloud.LCObject;
+import cn.leancloud.query.LCCloudQueryResult;
+import cn.leancloud.types.LCNull;
 import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
@@ -18,9 +17,9 @@ import java.util.List;
 public class ObserverBuilder {
 
   static class SingleObjectObserver<T> implements Observer<T> {
-    private AVCallback callback;
+    private LCCallback callback;
     private boolean nextCalled = false;
-    SingleObjectObserver(AVCallback<T> callback) {
+    SingleObjectObserver(LCCallback<T> callback) {
       this.callback = callback;
     }
 
@@ -36,7 +35,7 @@ public class ObserverBuilder {
     }
 
     public void onError(Throwable error) {
-      AVException exception = new AVException(error);
+      LCException exception = new LCException(error);
       this.callback.internalDone(exception);
     }
     public void onSubscribe(@NonNull Disposable var1) {
@@ -44,9 +43,9 @@ public class ObserverBuilder {
     }
   }
 
-  static class CollectionObserver<T extends AVObject>  implements Observer<List<T>> {
-    private AVCallback<List<T>> callback;
-    CollectionObserver(AVCallback callback) {
+  static class CollectionObserver<T extends LCObject>  implements Observer<List<T>> {
+    private LCCallback<List<T>> callback;
+    CollectionObserver(LCCallback callback) {
       this.callback = callback;
     }
 
@@ -58,7 +57,7 @@ public class ObserverBuilder {
     }
 
     public void onError(Throwable error) {
-      AVException exception = new AVException(error);
+      LCException exception = new LCException(error);
       this.callback.internalDone(exception);
     }
 
@@ -77,7 +76,7 @@ public class ObserverBuilder {
    * @param <T> template type
    * @return observer
    */
-  public static <T extends AVObject> SingleObjectObserver<T> buildSingleObserver(GetCallback<T> callback) {
+  public static <T extends LCObject> SingleObjectObserver<T> buildSingleObserver(GetCallback<T> callback) {
     return new SingleObjectObserver<T>(callback);
   }
 
@@ -87,7 +86,7 @@ public class ObserverBuilder {
    * @param <T> template type
    * @return observer
    */
-  public static <T extends AVObject> SingleObjectObserver<T> buildSingleObserver(SaveCallback<T> callback) {
+  public static <T extends LCObject> SingleObjectObserver<T> buildSingleObserver(SaveCallback<T> callback) {
     return new SingleObjectObserver<T>(callback);
   }
 
@@ -96,8 +95,8 @@ public class ObserverBuilder {
    * @param callback delete callback
    * @return observer
    */
-  public static SingleObjectObserver<AVNull> buildSingleObserver(DeleteCallback callback) {
-    return new SingleObjectObserver<AVNull>(callback);
+  public static SingleObjectObserver<LCNull> buildSingleObserver(DeleteCallback callback) {
+    return new SingleObjectObserver<LCNull>(callback);
   }
 
   /**
@@ -106,7 +105,7 @@ public class ObserverBuilder {
    * @param <T> template type
    * @return observer
    */
-  public static <T extends AVObject> SingleObjectObserver<T> buildSingleObserver(RefreshCallback<T> callback) {
+  public static <T extends LCObject> SingleObjectObserver<T> buildSingleObserver(RefreshCallback<T> callback) {
     return new SingleObjectObserver<T>(callback);
   }
 
@@ -116,7 +115,7 @@ public class ObserverBuilder {
    * @param <T> template type
    * @return observer
    */
-  public static <T extends AVUser> SingleObjectObserver<T> buildSingleObserver(LogInCallback<T> callback) {
+  public static <T extends LCUser> SingleObjectObserver<T> buildSingleObserver(LogInCallback<T> callback) {
     return new SingleObjectObserver<T>(callback);
   }
 
@@ -125,8 +124,8 @@ public class ObserverBuilder {
    * @param callback signup callback
    * @return observer
    */
-  public static SingleObjectObserver<AVUser> buildSingleObserver(SignUpCallback callback) {
-    return new SingleObjectObserver<AVUser>(callback);
+  public static SingleObjectObserver<LCUser> buildSingleObserver(SignUpCallback callback) {
+    return new SingleObjectObserver<LCUser>(callback);
   }
 
   /**
@@ -134,8 +133,8 @@ public class ObserverBuilder {
    * @param callback request email verify callback
    * @return observer
    */
-  public static SingleObjectObserver<AVNull> buildSingleObserver(RequestEmailVerifyCallback callback) {
-    return new SingleObjectObserver<AVNull>(callback);
+  public static SingleObjectObserver<LCNull> buildSingleObserver(RequestEmailVerifyCallback callback) {
+    return new SingleObjectObserver<LCNull>(callback);
   }
 
   /**
@@ -143,8 +142,8 @@ public class ObserverBuilder {
    * @param callback request mobile code callback
    * @return observer
    */
-  public static SingleObjectObserver<AVNull> buildSingleObserver(RequestMobileCodeCallback callback) {
-    return new SingleObjectObserver<AVNull>(callback);
+  public static SingleObjectObserver<LCNull> buildSingleObserver(RequestMobileCodeCallback callback) {
+    return new SingleObjectObserver<LCNull>(callback);
   }
 
   /**
@@ -161,8 +160,8 @@ public class ObserverBuilder {
    * @param callback request password reset callback
    * @return observer
    */
-  public static SingleObjectObserver<AVNull> buildSingleObserver(RequestPasswordResetCallback callback) {
-    return new SingleObjectObserver<AVNull>(callback);
+  public static SingleObjectObserver<LCNull> buildSingleObserver(RequestPasswordResetCallback callback) {
+    return new SingleObjectObserver<LCNull>(callback);
   }
 
   /**
@@ -179,8 +178,8 @@ public class ObserverBuilder {
    * @param callback update password callback
    * @return observer
    */
-  public static SingleObjectObserver<AVNull> buildSingleObserver(UpdatePasswordCallback callback) {
-    return new SingleObjectObserver<AVNull>(callback);
+  public static SingleObjectObserver<LCNull> buildSingleObserver(UpdatePasswordCallback callback) {
+    return new SingleObjectObserver<LCNull>(callback);
   }
 
   /**
@@ -188,8 +187,8 @@ public class ObserverBuilder {
    * @param callback mobile phone verify callback
    * @return observer
    */
-  public static SingleObjectObserver<AVNull> buildSingleObserver(MobilePhoneVerifyCallback callback) {
-    return new SingleObjectObserver<AVNull>(callback);
+  public static SingleObjectObserver<LCNull> buildSingleObserver(MobilePhoneVerifyCallback callback) {
+    return new SingleObjectObserver<LCNull>(callback);
   }
 
   /**
@@ -198,7 +197,7 @@ public class ObserverBuilder {
    * @param <T> template type
    * @return observer
    */
-  public static <T extends AVObject> SingleObjectObserver<T> buildSingleObserver(FollowCallback<T> callback) {
+  public static <T extends LCObject> SingleObjectObserver<T> buildSingleObserver(FollowCallback<T> callback) {
     return new SingleObjectObserver<>(callback);
   }
 
@@ -217,7 +216,7 @@ public class ObserverBuilder {
    * @param callback cloud query callback
    * @return observer
    */
-  public static SingleObjectObserver<AVCloudQueryResult> buildSingleObserver(CloudQueryCallback callback) {
+  public static SingleObjectObserver<LCCloudQueryResult> buildSingleObserver(CloudQueryCallback callback) {
     return new SingleObjectObserver<>(callback);
   }
 
@@ -226,7 +225,7 @@ public class ObserverBuilder {
    * @param callback status callback
    * @return observer
    */
-  public static SingleObjectObserver<AVStatus> buildSingleObserver(StatusCallback callback) {
+  public static SingleObjectObserver<LCStatus> buildSingleObserver(StatusCallback callback) {
     return new SingleObjectObserver<>(callback);
   }
 
@@ -235,8 +234,8 @@ public class ObserverBuilder {
    * @param callback send callback
    * @return observer
    */
-  public static SingleObjectObserver<AVNull> buildSingleObserver(SendCallback callback) {
-    return new SingleObjectObserver<AVNull>(callback);
+  public static SingleObjectObserver<LCNull> buildSingleObserver(SendCallback callback) {
+    return new SingleObjectObserver<LCNull>(callback);
   }
 
   /**
@@ -268,7 +267,7 @@ public class ObserverBuilder {
    * @return observer
    * @deprecated please use buildCollectionObserver(FindCallback callback).
    */
-  public static <T extends AVObject> CollectionObserver<T> buildSingleObserver(FindCallback<T> callback) {
+  public static <T extends LCObject> CollectionObserver<T> buildSingleObserver(FindCallback<T> callback) {
     return new CollectionObserver<T>(callback);
   }
 
@@ -278,7 +277,7 @@ public class ObserverBuilder {
    * @param <T> template type
    * @return observer
    */
-  public static <T extends AVObject> CollectionObserver<T> buildCollectionObserver(FindCallback<T> callback) {
+  public static <T extends LCObject> CollectionObserver<T> buildCollectionObserver(FindCallback<T> callback) {
     return new CollectionObserver<T>(callback);
   }
 
@@ -287,7 +286,7 @@ public class ObserverBuilder {
    * @param callback status list callback
    * @return observer
    */
-  public static CollectionObserver<AVStatus> buildCollectionObserver(StatusListCallback callback) {
+  public static CollectionObserver<LCStatus> buildCollectionObserver(StatusListCallback callback) {
     return new CollectionObserver<>(callback);
   }
 }

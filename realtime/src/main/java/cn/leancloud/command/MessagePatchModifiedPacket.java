@@ -1,7 +1,7 @@
 package cn.leancloud.command;
 
 import cn.leancloud.Messages;
-import cn.leancloud.im.v2.AVIMClient;
+import cn.leancloud.im.v2.LCIMClient;
 
 public class MessagePatchModifiedPacket extends PeerBasedCommandPacket {
 
@@ -27,7 +27,7 @@ public class MessagePatchModifiedPacket extends PeerBasedCommandPacket {
 
   public static MessagePatchModifiedPacket getPatchMessagePacket(String peerId, long lastPatchTime) {
     MessagePatchModifiedPacket messagePatchModifiedPacket = new MessagePatchModifiedPacket();
-    if (AVIMClient.getClientsCount() > 1) {
+    if (LCIMClient.getClientsCount() > 1) {
       // peerId is necessary only when more than 1 client logined.
       messagePatchModifiedPacket.setPeerId(peerId);
     }

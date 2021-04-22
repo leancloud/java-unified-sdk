@@ -50,17 +50,17 @@ public class AVUserFollowshipTest extends TestCase {
   }
 
   public static void prepareUser(String username, final String email, final boolean loginOnFailed) throws Exception {
-    AVUser user = new AVUser();
+    LCUser user = new LCUser();
     user.setEmail(email);
     user.setUsername(username);
     user.setPassword(DEFAULT_PASSWD);
     final CountDownLatch latch = new CountDownLatch(1);
-    user.signUpInBackground().subscribe(new Observer<AVUser>() {
+    user.signUpInBackground().subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
 
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         if (loginOnFailed) {
           if (email.startsWith("jfeng")) {
             JFENG_OBJECT_ID = avUser.getObjectId();
@@ -76,7 +76,7 @@ public class AVUserFollowshipTest extends TestCase {
         if (loginOnFailed) {
           System.out.println("try to loginWithEmail. cause: " + throwable.getMessage());
           try {
-            AVUser tmp = AVUser.loginByEmail(email, DEFAULT_PASSWD).blockingFirst();
+            LCUser tmp = LCUser.loginByEmail(email, DEFAULT_PASSWD).blockingFirst();
             if (email.startsWith("jfeng")) {
               JFENG_OBJECT_ID = tmp.getObjectId();
             } else if (email.startsWith("dennis")) {
@@ -99,20 +99,20 @@ public class AVUserFollowshipTest extends TestCase {
 
   public void testFolloweeQuery() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", DEFAULT_PASSWD).subscribe(new Observer<AVUser>() {
+    LCUser.logIn("jfeng", DEFAULT_PASSWD).subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("onNext. result=" + JSON.toJSONString(avUser));
 
-        AVUser currentUser = AVUser.getCurrentUser();
+        LCUser currentUser = LCUser.getCurrentUser();
         System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
         System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
-        AVQuery<AVObject> query = avUser.followeeQuery();
-        List<AVObject> followees = query.find();
+        LCQuery<LCObject> query = avUser.followeeQuery();
+        List<LCObject> followees = query.find();
         if (null == followees || followees.size() < 1) {
           avUser.followInBackground(DENNIS_OBJECT_ID).subscribe(new Observer<JSONObject>() {
             @Override
@@ -160,22 +160,22 @@ public class AVUserFollowshipTest extends TestCase {
 
   public void testFollowerQuery() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", DEFAULT_PASSWD).subscribe(new Observer<AVUser>() {
+    LCUser.logIn("jfeng", DEFAULT_PASSWD).subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("onNext. result=" + JSON.toJSONString(avUser));
 
-        AVUser currentUser = AVUser.getCurrentUser();
+        LCUser currentUser = LCUser.getCurrentUser();
         System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
         System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
-        AVQuery<AVObject> query = avUser.followerQuery();
-        List<AVObject> followers = query.find();
+        LCQuery<LCObject> query = avUser.followerQuery();
+        List<LCObject> followers = query.find();
         if (null != followers) {
-          for (AVObject fo: followers) {
+          for (LCObject fo: followers) {
             System.out.println("follower: " + fo.toJSONString());
           }
         }
@@ -199,7 +199,7 @@ public class AVUserFollowshipTest extends TestCase {
   public void testFollow() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
 
-    AVUser logginUser = AVUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
+    LCUser logginUser = LCUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
     logginUser.followInBackground(JFENG_OBJECT_ID).subscribe(new Observer<JSONObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
@@ -209,18 +209,18 @@ public class AVUserFollowshipTest extends TestCase {
       @Override
       public void onNext(JSONObject object) {
         System.out.println("succeed follow. " + object.toString());
-        AVUser jfeng = AVUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
+        LCUser jfeng = LCUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
 
-        AVQuery query = jfeng.followerQuery();
-        query.findInBackground().subscribe(new Observer<List<AVObject>>() {
+        LCQuery query = jfeng.followerQuery();
+        query.findInBackground().subscribe(new Observer<List<LCObject>>() {
           @Override
           public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(List<AVObject> o) {
-            for (AVObject tmp: o) {
+          public void onNext(List<LCObject> o) {
+            for (LCObject tmp: o) {
               System.out.println("result User:" + tmp);
               if ("jfeng001".equals(tmp.getAVObject("follower").getString("username"))) {
                 operationSucceed = true;
@@ -259,7 +259,7 @@ public class AVUserFollowshipTest extends TestCase {
 
   public void testUnfollow() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser logginUser = AVUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
+    LCUser logginUser = LCUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
     logginUser.unfollowInBackground(JFENG_OBJECT_ID).subscribe(new Observer<JSONObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
@@ -270,17 +270,17 @@ public class AVUserFollowshipTest extends TestCase {
       public void onNext(JSONObject object) {
         System.out.println("succeed to unfollow. " + object.toString());
 
-        AVUser jfeng = AVUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
+        LCUser jfeng = LCUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
 
-        AVQuery query = jfeng.followerQuery();
-        query.findInBackground().subscribe(new Observer<List<AVObject>>() {
+        LCQuery query = jfeng.followerQuery();
+        query.findInBackground().subscribe(new Observer<List<LCObject>>() {
           @Override
           public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(List<AVObject> o) {
+          public void onNext(List<LCObject> o) {
             System.out.println("onNext");
             operationSucceed = (null == o) || o.size() < 1;
             latch.countDown();
@@ -319,16 +319,16 @@ public class AVUserFollowshipTest extends TestCase {
 
   public void testFollowUserNotLogin() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVQuery<? extends AVUser> query = AVUser.getQuery();
-    query.findInBackground().subscribe(new Observer<List<? extends AVUser>>() {
+    LCQuery<? extends LCUser> query = LCUser.getQuery();
+    query.findInBackground().subscribe(new Observer<List<? extends LCUser>>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(List<? extends AVUser> avUsers) {
-        AVUser target = avUsers.get(0);
+      public void onNext(List<? extends LCUser> avUsers) {
+        LCUser target = avUsers.get(0);
         target.followInBackground("5bff479067f3560066d00676").subscribe(new Observer<JSONObject>() {
           @Override
           public void onSubscribe(Disposable disposable) {
@@ -372,20 +372,20 @@ public class AVUserFollowshipTest extends TestCase {
 
   public void testFolloweeAndFollowerQuery() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn("jfeng", DEFAULT_PASSWD).subscribe(new Observer<AVUser>() {
+    LCUser.logIn("jfeng", DEFAULT_PASSWD).subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         avUser.getFollowersAndFolloweesInBackground(new FollowersAndFolloweesCallback() {
           @Override
-          public void done(Map avObjects, AVException avException) {
+          public void done(Map avObjects, LCException LCException) {
             operationSucceed = (null != avObjects);
             System.out.println(JSON.toJSONString(avObjects.get("follower")));
             System.out.println(JSON.toJSONString(avObjects.get("followee")));
-            if (null != avException) {
-              avException.printStackTrace();
+            if (null != LCException) {
+              LCException.printStackTrace();
             }
             latch.countDown();
           }

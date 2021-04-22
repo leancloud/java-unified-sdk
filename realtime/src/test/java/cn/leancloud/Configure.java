@@ -1,21 +1,21 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.LeanCloud;
 
 public class Configure {
   public static final String TEST_APP_ID = "dYRQ8YfHRiILshUnfFJu2eQM-gzGzoHsz";
   public static final String TEST_APP_KEY = "ye24iIK6ys8IvaISMC4Bs5WK";
-  public static final AVOSCloud.REGION REGION = AVOSCloud.REGION.NorthChina;
+  public static final LeanCloud.REGION REGION = LeanCloud.REGION.NorthChina;
 
   public static void initialize() {
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    LeanCloud.setRegion(LeanCloud.REGION.NorthChina);
+    LeanCloud.setLogLevel(LCLogger.Level.VERBOSE);
+    LeanCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
   }
 
   public static void initializeWithApp(String appId, String appKey) {
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
-    AVOSCloud.initialize(appId, appKey);
+    LeanCloud.setRegion(LeanCloud.REGION.NorthChina);
+    LeanCloud.setLogLevel(LCLogger.Level.VERBOSE);
+    LeanCloud.initialize(appId, appKey);
   }
 }

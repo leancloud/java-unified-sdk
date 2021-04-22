@@ -1,6 +1,6 @@
 package cn.leancloud.cache;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.utils.LogUtil;
 
 import java.io.*;
@@ -12,7 +12,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class PersistenceUtil {
-  private static final AVLogger gLogger = LogUtil.getLogger(PersistenceUtil.class);
+  private static final LCLogger gLogger = LogUtil.getLogger(PersistenceUtil.class);
 
   private static PersistenceUtil INSTANCE = new PersistenceUtil();
   public static final int MAX_FILE_BUF_SIZE = 1024*1024*2;

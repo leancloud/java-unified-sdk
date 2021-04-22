@@ -30,19 +30,19 @@ public class AVRoleTest extends TestCase {
   }
 
   public void testModifyCurrentRole() throws Exception {
-    AVQuery<AVRole> query = AVRole.getQuery();
+    LCQuery<LCRole> query = LCRole.getQuery();
     query.whereEqualTo("name", "Admin");
-    AVRole target = query.getFirst();
-    target.getUsers().add(AVObject.createWithoutData(AVUser.class, "5dd7892143c2570074c96ca9"));
-    target.saveInBackground().subscribe(new Observer<AVObject>() {
+    LCRole target = query.getFirst();
+    target.getUsers().add(LCObject.createWithoutData(LCUser.class, "5dd7892143c2570074c96ca9"));
+    target.saveInBackground().subscribe(new Observer<LCObject>() {
       @Override
       public void onSubscribe(@NotNull Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(@NotNull AVObject avObject) {
-        System.out.println(avObject.toJSONString());
+      public void onNext(@NotNull LCObject LCObject) {
+        System.out.println(LCObject.toJSONString());
         testSucceed = true;
         latch.countDown();
       }
@@ -63,27 +63,27 @@ public class AVRoleTest extends TestCase {
   }
 
   public void testCreateRole() throws Exception {
-    AVQuery query = AVRole.getQuery();
+    LCQuery query = LCRole.getQuery();
     query.whereEqualTo("name", "Admin");
-    query.findInBackground().subscribe(new Observer<List<AVRole>>() {
+    query.findInBackground().subscribe(new Observer<List<LCRole>>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(List<AVRole> o) {
+      public void onNext(List<LCRole> o) {
         if (null == o || o.size() < 1) {
-          AVACL  acl = new AVACL();
+          LCACL acl = new LCACL();
           acl.setPublicReadAccess(true);
           acl.setPublicWriteAccess(false);
-          AVRole role = new AVRole("Admin", acl);
-          role.saveInBackground().subscribe(new Observer<AVObject>() {
+          LCRole role = new LCRole("Admin", acl);
+          role.saveInBackground().subscribe(new Observer<LCObject>() {
             public void onSubscribe(Disposable disposable) {
 
             }
 
-            public void onNext(AVObject avObject) {
+            public void onNext(LCObject LCObject) {
               testSucceed = true;
               latch.countDown();
             }
@@ -97,16 +97,16 @@ public class AVRoleTest extends TestCase {
             }
           });
         } else {
-          AVACL  acl = new AVACL();
+          LCACL acl = new LCACL();
           acl.setPublicReadAccess(true);
           acl.setPublicWriteAccess(false);
-          AVRole role = new AVRole("Admin", acl);
-          role.saveInBackground().subscribe(new Observer<AVObject>() {
+          LCRole role = new LCRole("Admin", acl);
+          role.saveInBackground().subscribe(new Observer<LCObject>() {
             public void onSubscribe(Disposable disposable) {
 
             }
 
-            public void onNext(AVObject avObject) {
+            public void onNext(LCObject LCObject) {
               latch.countDown();
             }
 

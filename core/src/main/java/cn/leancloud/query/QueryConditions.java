@@ -1,9 +1,9 @@
 package cn.leancloud.query;
 
-import cn.leancloud.AVObject;
+import cn.leancloud.LCObject;
 import cn.leancloud.ops.Utils;
-import cn.leancloud.types.AVGeoPoint;
-import cn.leancloud.utils.AVUtils;
+import cn.leancloud.types.LCGeoPoint;
+import cn.leancloud.utils.LCUtils;
 import cn.leancloud.utils.StringUtil;
 
 import java.util.*;
@@ -262,7 +262,7 @@ public class QueryConditions implements Cloneable {
   public Map<String, String> assembleParameters() {
     if (where.keySet().size() > 0) {
       Map<String, Object> whereMaps = compileWhereOperationMap();
-      String whereValue = AVUtils.jsonStringFromMapWithNull(Utils.getParsedMap(whereMaps));
+      String whereValue = LCUtils.jsonStringFromMapWithNull(Utils.getParsedMap(whereMaps));
       parameters.put("where", whereValue);
     }
     if (limit > 0) {
@@ -352,13 +352,13 @@ public class QueryConditions implements Cloneable {
     ops.add(op);
   }
 
-  public void whereWithinRadians(String key, AVGeoPoint point, double maxDistance) {
+  public void whereWithinRadians(String key, LCGeoPoint point, double maxDistance) {
     this.whereWithinRadians(key, point, maxDistance, -1);
   }
 
-  public void whereWithinRadians(String key, AVGeoPoint point, double maxDistance,
+  public void whereWithinRadians(String key, LCGeoPoint point, double maxDistance,
                                  double minDistance) {
-    Map<String, Object> map = AVUtils.createMap("$nearSphere", Utils.mapFromGeoPoint(point));
+    Map<String, Object> map = LCUtils.createMap("$nearSphere", Utils.mapFromGeoPoint(point));
     if (maxDistance >= 0) {
       map.put("$maxDistanceInRadians", maxDistance);
     }
@@ -401,7 +401,7 @@ public class QueryConditions implements Cloneable {
     addWhereItem(key, "$options", modifiers);
   }
 
-  public void whereNear(String key, AVGeoPoint point) {
+  public void whereNear(String key, LCGeoPoint point) {
     this.addWhereItem(key, "$nearSphere", Utils.mapFromGeoPoint(point));
   }
 
@@ -414,8 +414,8 @@ public class QueryConditions implements Cloneable {
   }
 
   public void whereEqualTo(String key, Object value) {
-    if (value instanceof AVObject) {
-      addWhereItem(key, QueryOperation.EQUAL_OP, Utils.mapFromPointerObject((AVObject) value));
+    if (value instanceof LCObject) {
+      addWhereItem(key, QueryOperation.EQUAL_OP, Utils.mapFromPointerObject((LCObject) value));
     } else {
       addWhereItem(key, QueryOperation.EQUAL_OP, value);
     }
@@ -425,21 +425,21 @@ public class QueryConditions implements Cloneable {
     this.whereMatches(key, String.format("^%s.*", prefix));
   }
 
-  public void whereWithinGeoBox(String key, AVGeoPoint southwest, AVGeoPoint northeast) {
+  public void whereWithinGeoBox(String key, LCGeoPoint southwest, LCGeoPoint northeast) {
     List<Map<String, Object>> box = new LinkedList<Map<String, Object>>();
     box.add(Utils.mapFromGeoPoint(southwest));
     box.add(Utils.mapFromGeoPoint(northeast));
-    Map<String, Object> map = AVUtils.createMap("$box", box);
+    Map<String, Object> map = LCUtils.createMap("$box", box);
     this.addWhereItem(key, "$within", map);
   }
 
-  public void whereWithinKilometers(String key, AVGeoPoint point, double maxDistance) {
+  public void whereWithinKilometers(String key, LCGeoPoint point, double maxDistance) {
     this.whereWithinKilometers(key, point, maxDistance, -1);
   }
 
-  public void whereWithinKilometers(String key, AVGeoPoint point, double maxDistance,
+  public void whereWithinKilometers(String key, LCGeoPoint point, double maxDistance,
                                     double minDistance) {
-    Map<String, Object> map = AVUtils.createMap("$nearSphere", Utils.mapFromGeoPoint(point));
+    Map<String, Object> map = LCUtils.createMap("$nearSphere", Utils.mapFromGeoPoint(point));
     if (maxDistance >= 0) {
       map.put("$maxDistanceInKilometers", maxDistance);
     }
@@ -449,14 +449,14 @@ public class QueryConditions implements Cloneable {
     addWhereItem(key, null, map);
   }
 
-  public void whereWithinMiles(String key, AVGeoPoint point, double maxDistance) {
+  public void whereWithinMiles(String key, LCGeoPoint point, double maxDistance) {
     this.whereWithinMiles(key, point, maxDistance, -1);
   }
 
 
-  public void whereWithinMiles(String key, AVGeoPoint point, double maxDistance,
+  public void whereWithinMiles(String key, LCGeoPoint point, double maxDistance,
                                double minDistance) {
-    Map<String, Object> map = AVUtils.createMap("$nearSphere", Utils.mapFromGeoPoint(point));
+    Map<String, Object> map = LCUtils.createMap("$nearSphere", Utils.mapFromGeoPoint(point));
     if (maxDistance >= 0) {
       map.put("$maxDistanceInMiles", maxDistance);
     }

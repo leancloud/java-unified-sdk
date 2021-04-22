@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebFilter(filterName = "httpsRedirectFilter", urlPatterns = {"/*"})
 public class HttpsRequestRedirectFilter implements Filter {
-  private static AVLogger LOGGER = LogUtil.getLogger(HttpsRequestRedirectFilter.class);
+  private static LCLogger LOGGER = LogUtil.getLogger(HttpsRequestRedirectFilter.class);
 
   public void init(FilterConfig filterConfig) throws ServletException {}
 

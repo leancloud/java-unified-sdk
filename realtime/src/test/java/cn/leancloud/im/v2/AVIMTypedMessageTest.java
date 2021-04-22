@@ -1,6 +1,6 @@
 package cn.leancloud.im.v2;
 
-import cn.leancloud.im.v2.messages.AVIMTextMessage;
+import cn.leancloud.im.v2.messages.LCIMTextMessage;
 import junit.framework.TestCase;
 
 import java.util.HashMap;
@@ -15,7 +15,7 @@ public class AVIMTypedMessageTest extends TestCase {
     Map<String, Object> attr = new HashMap<>();
     attr.put("time", System.currentTimeMillis());
 
-    AVIMTextMessage textMessage = new AVIMTextMessage();
+    LCIMTextMessage textMessage = new LCIMTextMessage();
     textMessage.setText("this is a test");
     textMessage.setAttrs(attr);
 

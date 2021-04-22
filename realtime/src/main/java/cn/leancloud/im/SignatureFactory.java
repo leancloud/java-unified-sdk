@@ -1,6 +1,6 @@
 package cn.leancloud.im;
 
-import cn.leancloud.AVException;
+import cn.leancloud.LCException;
 
 import java.util.List;
 
@@ -48,7 +48,7 @@ public interface SignatureFactory {
   /**
    * 签名异常类
    */
-  class SignatureException extends AVException {
+  class SignatureException extends LCException {
     public SignatureException(int theCode, String theMessage) {
       super(theCode, theMessage);
     }

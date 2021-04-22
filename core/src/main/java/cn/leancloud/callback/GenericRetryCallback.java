@@ -1,6 +1,6 @@
 package cn.leancloud.callback;
 
-import cn.leancloud.AVException;
+import cn.leancloud.LCException;
 
 abstract class GenericRetryCallback extends GenericObjectCallback {
   GenericObjectCallback callback;
@@ -10,7 +10,7 @@ abstract class GenericRetryCallback extends GenericObjectCallback {
   }
 
   @Override
-  public void onSuccess(String content, AVException e) {
+  public void onSuccess(String content, LCException e) {
     if (callback != null) {
       callback.onSuccess(content, e);
     }

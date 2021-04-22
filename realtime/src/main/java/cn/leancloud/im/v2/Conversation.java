@@ -1,6 +1,6 @@
 package cn.leancloud.im.v2;
 
-import cn.leancloud.AVObject;
+import cn.leancloud.LCObject;
 
 public interface Conversation {
   String AV_CONVERSATION_INTENT_ACTION = "com.avoscloud.im.v2.action";
@@ -240,6 +240,6 @@ public interface Conversation {
   String TEMPCONV_ID_PREFIX = "_tmp:";
 
   String[] CONVERSATION_COLUMNS = {MEMBERS, NAME, CREATOR,
-          LAST_MESSAGE_AT, AVObject.KEY_OBJECT_ID, MUTE, AVObject.KEY_UPDATED_AT,
-          AVObject.KEY_CREATED_AT, ATTRIBUTE, TRANSIENT, SYSTEM, TEMPORARY, TEMPORARYTTL};
+          LAST_MESSAGE_AT, LCObject.KEY_OBJECT_ID, MUTE, LCObject.KEY_UPDATED_AT,
+          LCObject.KEY_CREATED_AT, ATTRIBUTE, TRANSIENT, SYSTEM, TEMPORARY, TEMPORARYTTL};
 }

@@ -69,30 +69,30 @@ public class CommonTest extends TestCase {
   public void testConvertRecurCallback() throws Exception {
     final String mobilePhone = "";
     final String smsCode = "";
-    AVUser.signUpOrLoginByMobilePhoneInBackground(mobilePhone, smsCode).flatMap(new Function<AVUser, Observable<? extends AVObject>>() {
+    LCUser.signUpOrLoginByMobilePhoneInBackground(mobilePhone, smsCode).flatMap(new Function<LCUser, Observable<? extends LCObject>>() {
       @Override
-      public Observable<? extends AVObject> apply(AVUser avUser) throws Exception {
+      public Observable<? extends LCObject> apply(LCUser avUser) throws Exception {
         String username = "";
         String nickname = "";
         avUser.setUsername(username);
         avUser.put("nickname", nickname);
         return avUser.saveInBackground();
       }
-    }).flatMap(new Function<AVObject, Observable<? extends AVObject>>() {
+    }).flatMap(new Function<LCObject, Observable<? extends LCObject>>() {
       @Override
-      public Observable<? extends AVObject> apply(AVObject avUser) throws Exception {
-        AVInstallation currentInstallation = AVInstallation.getCurrentInstallation();
+      public Observable<? extends LCObject> apply(LCObject avUser) throws Exception {
+        LCInstallation currentInstallation = LCInstallation.getCurrentInstallation();
         currentInstallation.put("user", avUser.getObjectId());
         return currentInstallation.saveInBackground();
       }
-    }).subscribe(new Observer<AVObject>() {
+    }).subscribe(new Observer<LCObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVObject avObject) {
+      public void onNext(LCObject LCObject) {
 
       }
 

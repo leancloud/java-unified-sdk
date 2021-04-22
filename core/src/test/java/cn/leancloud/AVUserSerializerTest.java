@@ -33,17 +33,17 @@ public class AVUserSerializerTest extends TestCase {
   }
 
   public void testUserFetch() throws Exception {
-    final AVUser user = AVObject.createWithoutData(AVUser.class, "5c83c5b9303f390065666111");
-    user.fetchInBackground("author,kuolie,black").subscribe(new Observer<AVObject>() {
+    final LCUser user = LCObject.createWithoutData(LCUser.class, "5c83c5b9303f390065666111");
+    user.fetchInBackground("author,kuolie,black").subscribe(new Observer<LCObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVObject object) {
+      public void onNext(LCObject object) {
         System.out.println(user);
-        AVUser.changeCurrentUser(user, true);
+        LCUser.changeCurrentUser(user, true);
         testSucceed = true;
         latch.countDown();
       }
@@ -64,7 +64,7 @@ public class AVUserSerializerTest extends TestCase {
   }
 
   public void testCurrentUserFromLocalCache() throws Exception {
-    AVUser user = AVUser.currentUser();
+    LCUser user = LCUser.currentUser();
     assertTrue(null != user);
     System.out.println(user);
   }
@@ -73,14 +73,14 @@ public class AVUserSerializerTest extends TestCase {
     String jsonString = "{ \"_version\":\"5\",\"className\":\"_User\"," +
             "\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"signDate\":new Date(1594310400000)," +
             "\"username\":\"变音小助手\",\"siOffDate\":new Date(1594310400000)}}";
-    AVUser user = (AVUser) AVObject.parseAVObject(jsonString);
+    LCUser user = (LCUser) LCObject.parseAVObject(jsonString);
     assertTrue(null != user);
 
     try {
       jsonString = "{ \"_version\":\"5\",\"className\":\"_User\"," +
               "\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"signDate\":new Date(1594310400000)," +
               "\"sessionToken\":[new Date(1594310200000), new Date(1594310420000)],\"username\":\"变音小助手\",\"siOffDate\":new Date(1594310400000)}}";
-      user = (AVUser) AVObject.parseAVObject(jsonString);
+      user = (LCUser) LCObject.parseAVObject(jsonString);
       assertTrue(null != user);
     } catch (Exception ex) {
       System.out.println(ex.getMessage());

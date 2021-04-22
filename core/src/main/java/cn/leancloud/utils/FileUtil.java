@@ -1,6 +1,6 @@
 package cn.leancloud.utils;
 
-import cn.leancloud.AVFile;
+import cn.leancloud.LCFile;
 
 import java.util.regex.Pattern;
 
@@ -43,7 +43,7 @@ public class FileUtil {
     return "";
   }
 
-  public static String getFileMimeType(AVFile avFile) {
+  public static String getFileMimeType(LCFile avFile) {
     String fileName = avFile.getName();
     String fileUrl = avFile.getUrl();
     String mimeType = null;

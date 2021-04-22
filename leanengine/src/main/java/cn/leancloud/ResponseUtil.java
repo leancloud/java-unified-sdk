@@ -2,7 +2,7 @@ package cn.leancloud;
 
 
 import cn.leancloud.ops.Utils;
-import cn.leancloud.types.AVGeoPoint;
+import cn.leancloud.types.LCGeoPoint;
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONArray;
 import cn.leancloud.json.JSONObject;
@@ -43,16 +43,16 @@ public class ResponseUtil {
       return jsonStringFromMapWithNull(Utils.getParsedMap((Map<String, Object>) object, true));
     } else if (object instanceof Collection) {
       return jsonStringFromObjectWithNull(Utils.getParsedList((Collection) object, true));
-    } else if (object instanceof AVObject) {
-      return jsonStringFromMapWithNull(Utils.mapFromAVObject((AVObject) object, true));
-    } else if (object instanceof AVGeoPoint) {
-      return jsonStringFromMapWithNull(Utils.mapFromGeoPoint((AVGeoPoint) object));
+    } else if (object instanceof LCObject) {
+      return jsonStringFromMapWithNull(Utils.mapFromAVObject((LCObject) object, true));
+    } else if (object instanceof LCGeoPoint) {
+      return jsonStringFromMapWithNull(Utils.mapFromGeoPoint((LCGeoPoint) object));
     } else if (object instanceof Date) {
       return jsonStringFromObjectWithNull(Utils.mapFromDate((Date) object));
     } else if (object instanceof byte[]) {
       return jsonStringFromMapWithNull(Utils.mapFromByteArray((byte[]) object));
-    } else if (object instanceof AVFile) {
-      return jsonStringFromMapWithNull(((AVFile) object).toMap());
+    } else if (object instanceof LCFile) {
+      return jsonStringFromMapWithNull(((LCFile) object).toMap());
     } else if (object instanceof JSONObject) {
       return jsonStringFromObjectWithNull(JSON.parse(object.toString()));
     } else if (object instanceof JSONArray) {

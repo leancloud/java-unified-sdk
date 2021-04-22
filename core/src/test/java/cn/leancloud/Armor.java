@@ -1,9 +1,9 @@
 package cn.leancloud;
 
-import cn.leancloud.annotation.AVClassName;
+import cn.leancloud.annotation.LCClassName;
 
-@AVClassName("ObjectUnitTestArmor")
-public class Armor extends AVObject {
+@LCClassName("ObjectUnitTestArmor")
+public class Armor extends LCObject {
   public String getDisplayName() {
     return getString("displayName");
   }

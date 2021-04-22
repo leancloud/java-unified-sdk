@@ -2,8 +2,8 @@ package cn.leancloud.livequery;
 
 import cn.leancloud.im.WindTalker;
 import cn.leancloud.im.v2.Conversation;
-import cn.leancloud.session.AVConnectionManager;
-import cn.leancloud.session.AVIMOperationQueue;
+import cn.leancloud.session.LCConnectionManager;
+import cn.leancloud.session.IMOperationQueue;
 
 public class LiveQueryOperationDelegate {
   private static final LiveQueryOperationDelegate instance = new LiveQueryOperationDelegate();
@@ -14,16 +14,16 @@ public class LiveQueryOperationDelegate {
     return instance;
   }
 
-  AVIMOperationQueue operationCache;
+  IMOperationQueue operationCache;
   private LiveQueryOperationDelegate() {
-    operationCache = new AVIMOperationQueue(LIVEQUERY_DEFAULT_ID);
+    operationCache = new IMOperationQueue(LIVEQUERY_DEFAULT_ID);
   }
 
   public boolean login(String subscriptionId, int requestId) {
     // FIXME: no timeout timer for login request.
-    operationCache.offer(AVIMOperationQueue.Operation.getOperation(
+    operationCache.offer(IMOperationQueue.Operation.getOperation(
             Conversation.AVIMOperation.LIVEQUERY_LOGIN.getCode(), LIVEQUERY_DEFAULT_ID, null, requestId));
-    AVConnectionManager.getInstance().sendPacket(WindTalker.getInstance().assembleLiveQueryLoginPacket(subscriptionId, requestId));
+    LCConnectionManager.getInstance().sendPacket(WindTalker.getInstance().assembleLiveQueryLoginPacket(subscriptionId, requestId));
     return true;
   }
 

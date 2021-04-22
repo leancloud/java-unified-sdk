@@ -1,10 +1,10 @@
 package cn.leancloud.callback;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVObject;
+import cn.leancloud.LCException;
+import cn.leancloud.LCObject;
 
 public abstract class GenericObjectCallback {
-  public void onSuccess(String content, AVException e) {}
+  public void onSuccess(String content, LCException e) {}
 
   public void onFailure(int statusCode, Throwable error, String content) {
     if (isRetryNeeded(statusCode, error)) {
@@ -19,7 +19,7 @@ public abstract class GenericObjectCallback {
   }
 
 
-  public void onGroupRequestFinished(int left, int total, AVObject object) {
+  public void onGroupRequestFinished(int left, int total, LCObject object) {
 
   }
 

@@ -2,7 +2,7 @@ package cn.leancloud;
 
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
-import cn.leancloud.types.AVNull;
+import cn.leancloud.types.LCNull;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
@@ -40,17 +40,17 @@ public class AVUserTest extends TestCase {
   }
 
   public void testSingupWithEmail() throws Exception {
-    AVUser user = new AVUser();
+    LCUser user = new LCUser();
     user.setEmail(EMAIL);
     user.setUsername(USERNAME);
     user.setPassword(PASSWORD);
     final CountDownLatch latch = new CountDownLatch(1);
-    user.signUpInBackground().subscribe(new Observer<AVUser>() {
+    user.signUpInBackground().subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
 
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println(JSON.toJSONString(avUser));
         operationSucceed = true;
         latch.countDown();
@@ -72,15 +72,15 @@ public class AVUserTest extends TestCase {
 
   public void testLogin() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
+    LCUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("onNext. result=" + JSON.toJSONString(avUser));
 
-        AVUser currentUser = AVUser.getCurrentUser();
+        LCUser currentUser = LCUser.getCurrentUser();
         System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
         System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
@@ -108,21 +108,21 @@ public class AVUserTest extends TestCase {
     authData.put("access_token", "ACCESS_TOKEN1");
     authData.put("refresh_token", "REFRESH_TOKEN2");
     authData.put("scope", "SCOPE");
-    AVUser user = new AVUser();
-    user.loginWithAuthData(authData,"weixin",true).subscribe(new Observer<AVUser>() {
+    LCUser user = new LCUser();
+    user.loginWithAuthData(authData,"weixin",true).subscribe(new Observer<LCUser>() {
       @Override
       public void onSubscribe(Disposable d) {
       }
       @Override
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("存在匹配的用户，登录成功");
         latch.countDown();
       }
 
       @Override
       public void onError(Throwable e) {
-        AVException avException = new AVException(e);
-        int code = avException.getCode();
+        LCException LCException = new LCException(e);
+        int code = LCException.getCode();
         if (code == 211){
           // 跳转到输入用户名、密码、手机号等业务页面
         } else {
@@ -139,14 +139,14 @@ public class AVUserTest extends TestCase {
 
   public void testAnonymousLogin() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
+    LCUser.logInAnonymously().subscribe(new Observer<LCUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("onNext. result=" + avUser.toString());
         System.out.println("current user is authenticated? " + avUser.isAuthenticated() + ", isAnonymous? " + avUser.isAnonymous());
         String openId = "openid3322dr";
@@ -158,25 +158,25 @@ public class AVUserTest extends TestCase {
         userAuth.put("openid",openId);
 
         avUser.put("gender", "male");
-        avUser.associateWithAuthData(userAuth, "qq").subscribe(new Observer<AVUser>() {
+        avUser.associateWithAuthData(userAuth, "qq").subscribe(new Observer<LCUser>() {
           @Override
           public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(AVUser tmp) {
+          public void onNext(LCUser tmp) {
             System.out.println("onNext. result=" + tmp.toString());
             System.out.println("current user is authenticated? " + tmp.isAuthenticated() + ", isAnonymous? " + tmp.isAnonymous());
 
-            tmp.associateWithAuthData(userAuth, "weixin_test").subscribe(new Observer<AVUser>() {
+            tmp.associateWithAuthData(userAuth, "weixin_test").subscribe(new Observer<LCUser>() {
               @Override
               public void onSubscribe(Disposable disposable) {
 
               }
 
               @Override
-              public void onNext(AVUser tmp2) {
+              public void onNext(LCUser tmp2) {
                 System.out.println("onNext. result=" + tmp2.toString());
                 System.out.println("current user is authenticated? " + tmp2.isAuthenticated() + ", isAnonymous? " + tmp2.isAnonymous());
 
@@ -232,23 +232,23 @@ public class AVUserTest extends TestCase {
 
   public void testDisassociateAnonymousLogin() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
+    LCUser.logInAnonymously().subscribe(new Observer<LCUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("logInAnonymously onNext. result=" + avUser.toString());
-        avUser.dissociateWithAuthData("anonymous").subscribe(new Observer<AVUser>() {
+        avUser.dissociateWithAuthData("anonymous").subscribe(new Observer<LCUser>() {
           @Override
           public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(AVUser avUser) {
+          public void onNext(LCUser avUser) {
             System.out.println("dissociateWithAuthData onNext. result=" + avUser.toString());
             operationSucceed = true;
             latch.countDown();
@@ -282,22 +282,22 @@ public class AVUserTest extends TestCase {
   }
 
   public void testCurrentUser() throws Exception {
-    AVUser.disableAutomaticUser();
-    AVUser currentUser = AVUser.getCurrentUser();
+    LCUser.disableAutomaticUser();
+    LCUser currentUser = LCUser.getCurrentUser();
     assertNotNull(currentUser);
   }
 
   public void testQueryUser() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVQuery<AVUser> query = new AVQuery<AVUser>(AVUser.CLASS_NAME);
-    query.findInBackground().subscribe(new Observer<List<AVUser>>() {
+    LCQuery<LCUser> query = new LCQuery<LCUser>(LCUser.CLASS_NAME);
+    query.findInBackground().subscribe(new Observer<List<LCUser>>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(List<AVUser> avUsers) {
+      public void onNext(List<LCUser> avUsers) {
         operationSucceed = true;
         latch.countDown();
       }
@@ -318,15 +318,15 @@ public class AVUserTest extends TestCase {
 
   public void testCurrentUserWithNew() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
+    LCUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("onNext. result=" + avUser.toString());
-        AVUser.changeCurrentUser(avUser, true);
-        AVUser u = AVUser.getCurrentUser();
+        LCUser.changeCurrentUser(avUser, true);
+        LCUser u = LCUser.getCurrentUser();
         operationSucceed = avUser.equals(u);
         latch.countDown();
       }
@@ -354,7 +354,7 @@ public class AVUserTest extends TestCase {
 
   public void testCheckAuthenticatedFalse() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser u = new AVUser();
+    LCUser u = new LCUser();
     u.setEmail(EMAIL);
     u.setUsername(USERNAME);
     u.setPassword(PASSWORD);
@@ -382,12 +382,12 @@ public class AVUserTest extends TestCase {
   }
   public void testCheckAuthenticatedTrue() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
+    LCUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         avUser.checkAuthenticatedInBackground().subscribe(new Observer<Boolean>() {
           public void onSubscribe(Disposable disposable) {
 
@@ -423,19 +423,19 @@ public class AVUserTest extends TestCase {
   public void testSaveCurrentUserData() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     operationSucceed = false;
-    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
+    LCUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<LCUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         avUser.put("nickname", "Developer Fong");
         avUser.setFetchWhenSave(true);
         avUser.save();
         String nickName1 = avUser.getString("nickname");
-        String nkName2 = AVUser.currentUser().getString("nickname");
+        String nkName2 = LCUser.currentUser().getString("nickname");
         operationSucceed = nickName1.equals(nkName2) && nickName1.equals("Developer Fong");
         latch.countDown();
       }
@@ -457,7 +457,7 @@ public class AVUserTest extends TestCase {
   public void testGetCurrentUserAfterSave() throws Exception {
     testSaveCurrentUserData();
     operationSucceed = false;
-    String nkName = AVUser.currentUser().getString("nickname");
+    String nkName = LCUser.currentUser().getString("nickname");
     operationSucceed = nkName.equals("Developer Fong");
     assertTrue(operationSucceed);
   }
@@ -465,36 +465,36 @@ public class AVUserTest extends TestCase {
   public void testFetchThenUpdateCurrentUser() throws Exception {
     operationSucceed = false;
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
+    LCUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<LCUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
       }
 
       @Override
-      public void onNext(final AVUser avUser) {
-        System.out.println("currentUser:" + AVUser.currentUser());
-        avUser.fetchInBackground("sessionToken,nickname").subscribe(new Observer<AVObject>() {
+      public void onNext(final LCUser avUser) {
+        System.out.println("currentUser:" + LCUser.currentUser());
+        avUser.fetchInBackground("sessionToken,nickname").subscribe(new Observer<LCObject>() {
           @Override
           public void onSubscribe(Disposable disposable) {
           }
 
           @Override
-          public void onNext(AVObject avObject) {
-            System.out.println("currentUser:" + AVUser.currentUser());
-            AVUser.changeCurrentUser(avUser, true);
-            System.out.println("currentUser:" + AVUser.currentUser());
+          public void onNext(LCObject LCObject) {
+            System.out.println("currentUser:" + LCUser.currentUser());
+            LCUser.changeCurrentUser(avUser, true);
+            System.out.println("currentUser:" + LCUser.currentUser());
             final String newName = String.valueOf(System.currentTimeMillis());
             avUser.put("nickname", newName);
             avUser.setFetchWhenSave(true);
-            avUser.saveInBackground().subscribe(new Observer<AVObject>() {
+            avUser.saveInBackground().subscribe(new Observer<LCObject>() {
               @Override
               public void onSubscribe(Disposable disposable) {
               }
 
               @Override
-              public void onNext(AVObject finalObject) {
-                System.out.println("currentUser:" + AVUser.currentUser());
-                operationSucceed = AVUser.currentUser().getString("nickname").equals(newName);
+              public void onNext(LCObject finalObject) {
+                System.out.println("currentUser:" + LCUser.currentUser());
+                operationSucceed = LCUser.currentUser().getString("nickname").equals(newName);
                 latch.countDown();
               }
 
@@ -540,26 +540,26 @@ public class AVUserTest extends TestCase {
   public void testFetchThenUpdateAnotherUserObject() throws Exception {
     operationSucceed = false;
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
+    LCUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<LCUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
       }
 
       @Override
-      public void onNext(final AVUser avUser) {
-        System.out.println("currentUser:" + AVUser.currentUser());
+      public void onNext(final LCUser avUser) {
+        System.out.println("currentUser:" + LCUser.currentUser());
         try {
-          final AVUser another = AVObject.createWithoutData(AVUser.class, avUser.getObjectId());
-          another.fetchInBackground().subscribe(new Observer<AVObject>() {
+          final LCUser another = LCObject.createWithoutData(LCUser.class, avUser.getObjectId());
+          another.fetchInBackground().subscribe(new Observer<LCObject>() {
             @Override
             public void onSubscribe(Disposable disposable) {
             }
 
             @Override
-            public void onNext(AVObject avObject) {
-              String nickName = avObject.getString("nickname");
-              System.out.println("currentUser:" + AVUser.currentUser());
-              String currentUserNickname = AVUser.currentUser().getString("nickname");
+            public void onNext(LCObject LCObject) {
+              String nickName = LCObject.getString("nickname");
+              System.out.println("currentUser:" + LCUser.currentUser());
+              String currentUserNickname = LCUser.currentUser().getString("nickname");
 
               final String newName = String.valueOf(System.currentTimeMillis());
               another.put("nickname", newName);
@@ -568,15 +568,15 @@ public class AVUserTest extends TestCase {
               System.out.println("nickname(currentUser)=" + currentUserNickname + ", nickname(server)=" + nickName
                       + ", nickname(new)=" + newName);
 
-              another.saveInBackground().subscribe(new Observer<AVObject>() {
+              another.saveInBackground().subscribe(new Observer<LCObject>() {
                 @Override
                 public void onSubscribe(Disposable disposable) {
                 }
 
                 @Override
-                public void onNext(AVObject finalObject) {
-                  System.out.println("currentUser:" + AVUser.currentUser());
-                  operationSucceed = !finalObject.getString("nickname").equals(AVUser.currentUser().getString("nickname"));
+                public void onNext(LCObject finalObject) {
+                  System.out.println("currentUser:" + LCUser.currentUser());
+                  operationSucceed = !finalObject.getString("nickname").equals(LCUser.currentUser().getString("nickname"));
                   latch.countDown();
                 }
 
@@ -646,35 +646,35 @@ public class AVUserTest extends TestCase {
 
     final CountDownLatch latch = new CountDownLatch(1);
     operationSucceed = false;
-    AVUser.logIn(username, "FER$@$@#Ffwe").subscribe(new Observer<AVUser>() {
+    LCUser.logIn(username, "FER$@$@#Ffwe").subscribe(new Observer<LCUser>() {
       @Override
       public void onSubscribe(@NotNull Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(@NotNull AVUser avUser) {
+      public void onNext(@NotNull LCUser avUser) {
         System.out.println("succeed to login with username/password. currentUser: " + avUser.toJSONString());
 
-        avUser.associateWithAuthData(weixinAuthData, "weixin").subscribe(new Observer<AVUser>() {
+        avUser.associateWithAuthData(weixinAuthData, "weixin").subscribe(new Observer<LCUser>() {
           @Override
           public void onSubscribe(@NotNull Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(@NotNull AVUser abUser) {
+          public void onNext(@NotNull LCUser abUser) {
             System.out.println("succeed to associate with weixin data. currentUser: " + abUser.toJSONString());
-            abUser.associateWithAuthData(qqAuthData, "qq").subscribe(new Observer<AVUser>() {
+            abUser.associateWithAuthData(qqAuthData, "qq").subscribe(new Observer<LCUser>() {
               @Override
               public void onSubscribe(@NotNull Disposable disposable) {
 
               }
 
               @Override
-              public void onNext(@NotNull AVUser acUser) {
+              public void onNext(@NotNull LCUser acUser) {
                 System.out.println("succeed to associate with qq data. currentUser: " + acUser.toJSONString());
-                AVUser.currentUser().logOut();
+                LCUser.currentUser().logOut();
                 operationSucceed = true;
                 latch.countDown();
               }
@@ -730,39 +730,39 @@ public class AVUserTest extends TestCase {
     qqAuthData.put("access_token", "DCfafewerEWDWIF");
     qqAuthData.put("platform", "qq");
 
-    AVUser.loginWithAuthData(qqAuthData, "qq").subscribe(new Observer<AVUser>() {
+    LCUser.loginWithAuthData(qqAuthData, "qq").subscribe(new Observer<LCUser>() {
       @Override
       public void onSubscribe(@NotNull Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(@NotNull AVUser avUser) {
+      public void onNext(@NotNull LCUser avUser) {
         System.out.println("succeed to login with QQ data. currentUser: " + avUser.toJSONString());
         JSONObject auth = avUser.getJSONObject("authData");
         System.out.println("authData: " + auth.toJSONString());
-        avUser.dissociateWithAuthData("qq").subscribe(new Observer<AVUser>() {
+        avUser.dissociateWithAuthData("qq").subscribe(new Observer<LCUser>() {
           @Override
           public void onSubscribe(@NotNull Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(@NotNull AVUser axUser) {
+          public void onNext(@NotNull LCUser axUser) {
             System.out.println("succeed to dissociate with QQ data. currentUser: " + axUser.toJSONString());
 
             JSONObject auth = axUser.getJSONObject("authData");
             System.out.println("authData: " + auth.toJSONString());
 
             operationSucceed = true;
-            axUser.associateWithAuthData(qqAuthData, "qq").subscribe(new Observer<AVUser>() {
+            axUser.associateWithAuthData(qqAuthData, "qq").subscribe(new Observer<LCUser>() {
               @Override
               public void onSubscribe(@NotNull Disposable disposable) {
 
               }
 
               @Override
-              public void onNext(@NotNull AVUser avUser) {
+              public void onNext(@NotNull LCUser avUser) {
                 latch.countDown();
               }
 
@@ -807,7 +807,7 @@ public class AVUserTest extends TestCase {
   }
 
   public void testAssociateAuthDataTwice() throws Exception {
-    AVUser user = new AVUser();
+    LCUser user = new LCUser();
     user.setEmail("jfeng987@test.com");
     user.setUsername("jfeng987");
     user.setPassword("FER$@$@#Ffwe");
@@ -819,28 +819,28 @@ public class AVUserTest extends TestCase {
     userAuth.put("access_token",accessToken);
     userAuth.put("expires_in", expiresAt);
     userAuth.put("openid",openId);
-    AVUser tmp = user.associateWithAuthData(userAuth, "qq").blockingSingle();
+    LCUser tmp = user.associateWithAuthData(userAuth, "qq").blockingSingle();
     assertTrue(tmp != null);
 
     final CountDownLatch latch = new CountDownLatch(1);
     operationSucceed = false;
 
-    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
+    LCUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<LCUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(final AVUser two) {
-        two.associateWithAuthData(userAuth, "qq").subscribe(new Observer<AVUser>() {
+      public void onNext(final LCUser two) {
+        two.associateWithAuthData(userAuth, "qq").subscribe(new Observer<LCUser>() {
           @Override
           public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(AVUser avUser) {
+          public void onNext(LCUser avUser) {
             latch.countDown();
           }
 
@@ -877,15 +877,15 @@ public class AVUserTest extends TestCase {
 
   public void testRequestSMSCodeForUpdatingPhoneNumberWithoutLogin() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.requestSMSCodeForUpdatingPhoneNumberInBackground("18600345188", null).subscribe(
-            new Observer<AVNull>() {
+    LCUser.requestSMSCodeForUpdatingPhoneNumberInBackground("18600345188", null).subscribe(
+            new Observer<LCNull>() {
               @Override
               public void onSubscribe(Disposable disposable) {
 
               }
 
               @Override
-              public void onNext(AVNull avNull) {
+              public void onNext(LCNull LCNull) {
                 latch.countDown();
               }
 
@@ -909,27 +909,27 @@ public class AVUserTest extends TestCase {
 
   public void testRequestSMSCodeForUpdatingPhoneNumber() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
+    LCUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("onNext. result=" + JSON.toJSONString(avUser));
 
-        AVUser currentUser = AVUser.getCurrentUser();
+        LCUser currentUser = LCUser.getCurrentUser();
         System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
         System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
-        AVUser.requestSMSCodeForUpdatingPhoneNumberInBackground("18600345188", null).subscribe(
-                new Observer<AVNull>() {
+        LCUser.requestSMSCodeForUpdatingPhoneNumberInBackground("18600345188", null).subscribe(
+                new Observer<LCNull>() {
                   @Override
                   public void onSubscribe(Disposable disposable) {
 
                   }
 
                   @Override
-                  public void onNext(AVNull avNull) {
+                  public void onNext(LCNull LCNull) {
                     System.out.println("Succeed to requestSMSCodeForUpdatingPhoneNumber");
                     operationSucceed = true;
                     latch.countDown();
@@ -959,33 +959,33 @@ public class AVUserTest extends TestCase {
       }
     });
     latch.await();
-    AVUser.logOut();
+    LCUser.logOut();
     assertTrue(operationSucceed);
   }
 
   public void testVerifySMSCodeForUpdatingPhoneNumber() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    AVUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<AVUser>() {
+    LCUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
 
-      public void onNext(AVUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("onNext. result=" + JSON.toJSONString(avUser));
 
-        AVUser currentUser = AVUser.getCurrentUser();
+        LCUser currentUser = LCUser.getCurrentUser();
         System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
         System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
-        AVUser.verifySMSCodeForUpdatingPhoneNumberInBackground("135966", "18600345188").subscribe(
-                new Observer<AVNull>() {
+        LCUser.verifySMSCodeForUpdatingPhoneNumberInBackground("135966", "18600345188").subscribe(
+                new Observer<LCNull>() {
           @Override
           public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(AVNull avNull) {
+          public void onNext(LCNull LCNull) {
             System.out.println("Succeed to verifySMSCodeForUpdatingPhoneNumber");
             operationSucceed = true;
             latch.countDown();
@@ -1015,7 +1015,7 @@ public class AVUserTest extends TestCase {
       }
     });
     latch.await();
-    AVUser.logOut();
+    LCUser.logOut();
     assertTrue(operationSucceed);
   }
 }

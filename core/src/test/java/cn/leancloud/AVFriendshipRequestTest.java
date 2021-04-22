@@ -1,7 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.json.JSON;
-import cn.leancloud.types.AVNull;
+import cn.leancloud.types.LCNull;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
@@ -34,7 +34,7 @@ public class AVFriendshipRequestTest extends TestCase {
   protected void setUp() throws Exception {
     testSucceed = false;
     latch = new CountDownLatch(1);
-    AVUser.logOut();
+    LCUser.logOut();
   }
 
   @Override
@@ -43,56 +43,56 @@ public class AVFriendshipRequestTest extends TestCase {
   }
 
   public void testStatusSerializer() throws Exception {
-    System.out.println(AVFriendshipRequest.RequestStatus.Accepted.name());
-    System.out.println(AVFriendshipRequest.RequestStatus.Accepted.name().toLowerCase());
+    System.out.println(LCFriendshipRequest.RequestStatus.Accepted.name());
+    System.out.println(LCFriendshipRequest.RequestStatus.Accepted.name().toLowerCase());
   }
 
   public void testSimpleRequestWithLoginedUser() throws Exception {
-    AVUser.logIn(testUser1UserName, testUser1Password).subscribe(
-            new Observer<AVUser>() {
+    LCUser.logIn(testUser1UserName, testUser1Password).subscribe(
+            new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
       }
 
-      public void onNext(AVUser avUser) {
-        AVUser currentUser = AVUser.getCurrentUser();
+      public void onNext(LCUser avUser) {
+        LCUser currentUser = LCUser.getCurrentUser();
         System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
         System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
-        AVUser friend = null;
+        LCUser friend = null;
         try {
-          friend = AVUser.createWithoutData(AVUser.class, "5f5048abd67d4e29e52d21c0");
-        } catch (AVException e) {
+          friend = LCUser.createWithoutData(LCUser.class, "5f5048abd67d4e29e52d21c0");
+        } catch (LCException e) {
           e.printStackTrace();
         }
         avUser.applyFriendshipInBackground(friend, null)
-                .subscribe(new Observer<AVFriendshipRequest>() {
+                .subscribe(new Observer<LCFriendshipRequest>() {
                   @Override
                   public void onSubscribe(Disposable disposable) {
 
                   }
 
                   @Override
-                  public void onNext(final AVFriendshipRequest friendshipRequest) {
+                  public void onNext(final LCFriendshipRequest friendshipRequest) {
                     System.out.println("succeed to create new friend request. result=" + JSON.toJSONString(friendshipRequest));
                     System.out.println("objectId=" + friendshipRequest.getObjectId());
-                    AVUser.becomeWithSessionToken("52g2hsrptizbuyygafbhav4p3");
-                    friendshipRequest.accept(null).subscribe(new Observer<AVObject>() {
+                    LCUser.becomeWithSessionToken("52g2hsrptizbuyygafbhav4p3");
+                    friendshipRequest.accept(null).subscribe(new Observer<LCObject>() {
                       @Override
                       public void onSubscribe(Disposable disposable) {
 
                       }
 
                       @Override
-                      public void onNext(AVObject avObject) {
-                        System.out.println("succeed to accept new friend request. result=" + avObject);
-                        friendshipRequest.deleteInBackground().subscribe(new Observer<AVNull>() {
+                      public void onNext(LCObject LCObject) {
+                        System.out.println("succeed to accept new friend request. result=" + LCObject);
+                        friendshipRequest.deleteInBackground().subscribe(new Observer<LCNull>() {
                           @Override
                           public void onSubscribe(Disposable disposable) {
 
                           }
 
                           @Override
-                          public void onNext(AVNull avNull) {
+                          public void onNext(LCNull LCNull) {
                             System.out.println("succeed to delete new friend request.");
                             testSucceed = true;
                             latch.countDown();
@@ -154,43 +154,43 @@ public class AVFriendshipRequestTest extends TestCase {
   }
 
   public void testLoginedUserDeclineThenAccept() throws Exception {
-    AVUser.logInAnonymously().subscribe(
-            new Observer<AVUser>() {
+    LCUser.logInAnonymously().subscribe(
+            new Observer<LCUser>() {
               public void onSubscribe(Disposable disposable) {
               }
 
-              public void onNext(AVUser avUser) {
-                AVUser currentUser = AVUser.getCurrentUser();
+              public void onNext(LCUser avUser) {
+                LCUser currentUser = LCUser.getCurrentUser();
                 System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
                 System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
-                AVUser friend = null;
+                LCUser friend = null;
                 try {
-                  friend = AVUser.createWithoutData(AVUser.class, "5f5048abd67d4e29e52d21c0");
-                } catch (AVException e) {
+                  friend = LCUser.createWithoutData(LCUser.class, "5f5048abd67d4e29e52d21c0");
+                } catch (LCException e) {
                   e.printStackTrace();
                 }
                 avUser.applyFriendshipInBackground(friend, null)
-                        .subscribe(new Observer<AVFriendshipRequest>() {
+                        .subscribe(new Observer<LCFriendshipRequest>() {
                           @Override
                           public void onSubscribe(Disposable disposable) {
 
                           }
 
                           @Override
-                          public void onNext(final AVFriendshipRequest friendshipRequest) {
+                          public void onNext(final LCFriendshipRequest friendshipRequest) {
                             System.out.println("succeed to create new friend request. result=" + JSON.toJSONString(friendshipRequest));
                             System.out.println("objectId=" + friendshipRequest.getObjectId());
-                            AVUser.becomeWithSessionToken("52g2hsrptizbuyygafbhav4p3", true);
-                            friendshipRequest.decline().subscribe(new Observer<AVObject>() {
+                            LCUser.becomeWithSessionToken("52g2hsrptizbuyygafbhav4p3", true);
+                            friendshipRequest.decline().subscribe(new Observer<LCObject>() {
                               @Override
                               public void onSubscribe(Disposable disposable) {
 
                               }
 
                               @Override
-                              public void onNext(AVObject avObject) {
-                                System.out.println("succeed to decline new friend request. result=" + avObject);
+                              public void onNext(LCObject LCObject) {
+                                System.out.println("succeed to decline new friend request. result=" + LCObject);
                                 try {
                                   System.out.println("sleep 2000 ms...");
                                   Thread.sleep(2000);
@@ -198,23 +198,23 @@ public class AVFriendshipRequestTest extends TestCase {
                                 } catch (Exception ex) {
                                   ex.printStackTrace();
                                 }
-                                friendshipRequest.accept(null).subscribe(new Observer<AVObject>() {
+                                friendshipRequest.accept(null).subscribe(new Observer<LCObject>() {
                                   @Override
                                   public void onSubscribe(Disposable disposable) {
 
                                   }
 
                                   @Override
-                                  public void onNext(AVObject avObject) {
+                                  public void onNext(LCObject LCObject) {
                                     System.out.println("succeed to accept the declined friend request.");
-                                    friendshipRequest.deleteInBackground().subscribe(new Observer<AVNull>() {
+                                    friendshipRequest.deleteInBackground().subscribe(new Observer<LCNull>() {
                                       @Override
                                       public void onSubscribe(Disposable disposable) {
 
                                       }
 
                                       @Override
-                                      public void onNext(AVNull avNull) {
+                                      public void onNext(LCNull LCNull) {
                                         System.out.println("succeed to delete new friend request.");
                                         testSucceed = true;
                                         latch.countDown();
@@ -287,43 +287,43 @@ public class AVFriendshipRequestTest extends TestCase {
   }
 
   public void testQueryAllFriendshipRequests() throws Exception {
-    AVUser.logIn(testUser1UserName, testUser1Password).subscribe(
-            new Observer<AVUser>() {
+    LCUser.logIn(testUser1UserName, testUser1Password).subscribe(
+            new Observer<LCUser>() {
               public void onSubscribe(Disposable disposable) {
               }
 
-              public void onNext(AVUser avUser) {
-                AVUser currentUser = AVUser.getCurrentUser();
+              public void onNext(LCUser avUser) {
+                LCUser currentUser = LCUser.getCurrentUser();
                 System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
                 System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
-                AVUser friend = null;
+                LCUser friend = null;
                 try {
-                  friend = AVUser.createWithoutData(AVUser.class, "5dd7892143c2570074c96ca9");
-                } catch (AVException e) {
+                  friend = LCUser.createWithoutData(LCUser.class, "5dd7892143c2570074c96ca9");
+                } catch (LCException e) {
                   e.printStackTrace();
                 }
-                avUser.applyFriendshipInBackground(friend, null).subscribe(new Observer<AVFriendshipRequest>() {
+                avUser.applyFriendshipInBackground(friend, null).subscribe(new Observer<LCFriendshipRequest>() {
                   @Override
                   public void onSubscribe(Disposable disposable) {
 
                   }
 
                   @Override
-                  public void onNext(AVFriendshipRequest avFriendshipRequest) {
-                    AVUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl", true);
-                    AVUser.currentUser().friendshipRequestQuery(
-                            AVFriendshipRequest.STATUS_ANY,
+                  public void onNext(LCFriendshipRequest avFriendshipRequest) {
+                    LCUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl", true);
+                    LCUser.currentUser().friendshipRequestQuery(
+                            LCFriendshipRequest.STATUS_ANY,
                             true, true)
                             .findInBackground()
-                            .subscribe(new Observer<List<AVFriendshipRequest>>() {
+                            .subscribe(new Observer<List<LCFriendshipRequest>>() {
                               @Override
                               public void onSubscribe(Disposable disposable) {
 
                               }
 
                               @Override
-                              public void onNext(List<AVFriendshipRequest> avFriendshipRequests) {
+                              public void onNext(List<LCFriendshipRequest> avFriendshipRequests) {
                                 if (null != avFriendshipRequests && avFriendshipRequests.size() > 0) {
                                   testSucceed = true;
                                 }
@@ -346,19 +346,19 @@ public class AVFriendshipRequestTest extends TestCase {
                   @Override
                   public void onError(Throwable throwable) {
                     if (throwable.getMessage().contains("Friendship already exists.")) {
-                      AVUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl", true);
-                      AVUser.currentUser().friendshipRequestQuery(
-                              AVFriendshipRequest.STATUS_ANY,
+                      LCUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl", true);
+                      LCUser.currentUser().friendshipRequestQuery(
+                              LCFriendshipRequest.STATUS_ANY,
                               true, true)
                               .findInBackground()
-                              .subscribe(new Observer<List<AVFriendshipRequest>>() {
+                              .subscribe(new Observer<List<LCFriendshipRequest>>() {
                                 @Override
                                 public void onSubscribe(Disposable disposable) {
 
                                 }
 
                                 @Override
-                                public void onNext(List<AVFriendshipRequest> avFriendshipRequests) {
+                                public void onNext(List<LCFriendshipRequest> avFriendshipRequests) {
                                   if (null != avFriendshipRequests && avFriendshipRequests.size() > 0) {
                                     testSucceed = true;
                                   }
@@ -402,95 +402,95 @@ public class AVFriendshipRequestTest extends TestCase {
   }
 
   public void testSimpleRequestWithAnonymousUserAccept() throws Exception {
-    AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
+    LCUser.logInAnonymously().subscribe(new Observer<LCUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(final AVUser anonymousUser) {
-        final AVUser target;
+      public void onNext(final LCUser anonymousUser) {
+        final LCUser target;
         try {
-          target = AVUser.createWithoutData(AVUser.class, testUser1ObjectId);
+          target = LCUser.createWithoutData(LCUser.class, testUser1ObjectId);
         }catch (Exception ex) {
           latch.countDown();
           return;
         }
         Map<String, Object> param = new HashMap<>();
         param.put("group", "collage");
-        anonymousUser.applyFriendshipInBackground(target, param).subscribe(new Observer<AVFriendshipRequest>() {
+        anonymousUser.applyFriendshipInBackground(target, param).subscribe(new Observer<LCFriendshipRequest>() {
           @Override
           public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(AVFriendshipRequest avFriendshipRequest) {
+          public void onNext(LCFriendshipRequest avFriendshipRequest) {
             System.out.println("try to query all request from current User");
-            AVQuery<AVFriendshipRequest> query = anonymousUser.friendshipRequestQuery(AVFriendshipRequest.STATUS_PENDING,
+            LCQuery<LCFriendshipRequest> query = anonymousUser.friendshipRequestQuery(LCFriendshipRequest.STATUS_PENDING,
                     true, false);
-            query.findInBackground().subscribe(new Observer<List<AVFriendshipRequest>>() {
+            query.findInBackground().subscribe(new Observer<List<LCFriendshipRequest>>() {
               @Override
               public void onSubscribe(Disposable disposable) {
 
               }
 
               @Override
-              public void onNext(List<AVFriendshipRequest> avFriendshipRequests) {
+              public void onNext(List<LCFriendshipRequest> avFriendshipRequests) {
                 System.out.println("succeed to query pending request from anonymous user. resultSize=" + avFriendshipRequests.size());
                 if (avFriendshipRequests.size() < 1) {
                   latch.countDown();
                   return;
                 }
-                final AVFriendshipRequest targetFriendshipRequest = avFriendshipRequests.get(0);
-                AVUser.logIn(testUser1UserName, testUser1Password).subscribe(new Observer<AVUser>() {
+                final LCFriendshipRequest targetFriendshipRequest = avFriendshipRequests.get(0);
+                LCUser.logIn(testUser1UserName, testUser1Password).subscribe(new Observer<LCUser>() {
                   @Override
                   public void onSubscribe(Disposable disposable) {
 
                   }
 
                   @Override
-                  public void onNext(final AVUser secondUser) {
+                  public void onNext(final LCUser secondUser) {
                     Map<String, Object> param = new HashMap<>();
                     param.put("group", "fans");
-                    secondUser.acceptFriendshipRequest(targetFriendshipRequest, param).subscribe(new Observer<AVFriendshipRequest>() {
+                    secondUser.acceptFriendshipRequest(targetFriendshipRequest, param).subscribe(new Observer<LCFriendshipRequest>() {
                       @Override
                       public void onSubscribe(Disposable disposable) {
 
                       }
 
                       @Override
-                      public void onNext(AVFriendshipRequest avFriendshipRequest) {
-                        AVQuery<AVFriendshipRequest> query = secondUser.friendshipRequestQuery(AVFriendshipRequest.STATUS_ACCEPTED, true, true);
-                        query.findInBackground().subscribe(new Observer<List<AVFriendshipRequest>>() {
+                      public void onNext(LCFriendshipRequest avFriendshipRequest) {
+                        LCQuery<LCFriendshipRequest> query = secondUser.friendshipRequestQuery(LCFriendshipRequest.STATUS_ACCEPTED, true, true);
+                        query.findInBackground().subscribe(new Observer<List<LCFriendshipRequest>>() {
                           @Override
                           public void onSubscribe(Disposable disposable) {
 
                           }
 
                           @Override
-                          public void onNext(List<AVFriendshipRequest> tmpRequests) {
-                            AVQuery<AVFriendship> query = secondUser.friendshipQuery(false);
-                            query.whereEqualTo(AVFriendship.ATTR_FRIEND_STATUS, true);
-                            query.addDescendingOrder(AVObject.KEY_UPDATED_AT);
-                            List<AVFriendship> followees = query.find();
+                          public void onNext(List<LCFriendshipRequest> tmpRequests) {
+                            LCQuery<LCFriendship> query = secondUser.friendshipQuery(false);
+                            query.whereEqualTo(LCFriendship.ATTR_FRIEND_STATUS, true);
+                            query.addDescendingOrder(LCObject.KEY_UPDATED_AT);
+                            List<LCFriendship> followees = query.find();
                             if (followees == null || followees.size() < 1) {
                               latch.countDown();
                               return;
                             }
                             try {
-                              AVFriendship friendship = followees.get(0);
+                              LCFriendship friendship = followees.get(0);
                               friendship.put("remark", "丐帮帮主");
-                              secondUser.updateFriendship(friendship).subscribe(new Observer<AVObject>() {
+                              secondUser.updateFriendship(friendship).subscribe(new Observer<LCObject>() {
                                 @Override
                                 public void onSubscribe(Disposable disposable) {
 
                                 }
 
                                 @Override
-                                public void onNext(AVObject avObject) {
-                                  System.out.println("succeed to update friendship: " + avObject);
+                                public void onNext(LCObject LCObject) {
+                                  System.out.println("succeed to update friendship: " + LCObject);
                                   testSucceed = true;
                                   latch.countDown();
                                 }
@@ -602,74 +602,74 @@ public class AVFriendshipRequestTest extends TestCase {
   }
 
   public void testSimpleRequestWithAnonymousUserDecline() throws Exception {
-    AVUser.logInAnonymously().subscribe(new Observer<AVUser>() {
+    LCUser.logInAnonymously().subscribe(new Observer<LCUser>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(final AVUser anonymousUser) {
-        final AVUser target;
+      public void onNext(final LCUser anonymousUser) {
+        final LCUser target;
         try {
-          target = AVUser.createWithoutData(AVUser.class, testUser1ObjectId);
+          target = LCUser.createWithoutData(LCUser.class, testUser1ObjectId);
         }catch (Exception ex) {
           latch.countDown();
           return;
         }
         Map<String, Object> param = new HashMap<>();
         param.put("group", "collage");
-        anonymousUser.applyFriendshipInBackground(target, param).subscribe(new Observer<AVFriendshipRequest>() {
+        anonymousUser.applyFriendshipInBackground(target, param).subscribe(new Observer<LCFriendshipRequest>() {
           @Override
           public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(AVFriendshipRequest avFriendshipRequest) {
+          public void onNext(LCFriendshipRequest avFriendshipRequest) {
             System.out.println("try to query all request from current User");
-            AVQuery<AVFriendshipRequest> query = anonymousUser.friendshipRequestQuery(AVFriendshipRequest.STATUS_PENDING,
+            LCQuery<LCFriendshipRequest> query = anonymousUser.friendshipRequestQuery(LCFriendshipRequest.STATUS_PENDING,
                     false, false);
-            query.findInBackground().subscribe(new Observer<List<AVFriendshipRequest>>() {
+            query.findInBackground().subscribe(new Observer<List<LCFriendshipRequest>>() {
               @Override
               public void onSubscribe(Disposable disposable) {
 
               }
 
               @Override
-              public void onNext(List<AVFriendshipRequest> avFriendshipRequests) {
+              public void onNext(List<LCFriendshipRequest> avFriendshipRequests) {
                 System.out.println("succeed to query pending request from anonymous user. resultSize=" + avFriendshipRequests.size());
                 if (avFriendshipRequests.size() < 1) {
                   latch.countDown();
                   return;
                 }
-                final AVFriendshipRequest targetFriendshipRequest = avFriendshipRequests.get(0);
-                AVUser.logIn(testUser1UserName, testUser1Password).subscribe(new Observer<AVUser>() {
+                final LCFriendshipRequest targetFriendshipRequest = avFriendshipRequests.get(0);
+                LCUser.logIn(testUser1UserName, testUser1Password).subscribe(new Observer<LCUser>() {
                   @Override
                   public void onSubscribe(Disposable disposable) {
 
                   }
 
                   @Override
-                  public void onNext(final AVUser secondUser) {
-                    secondUser.declineFriendshipRequest(targetFriendshipRequest).subscribe(new Observer<AVFriendshipRequest>() {
+                  public void onNext(final LCUser secondUser) {
+                    secondUser.declineFriendshipRequest(targetFriendshipRequest).subscribe(new Observer<LCFriendshipRequest>() {
                       @Override
                       public void onSubscribe(Disposable disposable) {
 
                       }
 
                       @Override
-                      public void onNext(AVFriendshipRequest avFriendshipRequest) {
-                        AVQuery<AVFriendshipRequest> query =
-                                secondUser.friendshipRequestQuery(AVFriendshipRequest.STATUS_DECLINED, false, true);
-                        query.findInBackground().subscribe(new Observer<List<AVFriendshipRequest>>() {
+                      public void onNext(LCFriendshipRequest avFriendshipRequest) {
+                        LCQuery<LCFriendshipRequest> query =
+                                secondUser.friendshipRequestQuery(LCFriendshipRequest.STATUS_DECLINED, false, true);
+                        query.findInBackground().subscribe(new Observer<List<LCFriendshipRequest>>() {
                           @Override
                           public void onSubscribe(Disposable disposable) {
 
                           }
 
                           @Override
-                          public void onNext(List<AVFriendshipRequest> tmpRequests) {
+                          public void onNext(List<LCFriendshipRequest> tmpRequests) {
                             testSucceed = tmpRequests.size() > 0;
                             latch.countDown();
                           }

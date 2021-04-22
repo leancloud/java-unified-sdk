@@ -1,6 +1,6 @@
 package cn.leancloud.core;
 
-import cn.leancloud.AVUser;
+import cn.leancloud.LCUser;
 import cn.leancloud.Configure;
 import cn.leancloud.service.RTMConnectionServerResponse;
 import junit.framework.TestCase;
@@ -12,7 +12,7 @@ public class AppRouterTest extends TestCase {
   public AppRouterTest(String name) {
     super(name);
     Configure.initializeRuntime();
-    AVUser currentUser = AVUser.getCurrentUser();
+    LCUser currentUser = LCUser.getCurrentUser();
     System.out.println("currentUser = " + currentUser);
   }
 
@@ -34,15 +34,15 @@ public class AppRouterTest extends TestCase {
 
   public void testFetchApiEndpoint() {
     AppRouter router = AppRouter.getInstance();
-    String apiHost = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.API).blockingSingle();
+    String apiHost = router.getEndpoint(Configure.TEST_APP_ID, LeanService.API).blockingSingle();
     assertEquals("https://ohqhxu3m.lc-cn-n1-shared.com", apiHost);
-    String pushHost = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.PUSH).blockingSingle();
+    String pushHost = router.getEndpoint(Configure.TEST_APP_ID, LeanService.PUSH).blockingSingle();
     assertEquals("https://ohqhxu3m.push.lncld.net", pushHost);
   }
 
   public void testFetchRTMEndpoint() {
     AppRouter router = AppRouter.getInstance();
-    String rtmRouterServer = router.getEndpoint(Configure.TEST_APP_ID, AVOSService.RTM).blockingSingle();
+    String rtmRouterServer = router.getEndpoint(Configure.TEST_APP_ID, LeanService.RTM).blockingSingle();
     RTMConnectionServerResponse response = router.fetchRTMConnectionServer(rtmRouterServer, Configure.TEST_APP_ID,
             null, 1, false).blockingSingle();
     assertNotNull(response.getServer());
@@ -76,7 +76,7 @@ public class AppRouterTest extends TestCase {
     NorthAmericaSpecialApps.add("YHE5exCaW7UolMFJUtHvXTUY");
     Object[] appIds = NorthAmericaSpecialApps.toArray();
     for (int i = 0; i < appIds.length; i++) {
-      if (AVOSCloud.REGION.NorthAmerica != AppRouter.getAppRegion((String) appIds[i])) {
+      if (LeanCloud.REGION.NorthAmerica != AppRouter.getAppRegion((String) appIds[i])) {
         fail();
       }
     }

@@ -34,37 +34,37 @@ public class FileUnitTest extends TestCase {
   }
 
   public void testSaveWithSpecifiedUser() throws Exception {
-    AVUser user = AVUser.logIn(USERNAME, PASSWORD).blockingFirst();
+    LCUser user = LCUser.logIn(USERNAME, PASSWORD).blockingFirst();
     System.out.println("current sessionToken: " + user.getSessionToken());
-    AVFile avFile = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    LCFile avFile = new LCFile("FileUnitTestFiles", "hello world".getBytes());
     avFile.save(user);
     assertFalse(avFile.getObjectId().isEmpty());
-    avFile = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    avFile = new LCFile("FileUnitTestFiles", "hello world".getBytes());
     avFile.saveInBackground(user, false).blockingFirst();
     assertFalse(avFile.getObjectId().isEmpty());
   }
 
   public void testUploadDownloadAssociateFile() throws Exception {
-    AVFile avFile = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    LCFile avFile = new LCFile("FileUnitTestFiles", "hello world".getBytes());
     avFile.save();
     assertFalse(avFile.getObjectId().isEmpty());
 
-    AVObject avObject = new AVObject("FileUnitTest");
-    avObject.put("applicatName", "steve");
-    avObject.put("applicatFile", avFile);
-    avObject.setFetchWhenSave(true);
-    avObject.save();
-    assertFalse(avObject.getObjectId().isEmpty());
+    LCObject LCObject = new LCObject("FileUnitTest");
+    LCObject.put("applicatName", "steve");
+    LCObject.put("applicatFile", avFile);
+    LCObject.setFetchWhenSave(true);
+    LCObject.save();
+    assertFalse(LCObject.getObjectId().isEmpty());
 
     // retrieve file
-    AVFile file = AVFile.withObjectIdInBackground(avFile.getObjectId()).blockingFirst();
+    LCFile file = LCFile.withObjectIdInBackground(avFile.getObjectId()).blockingFirst();
     assertEquals(avFile.getUrl(), file.getUrl());
     assertEquals(avFile.getMetaData().size(), file.getMetaData().size());
     assertEquals(avFile.getMetaData().get("_checksum"), file.getMetaData().get("_checksum"));
 
     GetDataCallback cb = new GetDataCallback() {
       @Override
-      public void done(byte[] data, AVException e) {
+      public void done(byte[] data, LCException e) {
         assertEquals("hello world", new String(data));
       }
     };
@@ -72,7 +72,7 @@ public class FileUnitTest extends TestCase {
     file.getData();
 
     // get file from object
-    AVFile appFile = avObject.getAVFile("applicatFile");
+    LCFile appFile = LCObject.getAVFile("applicatFile");
     assertEquals(avFile.getUrl(), appFile.getUrl());
     assertEquals(avFile.getMetaData().size(), appFile.getMetaData().size());
     assertEquals(avFile.getMetaData().get("_checksum"), appFile.getMetaData().get("_checksum"));
@@ -80,9 +80,9 @@ public class FileUnitTest extends TestCase {
     appFile.getData();
 
     // query file from server
-    AVObject cloudObj = AVObject.createWithoutData("FileUnitTest", avObject.getObjectId());
+    LCObject cloudObj = LCObject.createWithoutData("FileUnitTest", LCObject.getObjectId());
     cloudObj.fetchIfNeeded();
-    appFile = avObject.getAVFile("applicatFile");
+    appFile = LCObject.getAVFile("applicatFile");
     assertEquals(avFile.getUrl(), appFile.getUrl());
     assertEquals(avFile.getMetaData(), appFile.getMetaData());
 
@@ -91,23 +91,23 @@ public class FileUnitTest extends TestCase {
 
   public void testFileArray() throws Exception {
     System.out.println("begin testFileArray()...");
-    AVFile avFile1 = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    LCFile avFile1 = new LCFile("FileUnitTestFiles", "hello world".getBytes());
     avFile1.save();
-    AVFile avFile2 = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    LCFile avFile2 = new LCFile("FileUnitTestFiles", "hello world".getBytes());
     avFile2.save();
 
-    AVObject avObject = new AVObject("FileUnitTest");
-    avObject.add("file_array", avFile1);
-    avObject.add("file_array", avFile2);
-    avObject.save();
+    LCObject LCObject = new LCObject("FileUnitTest");
+    LCObject.add("file_array", avFile1);
+    LCObject.add("file_array", avFile2);
+    LCObject.save();
 
-    AVObject cloudObj =
-            AVQuery.getQuery("FileUnitTest").include("file_array").get(avObject.getObjectId());
+    LCObject cloudObj =
+            LCQuery.getQuery("FileUnitTest").include("file_array").get(LCObject.getObjectId());
 
-    List<AVFile> files = cloudObj.getList("file_array");
+    List<LCFile> files = cloudObj.getList("file_array");
     assertNotNull(files);
     assertEquals(2, files.size());
-    for (AVFile file : files) {
+    for (LCFile file : files) {
       file.fetch();
       byte[] data = file.getData();
       assertEquals("hello world", new String(data));
@@ -115,26 +115,26 @@ public class FileUnitTest extends TestCase {
   }
 
   public void testFileArrayWithAddAll() throws Exception {
-    AVFile avFile1 = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    LCFile avFile1 = new LCFile("FileUnitTestFiles", "hello world".getBytes());
     avFile1.save();
-    AVFile avFile2 = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    LCFile avFile2 = new LCFile("FileUnitTestFiles", "hello world".getBytes());
     avFile2.save();
 
-    List<AVFile> fileList = new LinkedList<AVFile>();
+    List<LCFile> fileList = new LinkedList<LCFile>();
     fileList.add(avFile1);
     fileList.add(avFile2);
 
-    AVObject avObject = new AVObject("FileUnitTest");
-    avObject.addAll("file_array", fileList);
-    avObject.save();
+    LCObject LCObject = new LCObject("FileUnitTest");
+    LCObject.addAll("file_array", fileList);
+    LCObject.save();
 
-    AVObject cloudObj =
-            AVQuery.getQuery("FileUnitTest").include("file_array").get(avObject.getObjectId());
+    LCObject cloudObj =
+            LCQuery.getQuery("FileUnitTest").include("file_array").get(LCObject.getObjectId());
 
-    List<AVFile> files = cloudObj.getList("file_array");
+    List<LCFile> files = cloudObj.getList("file_array");
     assertNotNull(files);
     assertEquals(2, files.size());
-    for (AVFile file : files) {
+    for (LCFile file : files) {
       file.fetch();
       byte[] data = file.getData();
       assertEquals("hello world", new String(data));
@@ -142,13 +142,13 @@ public class FileUnitTest extends TestCase {
   }
 
   public void testFileArrayGetInSubClass() throws Exception {
-    AVObject.registerSubclass(Operation.class);
-    AVFile avFile1 = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    LCObject.registerSubclass(Operation.class);
+    LCFile avFile1 = new LCFile("FileUnitTestFiles", "hello world".getBytes());
     avFile1.save();
-    AVFile avFile2 = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    LCFile avFile2 = new LCFile("FileUnitTestFiles", "hello world".getBytes());
     avFile2.save();
 
-    List<AVFile> fileList = new LinkedList<AVFile>();
+    List<LCFile> fileList = new LinkedList<LCFile>();
     fileList.add(avFile1);
     fileList.add(avFile2);
 
@@ -156,13 +156,13 @@ public class FileUnitTest extends TestCase {
     operation.addAll("file_array", fileList);
     operation.save();
 
-    AVObject cloudObj =
+    LCObject cloudObj =
             Operation.getQuery(Operation.class).include("file_array").get(operation.getObjectId());
 
-    List<AVFile> files = cloudObj.getList("file_array");
+    List<LCFile> files = cloudObj.getList("file_array");
     assertNotNull(files);
     assertEquals(2, files.size());
-    for (AVFile file : files) {
+    for (LCFile file : files) {
       file.fetch();
       byte[] data = file.getData();
       assertEquals("hello world", new String(data));
@@ -170,26 +170,26 @@ public class FileUnitTest extends TestCase {
   }
 
   public void testFileArrayWrongWithPut() throws Exception {
-    AVFile avFile1 = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    LCFile avFile1 = new LCFile("FileUnitTestFiles", "hello world".getBytes());
     avFile1.save();
-    AVFile avFile2 = new AVFile("FileUnitTestFiles", "hello world".getBytes());
+    LCFile avFile2 = new LCFile("FileUnitTestFiles", "hello world".getBytes());
     avFile2.save();
 
-    List<AVFile> fileList = new LinkedList<AVFile>();
+    List<LCFile> fileList = new LinkedList<LCFile>();
     fileList.add(avFile1);
     fileList.add(avFile2);
 
-    AVObject avObject = new AVObject("WrongFileArrayTest");
-    avObject.put("file_array", fileList);
-    avObject.save();
+    LCObject LCObject = new LCObject("WrongFileArrayTest");
+    LCObject.put("file_array", fileList);
+    LCObject.save();
 
-    AVObject cloudObj =
-            AVQuery.getQuery("WrongFileArrayTest").include("file_array").get(avObject.getObjectId());
+    LCObject cloudObj =
+            LCQuery.getQuery("WrongFileArrayTest").include("file_array").get(LCObject.getObjectId());
 
-    List<AVFile> files = cloudObj.getList("file_array");
+    List<LCFile> files = cloudObj.getList("file_array");
     assertNotNull(files);
     assertEquals(2, files.size());
-    for (AVFile file : files) {
+    for (LCFile file : files) {
       file.fetch();
       byte[] data = file.getData();
       assertEquals("hello world", new String(data));

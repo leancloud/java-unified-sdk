@@ -1,8 +1,8 @@
 package cn.leancloud.command;
 
 import cn.leancloud.Messages;
-import cn.leancloud.im.v2.AVIMClient;
-import cn.leancloud.im.v2.AVIMMessageOption;
+import cn.leancloud.im.v2.LCIMClient;
+import cn.leancloud.im.v2.LCIMMessageOption;
 import cn.leancloud.utils.StringUtil;
 import com.google.protobuf.ByteString;
 import java.util.List;
@@ -13,7 +13,7 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
   boolean mentionAll = false;
   List<String> mentionList = null;
   String messageToken = null;
-  AVIMMessageOption messageOption;
+  LCIMMessageOption messageOption;
   ByteString binaryMessage = null;
 
   public ConversationDirectMessagePacket() {
@@ -36,7 +36,7 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
     this.message = message;
   }
 
-  private void setMessageOption(AVIMMessageOption option) {
+  private void setMessageOption(LCIMMessageOption option) {
     this.messageOption = option;
   }
 
@@ -121,9 +121,9 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
   public static ConversationDirectMessagePacket getConversationMessagePacket(String peerId,
                                                                              String conversationId,
                                                                              String msg, byte[] binaryMsg, boolean mentionAll, List<String> mentionList,
-                                                                             AVIMMessageOption messageOption, int requestId) {
+                                                                             LCIMMessageOption messageOption, int requestId) {
     ConversationDirectMessagePacket cdmp = new ConversationDirectMessagePacket();
-    if (AVIMClient.getClientsCount() > 1) {
+    if (LCIMClient.getClientsCount() > 1) {
       // peerId is necessary only when more than 1 client logined.
       cdmp.setPeerId(peerId);
     }
@@ -140,7 +140,7 @@ public class ConversationDirectMessagePacket extends PeerBasedCommandPacket {
   public static ConversationDirectMessagePacket getConversationMessagePacket(String peerId,
                                                                              String conversationId,
                                                                              String msg, byte[] binaryMsg, boolean mentionAll, List<String> mentionList,
-                                                                             String messageToken, AVIMMessageOption option, int requestId) {
+                                                                             String messageToken, LCIMMessageOption option, int requestId) {
     ConversationDirectMessagePacket cdmp =
             getConversationMessagePacket(peerId, conversationId, msg, binaryMsg, mentionAll, mentionList, option, requestId);
     cdmp.messageToken = messageToken;

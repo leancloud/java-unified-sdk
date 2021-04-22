@@ -2,7 +2,7 @@ package cn.leancloud.ops;
 
 import cn.leancloud.*;
 import cn.leancloud.codec.Base64;
-import cn.leancloud.types.AVGeoPoint;
+import cn.leancloud.types.LCGeoPoint;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSONArray;
@@ -12,7 +12,7 @@ import java.util.*;
 
 //@JSONType(deserializer = BaseOperationAdapter.class, serializer = BaseOperationAdapter.class)
 public abstract class BaseOperation implements ObjectFieldOperation {
-  static final AVLogger LOGGER = LogUtil.getLogger(BaseOperation.class);
+  static final LCLogger LOGGER = LogUtil.getLogger(BaseOperation.class);
   static final String KEY_OP = "__op";
   static final String KEY_OBJECTS = "objects";
   static final String KEY_AMOUNT = "amount";
@@ -62,19 +62,19 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     this.isFinal = isFinal;
   }
 
-  public boolean checkCircleReference(Map<AVObject, Boolean> markMap) {
+  public boolean checkCircleReference(Map<LCObject, Boolean> markMap) {
     if (null == markMap) {
       return false;
     }
     return checkValueCircleReference(markMap, this.value);
   }
 
-  private static boolean checkValueCircleReference(Map<AVObject, Boolean> markMap, Object value) {
+  private static boolean checkValueCircleReference(Map<LCObject, Boolean> markMap, Object value) {
     if (null == value || null == markMap) {
       return false;
     }
-    if (value instanceof AVObject) {
-      AVObject v = (AVObject)value;
+    if (value instanceof LCObject) {
+      LCObject v = (LCObject)value;
       if (markMap.containsKey(v) && markMap.get(v) == true) {
         return true;
       }
@@ -168,14 +168,14 @@ public abstract class BaseOperation implements ObjectFieldOperation {
       return encodeMap((Map<String, Object>)o, isTop);
     } else if (o instanceof Collection) {
       return encodeCollection((Collection)o, isTop);
-    } else if (o instanceof AVObject) {
-      return encodeAVObject((AVObject)o, isTop);
-    } else if (o instanceof AVGeoPoint) {
-      return encodeGeoPointer((AVGeoPoint) o);
-    }else if (o instanceof AVACL) {
-      return ((AVACL) o).toJSONObject();
-    } else if (o instanceof AVFile) {
-      return encodeAVFile((AVFile) o);
+    } else if (o instanceof LCObject) {
+      return encodeAVObject((LCObject)o, isTop);
+    } else if (o instanceof LCGeoPoint) {
+      return encodeGeoPointer((LCGeoPoint) o);
+    }else if (o instanceof LCACL) {
+      return ((LCACL) o).toJSONObject();
+    } else if (o instanceof LCFile) {
+      return encodeAVFile((LCFile) o);
     } else if (o instanceof Date) {
       return encodeDate((Date) o);
     } else if (o instanceof byte[]) {
@@ -208,7 +208,7 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     return result;
   }
 
-  protected static Object encodeAVObject(AVObject o, boolean isTop) {
+  protected static Object encodeAVObject(LCObject o, boolean isTop) {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("className", o.getClassName());
     if (!StringUtil.isEmpty(o.getObjectId())) {
@@ -226,7 +226,7 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     return result;
   }
 
-  protected static Object encodeGeoPointer(AVGeoPoint o) {
+  protected static Object encodeGeoPointer(LCGeoPoint o) {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("__type", "GeoPoint");
     result.put("latitude", o.getLatitude());
@@ -234,7 +234,7 @@ public abstract class BaseOperation implements ObjectFieldOperation {
     return result;
   }
 
-  protected static Object encodeAVFile(AVFile o) {
+  protected static Object encodeAVFile(LCFile o) {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("__type", "_File");
     result.put("metaData", o.getMetaData());

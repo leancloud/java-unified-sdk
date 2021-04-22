@@ -1,6 +1,6 @@
 package cn.leancloud.im;
 
-import cn.leancloud.session.AVSessionCacheHelper;
+import cn.leancloud.session.SessionCacheHelper;
 
 public class SignatureTask implements Runnable {
   private final SignatureCallback callback;
@@ -16,7 +16,7 @@ public class SignatureTask implements Runnable {
     try {
       Signature signature;
       if (callback.useSignatureCache()) {
-        signature = AVSessionCacheHelper.SignatureCache.getSessionSignature(this.clientId);
+        signature = SessionCacheHelper.SignatureCache.getSessionSignature(this.clientId);
         if (null != signature && !signature.isExpired()) {
           ;
         } else {
@@ -27,7 +27,7 @@ public class SignatureTask implements Runnable {
       }
       this.callback.onSignatureReady(signature, null);
       if (callback.cacheSignature()) {
-        AVSessionCacheHelper.SignatureCache.addSessionSignature(this.clientId, signature);
+        SessionCacheHelper.SignatureCache.addSessionSignature(this.clientId, signature);
       }
     } catch (SignatureFactory.SignatureException ex) {
       this.callback.onSignatureReady(null, ex);

@@ -1,8 +1,8 @@
 package cn.leancloud.upload;
 
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCException;
+import cn.leancloud.LCLogger;
 import cn.leancloud.codec.Base64;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -47,7 +47,7 @@ import java.util.zip.CRC32;
  */
 
 class QiniuAccessor {
-  private static AVLogger LOGGER = LogUtil.getLogger(QiniuAccessor.class);
+  private static LCLogger LOGGER = LogUtil.getLogger(QiniuAccessor.class);
 
   static final String QINIU_HOST = "http://upload.qiniu.com";
   static final String QINIU_CREATE_BLOCK_EP = "%s/mkblk/%d";
@@ -292,12 +292,12 @@ class QiniuAccessor {
   }
 
   private void validateCrc32Value(QiniuBlockResponseData respData, byte[] data, int offset, int nextChunkSize)
-          throws AVException {
+          throws LCException {
     CRC32 crc32 = new CRC32();
     crc32.update(data,offset,nextChunkSize);
     long localCRC32 = crc32.getValue();
     if(respData!=null && respData.crc32 != localCRC32){
-      throw  new AVException(AVException.OTHER_CAUSE,"CRC32 validation failure for chunk upload");
+      throw  new LCException(LCException.OTHER_CAUSE,"CRC32 validation failure for chunk upload");
     }
   }
 

@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebFilter(filterName = "requestAuthenticationFilter", urlPatterns = {"/*"})
 public class RequestAuthenticationFilter implements Filter {
-  private static AVLogger LOGGER = LogUtil.getLogger(RequestAuthenticationFilter.class);
+  private static LCLogger LOGGER = LogUtil.getLogger(RequestAuthenticationFilter.class);
 
   public void init(FilterConfig filterConfig) throws ServletException {}
 
@@ -27,7 +27,7 @@ public class RequestAuthenticationFilter implements Filter {
       EngineSessionCookie sessionCookie = LeanEngine.getSessionCookie();
       if (sessionCookie != null && request instanceof HttpServletRequest
           && response instanceof HttpServletResponse) {
-        AVUser requestUser = sessionCookie.parseCookie((HttpServletRequest) request, (HttpServletResponse) response);
+        LCUser requestUser = sessionCookie.parseCookie((HttpServletRequest) request, (HttpServletResponse) response);
         if (null != requestUser) {
           EngineRequestContext.setAuthenticatedUser(requestUser);
         }

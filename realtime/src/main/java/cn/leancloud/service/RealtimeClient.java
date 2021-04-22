@@ -2,7 +2,7 @@ package cn.leancloud.service;
 
 import cn.leancloud.core.*;
 import cn.leancloud.im.Signature;
-import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
+import cn.leancloud.im.v2.conversation.LCIMConversationMemberInfo;
 import cn.leancloud.utils.ErrorUtils;
 import cn.leancloud.json.JSONObject;
 import io.reactivex.Observable;
@@ -41,7 +41,7 @@ public class RealtimeClient {
     this.defaultCreator = AppConfiguration.getDefaultScheduler();
     final OkHttpClient httpClient = PaasClient.getGlobalOkHttpClient();
     AppRouter appRouter = AppRouter.getInstance();
-    appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.API).subscribe(
+    appRouter.getEndpoint(LeanCloud.getApplicationId(), LeanService.API).subscribe(
             new Consumer<String>() {
               @Override
               public void accept(String apiHost) throws Exception {
@@ -79,15 +79,15 @@ public class RealtimeClient {
     return wrapObservable(service.createSignature(JSONObject.Builder.create(params)));
   }
 
-  public Observable<List<AVIMConversationMemberInfo>> queryMemberInfo(Map<String, String> query, String rtmSessionToken) {
+  public Observable<List<LCIMConversationMemberInfo>> queryMemberInfo(Map<String, String> query, String rtmSessionToken) {
     return wrapObservable(service.queryMemberInfo(rtmSessionToken, query))
-            .map(new Function<Map<String, List<Map<String, Object>>>, List<AVIMConversationMemberInfo>>() {
+            .map(new Function<Map<String, List<Map<String, Object>>>, List<LCIMConversationMemberInfo>>() {
               @Override
-              public List<AVIMConversationMemberInfo> apply(Map<String, List<Map<String, Object>>> rawResult) throws Exception {
+              public List<LCIMConversationMemberInfo> apply(Map<String, List<Map<String, Object>>> rawResult) throws Exception {
                 List<Map<String, Object>> objects = rawResult.get("results");
-                List<AVIMConversationMemberInfo> result = new LinkedList<AVIMConversationMemberInfo>();
+                List<LCIMConversationMemberInfo> result = new LinkedList<LCIMConversationMemberInfo>();
                 for (Map<String, Object> object: objects) {
-                  AVIMConversationMemberInfo tmp = AVIMConversationMemberInfo.createInstance(object);
+                  LCIMConversationMemberInfo tmp = LCIMConversationMemberInfo.createInstance(object);
                   result.add(tmp);
                 }
                 return result;

@@ -1,7 +1,7 @@
 package cn.leancloud.core;
 
 import cn.leancloud.codec.MDFive;
-import cn.leancloud.utils.AVUtils;
+import cn.leancloud.utils.LCUtils;
 import cn.leancloud.utils.StringUtil;
 
 public class GeneralRequestSignature implements RequestSignature {
@@ -9,7 +9,7 @@ public class GeneralRequestSignature implements RequestSignature {
   private static String masterKey = null;
 
   public String generateSign() {
-    return requestSign(AVUtils.getCurrentTimestamp(), isUseMasterKey());
+    return requestSign(LCUtils.getCurrentTimestamp(), isUseMasterKey());
   }
 
   public static String requestSign(String key, long ts, String suffix) {
@@ -24,7 +24,7 @@ public class GeneralRequestSignature implements RequestSignature {
   }
 
   public static String requestSign(long ts, boolean useMasterKey) {
-    String appKey = AVOSCloud.getApplicationKey();
+    String appKey = LeanCloud.getApplicationKey();
     String usedKey = useMasterKey ? masterKey : appKey;
     return requestSign(usedKey, ts, useMasterKey?"master":null);
   }

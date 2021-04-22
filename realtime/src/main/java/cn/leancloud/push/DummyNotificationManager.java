@@ -1,6 +1,6 @@
 package cn.leancloud.push;
 
-class DummyNotificationManager extends AVNotificationManager {
+class DummyNotificationManager extends LCNotificationManager {
   String getApplicationName() {
     return "Notification";
   }

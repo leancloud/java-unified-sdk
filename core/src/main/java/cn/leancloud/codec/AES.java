@@ -1,6 +1,6 @@
 package cn.leancloud.codec;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.utils.LogUtil;
 
 import javax.crypto.*;
@@ -13,7 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
 public class AES {
-  private static final AVLogger Log = LogUtil.getLogger(AES.class);
+  private static final LCLogger Log = LogUtil.getLogger(AES.class);
 
   private static final String KEY_GENERATION_ALG = "PBKDF2WithHmacSHA1";
 
