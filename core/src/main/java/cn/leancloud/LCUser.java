@@ -958,13 +958,8 @@ public class LCUser extends LCObject {
           } else {
             // older format
             try {
-              T newUser = userClass.newInstance();
-              Map<String, Object> rawData = JSON.parseObject(jsonString, Map.class);
-              if (rawData.containsKey("serverData") || rawData.get("serverData") instanceof Map) {
-                newUser.resetServerData((Map<String, Object>)rawData.get("serverData"));
-              } else {
-                newUser.resetServerData(rawData);
-              }
+              LCObject rawData = JSON.parseObject(jsonString, LCObject.class);
+              T newUser = Transformer.transform(rawData, userClass);
 
               changeCurrentUser(newUser, true);
               user = newUser;

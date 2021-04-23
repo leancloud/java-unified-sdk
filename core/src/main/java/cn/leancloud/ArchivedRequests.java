@@ -110,19 +110,20 @@ public class ArchivedRequests {
           public void onComplete() { }
         });
       } else {
+        final String objectInternalId = obj.internalId();
         obj.saveInBackground().subscribe(new Observer<LCObject>() {
           @Override
           public void onSubscribe(Disposable disposable) { }
 
           @Override
           public void onNext(LCObject LCObject) {
-            collection.remove(obj.internalId());
-            File archivedFile = getArchivedFile(obj, isDelete);
+            collection.remove(objectInternalId);
+            File archivedFile = getArchivedFile(objectInternalId, isDelete);
             boolean ret = PersistenceUtil.sharedInstance().forceDeleteFile(archivedFile);
             if (!ret) {
-              logger.w("failed to delete file:" + archivedFile.getAbsolutePath() + " for objectInternalId: " + obj.internalId());
+              logger.w("failed to delete file:" + archivedFile.getAbsolutePath() + " for objectInternalId: " + objectInternalId);
             } else {
-              logger.d("succeed to delete file:" + archivedFile.getAbsolutePath() + " for objectInternalId: " + obj.internalId());
+              logger.d("succeed to delete file:" + archivedFile.getAbsolutePath() + " for objectInternalId: " + objectInternalId);
             }
           }
 
@@ -156,6 +157,9 @@ public class ArchivedRequests {
 
   private File getArchivedFile(LCObject object, boolean isDelete) {
     String fileName = getArchiveRequestFileName(object);
+    return new File(AppConfiguration.getCommandCacheDir(), fileName);
+  }
+  private File getArchivedFile(String fileName, boolean isDelete) {
     return new File(AppConfiguration.getCommandCacheDir(), fileName);
   }
 
@@ -228,8 +232,10 @@ public class ArchivedRequests {
   }
 
   private static String getArchiveRequestFileName(LCObject object) {
-    if (StringUtil.isEmpty(object.getObjectId())) {
-      return object.internalId();
+    if (!StringUtil.isEmpty(object.getObjectId())) {
+      return object.getObjectId();
+    } else if (!StringUtil.isEmpty(object.getUuid())) {
+      return object.getUuid();
     } else {
       return MDFive.computeMD5(object.getRequestRawEndpoint());
     }
