@@ -1713,12 +1713,12 @@ public class LCObject {
 //  objectString = objectString.replaceAll("^\\{\\s*\"@type\":\\s*\"cn.leancloud.AV(Object|Installation|User|Status|Role|File)\",", "{");
 
     // replace old AVObject type name.
-    objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVObject\",", "\"@type\":\"cn.leancloud.AVObject\",");
-    objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVInstallation\",", "\"@type\":\"cn.leancloud.AVInstallation\",");
-    objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVUser\",", "\"@type\":\"cn.leancloud.AVUser\",");
-    objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVStatus\",", "\"@type\":\"cn.leancloud.AVStatus\",");
-    objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVRole\",", "\"@type\":\"cn.leancloud.AVRole\",");
-    objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVFile\",", "\"@type\":\"cn.leancloud.AVFile\",");
+    objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVObject\",", "\"@type\":\"cn.leancloud.LCObject\",");
+    objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVInstallation\",", "\"@type\":\"cn.leancloud.LCInstallation\",");
+    objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVUser\",", "\"@type\":\"cn.leancloud.LCUser\",");
+    objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVStatus\",", "\"@type\":\"cn.leancloud.LCStatus\",");
+    objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVRole\",", "\"@type\":\"cn.leancloud.LCRole\",");
+    objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.AVFile\",", "\"@type\":\"cn.leancloud.LCFile\",");
 
     objectString = objectString.replaceAll("\"@type\":\\s*\"com.avos.avoscloud.ops.[A-Za-z]+Op\",", "");
 
