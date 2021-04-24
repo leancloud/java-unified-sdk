@@ -12,6 +12,10 @@ import java.util.concurrent.CountDownLatch;
 
 public class AVSubUserTest extends TestCase {
   private boolean operationSucceed = false;
+  public static final String USERNAME = "jfeng20200618";
+  public static final String PASSWORD = "FER$@$@#Ffwe";
+  private static final String EMAIL = "jfeng20200618@test.com";
+
   public AVSubUserTest(String name) {
     super(name);
     AVUser.alwaysUseSubUserClass(SubUser.class);
@@ -34,9 +38,9 @@ public class AVSubUserTest extends TestCase {
 
   public void testSingupWithEmail() throws Exception {
     SubUser user = new SubUser();
-    user.setEmail("jfeng@test.com");
-    user.setUsername("jfeng");
-    user.setPassword("FER$@$@#Ffwe");
+    user.setEmail(EMAIL);
+    user.setUsername(USERNAME);
+    user.setPassword(PASSWORD);
     final CountDownLatch latch = new CountDownLatch(1);
     user.signUpInBackground().subscribe(new Observer<AVUser>() {
       public void onSubscribe(Disposable disposable) {

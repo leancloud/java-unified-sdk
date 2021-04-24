@@ -5,6 +5,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -12,10 +13,13 @@ public class AVUserSerializerTest extends TestCase {
   private CountDownLatch latch = null;
   private boolean testSucceed = false;
 
+  public static final String USERNAME = "jfeng20200618";
+  public static final String PASSWORD = "FER$@$@#Ffwe";
+  private static final String EMAIL = "jfeng@test.com";
+
   public AVUserSerializerTest(String name) {
     super(name);
-    Configure.initializeWithMasterKey("xtuccgojwm9z701f4wzyu579klvlmag2pugywe39rg5iyqug",
-            "uzhzd5etmy4i6r3hbnzxhzbfojhfy8pw87fx8ve04w2h6id0", "https://lc.i7play.com");
+    Configure.initializeRuntime();
   }
 
   public static Test suite() {
@@ -33,24 +37,24 @@ public class AVUserSerializerTest extends TestCase {
   }
 
   public void testUserFetch() throws Exception {
-    final AVUser user = AVObject.createWithoutData(AVUser.class, "5c83c5b9303f390065666111");
-    user.fetchInBackground("author,kuolie,black").subscribe(new Observer<AVObject>() {
+    AVUser.loginByEmail(EMAIL, PASSWORD).subscribe(new Observer<AVUser>() {
       @Override
-      public void onSubscribe(Disposable disposable) {
+      public void onSubscribe(@NotNull Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVObject object) {
-        System.out.println(user);
-        AVUser.changeCurrentUser(user, true);
-        testSucceed = true;
+      public void onNext(@NotNull AVUser avUser) {
+        AVFile avatar = new AVFile("test avatar", "https://nimg.ws.126.net/?url=http%3A%2F%2Fcms-bucket.ws.126.net%2F2021%2F0424%2Fe1bb4ab1j00qs1sfw000mc000go00b4c.jpg&thumbnail=660x2147483647&quality=80&type=jpg");
+        avUser.put("avatar", avatar);
+        avUser.save();
+        AVFile savedFile = avUser.getAVFile("avatar");
+        testSucceed = null != savedFile;
         latch.countDown();
       }
 
       @Override
-      public void onError(Throwable throwable) {
-        throwable.printStackTrace();
+      public void onError(@NotNull Throwable throwable) {
         latch.countDown();
       }
 
@@ -65,8 +69,11 @@ public class AVUserSerializerTest extends TestCase {
 
   public void testCurrentUserFromLocalCache() throws Exception {
     AVUser user = AVUser.currentUser();
-    assertTrue(null != user);
     System.out.println(user);
+    assertTrue(null != user);
+    AVFile savedFile = user.getAVFile("avatar");
+    System.out.println(savedFile);
+    assertTrue(null != savedFile);
   }
 
   public void testDeserializedUser() throws Exception {
@@ -77,6 +84,7 @@ public class AVUserSerializerTest extends TestCase {
     assertTrue(null != user);
 
     try {
+      // gson doesnot support "new Date".
       jsonString = "{ \"_version\":\"5\",\"className\":\"_User\"," +
               "\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"signDate\":new Date(1594310400000)," +
               "\"sessionToken\":[new Date(1594310200000), new Date(1594310420000)],\"username\":\"变音小助手\",\"siOffDate\":new Date(1594310400000)}}";
