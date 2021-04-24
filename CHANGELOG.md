@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 7.2.6 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- bugfix: can't deserialize AVUser with AVFile attribute from cache.
+- bugfix: AVObject.saveEventually will run more times bcz not deleting cache file correctly.
+
 ## 7.2.5 release
 
 #### Break changes
