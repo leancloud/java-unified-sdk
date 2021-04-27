@@ -10,6 +10,6 @@ public abstract class LCIMConversationCreatedCallback extends LCCallback<LCIMCon
 
   @Override
   protected final void internalDone0(LCIMConversation returnValue, LCException e) {
-    done(returnValue, LCIMException.wrapperAVException(e));
+    done(returnValue, LCIMException.wrapperException(e));
   }
 }

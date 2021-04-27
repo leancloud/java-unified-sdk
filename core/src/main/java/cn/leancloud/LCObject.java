@@ -408,7 +408,7 @@ public class LCObject {
    * @param key specified key.
    * @return the AVGeoPoint value associated with specified key.
    */
-  public LCGeoPoint getAVGeoPoint(String key) {
+  public LCGeoPoint getLCGeoPoint(String key) {
     return (LCGeoPoint) get(key);
   }
 
@@ -417,7 +417,7 @@ public class LCObject {
    * @param key specified key.
    * @return the AVFile value associated with specified key.
    */
-  public LCFile getAVFile(String key) {
+  public LCFile getLCFile(String key) {
     return (LCFile) get(key);
   }
 
@@ -427,7 +427,7 @@ public class LCObject {
    * @param <T> template type
    * @return the AVObject value associated with specified key.
    */
-  public <T extends LCObject> T getAVObject(String key) {
+  public <T extends LCObject> T getLCObject(String key) {
     try {
       return (T) get(key);
     } catch (Exception ex) {

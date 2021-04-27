@@ -11,7 +11,7 @@ import cn.leancloud.utils.LogUtil;
 public abstract class LCIMClientEventHandler extends LCIMEventHandler {
   protected static final LCLogger LOGGER = LogUtil.getLogger(LCIMClientEventHandler.class);
 
-  private int prevOperation = Conversation.AVIMOperation.CONVERSATION_UNKNOWN.getCode();
+  private int prevOperation = Conversation.LCIMOperation.CONVERSATION_UNKNOWN.getCode();
 
   /**
    * 实现本方法以处理网络断开事件

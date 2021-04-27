@@ -111,7 +111,7 @@ class LiveQueryConnectionListener implements LCConnectionListener {
       int code = errorCommand.getCode();
       int appCode = (errorCommand.hasAppCode() ? errorCommand.getAppCode() : 0);
       String reason = errorCommand.getReason();
-      Conversation.AVIMOperation operation = null;
+      Conversation.LCIMOperation operation = null;
       InternalConfiguration.getOperationTube().onOperationCompleted(peerId, null, requestKey,
               operation, new LCIMException(code, appCode, reason));
     }

@@ -22,7 +22,7 @@ public class LiveQueryOperationDelegate {
   public boolean login(String subscriptionId, int requestId) {
     // FIXME: no timeout timer for login request.
     operationCache.offer(IMOperationQueue.Operation.getOperation(
-            Conversation.AVIMOperation.LIVEQUERY_LOGIN.getCode(), LIVEQUERY_DEFAULT_ID, null, requestId));
+            Conversation.LCIMOperation.LIVEQUERY_LOGIN.getCode(), LIVEQUERY_DEFAULT_ID, null, requestId));
     LCConnectionManager.getInstance().sendPacket(WindTalker.getInstance().assembleLiveQueryLoginPacket(subscriptionId, requestId));
     return true;
   }

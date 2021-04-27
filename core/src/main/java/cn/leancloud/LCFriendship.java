@@ -18,7 +18,7 @@ public class LCFriendship extends LCObject {
   }
 
   public LCUser getFollowee() {
-    return getAVObject(ATTR_FOLLOWEE);
+    return getLCObject(ATTR_FOLLOWEE);
   }
 
   public void setFollowee(LCUser followee) {
@@ -26,7 +26,7 @@ public class LCFriendship extends LCObject {
   }
 
   public LCUser getFollower() {
-    return getAVObject(ATTR_FOLLOWER);
+    return getLCObject(ATTR_FOLLOWER);
   }
 
   public void setFollower(LCUser follower) {

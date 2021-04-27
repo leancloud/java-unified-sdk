@@ -13,34 +13,34 @@ import java.util.Map;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVInstallation;
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCException;
+import cn.leancloud.LCInstallation;
+import cn.leancloud.LCLogger;
 import cn.leancloud.LeanCloud;
-import cn.leancloud.callback.AVCallback;
+import cn.leancloud.callback.LCCallback;
 import cn.leancloud.codec.MDFive;
-import cn.leancloud.im.v2.AVIMClient;
-import cn.leancloud.im.v2.AVIMClient.AVIMClientStatus;
-import cn.leancloud.im.v2.AVIMException;
-import cn.leancloud.im.v2.AVIMMessage;
-import cn.leancloud.im.v2.AVIMMessageOption;
+import cn.leancloud.im.v2.LCIMClient;
+import cn.leancloud.im.v2.LCIMClient.LCIMClientStatus;
+import cn.leancloud.im.v2.LCIMException;
+import cn.leancloud.im.v2.LCIMMessage;
+import cn.leancloud.im.v2.LCIMMessageOption;
 import cn.leancloud.im.v2.Conversation;
-import cn.leancloud.im.v2.Conversation.AVIMOperation;
-import cn.leancloud.im.v2.callback.AVIMClientCallback;
-import cn.leancloud.im.v2.callback.AVIMClientStatusCallback;
-import cn.leancloud.im.v2.callback.AVIMCommonJsonCallback;
-import cn.leancloud.im.v2.callback.AVIMConversationCallback;
-import cn.leancloud.im.v2.callback.AVIMConversationIterableResult;
-import cn.leancloud.im.v2.callback.AVIMConversationIterableResultCallback;
-import cn.leancloud.im.v2.callback.AVIMMessagesQueryCallback;
-import cn.leancloud.im.v2.callback.AVIMOnlineClientsCallback;
+import cn.leancloud.im.v2.Conversation.LCIMOperation;
+import cn.leancloud.im.v2.callback.LCIMClientCallback;
+import cn.leancloud.im.v2.callback.LCIMClientStatusCallback;
+import cn.leancloud.im.v2.callback.LCIMCommonJsonCallback;
+import cn.leancloud.im.v2.callback.LCIMConversationCallback;
+import cn.leancloud.im.v2.callback.LCIMConversationIterableResult;
+import cn.leancloud.im.v2.callback.LCIMConversationIterableResultCallback;
+import cn.leancloud.im.v2.callback.LCIMMessagesQueryCallback;
+import cn.leancloud.im.v2.callback.LCIMOnlineClientsCallback;
 import cn.leancloud.json.JSON;
-import cn.leancloud.livequery.AVLiveQuery;
-import cn.leancloud.livequery.AVLiveQuerySubscribeCallback;
+import cn.leancloud.livequery.LCLiveQuery;
+import cn.leancloud.livequery.LCLiveQuerySubscribeCallback;
 import cn.leancloud.push.PushService;
-import cn.leancloud.session.AVConnectionManager;
-import cn.leancloud.session.AVSession;
-import cn.leancloud.session.AVSessionManager;
+import cn.leancloud.session.LCConnectionManager;
+import cn.leancloud.session.LCSession;
+import cn.leancloud.session.LCSessionManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
@@ -49,10 +49,10 @@ import cn.leancloud.utils.StringUtil;
  */
 
 public class AndroidOperationTube implements OperationTube {
-  private static AVLogger LOGGER = LogUtil.getLogger(AndroidOperationTube.class);
+  private static LCLogger LOGGER = LogUtil.getLogger(AndroidOperationTube.class);
 
-  public boolean openClient(AVConnectionManager connectionManager, final String clientId, String tag, String userSessionToken,
-                            boolean reConnect, final AVIMClientCallback callback) {
+  public boolean openClient(LCConnectionManager connectionManager, final String clientId, String tag, String userSessionToken,
+                            boolean reConnect, final LCIMClientCallback callback) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CLIENT_TAG, tag);
     params.put(Conversation.PARAM_CLIENT_USERSESSIONTOKEN, userSessionToken);
@@ -65,60 +65,60 @@ public class AndroidOperationTube implements OperationTube {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           LOGGER.d("openClient get response. error:" + error);
-          callback.internalDone(AVIMClient.getInstance(clientId), AVIMException.wrapperAVException(error));
+          callback.internalDone(LCIMClient.getInstance(clientId), LCIMException.wrapperException(error));
         }
       };
     }
     return this.sendClientCMDToPushService(clientId, JSON.toJSONString(params), receiver,
-        AVIMOperation.CLIENT_OPEN);
+        LCIMOperation.CLIENT_OPEN);
   }
 
-  public boolean queryClientStatus(AVConnectionManager connectionManager, String clientId, final AVIMClientStatusCallback callback) {
+  public boolean queryClientStatus(LCConnectionManager connectionManager, String clientId, final LCIMClientStatusCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
       receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
-          AVIMClientStatus status = null;
+          LCIMClientStatus status = null;
           if (null != intentResult
               && intentResult.containsKey(Conversation.callbackClientStatus)) {
-            status = AVIMClientStatus.getClientStatus((int) intentResult.get(Conversation.callbackClientStatus));
+            status = LCIMClientStatus.getClientStatus((int) intentResult.get(Conversation.callbackClientStatus));
           }
-          callback.internalDone(status, AVIMException.wrapperAVException(error));
+          callback.internalDone(status, LCIMException.wrapperException(error));
         }
       };
     }
-    return this.sendClientCMDToPushService(clientId, null, receiver, AVIMOperation.CLIENT_STATUS);
+    return this.sendClientCMDToPushService(clientId, null, receiver, LCIMOperation.CLIENT_STATUS);
   }
 
-  public boolean closeClient(AVConnectionManager connectionManager, final String self, final AVIMClientCallback callback) {
+  public boolean closeClient(LCConnectionManager connectionManager, final String self, final LCIMClientCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
       receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
-          AVIMClient client = AVIMClient.getInstance(self);
-          callback.internalDone(client, AVIMException.wrapperAVException(error));
+          LCIMClient client = LCIMClient.getInstance(self);
+          callback.internalDone(client, LCIMException.wrapperException(error));
         }
       };
     }
-    return this.sendClientCMDToPushService(self, null, receiver, AVIMOperation.CLIENT_DISCONNECT);
+    return this.sendClientCMDToPushService(self, null, receiver, LCIMOperation.CLIENT_DISCONNECT);
   }
 
-  public boolean renewSessionToken(AVConnectionManager connectionManager, String clientId, final AVIMClientCallback callback) {
+  public boolean renewSessionToken(LCConnectionManager connectionManager, String clientId, final LCIMClientCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
       receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
-          callback.internalDone(null, AVIMException.wrapperAVException(error));
+          callback.internalDone(null, LCIMException.wrapperException(error));
         }
       };
     }
-    return this.sendClientCMDToPushService(clientId, null, receiver, AVIMOperation.CLIENT_REFRESH_TOKEN);
+    return this.sendClientCMDToPushService(clientId, null, receiver, LCIMOperation.CLIENT_REFRESH_TOKEN);
   }
 
-  public boolean queryOnlineClients(AVConnectionManager connectionManager, String self, List<String> clients, final AVIMOnlineClientsCallback callback) {
+  public boolean queryOnlineClients(LCConnectionManager connectionManager, String self, List<String> clients, final LCIMOnlineClientsCallback callback) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_ONLINE_CLIENTS, clients);
 
@@ -128,7 +128,7 @@ public class AndroidOperationTube implements OperationTube {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           if (error != null) {
-            callback.internalDone(null, AVIMException.wrapperAVException(error));
+            callback.internalDone(null, LCIMException.wrapperException(error));
           } else {
             List<String> onlineClients = null;
             if (null != intentResult && intentResult.containsKey(Conversation.callbackOnlineClients)) {
@@ -140,12 +140,12 @@ public class AndroidOperationTube implements OperationTube {
       };
     }
 
-    return this.sendClientCMDToPushService(self, JSON.toJSONString(params), receiver, AVIMOperation.CLIENT_ONLINE_QUERY);
+    return this.sendClientCMDToPushService(self, JSON.toJSONString(params), receiver, LCIMOperation.CLIENT_ONLINE_QUERY);
   }
 
-  public boolean createConversation(AVConnectionManager connectionManager, final String self, final List<String> members,
+  public boolean createConversation(LCConnectionManager connectionManager, final String self, final List<String> members,
                                     final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
-                                    final boolean isTemp, int tempTTL, final AVIMCommonJsonCallback callback) {
+                                    final boolean isTemp, int tempTTL, final LCIMCommonJsonCallback callback) {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, members);
     params.put(Conversation.PARAM_CONVERSATION_ISUNIQUE, isUnique);
@@ -162,39 +162,39 @@ public class AndroidOperationTube implements OperationTube {
       receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
-          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
+          callback.internalDone(intentResult, LCIMException.wrapperException(error));
         }
       };
     }
     return this.sendClientCMDToPushService(self, JSON.toJSONString(params), receiver,
-        AVIMOperation.CONVERSATION_CREATION);
+        LCIMOperation.CONVERSATION_CREATION);
   }
 
-  public boolean updateConversation(AVConnectionManager connectionManager, final String clientId, String conversationId, int convType,
-                                    final Map<String, Object> param, final AVIMCommonJsonCallback callback) {
+  public boolean updateConversation(LCConnectionManager connectionManager, final String clientId, String conversationId, int convType,
+                                    final Map<String, Object> param, final LCIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
       receiver = new LCIMBaseBroadcastReceiver(callback) {
 
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
-          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
+          callback.internalDone(intentResult, LCIMException.wrapperException(error));
         }
       };
     }
     return this.sendClientCMDToPushService(clientId, conversationId, convType, JSON.toJSONString(param),
-        null, null, AVIMOperation.CONVERSATION_UPDATE, receiver);
+        null, null, LCIMOperation.CONVERSATION_UPDATE, receiver);
   }
 
-  public boolean participateConversation(AVConnectionManager connectionManager, final String clientId, String conversationId, int convType, final Map<String, Object> param,
-                                         Conversation.AVIMOperation operation, final AVIMConversationCallback callback) {
+  public boolean participateConversation(LCConnectionManager connectionManager, final String clientId, String conversationId, int convType, final Map<String, Object> param,
+                                         Conversation.LCIMOperation operation, final LCIMConversationCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
       receiver = new LCIMBaseBroadcastReceiver(callback) {
 
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
-          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
+          callback.internalDone(intentResult, LCIMException.wrapperException(error));
         }
       };
     }
@@ -203,108 +203,108 @@ public class AndroidOperationTube implements OperationTube {
         null, null, operation, receiver);
   }
 
-  public boolean queryConversations(AVConnectionManager connectionManager, final String clientId, final String queryString, final AVIMCommonJsonCallback callback) {
+  public boolean queryConversations(LCConnectionManager connectionManager, final String clientId, final String queryString, final LCIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (callback != null) {
       receiver = new LCIMBaseBroadcastReceiver(callback) {
 
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
-          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
+          callback.internalDone(intentResult, LCIMException.wrapperException(error));
         }
       };
     }
-    return this.sendClientCMDToPushService(clientId, queryString, receiver, AVIMOperation.CONVERSATION_QUERY);
+    return this.sendClientCMDToPushService(clientId, queryString, receiver, LCIMOperation.CONVERSATION_QUERY);
   }
 
-  public boolean queryConversationsInternally(AVConnectionManager connectionManager, final String clientId, final String queryString,
-                                              final AVIMCommonJsonCallback callback) {
+  public boolean queryConversationsInternally(LCConnectionManager connectionManager, final String clientId, final String queryString,
+                                              final LCIMCommonJsonCallback callback) {
     // internal query conversation.
     LOGGER.d("queryConversationsInternally...");
     int requestId = WindTalker.getNextIMRequestId();
     RequestCache.getInstance().addRequestCallback(clientId, null, requestId, callback);
-    AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId, AVInstallation.getCurrentInstallation().getInstallationId(), connectionManager);
+    LCSession session = LCSessionManager.getInstance().getOrCreateSession(clientId, LCInstallation.getCurrentInstallation().getInstallationId(), connectionManager);
     session.queryConversations(JSON.parseObject(queryString, Map.class), requestId, MDFive.computeMD5(queryString));
     return true;
   }
 
-  public boolean sendMessage(AVConnectionManager connectionManager, String clientId, String conversationId, int convType, final AVIMMessage message,
-                             final AVIMMessageOption messageOption, final AVIMCommonJsonCallback callback) {
+  public boolean sendMessage(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, final LCIMMessage message,
+                             final LCIMMessageOption messageOption, final LCIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
       receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
-          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
+          callback.internalDone(intentResult, LCIMException.wrapperException(error));
         }
       };
     }
     return this.sendClientCMDToPushService(clientId, conversationId, convType, null,
-        message, messageOption, AVIMOperation.CONVERSATION_SEND_MESSAGE, receiver);
+        message, messageOption, LCIMOperation.CONVERSATION_SEND_MESSAGE, receiver);
   }
 
-  public boolean updateMessage(AVConnectionManager connectionManager, String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage,
-                               final AVIMCommonJsonCallback callback) {
+  public boolean updateMessage(LCConnectionManager connectionManager, String clientId, int convType, LCIMMessage oldMessage, LCIMMessage newMessage,
+                               final LCIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
       receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
-          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
+          callback.internalDone(intentResult, LCIMException.wrapperException(error));
         }
       };
     }
     return this.sendClientCMDToPushService2(clientId, oldMessage.getConversationId(), convType, oldMessage,
-        newMessage, AVIMOperation.CONVERSATION_UPDATE_MESSAGE, receiver);
+        newMessage, LCIMOperation.CONVERSATION_UPDATE_MESSAGE, receiver);
   }
 
-  public boolean recallMessage(AVConnectionManager connectionManager, String clientId, int convType, AVIMMessage message,
-                               final AVIMCommonJsonCallback callback) {
+  public boolean recallMessage(LCConnectionManager connectionManager, String clientId, int convType, LCIMMessage message,
+                               final LCIMCommonJsonCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
       receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
-          callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
+          callback.internalDone(intentResult, LCIMException.wrapperException(error));
         }
       };
     }
     return this.sendClientCMDToPushService(clientId, message.getConversationId(), convType, null,
-        message, null, AVIMOperation.CONVERSATION_RECALL_MESSAGE, receiver);
+        message, null, LCIMOperation.CONVERSATION_RECALL_MESSAGE, receiver);
   }
 
-  public boolean fetchReceiptTimestamps(AVConnectionManager connectionManager, String clientId,
-                                        String conversationId, int convType, Conversation.AVIMOperation operation,
-                                        final AVIMCommonJsonCallback callback) {
+  public boolean fetchReceiptTimestamps(LCConnectionManager connectionManager, String clientId,
+                                        String conversationId, int convType, Conversation.LCIMOperation operation,
+                                        final LCIMCommonJsonCallback callback) {
     return false;
   }
 
-  public boolean queryMessages(AVConnectionManager connectionManager, String clientId, String conversationId, int convType, String params,
-                               final Conversation.AVIMOperation operation, final AVIMMessagesQueryCallback callback) {
+  public boolean queryMessages(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, String params,
+                               final Conversation.LCIMOperation operation, final LCIMMessagesQueryCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
       receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
-          List<AVIMMessage> msg = (null == intentResult) ?
-              null : (List<AVIMMessage>) intentResult.get(Conversation.callbackHistoryMessages);
-          callback.internalDone(msg, AVIMException.wrapperAVException(error));
+          List<LCIMMessage> msg = (null == intentResult) ?
+              null : (List<LCIMMessage>) intentResult.get(Conversation.callbackHistoryMessages);
+          callback.internalDone(msg, LCIMException.wrapperException(error));
         }
       };
     }
     return this.sendClientCMDToPushService(clientId, conversationId, convType, params, null, null,
-        AVIMOperation.CONVERSATION_MESSAGE_QUERY, receiver);
+        LCIMOperation.CONVERSATION_MESSAGE_QUERY, receiver);
   }
 
-  public boolean processMembers(AVConnectionManager connectionManager, String clientId,
+  public boolean processMembers(LCConnectionManager connectionManager, String clientId,
                                 String conversationId, int convType, String params,
-                                Conversation.AVIMOperation op, final AVCallback callback) {
+                                Conversation.LCIMOperation op, final LCCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
       receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
-          if (AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY == op) {
+          if (LCIMOperation.CONVERSATION_MEMBER_COUNT_QUERY == op) {
             int result = 0;
             if (null != intentResult) {
               Object memberCount = intentResult.get(Conversation.callbackMemberCount);
@@ -312,9 +312,9 @@ public class AndroidOperationTube implements OperationTube {
                 result = (Integer) memberCount;
               }
             }
-            callback.internalDone(result, AVIMException.wrapperAVException(error));
-          } else if (AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY == op
-              || AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY == op) {
+            callback.internalDone(result, LCIMException.wrapperException(error));
+          } else if (LCIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY == op
+              || LCIMOperation.CONVERSATION_MUTED_MEMBER_QUERY == op) {
             List<String> result = new ArrayList<>();
             String next = null;
             if (null != intentResult) {
@@ -326,16 +326,16 @@ public class AndroidOperationTube implements OperationTube {
                 result.addAll(Arrays.asList((String[])memberList));
               }
             }
-            if (callback instanceof AVIMConversationIterableResultCallback) {
-              AVIMConversationIterableResult iterableResult = new AVIMConversationIterableResult();
+            if (callback instanceof LCIMConversationIterableResultCallback) {
+              LCIMConversationIterableResult iterableResult = new LCIMConversationIterableResult();
               iterableResult.setMembers(result);
               iterableResult.setNext(next);
-              callback.internalDone(iterableResult, AVIMException.wrapperAVException(error));
+              callback.internalDone(iterableResult, LCIMException.wrapperException(error));
             } else {
-              callback.internalDone(result, AVIMException.wrapperAVException(error));
+              callback.internalDone(result, LCIMException.wrapperException(error));
             }
           } else {
-            callback.internalDone(intentResult, AVIMException.wrapperAVException(error));
+            callback.internalDone(intentResult, LCIMException.wrapperException(error));
           }
         }
       };
@@ -344,21 +344,21 @@ public class AndroidOperationTube implements OperationTube {
         op, receiver);
   }
 
-  public boolean markConversationRead(AVConnectionManager connectionManager, String clientId, String conversationId, int convType,
+  public boolean markConversationRead(LCConnectionManager connectionManager, String clientId, String conversationId, int convType,
                                       Map<String, Object> lastMessageParam) {
     String dataString = null == lastMessageParam ? null : JSON.toJSONString(lastMessageParam);
     return this.sendClientCMDToPushService(clientId, conversationId, convType, dataString,
-        null, null, AVIMOperation.CONVERSATION_READ, null);
+        null, null, LCIMOperation.CONVERSATION_READ, null);
   }
 
-  public boolean loginLiveQuery(AVConnectionManager connectionManager, String subscriptionId, final AVLiveQuerySubscribeCallback callback) {
+  public boolean loginLiveQuery(LCConnectionManager connectionManager, String subscriptionId, final LCLiveQuerySubscribeCallback callback) {
     BroadcastReceiver receiver = null;
     if (null != callback) {
       receiver = new LCIMBaseBroadcastReceiver(callback) {
         @Override
         public void execute(Map<String, Object> intentResult, Throwable error) {
           if (null != callback) {
-            callback.internalDone(null == error ? null : new AVException(error));
+            callback.internalDone(null == error ? null : new LCException(error));
           }
         }
       };
@@ -366,18 +366,18 @@ public class AndroidOperationTube implements OperationTube {
     if (LeanCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
       if (null != callback) {
-        callback.internalDone(new AVException(AVException.OTHER_CAUSE,
+        callback.internalDone(new LCException(LCException.OTHER_CAUSE,
             "root Context is null, please initialize at first."));
       }
       return false;
     }
     int requestId = WindTalker.getNextIMRequestId();
     LocalBroadcastManager.getInstance(LeanCloud.getContext()).registerReceiver(receiver,
-        new IntentFilter(AVLiveQuery.LIVEQUERY_PRIFIX + requestId));
+        new IntentFilter(LCLiveQuery.LIVEQUERY_PRIFIX + requestId));
     try {
       Intent i = new Intent(LeanCloud.getContext(), PushService.class);
-      i.setAction(AVLiveQuery.ACTION_LIVE_QUERY_LOGIN);
-      i.putExtra(AVLiveQuery.SUBSCRIBE_ID, subscriptionId);
+      i.setAction(LCLiveQuery.ACTION_LIVE_QUERY_LOGIN);
+      i.putExtra(LCLiveQuery.SUBSCRIBE_ID, subscriptionId);
       i.putExtra(Conversation.INTENT_KEY_REQUESTID, requestId);
       LeanCloud.getContext().startService(IntentUtil.setupIntentFlags(i));
     } catch (Exception ex) {
@@ -388,13 +388,13 @@ public class AndroidOperationTube implements OperationTube {
   }
 
   protected boolean sendClientCMDToPushService(String clientId, String dataAsString, BroadcastReceiver receiver,
-                                               AVIMOperation operation) {
+                                               LCIMOperation operation) {
 
     if (LeanCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
       if (null != receiver && receiver instanceof LCIMBaseBroadcastReceiver) {
         ((LCIMBaseBroadcastReceiver)receiver).execute(new HashMap<>(),
-            new AVException(AVException.OTHER_CAUSE, "root Context is null, please initialize at first."));
+            new LCException(LCException.OTHER_CAUSE, "root Context is null, please initialize at first."));
       }
       return false;
     }
@@ -405,7 +405,7 @@ public class AndroidOperationTube implements OperationTube {
           new IntentFilter(operation.getOperation() + requestId));
     }
     Intent i = new Intent(LeanCloud.getContext(), PushService.class);
-    i.setAction(Conversation.AV_CONVERSATION_INTENT_ACTION);
+    i.setAction(Conversation.LC_CONVERSATION_INTENT_ACTION);
     if (!StringUtil.isEmpty(dataAsString)) {
       i.putExtra(Conversation.INTENT_KEY_DATA, dataAsString);
     }
@@ -423,14 +423,14 @@ public class AndroidOperationTube implements OperationTube {
   }
 
   protected boolean sendClientCMDToPushService(String clientId, String conversationId, int convType,
-                                               String dataAsString, final AVIMMessage message,
-                                               final AVIMMessageOption option, final AVIMOperation operation,
+                                               String dataAsString, final LCIMMessage message,
+                                               final LCIMMessageOption option, final LCIMOperation operation,
                                                BroadcastReceiver receiver) {
     if (LeanCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
       if (null != receiver && receiver instanceof LCIMBaseBroadcastReceiver) {
         ((LCIMBaseBroadcastReceiver)receiver).execute(new HashMap<>(),
-            new AVException(AVException.OTHER_CAUSE, "root Context is null, please initialize at first."));
+            new LCException(LCException.OTHER_CAUSE, "root Context is null, please initialize at first."));
       }
       return false;
     }
@@ -441,7 +441,7 @@ public class AndroidOperationTube implements OperationTube {
           new IntentFilter(operation.getOperation() + requestId));
     }
     Intent i = new Intent(LeanCloud.getContext(), PushService.class);
-    i.setAction(Conversation.AV_CONVERSATION_INTENT_ACTION);
+    i.setAction(Conversation.LC_CONVERSATION_INTENT_ACTION);
     if (!StringUtil.isEmpty(dataAsString)) {
       i.putExtra(Conversation.INTENT_KEY_DATA, dataAsString);
     }
@@ -466,14 +466,14 @@ public class AndroidOperationTube implements OperationTube {
   }
 
   protected boolean sendClientCMDToPushService2(String clientId, String conversationId, int convType,
-                                                final AVIMMessage message, final AVIMMessage message2,
-                                                final AVIMOperation operation,
+                                                final LCIMMessage message, final LCIMMessage message2,
+                                                final LCIMOperation operation,
                                                 BroadcastReceiver receiver) {
     if (LeanCloud.getContext() == null) {
       LOGGER.e("failed to startService. cause: root Context is null.");
       if (null != receiver && receiver instanceof LCIMBaseBroadcastReceiver) {
         ((LCIMBaseBroadcastReceiver)receiver).execute(new HashMap<>(),
-            new AVException(AVException.OTHER_CAUSE, "root Context is null, please initialize at first."));
+            new LCException(LCException.OTHER_CAUSE, "root Context is null, please initialize at first."));
       }
       return false;
     }
@@ -483,7 +483,7 @@ public class AndroidOperationTube implements OperationTube {
           new IntentFilter(operation.getOperation() + requestId));
     }
     Intent i = new Intent(LeanCloud.getContext(), PushService.class);
-    i.setAction(Conversation.AV_CONVERSATION_INTENT_ACTION);
+    i.setAction(Conversation.LC_CONVERSATION_INTENT_ACTION);
 
     if (null != message) {
       i.putExtra(Conversation.INTENT_KEY_DATA, message.toJSONString());
@@ -507,12 +507,12 @@ public class AndroidOperationTube implements OperationTube {
 
   // response notifier
   public void onOperationCompleted(String clientId, String conversationId, int requestId,
-                                   Conversation.AVIMOperation operation, Throwable throwable) {
-    if (AVIMOperation.CONVERSATION_QUERY == operation) {
-      AVCallback callback = RequestCache.getInstance().getRequestCallback(clientId, null, requestId);
+                                   Conversation.LCIMOperation operation, Throwable throwable) {
+    if (LCIMOperation.CONVERSATION_QUERY == operation) {
+      LCCallback callback = RequestCache.getInstance().getRequestCallback(clientId, null, requestId);
       if (null != callback) {
         // internal query conversation.
-        callback.internalDone(null, AVIMException.wrapperAVException(throwable));
+        callback.internalDone(null, LCIMException.wrapperException(throwable));
         RequestCache.getInstance().cleanRequestCallback(clientId, null, requestId);
         return;
       }
@@ -521,9 +521,9 @@ public class AndroidOperationTube implements OperationTube {
   }
 
   public void onOperationCompletedEx(String clientId, String conversationId, int requestId,
-                                     Conversation.AVIMOperation operation, HashMap<String, Object> resultData) {
-    if (AVIMOperation.CONVERSATION_QUERY == operation) {
-      AVCallback callback = RequestCache.getInstance().getRequestCallback(clientId, null, requestId);
+                                     Conversation.LCIMOperation operation, HashMap<String, Object> resultData) {
+    if (LCIMOperation.CONVERSATION_QUERY == operation) {
+      LCCallback callback = RequestCache.getInstance().getRequestCallback(clientId, null, requestId);
       if (null != callback) {
         // internal query conversation.
         callback.internalDone(resultData, null);

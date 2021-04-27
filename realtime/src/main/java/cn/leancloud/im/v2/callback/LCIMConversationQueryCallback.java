@@ -17,7 +17,7 @@ public abstract class LCIMConversationQueryCallback
 
   @Override
   protected final void internalDone0(List<LCIMConversation> returnValue, LCException e) {
-    done(returnValue, LCIMException.wrapperAVException(e));
+    done(returnValue, LCIMException.wrapperException(e));
   }
 
 }

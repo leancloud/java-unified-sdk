@@ -3,7 +3,7 @@ package cn.leancloud.im.v2;
 import cn.leancloud.LCObject;
 
 public interface Conversation {
-  String AV_CONVERSATION_INTENT_ACTION = "com.avoscloud.im.v2.action";
+  String LC_CONVERSATION_INTENT_ACTION = "com.avoscloud.im.v2.action";
 
   String PARAM_CLIENT_TAG = "client.tag";
   String PARAM_CLIENT_USERSESSIONTOKEN = "client.userSession";
@@ -43,7 +43,7 @@ public interface Conversation {
 
   int DEFAULT_CONVERSATION_EXPIRE_TIME_IN_MILLS = 3600000;  // 1 hour
 
-  enum AVIMOperation {
+  enum LCIMOperation {
     CONVERSATION_CREATION(40000, "com.avoscloud.v2.im.conversation.creation."),
     CONVERSATION_ADD_MEMBER(40001, "com.avoscloud.v2.im.conversation.members."),
     CONVERSATION_RM_MEMBER(40002, "com.avoscloud.v2.im.conversation.members."),
@@ -78,7 +78,7 @@ public interface Conversation {
     private final String header;
     private final int code;
 
-    AVIMOperation(int operationCode, String operationHeader) {
+    LCIMOperation(int operationCode, String operationHeader) {
       this.code = operationCode;
       this.header = operationHeader;
     }
@@ -91,7 +91,7 @@ public interface Conversation {
       return header;
     }
 
-    public static AVIMOperation getAVIMOperation(int code) {
+    public static LCIMOperation getIMOperation(int code) {
       switch (code) {
         case 40000:
           return CONVERSATION_CREATION;

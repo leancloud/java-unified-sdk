@@ -256,7 +256,7 @@ public class QueryUnitTest extends TestCase {
         assertNotNull(avObjects);
         assertTrue(avObjects.size() > 0);
         for (LCObject obj : avObjects) {
-          assertTrue(obj.getAVObject("player").has("image"));
+          assertTrue(obj.getLCObject("player").has("image"));
         }
       }
     };
@@ -272,8 +272,8 @@ public class QueryUnitTest extends TestCase {
     List<LCObject> biggerResult = query.find();
     Set<String> playerIds = new HashSet<String>();
     for(LCObject o:biggerResult){
-      if (null != o.getAVObject("player")) {
-        playerIds.add(o.getAVObject("player").getObjectId());
+      if (null != o.getLCObject("player")) {
+        playerIds.add(o.getLCObject("player").getObjectId());
       }
     }
     List<LCObject> innerResult = innerQuery.find();

@@ -8,7 +8,7 @@ import cn.leancloud.command.*;
 import cn.leancloud.command.ConversationControlPacket.ConversationControlOp;
 import cn.leancloud.im.*;
 import cn.leancloud.im.v2.*;
-import cn.leancloud.im.v2.Conversation.AVIMOperation;
+import cn.leancloud.im.v2.Conversation.LCIMOperation;
 import cn.leancloud.im.v2.callback.LCIMCommonJsonCallback;
 import cn.leancloud.session.IMOperationQueue.Operation;
 import cn.leancloud.im.v2.callback.LCIMOperationFailure;
@@ -44,7 +44,7 @@ public class LCConversationHolder {
   }
 
   public void addMembers(final List<String> members, final int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_ADD_MEMBER, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_ADD_MEMBER, requestId)) {
       return;
     }
     SignatureCallback callback = new SignatureCallback() {
@@ -53,14 +53,14 @@ public class LCConversationHolder {
       public void onSignatureReady(Signature sig, LCException e) {
         if (e == null) {
           session.conversationOperationCache.offer(Operation.getOperation(
-                  AVIMOperation.CONVERSATION_ADD_MEMBER.getCode(), session.getSelfPeerId(),
+                  LCIMOperation.CONVERSATION_ADD_MEMBER.getCode(), session.getSelfPeerId(),
                   conversationId, requestId));
           session.sendPacket(ConversationControlPacket.genConversationCommand(
                   session.getSelfPeerId(), conversationId, members,
                   ConversationControlPacket.ConversationControlOp.ADD, null, sig, requestId));
         } else {
           InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId,
-                  requestId, AVIMOperation.CONVERSATION_ADD_MEMBER, e);
+                  requestId, LCIMOperation.CONVERSATION_ADD_MEMBER, e);
         }
       }
 
@@ -79,7 +79,7 @@ public class LCConversationHolder {
   }
 
   public void kickMembers(final List<String> members, final int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_RM_MEMBER, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_RM_MEMBER, requestId)) {
       return;
     }
     SignatureCallback callback = new SignatureCallback() {
@@ -88,14 +88,14 @@ public class LCConversationHolder {
       public void onSignatureReady(Signature sig, LCException e) {
         if (e == null) {
           session.conversationOperationCache.offer(Operation.getOperation(
-                  AVIMOperation.CONVERSATION_RM_MEMBER.getCode(), session.getSelfPeerId(),
+                  LCIMOperation.CONVERSATION_RM_MEMBER.getCode(), session.getSelfPeerId(),
                   conversationId, requestId));
           session.sendPacket(ConversationControlPacket.genConversationCommand(
                   session.getSelfPeerId(), conversationId, members,
                   ConversationControlOp.REMOVE, null, sig, requestId));
         } else {
           InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId,
-                  requestId, AVIMOperation.CONVERSATION_RM_MEMBER, e);
+                  requestId, LCIMOperation.CONVERSATION_RM_MEMBER, e);
         }
       }
 
@@ -114,11 +114,11 @@ public class LCConversationHolder {
   }
 
   public void muteMembers(final List<String> members, final int requestId){
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_MUTE_MEMBER, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_MUTE_MEMBER, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_MUTE_MEMBER.getCode(), session.getSelfPeerId(),
+            LCIMOperation.CONVERSATION_MUTE_MEMBER.getCode(), session.getSelfPeerId(),
             conversationId, requestId));
     session.sendPacket(ConversationControlPacket.genConversationCommand(
             session.getSelfPeerId(), conversationId, members,
@@ -126,11 +126,11 @@ public class LCConversationHolder {
   }
 
   public void unmuteMembers(final List<String> members, final int requestId){
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UNMUTE_MEMBER, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_UNMUTE_MEMBER, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_UNMUTE_MEMBER.getCode(), session.getSelfPeerId(),
+            LCIMOperation.CONVERSATION_UNMUTE_MEMBER.getCode(), session.getSelfPeerId(),
             conversationId, requestId));
     session.sendPacket(ConversationControlPacket.genConversationCommand(
             session.getSelfPeerId(), conversationId, members,
@@ -138,7 +138,7 @@ public class LCConversationHolder {
   }
 
   public void blockMembers(final List<String> members, final int requestId){
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_BLOCK_MEMBER, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_BLOCK_MEMBER, requestId)) {
       return;
     }
     SignatureCallback callback = new SignatureCallback() {
@@ -147,14 +147,14 @@ public class LCConversationHolder {
       public void onSignatureReady(Signature sig, LCException e) {
         if (e == null) {
           session.conversationOperationCache.offer(Operation.getOperation(
-                  AVIMOperation.CONVERSATION_BLOCK_MEMBER.getCode(), session.getSelfPeerId(),
+                  LCIMOperation.CONVERSATION_BLOCK_MEMBER.getCode(), session.getSelfPeerId(),
                   conversationId, requestId));
           session.sendPacket(BlacklistCommandPacket.genBlacklistCommandPacket(
                   session.getSelfPeerId(), conversationId,
                   BlacklistCommandPacket.BlacklistCommandOp.BLOCK, members, sig, requestId));
         } else {
           InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId,
-                  requestId, AVIMOperation.CONVERSATION_BLOCK_MEMBER, e);
+                  requestId, LCIMOperation.CONVERSATION_BLOCK_MEMBER, e);
         }
       }
 
@@ -171,7 +171,7 @@ public class LCConversationHolder {
   }
 
   public void unblockMembers(final List<String> members, final int requestId){
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UNBLOCK_MEMBER, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_UNBLOCK_MEMBER, requestId)) {
       return;
     }
 
@@ -181,14 +181,14 @@ public class LCConversationHolder {
       public void onSignatureReady(Signature sig, LCException e) {
         if (e == null) {
           session.conversationOperationCache.offer(Operation.getOperation(
-                  AVIMOperation.CONVERSATION_UNBLOCK_MEMBER.getCode(), session.getSelfPeerId(),
+                  LCIMOperation.CONVERSATION_UNBLOCK_MEMBER.getCode(), session.getSelfPeerId(),
                   conversationId, requestId));
           session.sendPacket(BlacklistCommandPacket.genBlacklistCommandPacket(
                   session.getSelfPeerId(), conversationId,
                   BlacklistCommandPacket.BlacklistCommandOp.UNBLOCK, members, sig, requestId));
         } else {
           InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId,
-                  requestId, AVIMOperation.CONVERSATION_UNBLOCK_MEMBER, e);
+                  requestId, LCIMOperation.CONVERSATION_UNBLOCK_MEMBER, e);
         }
       }
 
@@ -212,14 +212,14 @@ public class LCConversationHolder {
       public void onSignatureReady(Signature sig, LCException e) {
         if (e == null) {
           session.conversationOperationCache.offer(Operation.getOperation(
-                  AVIMOperation.CONVERSATION_JOIN.getCode(), session.getSelfPeerId(), conversationId,
+                  LCIMOperation.CONVERSATION_JOIN.getCode(), session.getSelfPeerId(), conversationId,
                   requestId));
           session.sendPacket(ConversationControlPacket.genConversationCommand(
                   session.getSelfPeerId(), conversationId, Arrays.asList(session.getSelfPeerId()),
                   ConversationControlOp.ADD, null, sig, requestId));
         } else {
           InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId,
-                  requestId, AVIMOperation.CONVERSATION_JOIN, e);
+                  requestId, LCIMOperation.CONVERSATION_JOIN, e);
         }
       }
 
@@ -239,11 +239,11 @@ public class LCConversationHolder {
   }
 
   public void queryMutedMembers(int offset, int limit, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode(), session.getSelfPeerId(), conversationId,
+            LCIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode(), session.getSelfPeerId(), conversationId,
             requestId));
     ConversationControlPacket packet = ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
             conversationId, null, ConversationControlOp.QUERY_SHUTUP, null, null, requestId);
@@ -253,11 +253,11 @@ public class LCConversationHolder {
   }
 
   public void queryBlockedMembers(int offset, int limit, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode(), session.getSelfPeerId(), conversationId,
+            LCIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode(), session.getSelfPeerId(), conversationId,
             requestId));
     BlacklistCommandPacket packet = BlacklistCommandPacket.genBlacklistCommandPacket(session.getSelfPeerId(),
             conversationId, BlacklistCommandPacket.BlacklistCommandOp.QUERY, offset, limit, requestId);
@@ -265,11 +265,11 @@ public class LCConversationHolder {
   }
 
   public void updateInfo(Map<String, Object> attr, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UPDATE, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_UPDATE, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_UPDATE.getCode(), session.getSelfPeerId(), conversationId,
+            LCIMOperation.CONVERSATION_UPDATE.getCode(), session.getSelfPeerId(), conversationId,
             requestId));
     session.sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
             conversationId, null, ConversationControlOp.UPDATE, attr, null, requestId));
@@ -277,11 +277,11 @@ public class LCConversationHolder {
   }
 
   public void promoteMember(Map<String, Object> member, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_PROMOTE_MEMBER, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_PROMOTE_MEMBER, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_PROMOTE_MEMBER.getCode(), session.getSelfPeerId(), conversationId,
+            LCIMOperation.CONVERSATION_PROMOTE_MEMBER.getCode(), session.getSelfPeerId(), conversationId,
             requestId));
     ConversationControlPacket ccp = ConversationControlPacket.genConversationMemberCommand(session.getSelfPeerId(),
             conversationId, ConversationControlOp.MEMBER_UPDATE, member, null, requestId);
@@ -289,7 +289,7 @@ public class LCConversationHolder {
   }
 
   public void sendMessage(LCIMMessage message, int requestId, LCIMMessageOption messageOption) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_SEND_MESSAGE, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_SEND_MESSAGE, requestId)) {
       return;
     }
     byte[] binaryMessage = null;
@@ -310,7 +310,7 @@ public class LCConversationHolder {
   }
 
   public void patchMessage(LCIMMessage oldMessage, LCIMMessage newMessage, LCIMMessage recallMessage,
-                           Conversation.AVIMOperation operation, int requestId) {
+                           LCIMOperation operation, int requestId) {
     if (!checkSessionStatus(operation, requestId)) {
       return;
     }
@@ -318,14 +318,14 @@ public class LCConversationHolder {
     session.conversationOperationCache.offer(Operation.getOperation(
             operation.getCode(), session.getSelfPeerId(), conversationId, requestId));
 
-    if (operation.equals(AVIMOperation.CONVERSATION_RECALL_MESSAGE)) {
+    if (operation.equals(LCIMOperation.CONVERSATION_RECALL_MESSAGE)) {
       String messageId = recallMessage.getMessageId();
       long timeStamp = recallMessage.getTimestamp();
 
       session.sendPacket(
               MessagePatchModifyPacket.getMessagePatchPacketForRecall(session.getSelfPeerId(), conversationId, messageId,
                       timeStamp, requestId));
-    } else if (operation.equals(AVIMOperation.CONVERSATION_UPDATE_MESSAGE)){
+    } else if (operation.equals(LCIMOperation.CONVERSATION_UPDATE_MESSAGE)){
       String messageId = oldMessage.getMessageId();
       long timeStamp = oldMessage.getTimestamp();
       String data = newMessage.getContent();
@@ -342,11 +342,11 @@ public class LCConversationHolder {
   }
 
   public void quit(final int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_QUIT, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_QUIT, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_QUIT.getCode(), session.getSelfPeerId(), conversationId,
+            LCIMOperation.CONVERSATION_QUIT.getCode(), session.getSelfPeerId(), conversationId,
             requestId));
     session.sendPacket(ConversationControlPacket.genConversationCommand(
             session.getSelfPeerId(), conversationId, Arrays.asList(session.getSelfPeerId()),
@@ -362,11 +362,11 @@ public class LCConversationHolder {
   public void queryHistoryMessages(String msgId, long timestamp, boolean sclosed,
                                    String toMsgId, long toTimestamp, boolean toclosed,
                                    int direct, int limit, int msgType, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_MESSAGE_QUERY, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_MESSAGE_QUERY, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_MESSAGE_QUERY.getCode(), session.getSelfPeerId(),
+            LCIMOperation.CONVERSATION_MESSAGE_QUERY.getCode(), session.getSelfPeerId(),
             conversationId, requestId));
     session.sendPacket(ConversationMessageQueryPacket.getConversationMessageQueryPacket(
             session.getSelfPeerId(), conversationId, msgId, timestamp, sclosed, toMsgId, toTimestamp, toclosed,
@@ -374,11 +374,11 @@ public class LCConversationHolder {
   }
 
   public void mute(int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_MUTE, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_MUTE, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_MUTE.getCode(), session.getSelfPeerId(), conversationId,
+            LCIMOperation.CONVERSATION_MUTE.getCode(), session.getSelfPeerId(), conversationId,
             requestId));
     session.sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
             conversationId, null, ConversationControlOp.MUTE, null, null, requestId));
@@ -386,22 +386,22 @@ public class LCConversationHolder {
   }
 
   public void unmute(int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_UNMUTE, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_UNMUTE, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_UNMUTE.getCode(), session.getSelfPeerId(), conversationId,
+            LCIMOperation.CONVERSATION_UNMUTE.getCode(), session.getSelfPeerId(), conversationId,
             requestId));
     session.sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
             conversationId, null, ConversationControlOp.UNMUTE, null, null, requestId));
   }
 
   public void getMemberCount(int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY.getCode(), session.getSelfPeerId(),
+            LCIMOperation.CONVERSATION_MEMBER_COUNT_QUERY.getCode(), session.getSelfPeerId(),
             conversationId,
             requestId));
     session.sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
@@ -410,11 +410,11 @@ public class LCConversationHolder {
   }
 
   public void getReceiptTime(int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME.getCode(), session.getSelfPeerId(), conversationId,
+            LCIMOperation.CONVERSATION_FETCH_RECEIPT_TIME.getCode(), session.getSelfPeerId(), conversationId,
             requestId));
     session.sendPacket(ConversationControlPacket.genConversationCommand(session.getSelfPeerId(),
             conversationId, null, ConversationControlOp.MAX_READ, null, null, requestId));
@@ -422,11 +422,11 @@ public class LCConversationHolder {
   }
 
   private void read(String msgId, long timestamp, int requestId) {
-    if (!checkSessionStatus(AVIMOperation.CONVERSATION_READ, requestId)) {
+    if (!checkSessionStatus(LCIMOperation.CONVERSATION_READ, requestId)) {
       return;
     }
     session.conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_READ.getCode(), session.getSelfPeerId(), conversationId, requestId));
+            LCIMOperation.CONVERSATION_READ.getCode(), session.getSelfPeerId(), conversationId, requestId));
 
     UnreadMessagesClearPacket packet =
             UnreadMessagesClearPacket.getUnreadClearPacket(session.getSelfPeerId(), conversationId, msgId, timestamp, requestId);
@@ -437,7 +437,7 @@ public class LCConversationHolder {
 
   }
 
-  private boolean checkSessionStatus(Conversation.AVIMOperation operation, int requestId) {
+  private boolean checkSessionStatus(LCIMOperation operation, int requestId) {
     if (session.getCurrentStatus() == LCSession.Status.Closed) {
       RuntimeException se = new RuntimeException("Connection Lost");
       InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId,
@@ -448,7 +448,7 @@ public class LCConversationHolder {
     }
   }
 
-  public void processConversationCommandFromClient(Conversation.AVIMOperation imop, Map<String, Object> params,
+  public void processConversationCommandFromClient(LCIMOperation imop, Map<String, Object> params,
                                                    int requestId) {
     List<String> members = null != params ? ((List<String>) params.get(Conversation.PARAM_CONVERSATION_MEMBER)) : null;
     switch (imop) {
@@ -538,7 +538,7 @@ public class LCConversationHolder {
     }
   }
 
-  public void processConversationCommandFromServer(Conversation.AVIMOperation imop, String operation, int requestId, Messages.ConvCommand convCommand) {
+  public void processConversationCommandFromServer(LCIMOperation imop, String operation, int requestId, Messages.ConvCommand convCommand) {
     if (ConversationControlOp.STARTED.equals(operation)) {
       // need convCommand to instantiate conversation object.
       onConversationCreated(requestId, convCommand);
@@ -549,9 +549,9 @@ public class LCConversationHolder {
       if (requestId != CommandPacket.UNSUPPORTED_OPERATION) {
         if (null == imop) {
           LOGGER.e("IllegalState. operation is null, excepted is QUIT / KICK, originalOp=" + operation);
-        } else if (imop.getCode() == AVIMOperation.CONVERSATION_QUIT.getCode()) {
+        } else if (imop.getCode() == LCIMOperation.CONVERSATION_QUIT.getCode()) {
           onQuit(requestId);
-        } else if (imop.getCode() == AVIMOperation.CONVERSATION_RM_MEMBER.getCode()) {
+        } else if (imop.getCode() == LCIMOperation.CONVERSATION_RM_MEMBER.getCode()) {
           onKicked(requestId, convCommand);
         }
       }
@@ -560,9 +560,9 @@ public class LCConversationHolder {
       if (requestId != CommandPacket.UNSUPPORTED_OPERATION) {
         if (null == imop) {
           LOGGER.e("IllegalState. operation is null, excepted is JOIN / INVITE, originalOp=" + operation);
-        } else if (imop.getCode() == AVIMOperation.CONVERSATION_JOIN.getCode()) {
+        } else if (imop.getCode() == LCIMOperation.CONVERSATION_JOIN.getCode()) {
           onJoined(requestId);
-        } else if (imop.getCode() == AVIMOperation.CONVERSATION_ADD_MEMBER.getCode()) {
+        } else if (imop.getCode() == LCIMOperation.CONVERSATION_ADD_MEMBER.getCode()) {
           onInvited(requestId, convCommand);
         }
       }
@@ -578,11 +578,11 @@ public class LCConversationHolder {
         onInfoChangedNotify(convCommand);
       } else {
         mergeServerData(convCommand);
-        if (AVIMOperation.CONVERSATION_MUTE.getCode() == imop.getCode()) {
+        if (LCIMOperation.CONVERSATION_MUTE.getCode() == imop.getCode()) {
           onMuted(requestId);
-        } else if (AVIMOperation.CONVERSATION_UNMUTE.getCode() == imop.getCode()) {
+        } else if (LCIMOperation.CONVERSATION_UNMUTE.getCode() == imop.getCode()) {
           onUnmuted(requestId);
-        } else if (AVIMOperation.CONVERSATION_UPDATE.getCode() == imop.getCode()) {
+        } else if (LCIMOperation.CONVERSATION_UPDATE.getCode() == imop.getCode()) {
           onInfoUpdated(requestId, convCommand.getUdate());
         }
       }
@@ -660,7 +660,7 @@ public class LCConversationHolder {
     }
   }
 
-  void onResponse4MemberBlock(Conversation.AVIMOperation imop, String operation, int reqeustId, Messages.BlacklistCommand blacklistCommand) {
+  void onResponse4MemberBlock(LCIMOperation imop, String operation, int reqeustId, Messages.BlacklistCommand blacklistCommand) {
     if (null == blacklistCommand) {
       return;
     }
@@ -671,7 +671,7 @@ public class LCConversationHolder {
             reqeustId, imop, bundle);
   }
 
-  void onResponse4MemberMute(AVIMOperation imop, String operation, int requestId, Messages.ConvCommand convCommand) {
+  void onResponse4MemberMute(LCIMOperation imop, String operation, int requestId, Messages.ConvCommand convCommand) {
     if (null == convCommand) {
       return;
     }
@@ -761,7 +761,7 @@ public class LCConversationHolder {
       bundle.put(Conversation.callbackUniqueId, uniqueId);
     }
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_CREATION, bundle);
+            LCIMOperation.CONVERSATION_CREATION, bundle);
   }
 
   void onJoined(int requestId) {
@@ -770,7 +770,7 @@ public class LCConversationHolder {
     ConversationSynchronizer.mergeMembers(conversation, Arrays.asList(session.getSelfPeerId()));
 
     InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_JOIN, null);
+            LCIMOperation.CONVERSATION_JOIN, null);
   }
   void onInvited(int requestId, Messages.ConvCommand convCommand) {
     List<String> allowedList = convCommand.getAllowedPidsList();
@@ -782,7 +782,7 @@ public class LCConversationHolder {
 
     HashMap<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_ADD_MEMBER, bundle);
+            LCIMOperation.CONVERSATION_ADD_MEMBER, bundle);
   }
 
   void onKicked(int requestId, Messages.ConvCommand convCommand) {
@@ -795,21 +795,21 @@ public class LCConversationHolder {
 
     HashMap<String, Object> bundle = genPartiallyResult(allowedList, errorCommandList);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_RM_MEMBER, bundle);
+            LCIMOperation.CONVERSATION_RM_MEMBER, bundle);
   }
   void onQuit(int requestId) {
     InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_QUIT, null);
+            LCIMOperation.CONVERSATION_QUIT, null);
   }
   private void onInfoUpdated(int requestId, String updatedAt) {
     HashMap<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackUpdatedAt, updatedAt);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_UPDATE, bundle);
+            LCIMOperation.CONVERSATION_UPDATE, bundle);
   }
   private void onMemberUpdated(int requestId) {
     InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_PROMOTE_MEMBER, null);
+            LCIMOperation.CONVERSATION_PROMOTE_MEMBER, null);
   }
   private void onMemberChanged(final String operator, Messages.ConvMemberInfo member) {
     final LCIMConversationEventHandler handler = LCIMMessageManagerHelper.getConversationEventHandler();
@@ -831,24 +831,24 @@ public class LCConversationHolder {
   }
   void onMuted(int requestId) {
     InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_MUTE, null);
+            LCIMOperation.CONVERSATION_MUTE, null);
   }
   void onUnmuted(int requestId) {
     InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_UNMUTE, null);
+            LCIMOperation.CONVERSATION_UNMUTE, null);
   }
   void onMemberCount(int count, int requestId) {
     HashMap<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackMemberCount, count);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, bundle);
+            LCIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, bundle);
   }
   void onMessageSent(int requestId, String msgId, long timestamp) {
     HashMap<String, Object> bundle = new HashMap<>();
     bundle.put(Conversation.callbackMessageTimeStamp, timestamp);
     bundle.put(Conversation.callbackMessageId, msgId);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_SEND_MESSAGE, bundle);
+            LCIMOperation.CONVERSATION_SEND_MESSAGE, bundle);
   }
   void onHistoryMessageQuery(ArrayList<LCIMMessage> messages, int requestId, long deliveredAt, long readAt) {
     HashMap<String, Object> bundle = new HashMap<>();
@@ -856,7 +856,7 @@ public class LCConversationHolder {
     bundle.put(Conversation.callbackDeliveredAt, deliveredAt);
     bundle.put(Conversation.callbackReadAt, readAt);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_MESSAGE_QUERY, bundle);
+            LCIMOperation.CONVERSATION_MESSAGE_QUERY, bundle);
     session.sendUnreadMessagesAck(messages, conversationId);
   }
 
@@ -865,7 +865,7 @@ public class LCConversationHolder {
     bundle.put(Conversation.callbackReadAt, readAt);
     bundle.put(Conversation.callbackDeliveredAt, deliveredAt);
     InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), conversationId, requestId,
-            AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, bundle);
+            LCIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, bundle);
   }
   void onInvitedToConversation(final String invitedBy, Messages.ConvCommand convCommand) {
     final LCIMConversationEventHandler handler = LCIMMessageManagerHelper.getConversationEventHandler();

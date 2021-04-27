@@ -7,7 +7,7 @@ import cn.leancloud.im.v2.LCIMClient;
 import cn.leancloud.im.v2.LCIMClientEventHandler;
 import cn.leancloud.im.v2.LCIMMessageManagerHelper;
 import cn.leancloud.im.v2.Conversation;
-import cn.leancloud.im.v2.Conversation.AVIMOperation;
+import cn.leancloud.im.v2.Conversation.LCIMOperation;
 import cn.leancloud.utils.LogUtil;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class DefaultSessionListener extends LCSessionListener {
     // 这里需要给AVIMClient那边发一个LocalBoardcastMessage
     if (requestId > CommandPacket.UNSUPPORTED_OPERATION) {
       InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
-              AVIMOperation.CLIENT_OPEN, null);
+              LCIMOperation.CLIENT_OPEN, null);
       broadcastSessionStatus(session, Conversation.STATUS_ON_CLIENT_ONLINE);
     } else {
       LOGGER.d("internal session open.");
@@ -43,7 +43,7 @@ public class DefaultSessionListener extends LCSessionListener {
   public void onSessionTokenRenewed(LCSession session, int requestId) {
     if (requestId > CommandPacket.UNSUPPORTED_OPERATION) {
       InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
-              AVIMOperation.CLIENT_REFRESH_TOKEN, null);
+              LCIMOperation.CLIENT_REFRESH_TOKEN, null);
     }
   }
 
@@ -77,18 +77,18 @@ public class DefaultSessionListener extends LCSessionListener {
       switch (sessionOperation) {
         case LCSession.OPERATION_OPEN_SESSION:
           InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
-                  Conversation.AVIMOperation.CLIENT_OPEN, e);
+                  LCIMOperation.CLIENT_OPEN, e);
           break;
         case LCSession.OPERATION_CLOSE_SESSION:
           InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
-                  Conversation.AVIMOperation.CLIENT_DISCONNECT, e);
+                  LCIMOperation.CLIENT_DISCONNECT, e);
           break;
         default:
           break;
       }
-      if (sessionOperation == AVIMOperation.CONVERSATION_CREATION.getCode()) {
+      if (sessionOperation == LCIMOperation.CONVERSATION_CREATION.getCode()) {
         InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
-                Conversation.AVIMOperation.CONVERSATION_CREATION, e);
+                LCIMOperation.CONVERSATION_CREATION, e);
       }
     }
   }
@@ -98,7 +98,7 @@ public class DefaultSessionListener extends LCSessionListener {
     LCSessionManager.getInstance().removeSession(session.getSelfPeerId());
     if (requestId > CommandPacket.UNSUPPORTED_OPERATION) {
       InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
-              AVIMOperation.CLIENT_DISCONNECT, null);
+              LCIMOperation.CLIENT_DISCONNECT, null);
     }
   }
 
@@ -118,7 +118,7 @@ public class DefaultSessionListener extends LCSessionListener {
       bundle.put(Conversation.callbackOnlineClients, new ArrayList<String>(
               onlinePeerIds));
       InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestCode,
-              AVIMOperation.CLIENT_ONLINE_QUERY, bundle);
+              LCIMOperation.CLIENT_ONLINE_QUERY, bundle);
     }
   }
 }

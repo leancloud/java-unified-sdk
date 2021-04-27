@@ -8,8 +8,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.leancloud.im.v2.messages.AVIMFileMessage;
-import cn.leancloud.im.v2.messages.AVIMImageMessage;
+import cn.leancloud.im.v2.messages.LCIMFileMessage;
+import cn.leancloud.im.v2.messages.LCIMImageMessage;
 
 /**
  * Created by fengjunwen on 2018/7/4.
@@ -27,11 +27,11 @@ public class AndroidFileMetaAccessor implements FileMetaAccessor {
       String format = getMimeType(file.getAbsolutePath());
       double duration = Long.parseLong(durationString) / 1000.0d;
 
-      meta.put(AVIMFileMessage.FORMAT, format);
-      meta.put(AVIMFileMessage.DURATION, duration);
+      meta.put(LCIMFileMessage.FORMAT, format);
+      meta.put(LCIMFileMessage.DURATION, duration);
     } catch (Exception e) {
-      meta.put(AVIMFileMessage.DURATION, 0l);
-      meta.put(AVIMFileMessage.FORMAT, "");
+      meta.put(LCIMFileMessage.DURATION, 0l);
+      meta.put(LCIMFileMessage.FORMAT, "");
     }
 
     return meta;
@@ -59,9 +59,9 @@ public class AndroidFileMetaAccessor implements FileMetaAccessor {
     // If you want, the MIME type will also be decoded (if possible)
     String type = options.outMimeType;
     Map<String, Object> meta = new HashMap<String, Object>();
-    meta.put(AVIMFileMessage.FORMAT, type);
-    meta.put(AVIMImageMessage.IMAGE_WIDTH, width);
-    meta.put(AVIMImageMessage.IMAGE_HEIGHT, height);
+    meta.put(LCIMFileMessage.FORMAT, type);
+    meta.put(LCIMImageMessage.IMAGE_WIDTH, width);
+    meta.put(LCIMImageMessage.IMAGE_HEIGHT, height);
     return meta;
   }
 

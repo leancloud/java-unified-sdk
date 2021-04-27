@@ -20,6 +20,6 @@ public abstract class LCIMConversationMemberQueryCallback extends LCCallback<Lis
 
   @Override
   protected final void internalDone0(List<LCIMConversationMemberInfo> returnValue, LCException e) {
-    done(returnValue, LCIMException.wrapperAVException(e));
+    done(returnValue, LCIMException.wrapperException(e));
   }
 }

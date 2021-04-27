@@ -340,12 +340,12 @@ public class DemoBaseActivity extends ListActivity {
     }
   }
 
-  protected <T extends AVObject> void logObjects(List<T> objects, String key) {
+  protected <T extends LCObject> void logObjects(List<T> objects, String key) {
     StringBuilder sb = new StringBuilder();
     sb.append("一组对象 ");
     sb.append(key);
     sb.append(" 字段的值：\n");
-    for (AVObject obj : objects) {
+    for (LCObject obj : objects) {
       sb.append(obj.get(key));
       sb.append("\n");
     }
@@ -360,16 +360,16 @@ public class DemoBaseActivity extends ListActivity {
     return bytes;
   }
 
-  public List<Student> findStudents() throws AVException {
-    AVQuery<Student> q = AVObject.getQuery(Student.class);
+  public List<Student> findStudents() throws LCException {
+    LCQuery<Student> q = LCObject.getQuery(Student.class);
     q.limit(5);
     return q.find();
   }
 
-  protected <T extends AVObject> String prettyJSON(List<T> objects) {
+  protected <T extends LCObject> String prettyJSON(List<T> objects) {
     StringBuilder sb = new StringBuilder();
     sb.append("[");
-    for (AVObject object : objects) {
+    for (LCObject object : objects) {
       sb.append(prettyJSON(object));
       sb.append(",");
     }
@@ -377,7 +377,7 @@ public class DemoBaseActivity extends ListActivity {
     return sb.toString();
   }
 
-  protected String prettyJSON(AVObject object) {
+  protected String prettyJSON(LCObject object) {
     JSONObject jsonObject = object.toJSONObject();
     try {
       return jsonObject.toString();
@@ -399,8 +399,8 @@ public class DemoBaseActivity extends ListActivity {
     return this.getClass().getSimpleName();
   }
 
-  protected Student getFirstStudent() throws AVException {
-    AVQuery<Student> q = AVObject.getQuery(Student.class);
+  protected Student getFirstStudent() throws LCException {
+    LCQuery<Student> q = LCObject.getQuery(Student.class);
     q.addDescendingOrder("createdAt");
     Student student = q.getFirst();
     if (student == null) {

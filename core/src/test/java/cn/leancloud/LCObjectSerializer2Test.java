@@ -39,14 +39,14 @@ public class LCObjectSerializer2Test extends TestCase {
     System.out.println(o.toJSONString());
     LCObject newO = LCObject.parseAVObject(o.toJSONString());
     assertTrue(null != newO);
-    assertTrue(null != newO.getAVFile("portrait"));
+    assertTrue(null != newO.getLCFile("portrait"));
 
     String arhiveString = ArchivedRequests.getArchiveContent(o, false);
     System.out.println(arhiveString);
     LCObject newV = ArchivedRequests.parseAVObject(arhiveString);
     System.out.println(newV.toJSONString());
     assertTrue(null != newV);
-    assertTrue(null != newV.getAVFile("portrait"));
+    assertTrue(null != newV.getLCFile("portrait"));
   }
 
   public void testDeserializedWithOperationQueueData() throws Exception {
@@ -81,7 +81,7 @@ public class LCObjectSerializer2Test extends TestCase {
     LCUser user = (LCUser) LCObject.parseAVObject(json);
     assertTrue(null != user);
     assertTrue(user.getObjectId().equals("5c282efc9f54540070f04e9a"));
-    LCFile userProfile = user.getAVFile("portrait");
+    LCFile userProfile = user.getLCFile("portrait");
     assertTrue(null != userProfile);
 
     json = "{ \"@type\":  \"com.avos.avoscloud.AVStatus\",\"objectId\":\"0qYaOiU08hqm8bgpDk4CrTXXBs1NPtSs\",\"updatedAt\":null,\"createdAt\":\"2018-12-28T03:16:19.239Z\",\"className\":\"_Status\",\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"deviceType\":\"android\",\"timeZone\":\"Asia/Shanghai\",\"installationId\":\"fd6605e9a1679d355457ad5c37fc99b3\"}}";
@@ -107,9 +107,9 @@ public class LCObjectSerializer2Test extends TestCase {
     String json = "{\"updatedAt\":\"2019-09-05T08:32:31.200Z\",\"createdAt\":\"2019-09-05T08:32:31.200Z\",\"taskId\":{\"updatedAt\":\"2019-09-05T08:14:29.183Z\",\"createdAt\":\"2019-09-05T08:14:29.183Z\",\"userId\":{\"updatedAt\":\"2019-06-18T08:28:23.812Z\",\"username\":\"100364\",\"createdAt\":\"2019-06-18T08:28:23.618Z\",\"nickName\":\"\\u5b66\\u5458100364\",\"objectId\":\"5d08a0a712215f00718cbc71\",\"__type\":\"Pointer\",\"className\":\"_User\"},\"objectId\":\"5d70c3e5c8959c0074f13310\",\"__type\":\"Pointer\",\"className\":\"hb_Task\"},\"objectId\":\"5d70c81f17b54d00680ddba3\"}";
     LCObject object = LCObject.parseAVObject(json);
     System.out.println("object=" + object);
-    LCObject taskId = object.getAVObject("taskId");
+    LCObject taskId = object.getLCObject("taskId");
     System.out.println("task=" + taskId);
-    LCUser user = taskId.getAVObject("userId");
+    LCUser user = taskId.getLCObject("userId");
     assertTrue(null != user);
   }
 

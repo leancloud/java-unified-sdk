@@ -37,7 +37,7 @@ public class LCCachedUserTest extends TestCase {
       @Override
       public void onNext(@NotNull LCObject lcObject) {
         System.out.println("refresh result: "+ lcObject.toJSONString());
-        LCFile iconFile = lcObject.getAVFile("icon");
+        LCFile iconFile = lcObject.getLCFile("icon");
         System.out.println("icon result: "+ iconFile.toJSONString());
         LCUser.changeCurrentUser((LCUser) lcObject, true);
         operationSucceed = true;
@@ -61,7 +61,7 @@ public class LCCachedUserTest extends TestCase {
   public void testGetUserFromCache() throws Exception {
     LCUser currentUser = LCUser.currentUser();
     System.out.println("refresh result: "+ currentUser.toJSONString());
-    LCFile iconFile = currentUser.getAVFile("icon");
+    LCFile iconFile = currentUser.getLCFile("icon");
     operationSucceed = null != iconFile;
     System.out.println("icon result: "+ iconFile.toJSONString());
     assertEquals(true, operationSucceed);

@@ -158,7 +158,7 @@ public class UserUnitTest extends TestCase {
     // get current user
     LCUser currentUser = LCUser.getCurrentUser();
 
-    LCObject unitTest = currentUser.getAVObject("UserUnitTest");
+    LCObject unitTest = currentUser.getLCObject("UserUnitTest");
     assertNotNull(unitTest);
     LCRelation<LCObject> relation = unitTest.getRelation("me");
     assertNotNull(relation);
@@ -218,7 +218,7 @@ public class UserUnitTest extends TestCase {
           public void done(LCException e) {
             assertNull(e);
             LCFile theFile = currentUser
-                    .getAVFile("test_file");
+                    .getLCFile("test_file");
             assertNotNull(theFile);
             assertEquals("test", theFile.getName());
             assertNotNull(theFile.getUrl());

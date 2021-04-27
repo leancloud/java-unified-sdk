@@ -211,7 +211,7 @@ public class LCQueryTest extends TestCase {
 
       @Override
       public void onNext(LCObject o) {
-        LCObject friend = o.getAVObject("friend");
+        LCObject friend = o.getLCObject("friend");
         testSucceed = "Automatic Tester".equals(friend.get("name"));
         latch.countDown();
       }
@@ -248,7 +248,7 @@ public class LCQueryTest extends TestCase {
 
       @Override
       public void onNext(LCObject o) {
-        LCObject friend = o.getAVObject("friend");
+        LCObject friend = o.getLCObject("friend");
         testSucceed = "Automatic Tester".equals(friend.get("name"));
         latch.countDown();
       }
@@ -643,9 +643,9 @@ public class LCQueryTest extends TestCase {
     List<Map<String, Object>> redList = new ArrayList<>();
     for (LCObject redPacket: queryList) {
       Map<String, Object> save = new HashMap<>();
-      LCObject task = redPacket.getAVObject("taskId");
+      LCObject task = redPacket.getLCObject("taskId");
       System.out.println(task);
-      LCUser user = task.getAVObject("userId");
+      LCUser user = task.getLCObject("userId");
       System.out.println(user);
     }
 

@@ -18,6 +18,6 @@ public abstract class LCIMConversationCallback extends LCCallback<Void> {
 
   @Override
   protected final void internalDone0(java.lang.Void returnValue, LCException e) {
-    done(LCIMException.wrapperAVException(e));
+    done(LCIMException.wrapperException(e));
   }
 }

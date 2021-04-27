@@ -346,7 +346,7 @@ public class LCObjectSaveAndFetchTest extends TestCase {
       @Override
       public void onNext(LCObject LCObject) {
         System.out.println(LCObject.toJSONString());
-        testSucceed = url.equals(LCObject.getAVFile("avatar").getUrl());
+        testSucceed = url.equals(LCObject.getLCFile("avatar").getUrl());
         object.delete();
         latch.countDown();
       }
@@ -388,7 +388,7 @@ public class LCObjectSaveAndFetchTest extends TestCase {
       @Override
       public void onNext(LCObject LCObject) {
         System.out.println(LCObject.toJSONString());
-        testSucceed = url.equals(LCObject.getAVFile("avatar").getUrl());
+        testSucceed = url.equals(LCObject.getLCFile("avatar").getUrl());
         object.delete();
         latch.countDown();
       }
@@ -429,7 +429,7 @@ public class LCObjectSaveAndFetchTest extends TestCase {
       @Override
       public void onNext(LCObject LCObject) {
         System.out.println(LCObject.toJSONString());
-        testSucceed = file.getUrl().equals(LCObject.getAVFile("avatar").getUrl());
+        testSucceed = file.getUrl().equals(LCObject.getLCFile("avatar").getUrl());
         object.delete();
         latch.countDown();
       }
@@ -469,8 +469,8 @@ public class LCObjectSaveAndFetchTest extends TestCase {
       @Override
       public void onNext(LCObject LCObject) {
         System.out.println(LCObject.toJSONString());
-        testSucceed = LCObject.getAVFile("avatar") != null
-                && file.getUrl().equals(LCObject.getAVFile("avatar").getUrl());
+        testSucceed = LCObject.getLCFile("avatar") != null
+                && file.getUrl().equals(LCObject.getLCFile("avatar").getUrl());
         object.delete();
         latch.countDown();
       }

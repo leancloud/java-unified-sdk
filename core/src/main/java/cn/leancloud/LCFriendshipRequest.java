@@ -35,11 +35,11 @@ public class LCFriendshipRequest extends LCObject {
   }
 
   public LCUser getFriend() {
-    return getAVObject(ATTR_FRIEND);
+    return getLCObject(ATTR_FRIEND);
   }
 
   public LCUser getSourceUser() {
-    return getAVObject(ATTR_USER);
+    return getLCObject(ATTR_USER);
   }
 
   public void setSourceUser(LCUser user) {

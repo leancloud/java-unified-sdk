@@ -195,13 +195,13 @@ public class ObjectUnitTest extends TestCase {
 
     LCObject theObject = LCObject.createWithoutData("ObjectUnitTest", LCObject.getObjectId());
     theObject.refresh("pointer");
-    LCObject pointer = theObject.getAVObject("pointer");
+    LCObject pointer = theObject.getLCObject("pointer");
     assertEquals(now, pointer.getLong("number"));
 
     // test fetch
     theObject = LCObject.createWithoutData("ObjectUnitTest", LCObject.getObjectId());
     theObject = theObject.fetch("pointer");
-    pointer = theObject.getAVObject("pointer");
+    pointer = theObject.getLCObject("pointer");
     assertEquals(now, pointer.getLong("number"));
   }
 

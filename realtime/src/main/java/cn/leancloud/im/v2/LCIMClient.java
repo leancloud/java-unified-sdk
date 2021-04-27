@@ -32,23 +32,23 @@ public class LCIMClient {
   /**
    * 当前client的状态
    */
-  public enum AVIMClientStatus {
+  public enum LCIMClientStatus {
     /**
      * 当前client尚未open，或者已经close
      */
-    AVIMClientStatusNone(110),
+    LCIMClientStatusNone(110),
     /**
      * 当前client已经打开，连接正常
      */
-    AVIMClientStatusOpened(111),
+    LCIMClientStatusOpened(111),
     /**
      * 当前client由于网络因素导致的连接中断
      */
-    AVIMClientStatusPaused(120);
+    LCIMClientStatusPaused(120);
 
     int code;
 
-    AVIMClientStatus(int code) {
+    LCIMClientStatus(int code) {
       this.code = code;
     }
 
@@ -56,14 +56,14 @@ public class LCIMClient {
       return code;
     }
 
-    public static AVIMClientStatus getClientStatus(int code) {
+    public static LCIMClientStatus getClientStatus(int code) {
       switch (code) {
         case 110:
-          return AVIMClientStatusNone;
+          return LCIMClientStatusNone;
         case 111:
-          return AVIMClientStatusOpened;
+          return LCIMClientStatusOpened;
         case 120:
-          return AVIMClientStatusPaused;
+          return LCIMClientStatusPaused;
         default:
           return null;
       }
@@ -428,7 +428,7 @@ public class LCIMClient {
           }
         }
         if (null != callback) {
-          callback.internalDone(conversation, LCIMException.wrapperAVException(e));
+          callback.internalDone(conversation, LCIMException.wrapperException(e));
         }
       }
     };
@@ -671,7 +671,7 @@ public class LCIMClient {
         @Override
         public void done(LCIMClient client, LCIMException e) {
           if (null != e) {
-            cb.internalDone(null, LCIMException.wrapperAVException(e));
+            cb.internalDone(null, LCIMException.wrapperException(e));
           } else {
             queryConvMemberThroughNetwork(queryConditions, cb);
           }
@@ -704,7 +704,7 @@ public class LCIMClient {
 
       @Override
       public void onError(Throwable throwable) {
-        callback.internalDone(null, LCIMException.wrapperAVException(throwable));
+        callback.internalDone(null, LCIMException.wrapperException(throwable));
       }
 
       @Override

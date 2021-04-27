@@ -38,12 +38,12 @@ public class LCParcelableObject implements Parcelable {
     LOGGER.d("writeToParcel with archivedContent: " + archivedContent);
   }
 
-  public static transient final Creator<LCParcelableObject> CREATOR = AVObjectCreator.instance;
+  public static transient final Creator<LCParcelableObject> CREATOR = LCObjectCreator.instance;
 
-  public static class AVObjectCreator implements Creator<LCParcelableObject> {
-    public static AVObjectCreator instance = new AVObjectCreator();
+  public static class LCObjectCreator implements Creator<LCParcelableObject> {
+    public static LCObjectCreator instance = new LCObjectCreator();
 
-    private AVObjectCreator() {
+    private LCObjectCreator() {
 
     }
 

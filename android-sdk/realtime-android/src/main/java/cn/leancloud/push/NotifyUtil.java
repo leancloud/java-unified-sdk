@@ -12,7 +12,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.LeanCloud;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.codec.Base64Decoder;
@@ -25,7 +25,7 @@ import cn.leancloud.utils.StringUtil;
  */
 
 public class NotifyUtil {
-  private static AVLogger LOGGER = LogUtil.getLogger(NotifyUtil.class);
+  private static LCLogger LOGGER = LogUtil.getLogger(NotifyUtil.class);
 
   protected static HandlerThread thread = new HandlerThread("com.avos.avoscloud.notify");
   static final int SERVICE_RESTART = 1024;

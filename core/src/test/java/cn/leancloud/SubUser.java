@@ -6,7 +6,7 @@ import cn.leancloud.annotation.LCClassName;
 @LCClassName("SubUser")
 public class SubUser extends LCUser {
   public LCObject getArmor() {
-    return getAVObject("armor");
+    return getLCObject("armor");
   }
 
   public void setArmor(LCObject armor) {

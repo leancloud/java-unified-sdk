@@ -23,7 +23,7 @@ public class Post extends LCObject {
   }
 
   public Student getAuthor() {
-    return getAVObject(AUTHOR);
+    return getLCObject(AUTHOR);
   }
 
   public void setAuthor(Student author) {

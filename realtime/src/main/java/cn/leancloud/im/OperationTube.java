@@ -29,7 +29,7 @@ public interface OperationTube {
                              final LCIMCommonJsonCallback callback);
 
   boolean participateConversation(LCConnectionManager connectionManager, final String clientId, String conversationId, int convType, final Map<String, Object> param,
-                                  Conversation.AVIMOperation operation, final LCIMConversationCallback callback);
+                                  Conversation.LCIMOperation operation, final LCIMConversationCallback callback);
 
   boolean queryConversations(LCConnectionManager connectionManager, final String clientId, final String queryString, final LCIMCommonJsonCallback callback);
   boolean queryConversationsInternally(LCConnectionManager connectionManager, final String clientId, final String queryString, final LCIMCommonJsonCallback callback);
@@ -39,12 +39,12 @@ public interface OperationTube {
   boolean updateMessage(LCConnectionManager connectionManager, String clientId, int convType, LCIMMessage oldMessage, LCIMMessage newMessage,
                         final LCIMCommonJsonCallback callback);
   boolean recallMessage(LCConnectionManager connectionManager, String clientId, int convType, LCIMMessage message, final LCIMCommonJsonCallback callback);
-  boolean fetchReceiptTimestamps(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, Conversation.AVIMOperation operation,
+  boolean fetchReceiptTimestamps(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, Conversation.LCIMOperation operation,
                                  final LCIMCommonJsonCallback callback);
   boolean queryMessages(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, String params,
-                        Conversation.AVIMOperation operation, final LCIMMessagesQueryCallback callback);
+                        Conversation.LCIMOperation operation, final LCIMMessagesQueryCallback callback);
 
-  boolean processMembers(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
+  boolean processMembers(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, String params, Conversation.LCIMOperation op,
                          final LCCallback callback);
 
   boolean markConversationRead(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, Map<String, Object> lastMessageParam);
@@ -53,8 +53,8 @@ public interface OperationTube {
   
   // response notifier
   void onOperationCompleted(String clientId, String conversationId, int requestId,
-                            Conversation.AVIMOperation operation, Throwable throwable);
+                            Conversation.LCIMOperation operation, Throwable throwable);
   void onOperationCompletedEx(String clientId, String conversationId, int requestId,
-                              Conversation.AVIMOperation operation, HashMap<String, Object> resultData);
+                              Conversation.LCIMOperation operation, HashMap<String, Object> resultData);
   void onLiveQueryCompleted(int requestId, Throwable throwable);
 }

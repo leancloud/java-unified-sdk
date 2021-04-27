@@ -12,7 +12,7 @@ import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.session.PendingMessageCache.Message;
 import cn.leancloud.session.IMOperationQueue.Operation;
-import cn.leancloud.im.v2.Conversation.AVIMOperation;
+import cn.leancloud.im.v2.Conversation.LCIMOperation;
 
 import com.google.protobuf.ByteString;
 
@@ -53,7 +53,7 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
             if (!StringUtil.isEmpty(m.cid)) {
               LCConversationHolder conversation = session.getConversationHolder(m.cid, Conversation.CONV_TYPE_NORMAL);
               InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), conversation.conversationId,
-                      Integer.parseInt(m.id), Conversation.AVIMOperation.CONVERSATION_SEND_MESSAGE,
+                      Integer.parseInt(m.id), LCIMOperation.CONVERSATION_SEND_MESSAGE,
                       new RuntimeException("Connection Lost"));
             }
           }
@@ -64,7 +64,7 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
             int requestId = entry.getKey();
             Operation op = session.conversationOperationCache.poll(requestId);
             InternalConfiguration.getOperationTube().onOperationCompleted(op.sessionId, op.conversationId, requestId,
-                    Conversation.AVIMOperation.getAVIMOperation(op.operation), new IllegalStateException("Connection Lost"));
+                    LCIMOperation.getIMOperation(op.operation), new IllegalStateException("Connection Lost"));
           }
         }
       } catch (Exception e) {
@@ -81,13 +81,13 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
 
     if (null != requestKey && requestKey != CommandPacket.UNSUPPORTED_OPERATION) {
       Operation op = session.conversationOperationCache.poll(requestKey);
-      if (null != op && op.operation == AVIMOperation.CLIENT_OPEN.getCode()) {
+      if (null != op && op.operation == LCIMOperation.CLIENT_OPEN.getCode()) {
         session.setSessionStatus(LCSession.Status.Closed);
       }
       int code = errorCommand.getCode();
       int appCode = (errorCommand.hasAppCode() ? errorCommand.getAppCode() : 0);
       String reason = errorCommand.getReason();
-      AVIMOperation operation = (null != op)? AVIMOperation.getAVIMOperation(op.operation): null;
+      LCIMOperation operation = (null != op)? LCIMOperation.getIMOperation(op.operation): null;
       InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestKey,
               operation, new LCIMException(code, appCode, reason));
     }
@@ -313,7 +313,7 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
     if (ConversationControlPacket.ConversationControlOp.QUERY_RESULT.equals(operation)) {
       Operation op = session.conversationOperationCache.poll(requestKey);
       LOGGER.d("poll operation with requestId=" + requestKey + ", result=" + op);
-      if (null != op && op.operation == AVIMOperation.CONVERSATION_QUERY.getCode()) {
+      if (null != op && op.operation == LCIMOperation.CONVERSATION_QUERY.getCode()) {
         String result = convCommand.getResults().getData();
         final HashMap<String, Object> bundle = new HashMap<>();
         bundle.put(Conversation.callbackData, result);
@@ -322,7 +322,7 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
           public void done(Operation operation) {
             LOGGER.d("[RequestSuppression] requestId=" + operation.requestId + ", selfId=" + operation.sessionId + " completed.");
             InternalConfiguration.getOperationTube().onOperationCompletedEx(operation.sessionId, null, operation.requestId,
-                    AVIMOperation.CONVERSATION_QUERY, bundle);
+                    LCIMOperation.CONVERSATION_QUERY, bundle);
           }
         });
       } else {
@@ -330,7 +330,7 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
       }
     } else if (ConversationControlPacket.ConversationControlOp.QUERY_SHUTUP_RESULT.equals(operation)) {
       Operation op = session.conversationOperationCache.poll(requestKey);
-      if (null != op && op.operation == AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()) {
+      if (null != op && op.operation == LCIMOperation.CONVERSATION_MUTED_MEMBER_QUERY.getCode()) {
         List<String> result = convCommand.getMList(); // result stored in m field.
         String next = convCommand.hasNext()? convCommand.getNext() : null;
         String[] resultMembers = new String[null == result? 0 : result.size()];
@@ -343,14 +343,14 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
           bundle.put(Conversation.callbackIterableNext, next);
         }
         InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
-                AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, bundle);
+                LCIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, bundle);
       } else {
         LOGGER.w("not found requestKey: " + requestKey);
       }
     } else {
       String conversationId = null;
       int requestId = (null != requestKey ? requestKey : CommandPacket.UNSUPPORTED_OPERATION);
-      AVIMOperation originOperation = null;
+      LCIMOperation originOperation = null;
       if ((operation.equals(ConversationControlPacket.ConversationControlOp.ADDED)
               || operation.equals(ConversationControlOp.REMOVED)
               || operation.equals(ConversationControlOp.UPDATED)
@@ -363,7 +363,7 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
 
         Operation op = session.conversationOperationCache.poll(requestId);
         if (null != op) {
-          originOperation = AVIMOperation.getAVIMOperation(op.operation);
+          originOperation = LCIMOperation.getIMOperation(op.operation);
           conversationId = op.conversationId;
         } else {
           conversationId = convCommand.getCid();
@@ -390,13 +390,13 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
                                    Messages.ErrorCommand errorCommand) {
     if (null != requestKey && requestKey != CommandPacket.UNSUPPORTED_OPERATION) {
       Operation op = session.conversationOperationCache.poll(requestKey);
-      if (null != op && op.operation == AVIMOperation.CLIENT_OPEN.getCode()) {
+      if (null != op && op.operation == LCIMOperation.CLIENT_OPEN.getCode()) {
         session.setSessionStatus(LCSession.Status.Closed);
       }
       int code = errorCommand.getCode();
       int appCode = (errorCommand.hasAppCode() ? errorCommand.getAppCode() : 0);
       String reason = errorCommand.getReason();
-      AVIMOperation operation = (null != op)? AVIMOperation.getAVIMOperation(op.operation): null;
+      LCIMOperation operation = (null != op)? LCIMOperation.getIMOperation(op.operation): null;
       InternalConfiguration.getOperationTube().onOperationCompleted(peerId, null, requestKey,
               operation, new LCIMException(code, appCode, reason));
     }
@@ -469,7 +469,7 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
                                        Messages.BlacklistCommand blacklistCommand) {
     if (BlacklistCommandPacket.BlacklistCommandOp.QUERY_RESULT.equals(operation)) {
       Operation op = session.conversationOperationCache.poll(requestKey);
-      if (null == op || op.operation != Conversation.AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode()) {
+      if (null == op || op.operation != LCIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY.getCode()) {
         LOGGER.w("not found requestKey: " + requestKey);
       } else {
         List<String> result = blacklistCommand.getBlockedPidsList();
@@ -485,7 +485,7 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
           bundle.put(Conversation.callbackIterableNext, next);
         }
         InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), cid, requestKey,
-                AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, bundle);
+                LCIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, bundle);
       }
     } else if (BlacklistCommandPacket.BlacklistCommandOp.BLOCKED.equals(operation)
             || BlacklistCommandPacket.BlacklistCommandOp.UNBLOCKED.equals(operation)){
@@ -496,7 +496,7 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
       if (null == op || null == internalConversation) {
         // warning.
       } else {
-        Conversation.AVIMOperation originOperation = Conversation.AVIMOperation.getAVIMOperation(op.operation);
+        LCIMOperation originOperation = LCIMOperation.getIMOperation(op.operation);
         internalConversation.onResponse4MemberBlock(originOperation, operation, requestKey, blacklistCommand);
       }
     }
@@ -517,7 +517,7 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
       }
     } else {
       Operation op = session.conversationOperationCache.poll(requestKey);
-      AVIMOperation operation = AVIMOperation.getAVIMOperation(op.operation);
+      LCIMOperation operation = LCIMOperation.getIMOperation(op.operation);
       HashMap<String, Object> bundle = new HashMap<>();
       bundle.put(Conversation.PARAM_MESSAGE_PATCH_TIME, patchCommand.getLastPatchTime());
       InternalConfiguration.getOperationTube().onOperationCompletedEx(session.getSelfPeerId(), null, requestKey,
@@ -537,10 +537,10 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
 
   private void onAckError(Integer requestKey, Messages.AckCommand command, Message m) {
     Operation op = session.conversationOperationCache.poll(requestKey);
-    if (op.operation == Conversation.AVIMOperation.CLIENT_OPEN.getCode()) {
+    if (op.operation == LCIMOperation.CLIENT_OPEN.getCode()) {
       session.setSessionStatus(LCSession.Status.Closed);
     }
-    Conversation.AVIMOperation operation = Conversation.AVIMOperation.getAVIMOperation(op.operation);
+    LCIMOperation operation = LCIMOperation.getIMOperation(op.operation);
     int code = command.getCode();
     int appCode = (command.hasAppCode() ? command.getAppCode() : 0);
     String reason = command.getReason();

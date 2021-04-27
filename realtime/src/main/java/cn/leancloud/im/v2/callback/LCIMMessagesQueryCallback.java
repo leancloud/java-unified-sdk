@@ -13,6 +13,6 @@ public abstract class LCIMMessagesQueryCallback extends LCCallback<List<LCIMMess
 
   @Override
   protected final void internalDone0(List<LCIMMessage> returnValue, LCException e) {
-    done(returnValue, LCIMException.wrapperAVException(e));
+    done(returnValue, LCIMException.wrapperException(e));
   }
 }

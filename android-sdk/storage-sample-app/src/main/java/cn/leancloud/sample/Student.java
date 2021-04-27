@@ -39,7 +39,7 @@ public class Student extends LCObject {
   }
 
   public LCFile getAvatar() {
-    return getAVFile(AVATAR);
+    return getLCFile(AVATAR);
   }
 
   public void setAvatar(LCFile avatar) {

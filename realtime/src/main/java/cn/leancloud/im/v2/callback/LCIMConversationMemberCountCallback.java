@@ -12,6 +12,6 @@ public abstract class LCIMConversationMemberCountCallback extends LCCallback<Int
 
   @Override
   protected final void internalDone0(Integer returnValue, LCException e) {
-    done(returnValue, LCIMException.wrapperAVException(e));
+    done(returnValue, LCIMException.wrapperException(e));
   }
 }

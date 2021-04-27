@@ -222,7 +222,7 @@ public class AVUserFollowshipTest extends TestCase {
           public void onNext(List<LCObject> o) {
             for (LCObject tmp: o) {
               System.out.println("result User:" + tmp);
-              if ("jfeng001".equals(tmp.getAVObject("follower").getString("username"))) {
+              if ("jfeng001".equals(tmp.getLCObject("follower").getString("username"))) {
                 operationSucceed = true;
               }
             }

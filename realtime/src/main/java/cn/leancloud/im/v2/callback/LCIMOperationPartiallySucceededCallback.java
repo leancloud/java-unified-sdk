@@ -23,7 +23,7 @@ public abstract class LCIMOperationPartiallySucceededCallback extends LCCallback
   @Override
   protected final void internalDone0(Map<String, Object> returnValue, LCException e) {
     if (null != e) {
-      done(LCIMException.wrapperAVException(e), null, null);
+      done(LCIMException.wrapperException(e), null, null);
     } else if (null != returnValue){
       String[] allowed = (String[]) returnValue.get(Conversation.callbackConvMemberPartial_SUCC);
       ArrayList<LCIMOperationFailure> failed = (ArrayList<LCIMOperationFailure>) returnValue.get(Conversation.callbackConvMemberPartial_FAIL);

@@ -16,7 +16,7 @@ import androidx.core.app.NotificationCompat;
 
 import java.util.Random;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.LeanCloud;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -25,8 +25,8 @@ import cn.leancloud.utils.StringUtil;
  * Created by fengjunwen on 2018/8/18.
  */
 
-public class AndroidNotificationManager extends AVNotificationManager {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AndroidNotificationManager.class);
+public class AndroidNotificationManager extends LCNotificationManager {
+  private static final LCLogger LOGGER = LogUtil.getLogger(AndroidNotificationManager.class);
   private static final String PUSH_INTENT_KEY = "com.avoscloud.push";
   private static final Random random = new Random();
   private static final AndroidNotificationManager INSTANCE = new AndroidNotificationManager();

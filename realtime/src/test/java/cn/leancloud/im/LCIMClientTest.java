@@ -186,7 +186,7 @@ public class LCIMClientTest extends TestCase {
           System.out.println("succeed open client.");
           client.getClientStatus(new LCIMClientStatusCallback() {
             @Override
-            public void done(LCIMClient.AVIMClientStatus status) {
+            public void done(LCIMClient.LCIMClientStatus status) {
               if (null != e) {
                 System.out.println("failed getOnlineClients");
                 e.printStackTrace();

@@ -67,7 +67,7 @@ public class IMOperationQueue {
         public void run() {
           Operation polledOP = poll(op.requestId);
           if (polledOP != null) {
-            Conversation.AVIMOperation operation = Conversation.AVIMOperation.getAVIMOperation(polledOP.operation);
+            Conversation.LCIMOperation operation = Conversation.LCIMOperation.getIMOperation(polledOP.operation);
             InternalConfiguration.getOperationTube().onOperationCompleted(polledOP.sessionId, polledOP.conversationId,
                     polledOP.requestId, operation, new LCException(LCException.TIMEOUT, "Timeout Exception"));
           }

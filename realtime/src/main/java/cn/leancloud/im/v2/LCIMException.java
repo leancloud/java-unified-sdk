@@ -53,7 +53,7 @@ public class LCIMException extends LCException {
     this.appCode = appCode;
   }
 
-  public static LCIMException wrapperAVException(Throwable e) {
+  public static LCIMException wrapperException(Throwable e) {
     if (e == null) {
       return null;
     } else if (e instanceof LCIMException){

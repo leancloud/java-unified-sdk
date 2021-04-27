@@ -11,6 +11,6 @@ public abstract class LCIMCommonJsonCallback extends LCCallback<Map<String, Obje
 
   @Override
   protected void internalDone0(Map<String, Object> result, LCException LCException) {
-    done(result, LCIMException.wrapperAVException(LCException));
+    done(result, LCIMException.wrapperException(LCException));
   }
 }

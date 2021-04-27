@@ -66,14 +66,14 @@ public class LCObjectSerializerTest extends TestCase {
     object.delete();
 
     // test attr.
-    LCObject leaderRst = rst.getAVObject("groupLead");
+    LCObject leaderRst = rst.getLCObject("groupLead");
     assertNotNull(leaderRst);
   }
 
   public void testAVFileAttr() {
     LCObject leader = LCObject.createWithoutData(CLASSNAME_STUDENT, studentId);
     leader.refresh("avatar");
-    LCFile avatarFile = leader.getAVFile("avatar");
+    LCFile avatarFile = leader.getLCFile("avatar");
     assertNotNull(avatarFile);
   }
 
@@ -104,7 +104,7 @@ public class LCObjectSerializerTest extends TestCase {
   public void testGEOPointAttr() {
     LCObject s = LCObject.createWithoutData(CLASSNAME_STUDENT, studentId);
     s.refresh();
-    LCGeoPoint pt = s.getAVGeoPoint("location");
+    LCGeoPoint pt = s.getLCGeoPoint("location");
     assertNotNull(pt);
   }
 

@@ -7,8 +7,7 @@ import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.*;
 import cn.leancloud.im.v2.LCIMClient;
 import cn.leancloud.im.v2.LCIMMessage;
-import cn.leancloud.im.v2.Conversation;
-import cn.leancloud.im.v2.Conversation.AVIMOperation;
+import cn.leancloud.im.v2.Conversation.LCIMOperation;
 import cn.leancloud.session.IMOperationQueue.Operation;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -241,7 +240,7 @@ public class LCSession {
           LOGGER.d("failed to generate signaure. cause:", exception);
         } else {
           conversationOperationCache.offer(IMOperationQueue.Operation.getOperation(
-                  Conversation.AVIMOperation.CLIENT_OPEN.getCode(), getSelfPeerId(), null, requestId));
+                  LCIMOperation.CLIENT_OPEN.getCode(), getSelfPeerId(), null, requestId));
           CommandPacket scp = WindTalker.getInstance().assembleSessionOpenPacket(installationId,
                   getSelfPeerId(), tag, sig, getLastNotifyTime(),
                   getLastPatchTime(), reconnectionFlag, requestId);
@@ -295,7 +294,7 @@ public class LCSession {
       }
       if (connectionManager.isConnectionEstablished()) {
         conversationOperationCache.offer(Operation.getOperation(
-                AVIMOperation.CLIENT_DISCONNECT.getCode(), selfId, null, requestId));
+                LCIMOperation.CLIENT_DISCONNECT.getCode(), selfId, null, requestId));
         CommandPacket scp = WindTalker.getInstance().assembleSessionPacket(this.installationId, this.selfId, null,
                 SessionControlPacket.SessionControlOp.CLOSE, null, requestId);
         connectionManager.sendPacket(scp);
@@ -311,7 +310,7 @@ public class LCSession {
   protected void storeMessage(PendingMessageCache.Message cacheMessage, int requestId) {
     pendingMessages.offer(cacheMessage);
     conversationOperationCache.offer(Operation.getOperation(
-            AVIMOperation.CONVERSATION_SEND_MESSAGE.getCode(), getSelfPeerId(), cacheMessage.cid,
+            LCIMOperation.CONVERSATION_SEND_MESSAGE.getCode(), getSelfPeerId(), cacheMessage.cid,
             requestId));
   }
 
@@ -334,12 +333,12 @@ public class LCSession {
     if (Status.Closed == currentStatus) {
       RuntimeException se = new RuntimeException("Connection Lost");
       InternalConfiguration.getOperationTube().onOperationCompleted(getSelfPeerId(), null, requestId,
-              AVIMOperation.CONVERSATION_QUERY, se);
+              LCIMOperation.CONVERSATION_QUERY, se);
       return;
     }
 
     Operation op = Operation.getOperation(
-            AVIMOperation.CONVERSATION_QUERY.getCode(), selfId, null, requestId);
+            LCIMOperation.CONVERSATION_QUERY.getCode(), selfId, null, requestId);
     op.setIdentifier(identifier);
 
     conversationOperationCache.offer(op);
@@ -392,7 +391,7 @@ public class LCSession {
                                     final boolean isSystem, final int requestId) {
     if (!connectionManager.isConnectionEstablished()) {
       RuntimeException se = new RuntimeException("Connection Lost");
-      sessionListener.onError(this, se, Conversation.AVIMOperation.CONVERSATION_CREATION.getCode(),
+      sessionListener.onError(this, se, LCIMOperation.CONVERSATION_CREATION.getCode(),
               requestId);
       return;
     }
@@ -410,13 +409,13 @@ public class LCSession {
       public void onSignatureReady(Signature sig, LCException e) {
         if (e == null) {
           conversationOperationCache.offer(Operation.getOperation(
-                  AVIMOperation.CONVERSATION_CREATION.getCode(), getSelfPeerId(), null, requestId));
+                  LCIMOperation.CONVERSATION_CREATION.getCode(), getSelfPeerId(), null, requestId));
           connectionManager.sendPacket(ConversationControlPacket.genConversationCommand(selfId, null,
                   members, ConversationControlPacket.ConversationControlOp.START, attributes, sig,
                   isTransient, isUnique, isTemp, tempTTL, isSystem, requestId));
         } else {
           InternalConfiguration.getOperationTube().onOperationCompleted(getSelfPeerId(), null, requestId,
-                  AVIMOperation.CONVERSATION_CREATION, e);
+                  LCIMOperation.CONVERSATION_CREATION, e);
         }
       }
     };

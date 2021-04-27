@@ -14,6 +14,6 @@ public abstract class LCIMConversationIterableResultCallback extends LCCallback<
 
   @Override
   protected final void internalDone0(LCIMConversationIterableResult iterableResult, LCException e) {
-    done(iterableResult, LCIMException.wrapperAVException(e));
+    done(iterableResult, LCIMException.wrapperException(e));
   }
 }

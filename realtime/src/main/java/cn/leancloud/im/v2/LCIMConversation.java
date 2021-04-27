@@ -694,7 +694,7 @@ public class LCIMConversation {
           message.setMessageStatus(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed);
         }
         if (null != callback) {
-          callback.internalDone(LCIMException.wrapperAVException(e));
+          callback.internalDone(LCIMException.wrapperException(e));
         }
       }
     };
@@ -887,7 +887,7 @@ public class LCIMConversation {
     };
     boolean ret = InternalConfiguration.getOperationTube().fetchReceiptTimestamps(client.getConnectionManager(), client.getClientId(), getConversationId(),
             getType(),
-            Conversation.AVIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, tmpCallback);
+            Conversation.LCIMOperation.CONVERSATION_FETCH_RECEIPT_TIME, tmpCallback);
     if (!ret && null != callback) {
       callback.internalDone(new LCException(LCException.OPERATION_FORBIDDEN, "couldn't send request in background."));
     }
@@ -988,7 +988,7 @@ public class LCIMConversation {
     params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, msgType);
     boolean ret = InternalConfiguration.getOperationTube().queryMessages(client.getConnectionManager(), this.client.getClientId(), getConversationId(),
             getType(), JSON.toJSONString(params),
-            Conversation.AVIMOperation.CONVERSATION_MESSAGE_QUERY, callback);
+            Conversation.LCIMOperation.CONVERSATION_MESSAGE_QUERY, callback);
     if (!ret) {
       callback.internalDone(new LCException(LCException.OPERATION_FORBIDDEN, "couldn't send request in background."));
     }
@@ -1010,7 +1010,7 @@ public class LCIMConversation {
     params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, 0);
     boolean ret = InternalConfiguration.getOperationTube().queryMessages(client.getConnectionManager(), this.client.getClientId(), getConversationId(),
             getType(), JSON.toJSONString(params),
-            Conversation.AVIMOperation.CONVERSATION_MESSAGE_QUERY, cb);
+            Conversation.LCIMOperation.CONVERSATION_MESSAGE_QUERY, cb);
     if (!ret && null != cb) {
       cb.internalDone(null,
               new LCException(LCException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1344,7 +1344,7 @@ public class LCIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
     boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), getConversationId(),
-            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_ADD_MEMBER, callback);
+            getType(), JSON.toJSONString(params), Conversation.LCIMOperation.CONVERSATION_ADD_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
               new LCException(LCException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1368,7 +1368,7 @@ public class LCIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
     boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), getConversationId(),
-            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_RM_MEMBER, callback);
+            getType(), JSON.toJSONString(params), Conversation.LCIMOperation.CONVERSATION_RM_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
               new LCException(LCException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1387,7 +1387,7 @@ public class LCIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER_DETAILS, info.getUpdateAttrs());
     boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
-            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_PROMOTE_MEMBER, callback);
+            getType(), JSON.toJSONString(params), Conversation.LCIMOperation.CONVERSATION_PROMOTE_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(new LCException(LCException.OPERATION_FORBIDDEN, "couldn't start service in background."));
     }
@@ -1409,7 +1409,7 @@ public class LCIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
     boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
-            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_MUTE_MEMBER, callback);
+            getType(), JSON.toJSONString(params), Conversation.LCIMOperation.CONVERSATION_MUTE_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
               new LCException(LCException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1432,7 +1432,7 @@ public class LCIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
     boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
-            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_UNMUTE_MEMBER, callback);
+            getType(), JSON.toJSONString(params), Conversation.LCIMOperation.CONVERSATION_UNMUTE_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(null,
               new LCException(LCException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1458,7 +1458,7 @@ public class LCIMConversation {
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
     boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(),
             this.client.getClientId(), conversationId,
-            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, callback);
+            getType(), JSON.toJSONString(params), Conversation.LCIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, callback);
     if (!ret) {
       callback.internalDone(null,
               new LCException(LCException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1493,7 +1493,7 @@ public class LCIMConversation {
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
     boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(),
             this.client.getClientId(), conversationId,
-            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, callback);
+            getType(), JSON.toJSONString(params), Conversation.LCIMOperation.CONVERSATION_MUTED_MEMBER_QUERY, callback);
     if (!ret) {
       callback.internalDone(null,
               new LCException(LCException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1516,7 +1516,7 @@ public class LCIMConversation {
     Map<String, Object> params = new HashMap<String, Object>();
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
     boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), this.client.getClientId(), conversationId,
-            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_BLOCK_MEMBER, callback);
+            getType(), JSON.toJSONString(params), Conversation.LCIMOperation.CONVERSATION_BLOCK_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(new LCException(LCException.OPERATION_FORBIDDEN, "couldn't start service in background."));
     }
@@ -1539,7 +1539,7 @@ public class LCIMConversation {
     params.put(Conversation.PARAM_CONVERSATION_MEMBER, memberIds);
     boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(),
             this.client.getClientId(), conversationId,
-            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_UNBLOCK_MEMBER, callback);
+            getType(), JSON.toJSONString(params), Conversation.LCIMOperation.CONVERSATION_UNBLOCK_MEMBER, callback);
     if (!ret && null != callback) {
       callback.internalDone(new LCException(LCException.OPERATION_FORBIDDEN, "couldn't start service in background."));
     }
@@ -1564,7 +1564,7 @@ public class LCIMConversation {
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
     boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(),
             this.client.getClientId(), conversationId,
-            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, callback);
+            getType(), JSON.toJSONString(params), Conversation.LCIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, callback);
     if (!ret) {
       callback.internalDone(null,
               new LCException(LCException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1599,7 +1599,7 @@ public class LCIMConversation {
     params.put(Conversation.QUERY_PARAM_OFFSET, offset);
     boolean ret = InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(),
             this.client.getClientId(), conversationId,
-            getType(), JSON.toJSONString(params), Conversation.AVIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, callback);
+            getType(), JSON.toJSONString(params), Conversation.LCIMOperation.CONVERSATION_BLOCKED_MEMBER_QUERY, callback);
     if (!ret) {
       callback.internalDone(null,
               new LCException(LCException.OPERATION_FORBIDDEN, "couldn't start service in background."));
@@ -1620,7 +1620,7 @@ public class LCIMConversation {
       return;
     }
     InternalConfiguration.getOperationTube().processMembers(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(),
-            null, Conversation.AVIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, callback);
+            null, Conversation.LCIMOperation.CONVERSATION_MEMBER_COUNT_QUERY, callback);
   }
 
   /**
@@ -1638,7 +1638,7 @@ public class LCIMConversation {
       return;
     }
     InternalConfiguration.getOperationTube().participateConversation(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(),
-            null, Conversation.AVIMOperation.CONVERSATION_MUTE, callback);
+            null, Conversation.LCIMOperation.CONVERSATION_MUTE, callback);
   }
 
   /**
@@ -1656,7 +1656,7 @@ public class LCIMConversation {
       return;
     }
     InternalConfiguration.getOperationTube().participateConversation(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(),
-            null, Conversation.AVIMOperation.CONVERSATION_UNMUTE, callback);
+            null, Conversation.LCIMOperation.CONVERSATION_UNMUTE, callback);
   }
 
   /**
@@ -1675,7 +1675,7 @@ public class LCIMConversation {
       return;
     }
     InternalConfiguration.getOperationTube().participateConversation(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(),
-            null, Conversation.AVIMOperation.CONVERSATION_QUIT, callback);
+            null, Conversation.LCIMOperation.CONVERSATION_QUIT, callback);
   }
 
   /**
@@ -1693,7 +1693,7 @@ public class LCIMConversation {
       return;
     }
     InternalConfiguration.getOperationTube().participateConversation(client.getConnectionManager(), client.getClientId(), getConversationId(), getType(),
-            null, Conversation.AVIMOperation.CONVERSATION_JOIN, callback);
+            null, Conversation.LCIMOperation.CONVERSATION_JOIN, callback);
   }
 
   /**
@@ -2039,7 +2039,7 @@ public class LCIMConversation {
           return new LCIMException(9100, "Conversation not found");
         }
       } catch (Exception e) {
-        return LCIMException.wrapperAVException(e);
+        return LCIMException.wrapperException(e);
       }
     } else {
       return new LCIMException(9100, "Conversation not found");

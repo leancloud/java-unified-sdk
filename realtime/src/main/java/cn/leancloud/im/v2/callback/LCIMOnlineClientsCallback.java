@@ -11,6 +11,6 @@ public abstract class LCIMOnlineClientsCallback extends LCCallback<List<String>>
 
   @Override
   protected final void internalDone0(List<String> object, LCException error) {
-    this.done(object, LCIMException.wrapperAVException(error));
+    this.done(object, LCIMException.wrapperException(error));
   }
 }

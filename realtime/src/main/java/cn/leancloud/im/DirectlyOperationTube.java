@@ -43,12 +43,12 @@ public class DirectlyOperationTube implements OperationTube {
     LOGGER.d("queryClientStatus...");
 
     String installationId = getInstallationId(clientId);
-    LCIMClient.AVIMClientStatus status = LCIMClient.AVIMClientStatus.AVIMClientStatusNone;
+    LCIMClient.LCIMClientStatus status = LCIMClient.LCIMClientStatus.LCIMClientStatusNone;
     LCSession session = LCSessionManager.getInstance().getOrCreateSession(clientId, installationId, connectionManager);
     if (LCSession.Status.Opened == session.getCurrentStatus()) {
-      status = LCIMClient.AVIMClientStatus.AVIMClientStatusOpened;
+      status = LCIMClient.LCIMClientStatus.LCIMClientStatusOpened;
     } else {
-      status = LCIMClient.AVIMClientStatus.AVIMClientStatusPaused;
+      status = LCIMClient.LCIMClientStatus.LCIMClientStatusPaused;
     }
     if (null != callback) {
       callback.internalDone(status, null);
@@ -105,7 +105,7 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public boolean participateConversation(LCConnectionManager connectionManager, final String clientId, String conversationId, int convType, final Map<String, Object> param,
-                                         Conversation.AVIMOperation operation, final LCIMConversationCallback callback) {
+                                         Conversation.LCIMOperation operation, final LCIMConversationCallback callback) {
     LOGGER.d("participateConversation...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -157,7 +157,7 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public boolean fetchReceiptTimestamps(LCConnectionManager connectionManager, String clientId, String conversationId, int convType,
-                                        Conversation.AVIMOperation operation, final LCIMCommonJsonCallback callback) {
+                                        Conversation.LCIMOperation operation, final LCIMCommonJsonCallback callback) {
     LOGGER.d("fetchReceiptTimestamps...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -166,7 +166,7 @@ public class DirectlyOperationTube implements OperationTube {
     return this.fetchReceiptTimestampsDirectly(connectionManager, clientId, conversationId, convType, operation, requestId);
   }
 
-  public boolean processMembers(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
+  public boolean processMembers(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, String params, Conversation.LCIMOperation op,
                                 final LCCallback callback) {
     LOGGER.d("processMembers...");
     int requestId = WindTalker.getNextIMRequestId();
@@ -177,7 +177,7 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public boolean queryMessages(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, String params,
-                               Conversation.AVIMOperation operation, final LCIMMessagesQueryCallback callback) {
+                               Conversation.LCIMOperation operation, final LCIMMessagesQueryCallback callback) {
     LOGGER.d("queryMessages...");
     int requestId = WindTalker.getNextIMRequestId();
     if (this.needCacheRequestKey) {
@@ -277,7 +277,7 @@ public class DirectlyOperationTube implements OperationTube {
   public boolean participateConversationDirectly(LCConnectionManager connectionManager, final String clientId,
                                                  String conversationId, int convType,
                                                  final Map<String, Object> param,
-                                                 Conversation.AVIMOperation operation, int requestId) {
+                                                 Conversation.LCIMOperation operation, int requestId) {
     String installationId = getInstallationId(clientId);
     LCSession session = LCSessionManager.getInstance().getOrCreateSession(clientId, installationId, connectionManager);
     LCConversationHolder holder = session.getConversationHolder(conversationId, convType);
@@ -301,7 +301,7 @@ public class DirectlyOperationTube implements OperationTube {
     String installationId = getInstallationId(clientId);
     LCSession session = LCSessionManager.getInstance().getOrCreateSession(clientId, installationId, connectionManager);
     LCConversationHolder holder = session.getConversationHolder(oldMessage.getConversationId(), convType);
-    holder.patchMessage(oldMessage, newMessage, null, Conversation.AVIMOperation.CONVERSATION_UPDATE_MESSAGE,
+    holder.patchMessage(oldMessage, newMessage, null, Conversation.LCIMOperation.CONVERSATION_UPDATE_MESSAGE,
             requestId);
     return true;
   }
@@ -310,12 +310,12 @@ public class DirectlyOperationTube implements OperationTube {
     String installationId = getInstallationId(clientId);
     LCSession session = LCSessionManager.getInstance().getOrCreateSession(clientId, installationId, connectionManager);
     LCConversationHolder holder = session.getConversationHolder(message.getConversationId(), convType);
-    holder.patchMessage(null, null, message, Conversation.AVIMOperation.CONVERSATION_RECALL_MESSAGE,
+    holder.patchMessage(null, null, message, Conversation.LCIMOperation.CONVERSATION_RECALL_MESSAGE,
             requestId);
     return true;
   }
   public boolean fetchReceiptTimestampsDirectly(LCConnectionManager connectionManager, String clientId,
-                                                String conversationId, int convType, Conversation.AVIMOperation operation,
+                                                String conversationId, int convType, Conversation.LCIMOperation operation,
                                                 int requestId) {
     String installationId = getInstallationId(clientId);
     LCSession session = LCSessionManager.getInstance().getOrCreateSession(clientId, installationId, connectionManager);
@@ -325,7 +325,7 @@ public class DirectlyOperationTube implements OperationTube {
   }
   public boolean queryMessagesDirectly(LCConnectionManager connectionManager, String clientId, String conversationId,
                                        int convType, String params,
-                                       Conversation.AVIMOperation operation, int requestId) {
+                                       Conversation.LCIMOperation operation, int requestId) {
     String installationId = getInstallationId(clientId);
     LCSession session = LCSessionManager.getInstance().getOrCreateSession(clientId, installationId, connectionManager);
     LCConversationHolder holder = session.getConversationHolder(conversationId, convType);
@@ -335,7 +335,7 @@ public class DirectlyOperationTube implements OperationTube {
   }
 
   public boolean processMembersDirectly(LCConnectionManager connectionManager, String clientId, String conversationId,
-                                        int convType, String params, Conversation.AVIMOperation op,
+                                        int convType, String params, Conversation.LCIMOperation op,
                                         int requestId) {
     String installationId = getInstallationId(clientId);
     LCSession session = LCSessionManager.getInstance().getOrCreateSession(clientId, installationId, connectionManager);
@@ -350,17 +350,17 @@ public class DirectlyOperationTube implements OperationTube {
     String installationId = getInstallationId(clientId);
     LCSession session = LCSessionManager.getInstance().getOrCreateSession(clientId, installationId, connectionManager);
     LCConversationHolder holder = session.getConversationHolder(conversationId, convType);
-    holder.processConversationCommandFromClient(Conversation.AVIMOperation.CONVERSATION_READ, lastMessageParam, requestId);
+    holder.processConversationCommandFromClient(Conversation.LCIMOperation.CONVERSATION_READ, lastMessageParam, requestId);
     return true;
   }
 
   private LCCallback getCachedCallback(final String clientId, final String conversationId, int requestId,
-                                       Conversation.AVIMOperation operation) {
+                                       Conversation.LCIMOperation operation) {
     return RequestCache.getInstance().getRequestCallback(clientId, null, requestId);
   }
 
   public void onOperationCompleted(String clientId, String conversationId, int requestId,
-                                   Conversation.AVIMOperation operation, Throwable throwable) {
+                                   Conversation.LCIMOperation operation, Throwable throwable) {
 
     LCCallback callback = getCachedCallback(clientId, conversationId, requestId, operation);
     if (null == callback) {
@@ -374,17 +374,17 @@ public class DirectlyOperationTube implements OperationTube {
       case CLIENT_OPEN:
       case CLIENT_DISCONNECT:
       case CLIENT_REFRESH_TOKEN:
-        callback.internalDone(LCIMClient.getInstance(clientId), LCIMException.wrapperAVException(throwable));
+        callback.internalDone(LCIMClient.getInstance(clientId), LCIMException.wrapperException(throwable));
         break;
       default:
-        callback.internalDone(LCIMException.wrapperAVException(throwable));
+        callback.internalDone(LCIMException.wrapperException(throwable));
         break;
     }
     RequestCache.getInstance().cleanRequestCallback(clientId, conversationId, requestId);
   }
 
   public void onOperationCompletedEx(String clientId, String conversationId, int requestId,
-                                     Conversation.AVIMOperation operation, HashMap<String, Object> resultData) {
+                                     Conversation.LCIMOperation operation, HashMap<String, Object> resultData) {
     LCCallback callback = getCachedCallback(clientId, conversationId, requestId, operation);
     if (null == callback) {
       LOGGER.w("onOperationCompletedEx encounter illegal response, ignore it: clientId=" + clientId + ", convId="

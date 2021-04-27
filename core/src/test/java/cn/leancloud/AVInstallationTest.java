@@ -232,7 +232,7 @@ public class AVInstallationTest extends TestCase {
     testSucceed = false;
     LCInstallation currentInstall = LCInstallation.getCurrentInstallation();
     currentInstall.fetch("user");
-    LCUser user = currentInstall.getAVObject("user");
+    LCUser user = currentInstall.getLCObject("user");
     if (null != user) {
       assertEquals(user.getUsername(), "jfeng");
     } else {

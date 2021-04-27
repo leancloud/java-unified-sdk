@@ -68,6 +68,7 @@ dependencies {
     implementation project(':storage-android')
 
     implementation("cn.leancloud:realtime-core:${rootProject.ext.sdkVersion}")
+    implementation("cn.leancloud:storage-core:${rootProject.ext.sdkVersion}")
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 

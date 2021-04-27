@@ -72,7 +72,7 @@ public class FileUnitTest extends TestCase {
     file.getData();
 
     // get file from object
-    LCFile appFile = LCObject.getAVFile("applicatFile");
+    LCFile appFile = LCObject.getLCFile("applicatFile");
     assertEquals(avFile.getUrl(), appFile.getUrl());
     assertEquals(avFile.getMetaData().size(), appFile.getMetaData().size());
     assertEquals(avFile.getMetaData().get("_checksum"), appFile.getMetaData().get("_checksum"));
@@ -82,7 +82,7 @@ public class FileUnitTest extends TestCase {
     // query file from server
     LCObject cloudObj = LCObject.createWithoutData("FileUnitTest", LCObject.getObjectId());
     cloudObj.fetchIfNeeded();
-    appFile = LCObject.getAVFile("applicatFile");
+    appFile = LCObject.getLCFile("applicatFile");
     assertEquals(avFile.getUrl(), appFile.getUrl());
     assertEquals(avFile.getMetaData(), appFile.getMetaData());
 

@@ -16,6 +16,6 @@ public abstract class LCIMConversationSimpleResultCallback extends LCCallback<Li
 
   @Override
   protected final void internalDone0(List<String> returnValue, LCException e) {
-    done(returnValue, LCIMException.wrapperAVException(e));
+    done(returnValue, LCIMException.wrapperException(e));
   }
 }

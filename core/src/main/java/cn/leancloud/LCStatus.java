@@ -154,7 +154,7 @@ public class LCStatus extends LCObject {
    * @return source user of the status
    */
   public LCUser getSource() {
-    return (LCUser) getAVObject(ATTR_SOURCE);
+    return (LCUser) getLCObject(ATTR_SOURCE);
   }
 
   /**

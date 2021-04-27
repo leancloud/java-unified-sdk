@@ -10,6 +10,6 @@ public abstract class LCIMClientCallback extends LCCallback<LCIMClient> {
 
   @Override
   protected void internalDone0(LCIMClient client, LCException LCException) {
-    done(client, LCIMException.wrapperAVException(LCException));
+    done(client, LCIMException.wrapperException(LCException));
   }
 }

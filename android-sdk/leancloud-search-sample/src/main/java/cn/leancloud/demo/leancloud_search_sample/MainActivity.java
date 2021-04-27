@@ -1,7 +1,7 @@
 package cn.leancloud.demo.leancloud_search_sample;
 
 import androidx.appcompat.app.AppCompatActivity;
-import cn.leancloud.search.AVSearchQuery;
+import cn.leancloud.search.LCSearchQuery;
 import cn.leancloud.search.SearchActivity;
 import cn.leancloud.utils.StringUtil;
 import android.content.Intent;
@@ -36,13 +36,13 @@ public class MainActivity extends AppCompatActivity {
           return;
         }
 
-        AVSearchQuery searchQuery = new AVSearchQuery(queryString);
+        LCSearchQuery searchQuery = new LCSearchQuery(queryString);
         searchQuery.orderByDescending("score");
         searchQuery.setTitleAttribute("content");
         SearchActivity activity = new SearchActivity();
         activity.setSearchQuery(searchQuery);
         Intent intent = new Intent(MainActivity.this, SearchActivity.class);
-        intent.putExtra(AVSearchQuery.DATA_EXTRA_SEARCH_KEY, JSON.toJSONString(searchQuery));
+        intent.putExtra(LCSearchQuery.DATA_EXTRA_SEARCH_KEY, JSON.toJSONString(searchQuery));
         startActivity(intent);
       }
     });
