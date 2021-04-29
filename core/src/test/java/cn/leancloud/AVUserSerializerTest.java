@@ -73,14 +73,14 @@ public class AVUserSerializerTest extends TestCase {
     String jsonString = "{ \"_version\":\"5\",\"className\":\"_User\"," +
             "\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"signDate\":new Date(1594310400000)," +
             "\"username\":\"变音小助手\",\"siOffDate\":new Date(1594310400000)}}";
-    LCUser user = (LCUser) LCObject.parseAVObject(jsonString);
+    LCUser user = (LCUser) LCObject.parseLCObject(jsonString);
     assertTrue(null != user);
 
     try {
       jsonString = "{ \"_version\":\"5\",\"className\":\"_User\"," +
               "\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"signDate\":new Date(1594310400000)," +
               "\"sessionToken\":[new Date(1594310200000), new Date(1594310420000)],\"username\":\"变音小助手\",\"siOffDate\":new Date(1594310400000)}}";
-      user = (LCUser) LCObject.parseAVObject(jsonString);
+      user = (LCUser) LCObject.parseLCObject(jsonString);
       assertTrue(null != user);
     } catch (Exception ex) {
       System.out.println(ex.getMessage());

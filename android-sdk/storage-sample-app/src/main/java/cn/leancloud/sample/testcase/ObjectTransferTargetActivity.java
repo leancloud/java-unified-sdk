@@ -4,12 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Window;
 
-import cn.leancloud.AVObject;
+import cn.leancloud.LCObject;
 import cn.leancloud.LCParcelableObject;
 import cn.leancloud.sample.R;
 
 public class ObjectTransferTargetActivity extends AppCompatActivity {
-  private AVObject attached = null;
+  private LCObject attached = null;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {

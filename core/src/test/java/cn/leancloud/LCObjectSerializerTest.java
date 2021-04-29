@@ -127,15 +127,15 @@ public class LCObjectSerializerTest extends TestCase {
 
   public void testDeserializer() {
     String oldVersionString = "{ \"@type\":\"com.example.avoscloud_demo.Student\",\"objectId\":\"5bff468944d904005f856849\",\"updatedAt\":\"2018-12-08T09:53:05.008Z\",\"createdAt\":\"2018-11-29T01:53:13.327Z\",\"className\":\"Student\",\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"name\":\"Automatic Tester's Dad\",\"course\":[\"Math\",\"Art\"],\"age\":20}}";
-    LCObject oldV = LCObject.parseAVObject(oldVersionString);
+    LCObject oldV = LCObject.parseLCObject(oldVersionString);
     assertTrue((null != oldV) && oldV.getObjectId().length() > 0);
     assertTrue(oldV.getInt("age") == 20);
 
     LCObject s = LCObject.createWithoutData(CLASSNAME_STUDENT, studentId);
     s.refresh();
-    LCObject newV = LCObject.parseAVObject(s.toJSONString());
+    LCObject newV = LCObject.parseLCObject(s.toJSONString());
     assertTrue((null != newV) && newV.getObjectId().length() > 0);
-    LCObject newS = LCObject.parseAVObject(s.toJSONString());
+    LCObject newS = LCObject.parseLCObject(s.toJSONString());
     assertTrue((null != newS) && newS.getObjectId().length() > 0);
 
     LCObject c = new LCObject(CLASSNAME_STUDENT);
