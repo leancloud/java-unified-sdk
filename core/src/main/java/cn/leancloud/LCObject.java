@@ -1704,7 +1704,7 @@ public class LCObject {
    * @param objectString json string.
    * @return AVObject instance, null if objectString is null
    */
-  public static LCObject parseAVObject(String objectString) {
+  public static LCObject parseLCObject(String objectString) {
     if (StringUtil.isEmpty(objectString)) {
       return null;
     }

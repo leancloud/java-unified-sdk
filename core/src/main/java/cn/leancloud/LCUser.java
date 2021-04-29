@@ -950,7 +950,7 @@ public class LCUser extends LCObject {
           if (jsonString.indexOf("@type") >= 0 || jsonString.indexOf(ObjectDeserializer.KEY_VERSION) >= 0) {
             // new version.
             try {
-              user = (LCUser) LCObject.parseAVObject(jsonString);;
+              user = (LCUser) LCObject.parseLCObject(jsonString);;
               PaasClient.getStorageClient().setCurrentUser(user);
             } catch (Exception ex) {
               logger.w("failed to deserialize AVUser instance.", ex);

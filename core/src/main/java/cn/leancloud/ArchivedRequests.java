@@ -218,7 +218,7 @@ public class ArchivedRequests {
     String objectJSON = contentMap.get(ATTR_OBJECT);
     String operationJSON = contentMap.get(ATTR_OPERATION);
 
-    LCObject resultObj = LCObject.parseAVObject(objectJSON);
+    LCObject resultObj = LCObject.parseLCObject(objectJSON);
     if (!StringUtil.isEmpty(internalId) && !internalId.equals(resultObj.getObjectId())) {
       resultObj.setUuid(internalId);
     }

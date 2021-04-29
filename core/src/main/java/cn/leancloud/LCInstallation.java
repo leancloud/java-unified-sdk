@@ -84,7 +84,7 @@ public final class LCInstallation extends LCObject {
         if (!StringUtil.isEmpty(json)) {
           if (json.indexOf("{") >= 0) {
             try {
-              currentInstallation = (LCInstallation) LCObject.parseAVObject(json);
+              currentInstallation = (LCInstallation) LCObject.parseLCObject(json);
               currentInstallation.totallyOverwrite = true;
             } catch (Exception ex) {
               LOGGER.w("failed to parse local installation data.", ex);
@@ -109,7 +109,7 @@ public final class LCInstallation extends LCObject {
       PersistenceUtil.sharedInstance().saveContentToFile(json, installationFile);
       LOGGER.d("create-ahead installation with json: " + json);
       try {
-        currentInstallation = (LCInstallation) LCObject.parseAVObject(json);
+        currentInstallation = (LCInstallation) LCObject.parseLCObject(json);
         currentInstallation.totallyOverwrite = true;
       } catch (Exception ex) {
         LOGGER.w("failed to parse create-ahead installation string.", ex);
