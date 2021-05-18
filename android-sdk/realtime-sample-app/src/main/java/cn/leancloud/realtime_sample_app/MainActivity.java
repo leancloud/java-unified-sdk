@@ -239,49 +239,80 @@ public class MainActivity extends AppCompatActivity {
           mTextMessage.setText(R.string.title_notifications);
           try {
             List<String> members = Arrays.asList("testUser2", "testUser3", "testUser4");
-            currentClient.createConversation(members, "UnitTestConversation", null, false, true, new LCIMConversationCreatedCallback() {
+            LCIMConversationsQuery convQuery1 = currentClient.getConversationsQuery();
+            convQuery1.setQueryPolicy(LCQuery.CachePolicy.NETWORK_ONLY);
+            convQuery1.containsMembers(members).findInBackground(new LCIMConversationQueryCallback() {
               @Override
-              public void done(final LCIMConversation conversation, LCIMException e) {
-                if (null != e) {
-                  System.out.println("failed to create conversation. cause: " + e.getMessage());
-                } else {
-                  System.out.println("succeed to create conversation, continue to update member role...");
-                  conversation.updateMemberRole("testUser2", ConversationMemberRole.MANAGER, new LCIMConversationCallback() {
-                    @Override
-                    public void done(LCIMException e1) {
-                      if (null != e1) {
-                        System.out.println("failed to promote testUser2. cause: " + e1.getMessage());
-                      } else {
-                        System.out.println("succeed to promote testUser2.");
-                        conversation.updateMemberRole("testUser3", ConversationMemberRole.MEMBER, new LCIMConversationCallback() {
-                          @Override
-                          public void done(LCIMException e2) {
-                            if (null != e2) {
-                              System.out.println("failed to promote testUser3. cause: " + e2.getMessage());
-                            } else {
-                              System.out.println("succeed to promote testUser3.");
-                              conversation.getAllMemberInfo(0, 10, new LCIMConversationMemberQueryCallback() {
-                                @Override
-                                public void done(List<LCIMConversationMemberInfo> memberInfoList, LCIMException e3) {
-                                  if (null == e3) {
-                                    for (LCIMConversationMemberInfo info: memberInfoList) {
-                                      System.out.println("memberInfo: " + info.toString());
-                                    }
-                                  } else {
-                                    System.out.println("failed to query memberInfo. cause: " + e3.getMessage());
-                                    e3.printStackTrace();
-                                  }
-                                }
-                              });
-                            }
-                          }
-                        });
-                      }
-                    }
-                  });
+              public void done(List<LCIMConversation> conversations, LCIMException e1) {
+                if (null != e1) {
+                  e1.printStackTrace();
+                  return;
                 }
+                for (LCIMConversation conv: conversations) {
+                  System.out.println(conv.getCreatedAt());
+                  System.out.println(conv.toJSONString());
+                }
+                LCIMConversationsQuery convQuery2 = currentClient.getConversationsQuery();
+                convQuery2.setQueryPolicy(LCQuery.CachePolicy.CACHE_ONLY);
+                convQuery2.containsMembers(members).findInBackground(new LCIMConversationQueryCallback() {
+                  @Override
+                  public void done(List<LCIMConversation> conversations, LCIMException e2) {
+                    if (null != e2) {
+                      e2.printStackTrace();
+                      return;
+                    }
+                    for (LCIMConversation conv: conversations) {
+                      System.out.println(conv.getCreatedAt());
+                      System.out.println(conv.toJSONString());
+                    }
+                  }
+                });
               }
             });
+
+//            currentClient.createConversation(members, "UnitTestConversation", null, false, true, new LCIMConversationCreatedCallback() {
+//              @Override
+//              public void done(final LCIMConversation conversation, LCIMException e) {
+//                if (null != e) {
+//                  System.out.println("failed to create conversation. cause: " + e.getMessage());
+//                } else {
+//                  System.out.println("succeed to create conversation, continue to update member role...");
+//                  conversation.updateMemberRole("testUser2", ConversationMemberRole.MANAGER, new LCIMConversationCallback() {
+//                    @Override
+//                    public void done(LCIMException e1) {
+//                      if (null != e1) {
+//                        System.out.println("failed to promote testUser2. cause: " + e1.getMessage());
+//                      } else {
+//                        System.out.println("succeed to promote testUser2.");
+//                        conversation.updateMemberRole("testUser3", ConversationMemberRole.MEMBER, new LCIMConversationCallback() {
+//                          @Override
+//                          public void done(LCIMException e2) {
+//                            if (null != e2) {
+//                              System.out.println("failed to promote testUser3. cause: " + e2.getMessage());
+//                            } else {
+//                              System.out.println("succeed to promote testUser3.");
+//                              conversation.getAllMemberInfo(0, 10, new LCIMConversationMemberQueryCallback() {
+//                                @Override
+//                                public void done(List<LCIMConversationMemberInfo> memberInfoList, LCIMException e3) {
+//                                  if (null == e3) {
+//                                    for (LCIMConversationMemberInfo info: memberInfoList) {
+//                                      System.out.println("memberInfo: " + info.toString());
+//                                    }
+//                                  } else {
+//                                    System.out.println("failed to query memberInfo. cause: " + e3.getMessage());
+//                                    e3.printStackTrace();
+//                                  }
+//                                }
+//                              });
+//                            }
+//                          }
+//                        });
+//                      }
+//                    }
+//                  });
+//                }
+//              }
+//            });
 
 
 //            AVFile file = new AVFile("apple.acc", "https://some.website.com/apple.acc", new HashMap<>());

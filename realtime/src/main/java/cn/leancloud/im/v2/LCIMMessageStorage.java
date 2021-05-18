@@ -22,7 +22,7 @@ public class LCIMMessageStorage {
   public static final String DB_NAME_PREFIX = "com.avos.avoscloud.im.v2.";
   public static final String MESSAGE_TABLE = "messages";
   public static final String MESSAGE_INDEX = "message_index";
-  public static final int DB_VERSION = 10;
+  public static final int DB_VERSION = 11;
   public static final String COLUMN_MESSAGE_ID = "message_id";
   public static final String COLUMN_TIMESTAMP = "timestamp";
   public static final String COLUMN_CONVERSATION_ID = "conversation_id";
