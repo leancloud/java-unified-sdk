@@ -22,7 +22,7 @@ public class AVIMMessageStorage {
   public static final String DB_NAME_PREFIX = "com.avos.avoscloud.im.v2.";
   public static final String MESSAGE_TABLE = "messages";
   public static final String MESSAGE_INDEX = "message_index";
-  public static final int DB_VERSION = 10;
+  public static final int DB_VERSION = 11;
   public static final String COLUMN_MESSAGE_ID = "message_id";
   public static final String COLUMN_TIMESTAMP = "timestamp";
   public static final String COLUMN_CONVERSATION_ID = "conversation_id";
@@ -524,8 +524,8 @@ public class AVIMMessageStorage {
       Map<String, Object> values = new HashMap<>();
       values.put(COLUMN_ATTRIBUTE, JSON.toJSONString(conversation.getAttributes()));
       values.put(COLUMN_INSTANCEDATA, JSON.toJSONString(conversation.instanceData));
-      values.put(COLUMN_CREATEDAT, conversation.getCreatedAt());
-      values.put(COLUMN_UPDATEDAT, conversation.getUpdatedAt());
+      values.put(COLUMN_CREATEDAT, conversation.getCreatedAtString());
+      values.put(COLUMN_UPDATEDAT, conversation.getUpdatedAtString());
       values.put(COLUMN_CREATOR, conversation.getCreator());
       values.put(COLUMN_EXPIREAT, System.currentTimeMillis()
               + Conversation.DEFAULT_CONVERSATION_EXPIRE_TIME_IN_MILLS);
@@ -564,7 +564,8 @@ public class AVIMMessageStorage {
 
       int insertResult = this.delegate.insert(CONVERSATION_TABLE, values);
       if (insertResult < 0) {
-        LOGGER.d("failed to insert conversation. conversationId=" + conversation.getConversationId());
+        LOGGER.d("failed to insert conversation. conversationId=" + conversation.getConversationId()
+                + ", result=" + insertResult);
       }
     }
     return 1;

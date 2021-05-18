@@ -239,49 +239,79 @@ public class MainActivity extends AppCompatActivity {
           mTextMessage.setText(R.string.title_notifications);
           try {
             List<String> members = Arrays.asList("testUser2", "testUser3", "testUser4");
-            currentClient.createConversation(members, "UnitTestConversation", null, false, true, new AVIMConversationCreatedCallback() {
+            AVIMConversationsQuery convQuery = currentClient.getConversationsQuery();
+            convQuery.setQueryPolicy(AVQuery.CachePolicy.NETWORK_ONLY);
+            convQuery.containsMembers(members).findInBackground(new AVIMConversationQueryCallback() {
               @Override
-              public void done(final AVIMConversation conversation, AVIMException e) {
-                if (null != e) {
-                  System.out.println("failed to create conversation. cause: " + e.getMessage());
+              public void done(List<AVIMConversation> conversations, AVIMException e1) {
+                if (null != e1) {
+                  System.out.println("failed to create conversation. cause: " + e1.getMessage());
                 } else {
-                  System.out.println("succeed to create conversation, continue to update member role...");
-                  conversation.updateMemberRole("testUser2", ConversationMemberRole.MANAGER, new AVIMConversationCallback() {
+                  for (AVIMConversation conv: conversations) {
+                    System.out.println(conv.getCreatedAt());
+                    System.out.println(conv.toJSONString());
+                  }
+                  AVIMConversationsQuery convQuery2 = currentClient.getConversationsQuery();
+                  convQuery2.setQueryPolicy(AVQuery.CachePolicy.CACHE_ONLY);
+                  convQuery2.containsMembers(members).findInBackground(new AVIMConversationQueryCallback() {
                     @Override
-                    public void done(AVIMException e1) {
-                      if (null != e1) {
-                        System.out.println("failed to promote testUser2. cause: " + e1.getMessage());
+                    public void done(List<AVIMConversation> conversations, AVIMException e2) {
+                      if (null != e2) {
+                        System.out.println("failed to create conversation. cause: " + e2.getMessage());
                       } else {
-                        System.out.println("succeed to promote testUser2.");
-                        conversation.updateMemberRole("testUser3", ConversationMemberRole.MEMBER, new AVIMConversationCallback() {
-                          @Override
-                          public void done(AVIMException e2) {
-                            if (null != e2) {
-                              System.out.println("failed to promote testUser3. cause: " + e2.getMessage());
-                            } else {
-                              System.out.println("succeed to promote testUser3.");
-                              conversation.getAllMemberInfo(0, 10, new AVIMConversationMemberQueryCallback() {
-                                @Override
-                                public void done(List<AVIMConversationMemberInfo> memberInfoList, AVIMException e3) {
-                                  if (null == e3) {
-                                    for (AVIMConversationMemberInfo info: memberInfoList) {
-                                      System.out.println("memberInfo: " + info.toString());
-                                    }
-                                  } else {
-                                    System.out.println("failed to query memberInfo. cause: " + e3.getMessage());
-                                    e3.printStackTrace();
-                                  }
-                                }
-                              });
-                            }
-                          }
-                        });
+                        for (AVIMConversation conv: conversations) {
+                          System.out.println(conv.getCreatedAt());
+                          System.out.println(conv.toJSONString());
+                        }
                       }
                     }
                   });
                 }
               }
             });
+//            currentClient.createConversation(members, "UnitTestConversation", null, false, true, new AVIMConversationCreatedCallback() {
+//              @Override
+//              public void done(final AVIMConversation conversation, AVIMException e) {
+//                if (null != e) {
+//                  System.out.println("failed to create conversation. cause: " + e.getMessage());
+//                } else {
+//                  System.out.println("succeed to create conversation, continue to update member role...");
+//                  conversation.updateMemberRole("testUser2", ConversationMemberRole.MANAGER, new AVIMConversationCallback() {
+//                    @Override
+//                    public void done(AVIMException e1) {
+//                      if (null != e1) {
+//                        System.out.println("failed to promote testUser2. cause: " + e1.getMessage());
+//                      } else {
+//                        System.out.println("succeed to promote testUser2.");
+//                        conversation.updateMemberRole("testUser3", ConversationMemberRole.MEMBER, new AVIMConversationCallback() {
+//                          @Override
+//                          public void done(AVIMException e2) {
+//                            if (null != e2) {
+//                              System.out.println("failed to promote testUser3. cause: " + e2.getMessage());
+//                            } else {
+//                              System.out.println("succeed to promote testUser3.");
+//                              conversation.getAllMemberInfo(0, 10, new AVIMConversationMemberQueryCallback() {
+//                                @Override
+//                                public void done(List<AVIMConversationMemberInfo> memberInfoList, AVIMException e3) {
+//                                  if (null == e3) {
+//                                    for (AVIMConversationMemberInfo info: memberInfoList) {
+//                                      System.out.println("memberInfo: " + info.toString());
+//                                    }
+//                                  } else {
+//                                    System.out.println("failed to query memberInfo. cause: " + e3.getMessage());
+//                                    e3.printStackTrace();
+//                                  }
+//                                }
+//                              });
+//                            }
+//                          }
+//                        });
+//                      }
+//                    }
+//                  });
+//                }
+//              }
+//            });
 
 
 //            AVFile file = new AVFile("apple.acc", "https://some.website.com/apple.acc", new HashMap<>());

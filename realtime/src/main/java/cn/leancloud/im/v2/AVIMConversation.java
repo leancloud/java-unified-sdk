@@ -142,6 +142,9 @@ public class AVIMConversation {
     return StringUtil.dateFromString((String) instanceData.get(AVObject.KEY_CREATED_AT));
   }
 
+  String getCreatedAtString() {
+    return (String) instanceData.get(AVObject.KEY_CREATED_AT);
+  }
   void setCreatedAt(String createdAt) {
     instanceData.put(AVObject.KEY_CREATED_AT, createdAt);
   }
@@ -155,6 +158,9 @@ public class AVIMConversation {
     return StringUtil.dateFromString((String) instanceData.get(AVObject.KEY_UPDATED_AT));
   }
 
+  String getUpdatedAtString() {
+    return (String) instanceData.get(AVObject.KEY_UPDATED_AT);
+  }
   void setUpdatedAt(String updatedAt) {
     instanceData.put(AVObject.KEY_UPDATED_AT, updatedAt);
   }

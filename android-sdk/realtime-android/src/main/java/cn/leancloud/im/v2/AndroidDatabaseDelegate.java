@@ -98,8 +98,8 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
         + AVIMMessageStorage.COLUMN_EXPIREAT + " NUMBERIC,"
         + COLUMN_ATTRIBUTE + " BLOB,"
         + COLUMN_INSTANCEDATA + " BLOB,"
-        + COLUMN_UPDATEDAT + " VARCHAR(32),"
-        + COLUMN_CREATEDAT + " VARCHAR(32),"
+        + COLUMN_UPDATEDAT + " VARCHAR(64),"
+        + COLUMN_CREATEDAT + " VARCHAR(64),"
         + COLUMN_CREATOR + " TEXT,"
         + COLUMN_MEMBERS + " TEXT,"
         + COLUMN_TRANSIENT + " INTEGER,"
@@ -114,6 +114,26 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
         + COLUMN_CONV_TEMP + " INTEGER default 0, "
         + COLUMN_CONV_TEMP_TTL + " NUMBERIC, "
         + "PRIMARY KEY(" + COLUMN_CONVERSATION_ID + "))";
+
+    static final String CONVERSATION_ALL_COLUMN = COLUMN_CONVERSATION_ID + "," +
+        AVIMMessageStorage.COLUMN_EXPIREAT + "," +
+        COLUMN_ATTRIBUTE + "," +
+        COLUMN_INSTANCEDATA + "," +
+        COLUMN_UPDATEDAT + "," +
+        COLUMN_CREATEDAT + "," +
+        COLUMN_CREATOR + "," +
+        COLUMN_MEMBERS + "," +
+        COLUMN_TRANSIENT + "," +
+        COLUMN_UNREAD_COUNT + "," +
+        COLUMN_CONVERSATION_READAT + "," +
+        COLUMN_CONVRESATION_DELIVEREDAT + "," +
+        COLUMN_LM + "," +
+        COLUMN_LASTMESSAGE + "," +
+        COLUMN_CONV_MENTIONED + "," +
+        COLUMN_CONV_LASTMESSAGE_INNERTYPE + "," +
+        COLUMN_CONV_SYSTEM + "," +
+        COLUMN_CONV_TEMP+ "," +
+        COLUMN_CONV_TEMP_TTL;
 
     public DBHelper(Context context, String clientId) {
       super(context, getDatabasePath(clientId), null, AVIMMessageStorage.DB_VERSION);
@@ -137,6 +157,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
       sqLiteDatabase.execSQL(MESSAGE_CREATE_SQL);
       sqLiteDatabase.execSQL(MESSAGE_UNIQUE_INDEX_SQL);
       sqLiteDatabase.execSQL(CONVERSATION_CREATE_SQL);
+      LOGGER.i("Succeed to create sqlite tables with version: " + AVIMMessageStorage.DB_VERSION);
     }
 
     @Override
@@ -177,10 +198,15 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
         upgradeToVersion10(sqLiteDatabase);
         oldVersion += 1;
       }
+      if (oldVersion == 10) {
+        upgradeToVersion11(sqLiteDatabase);
+        oldVersion += 1;
+      }
     }
 
     private void upgradeToVersion2(SQLiteDatabase db) {
       db.execSQL(CONVERSATION_CREATE_SQL);
+      LOGGER.i("Succeed to upgrade sqlite to version2.");
     }
 
     private void upgradeToVersion3(SQLiteDatabase db) {
@@ -189,6 +215,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
           db.execSQL(getAddColumnSql(MESSAGE_TABLE,
               COLUMN_DEDUPLICATED_TOKEN, AVIMMessageStorage.VARCHAR32));
         }
+        LOGGER.i("Succeed to upgrade sqlite to version3.");
       } catch (Exception ex) {
         LOGGER.w("failed to execute upgrade instrument. cause: " + ex.getMessage());
       }
@@ -200,6 +227,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
           db.execSQL(getAddColumnSql(CONVERSATION_TABLE,
               COLUMN_LASTMESSAGE, TEXT));
         }
+        LOGGER.i("Succeed to upgrade sqlite to version4.");
       } catch (Exception ex) {
         LOGGER.w("failed to execute upgrade instrument. cause: " + ex.getMessage());
       }
@@ -211,6 +239,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
           db.execSQL(getAddColumnSql(CONVERSATION_TABLE, COLUMN_INSTANCEDATA,
               AVIMMessageStorage.BLOB));
         }
+        LOGGER.i("Succeed to upgrade sqlite to version5.");
       } catch (Exception ex) {
         LOGGER.w("failed to execute upgrade instrument. cause: " + ex.getMessage());
       }
@@ -226,6 +255,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
         if (!columnExists(db, MESSAGE_TABLE, COLUMN_MESSAGE_READAT)) {
           db.execSQL(getAddColumnSql(MESSAGE_TABLE, COLUMN_MESSAGE_READAT, NUMBERIC));
         }
+        LOGGER.i("Succeed to upgrade sqlite to version6.");
       } catch (Exception ex) {
         LOGGER.w("failed to execute upgrade instrument. cause: " + ex.getMessage());
       }
@@ -236,6 +266,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
         if (!columnExists(db, MESSAGE_TABLE, COLUMN_MESSAGE_UPDATEAT)) {
           db.execSQL(getAddColumnSql(MESSAGE_TABLE, COLUMN_MESSAGE_UPDATEAT, NUMBERIC));
         }
+        LOGGER.i("Succeed to upgrade sqlite to version7.");
       } catch (Exception ex) {
         LOGGER.w("failed to execute upgrade instrument. cause: " + ex.getMessage());
       }
@@ -252,6 +283,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
         if (!columnExists(db, CONVERSATION_TABLE, COLUMN_CONV_MENTIONED)) {
           db.execSQL(getAddColumnSql(CONVERSATION_TABLE, COLUMN_CONV_MENTIONED, INTEGER, "0"));
         }
+        LOGGER.i("Succeed to upgrade sqlite to version8.");
       } catch (Exception ex) {
         LOGGER.w("failed to execute upgrade instrument. cause: " + ex.getMessage());
       }
@@ -265,6 +297,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
         if (!columnExists(db, CONVERSATION_TABLE, COLUMN_CONV_LASTMESSAGE_INNERTYPE)) {
           db.execSQL(getAddColumnSql(CONVERSATION_TABLE, COLUMN_CONV_LASTMESSAGE_INNERTYPE, INTEGER, "0"));
         }
+        LOGGER.i("Succeed to upgrade sqlite to version9.");
       } catch (Exception ex) {
         LOGGER.w("failed to execute upgrade instrument. cause: " + ex.getMessage());
       }
@@ -281,6 +314,23 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
         if (!columnExists(db, CONVERSATION_TABLE, COLUMN_CONV_TEMP_TTL)) {
           db.execSQL(getAddColumnSql(CONVERSATION_TABLE, COLUMN_CONV_TEMP_TTL, NUMBERIC));
         }
+        LOGGER.i("Succeed to upgrade sqlite to version10.");
+      } catch (Exception ex) {
+        LOGGER.w("failed to execute upgrade instrument. cause: " + ex.getMessage());
+      }
+    }
+
+    private void upgradeToVersion11(SQLiteDatabase db) {
+      try {
+        String modifyColumsSql = "BEGIN TRANSACTION;" +
+            "ALTER TABLE " + CONVERSATION_TABLE + " RENAME TO _conversation_old;" +
+            CONVERSATION_CREATE_SQL + ";" +
+            "INSERT INFO " + CONVERSATION_TABLE + "(" + CONVERSATION_ALL_COLUMN + ") SELECT " +
+            CONVERSATION_ALL_COLUMN + " FROM _conversation_old;" +
+            "DROP TABLE _conversation_old;" +
+            "COMMIT;";
+        db.execSQL(modifyColumsSql);
+        LOGGER.i("Succeed to upgrade sqlite to version11.");
       } catch (Exception ex) {
         LOGGER.w("failed to execute upgrade instrument. cause: " + ex.getMessage());
       }
