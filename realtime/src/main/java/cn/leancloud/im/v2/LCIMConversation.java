@@ -141,6 +141,10 @@ public class LCIMConversation {
     return StringUtil.dateFromString((String) instanceData.get(LCObject.KEY_CREATED_AT));
   }
 
+  String getCreatedAtString() {
+    return (String)instanceData.get(LCObject.KEY_CREATED_AT);
+  }
+
   void setCreatedAt(String createdAt) {
     instanceData.put(LCObject.KEY_CREATED_AT, createdAt);
   }
@@ -154,6 +158,9 @@ public class LCIMConversation {
     return StringUtil.dateFromString((String) instanceData.get(LCObject.KEY_UPDATED_AT));
   }
 
+  String getUpdatedAtString() {
+    return (String)instanceData.get(LCObject.KEY_UPDATED_AT);
+  }
   void setUpdatedAt(String updatedAt) {
     instanceData.put(LCObject.KEY_UPDATED_AT, updatedAt);
   }
