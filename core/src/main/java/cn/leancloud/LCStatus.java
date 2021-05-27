@@ -447,6 +447,11 @@ public class LCStatus extends LCObject {
     return true;
   }
 
+  @Override
+  public int hashCode() {
+    return Objects.hash(getClassName(), getObjectId());
+  }
+
   private static boolean checkCurrentUserAuthenticated() {
     LCUser currentUser = LCUser.getCurrentUser();
     return checkUserAuthenticated(currentUser);
@@ -474,7 +479,7 @@ public class LCStatus extends LCObject {
    */
   @Deprecated
   @Override
-  public LCACL getACL() {
+  public synchronized LCACL getACL() {
     throw new UnsupportedOperationException();
   }
 
@@ -483,7 +488,7 @@ public class LCStatus extends LCObject {
    */
   @Deprecated
   @Override
-  public void setACL(LCACL acl) {
+  public synchronized void setACL(LCACL acl) {
     throw new UnsupportedOperationException();
   }
 

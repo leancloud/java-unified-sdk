@@ -31,13 +31,10 @@ public class AppRouter {
   private static final LCLogger LOGGER = LogUtil.getLogger(AppRouter.class);
   private static final String APP_ROUTER_HOST = "https://app-router.com";
   private static AppRouter INSTANCE = null;
-  public static AppRouter getInstance() {
+
+  public static synchronized AppRouter getInstance() {
     if (null == INSTANCE) {
-      synchronized (AppRouter.class) {
-        if (null == INSTANCE) {
-          INSTANCE = new AppRouter();
-        }
-      }
+      INSTANCE = new AppRouter();
     }
     return INSTANCE;
   }
@@ -93,7 +90,7 @@ public class AppRouter {
     return LeanCloud.REGION.NorthChina;
   }
 
-  private volatile Retrofit retrofit = null;
+  private Retrofit retrofit = null;
   private AppAccessEndpoint defaultEndpoint = null;
   private AppAccessEndpoint customizedEndpoint = new AppAccessEndpoint();
 
@@ -225,7 +222,7 @@ public class AppRouter {
       }
     }
 
-    String result = null;
+    String result = "";
     switch (service) {
       case API:
         result = this.defaultEndpoint.getApiServer();

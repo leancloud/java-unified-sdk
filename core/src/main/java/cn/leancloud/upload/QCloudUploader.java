@@ -12,6 +12,7 @@ import okhttp3.*;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 public class QCloudUploader extends HttpClientUploader {
   private static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
@@ -30,7 +31,7 @@ public class QCloudUploader extends HttpClientUploader {
   private static final String PARAM_ACCESS_URL = "access_url";
   private static final int RETRY_TIMES = 5;
 
-  private volatile Future[] tasks;
+  private AtomicReferenceArray<Future> tasks;
   private String fileSha;
   private String fileKey;
   private String uploadUrl;
@@ -256,10 +257,10 @@ public class QCloudUploader extends HttpClientUploader {
   public void interruptImmediately() {
     super.interruptImmediately();
 
-    if (tasks != null && tasks.length > 0) {
+    if (tasks != null && tasks.length() > 0) {
       synchronized (tasks) {
-        for (int index = 0; index < tasks.length; index++) {
-          Future task = tasks[index];
+        for (int index = 0; index < tasks.length(); index++) {
+          Future task = tasks.get(index);
           if (task != null && !task.isDone() && !task.isCancelled()) {
             task.cancel(true);
           }

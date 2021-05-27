@@ -91,7 +91,7 @@ public class LCUtils {
   }
 
   public static double normalize2Double(int n, Double value) {
-    BigDecimal b = new BigDecimal(value);
+    BigDecimal b = BigDecimal.valueOf(value);
     return normalize2Double(n, b);
   }
 

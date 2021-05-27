@@ -16,7 +16,7 @@ public class LCLogger {
     }
     private int intLevel;
   }
-  private volatile InternalLogger internalLogger = null;
+  private InternalLogger internalLogger = null;
   private String tag = null;
 
   public LCLogger(String tag) {
@@ -67,13 +67,9 @@ public class LCLogger {
     writeLog(Level.ERROR, msg, tr);
   }
 
-  private InternalLogger getInternalLogger() {
+  private synchronized InternalLogger getInternalLogger() {
     if (null == internalLogger) {
-      synchronized (this) {
-        if (null == internalLogger) {
-          internalLogger = AppConfiguration.getLogAdapter().getLogger(tag);
-        }
-      }
+      internalLogger = AppConfiguration.getLogAdapter().getLogger(tag);
     }
     return internalLogger;
   }

@@ -41,7 +41,7 @@ public class LCPush {
   private long expirationTimeInterval;
   private final Set<String> pushTarget;
   private final Map<String, Object> pushData;
-  private volatile LCObject notification;
+  private LCObject notification;
   private Date pushDate = null;
   private int flowControl = 0;          // add since v6.1.2
 

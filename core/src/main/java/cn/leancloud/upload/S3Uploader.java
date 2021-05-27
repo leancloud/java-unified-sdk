@@ -14,7 +14,7 @@ class S3Uploader extends HttpClientUploader {
   private static String DEFAULT_HEADER_CACHE_CONTROL = "Cache-Control";
   private static String DEFAULT_HEADER_CACHE_CONTROL_VALUE = "public, max-age=31536000";
 
-  private volatile Call call;
+  private Call call;
   private String uploadUrl;
   private int retryTimes = DEFAULT_RETRY_TIMES;
 

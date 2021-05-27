@@ -35,7 +35,7 @@ public class LCDate {
       sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
       THREAD_LOCAL_DATE_FORMAT.set(sdf);
     }
-    if (StringUtil.isEmpty( this.iso)) {
+    if (StringUtil.isEmpty(this.iso)) {
       return null;
     }
     try {
