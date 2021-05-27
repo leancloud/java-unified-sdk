@@ -10,6 +10,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
 public class AES {
@@ -37,7 +38,7 @@ public class AES {
   private SecretKeyFactory keyfactory = null;
   private SecretKey sk = null;
   private SecretKeySpec skforAES = null;
-  private byte[] iv = {0xA, 1, 0xB, 5, 4, 0xF, 7, 9, 0x17, 3, 1, 6, 8, 0xC, 0xD, 91};
+//  private byte[] iv = {0xA, 1, 0xB, 5, 4, 0xF, 7, 9, 0x17, 3, 1, 6, 8, 0xC, 0xD, 91};
 
   private IvParameterSpec IV;
 
@@ -60,6 +61,9 @@ public class AES {
     // be secure if we kept it on a server accessible through https.
     byte[] skAsByteArray = sk.getEncoded();
     skforAES = new SecretKeySpec(skAsByteArray, "AES");
+    SecureRandom random = new SecureRandom();
+    byte[] iv = new byte[16];
+    random.nextBytes(iv);
     IV = new IvParameterSpec(iv);
   }
 
