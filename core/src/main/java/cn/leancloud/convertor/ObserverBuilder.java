@@ -265,17 +265,6 @@ public class ObserverBuilder {
    * @param callback find callback
    * @param <T> template type
    * @return observer
-   * @deprecated please use buildCollectionObserver(FindCallback callback).
-   */
-  public static <T extends LCObject> CollectionObserver<T> buildSingleObserver(FindCallback<T> callback) {
-    return new CollectionObserver<T>(callback);
-  }
-
-  /**
-   * build observer for FindCallback
-   * @param callback find callback
-   * @param <T> template type
-   * @return observer
    */
   public static <T extends LCObject> CollectionObserver<T> buildCollectionObserver(FindCallback<T> callback) {
     return new CollectionObserver<T>(callback);

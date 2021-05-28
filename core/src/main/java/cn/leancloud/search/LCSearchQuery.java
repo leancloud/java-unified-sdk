@@ -231,17 +231,6 @@ public class LCSearchQuery<T extends LCObject> {
   }
 
   /**
-   * lastId是作为分页的依据，根据设置lastId需要查询的页数 设置为null回到第一页
-   *
-   * @param lastId last session id.
-   * @deprecated 使用setSid(String)替代
-   */
-  @Deprecated
-  public void setLastId(String lastId) {
-    this.sid = lastId;
-  }
-
-  /**
    * 设置查询id，通常您都不需要调用这个方法来设置，只要不停调用find就可以实现分页。
    * 不过如果需要将查询分页传递到其他Activity，则可能需要通过传递sid来实现。
    *
@@ -249,17 +238,6 @@ public class LCSearchQuery<T extends LCObject> {
    */
   public void setSid(String sid) {
     this.sid = sid;
-  }
-
-  /**
-   * 获取本次查询的id，注意，它不是返回结果中对象的objectId，而是表示本次AVSearchQuery查询的id
-   *
-   * @return last session id.
-   * @deprecated 请使用getSid()替代。
-   */
-  @Deprecated
-  public String getLastId() {
-    return this.sid;
   }
 
   /**
