@@ -38,6 +38,7 @@ public class PersistenceUtil {
     }
     return lock;
   }
+
   public void removeLock(String path) {
     fileLocks.remove(path);
   }
@@ -46,7 +47,8 @@ public class PersistenceUtil {
     try {
       if (closeable != null) closeable.close();
     } catch (IOException e) {
-      //
+      //do nothing
+      gLogger.w("failed to close " + closeable + ", cause: " + e.getMessage());
     }
   }
   public boolean saveContentToFile(String content, File fileForSave) {

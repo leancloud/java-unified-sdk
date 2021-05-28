@@ -7,7 +7,7 @@ public abstract class MobilePhoneVerifyCallback extends LCCallback<LCNull> {
 
   /**
    * <p>
-   * AVMobilePhoneVerifyCallback 用来验证用户的手机号码
+   * MobilePhoneVerifyCallback 用来验证用户的手机号码
    * </p>
    * @param t null object.
    * @param LCException  exception.
@@ -16,9 +16,9 @@ public abstract class MobilePhoneVerifyCallback extends LCCallback<LCNull> {
    * </p>
    *
    * <pre>
-   * AVUser.verifyMobilePhoneInBackgroud(&quot;123456&quot;,
-   *     new AVMobilePhoneVerifyCallback() {
-   *       public void done(AVException e) {
+   * LCUser.verifyMobilePhoneInBackgroud(&quot;123456&quot;,
+   *     new MobilePhoneVerifyCallback() {
+   *       public void done(LCException e) {
    *         if (e == null) {
    *           requestedSuccessfully();
    *         } else {
