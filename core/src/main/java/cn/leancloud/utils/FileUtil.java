@@ -6,9 +6,9 @@ import java.util.regex.Pattern;
 
 public class FileUtil {
   public static final int DEFAULT_FILE_KEY_LEN = 40;
-  public static final String DEFAULTMIMETYPE = "application/octet-stream";
+  public static final String DEFAULT_MIME_TYPE = "application/octet-stream";
 
-  public static interface MimeTypeDetector {
+  public interface MimeTypeDetector {
     String getMimeTypeFromUrl(String url);
     String getMimeTypeFromPath(String filePath);
     String getMimeTypeFromExtension(String extension);
@@ -17,21 +17,6 @@ public class FileUtil {
   public static void config(MimeTypeDetector mimeTypeDetector) {
     detector = mimeTypeDetector;
   }
-
-//  public static String generateFileKey(String name, boolean keepFilename) {
-//    String key = StringUtil.getRandomString(DEFAULT_FILE_KEY_LEN);
-//    int idx = 0;
-//    if (!StringUtil.isEmpty(name)) {
-//      idx = name.lastIndexOf(".");
-//    }
-//    if (keepFilename) {
-//      key += "/" + name;
-//    } else if (idx > 0) {
-//      String postFix = name.substring(idx);
-//      key += postFix;
-//    }
-//    return key;
-//  }
 
   public static String getExtensionFromFilename(String filename) {
     if (!StringUtil.isEmpty(filename) && Pattern.matches("[a-zA-Z_0-9\\.\\-\\(\\)\\%]+", filename)) {
@@ -53,7 +38,7 @@ public class FileUtil {
       mimeType = getMimeTypeFromUrl(fileUrl);
     }
     if (StringUtil.isEmpty(mimeType)) {
-      mimeType = DEFAULTMIMETYPE;
+      mimeType = DEFAULT_MIME_TYPE;
     }
     return mimeType;
   }

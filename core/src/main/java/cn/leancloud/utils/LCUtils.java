@@ -35,9 +35,7 @@ public class LCUtils {
   }
 
   public static Map<String, Object> createMap(String cmp, Object value) {
-    Map<String, Object> dict = new HashMap<String, Object>();
-    dict.put(cmp, value);
-    return dict;
+    return createStringObjectMap(cmp, value);
   }
 
   public static Map<String, Object> createStringObjectMap(String key, Object value) {
@@ -75,7 +73,7 @@ public class LCUtils {
   }
 
   public static boolean equals(Object a, Object b) {
-    return (a == b) || (a != null && a.equals(b));
+    return Objects.equals(a, b);
   }
 
   public static int hash(Object... values) {
