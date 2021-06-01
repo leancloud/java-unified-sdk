@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.auth.UserBasedTestCase;
 import cn.leancloud.types.LCNull;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-public class LCObjectACLTest extends TestCase {
+public class LCObjectACLTest extends UserBasedTestCase {
   private CountDownLatch latch = null;
   private boolean testSucceed = false;
 
@@ -27,7 +28,6 @@ public class LCObjectACLTest extends TestCase {
 
   public LCObjectACLTest(String testName) {
     super(testName);
-    Configure.initializeRuntime();
   }
   public static Test suite() {
     return new TestSuite(LCObjectACLTest.class);
@@ -35,12 +35,9 @@ public class LCObjectACLTest extends TestCase {
 
   @Override
   protected void setUp() throws Exception {
+    super.setUp();
     latch = new CountDownLatch(1);
     testSucceed = false;
-    LCUser currentUser = LCUser.currentUser();
-    if (null != currentUser) {
-      LCUser.logOut();
-    }
   }
 
   public void testPrepareACL() throws Exception {

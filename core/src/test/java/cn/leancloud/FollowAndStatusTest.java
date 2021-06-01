@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.auth.UserBasedTestCase;
 import cn.leancloud.types.LCNull;
 import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
@@ -13,13 +14,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-public class FollowAndStatusTest extends TestCase {
+public class FollowAndStatusTest extends UserBasedTestCase {
   private CountDownLatch latch = null;
   private boolean testSucceed = false;
 
   public FollowAndStatusTest(String name) {
     super(name);
-    Configure.initializeRuntime();
+    setAuthUser("jfeng", AVUserFollowshipTest.DEFAULT_PASSWD);
   }
 
   public static Test suite() {
@@ -28,19 +29,9 @@ public class FollowAndStatusTest extends TestCase {
 
   @Override
   protected void setUp() throws Exception {
+    super.setUp();
     latch = new CountDownLatch(1);
     testSucceed = false;
-    userLogin("jfeng", AVUserFollowshipTest.DEFAULT_PASSWD);
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    latch = null;
-
-    LCUser current = LCUser.currentUser();
-    if (null != current) {
-      current.logOut();
-    }
   }
 
   private void userLogin(String username, String password) throws Exception {

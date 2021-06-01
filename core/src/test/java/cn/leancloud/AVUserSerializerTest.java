@@ -64,9 +64,6 @@ public class AVUserSerializerTest extends TestCase {
   }
 
   public void testCurrentUserFromLocalCache() throws Exception {
-    LCUser user = LCUser.currentUser();
-    assertTrue(null != user);
-    System.out.println(user);
   }
 
   public void testDeserializedUser() throws Exception {

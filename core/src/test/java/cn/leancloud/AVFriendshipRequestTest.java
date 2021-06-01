@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.auth.UserBasedTestCase;
 import cn.leancloud.json.JSON;
 import cn.leancloud.types.LCNull;
 import io.reactivex.Observer;
@@ -7,23 +8,52 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-public class AVFriendshipRequestTest extends TestCase {
+public class AVFriendshipRequestTest extends UserBasedTestCase {
   private boolean testSucceed = false;
   private CountDownLatch latch = null;
 
-  private String testUser1ObjectId = "5eeacc973ec3ec0008e6023c";
+  private String testUser1ObjectId = "";
   private String testUser1UserName = AVUserTest.USERNAME;
   private String testUser1Password = AVUserTest.PASSWORD;
 
   public AVFriendshipRequestTest(String name) {
     super(name);
-    Configure.initializeRuntime();
+    final CountDownLatch tmpLatch = new CountDownLatch(1);
+    LCUser.logIn(testUser1UserName, testUser1Password).subscribe(new Observer<LCUser>() {
+      @Override
+      public void onSubscribe(@NotNull Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(@NotNull LCUser lcUser) {
+        testUser1ObjectId = lcUser.objectId;
+        tmpLatch.countDown();
+      }
+
+      @Override
+      public void onError(@NotNull Throwable throwable) {
+        tmpLatch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    try {
+      tmpLatch.await(10, TimeUnit.SECONDS);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
   }
 
   public static Test suite() {
@@ -32,14 +62,14 @@ public class AVFriendshipRequestTest extends TestCase {
 
   @Override
   protected void setUp() throws Exception {
+    super.setUp();
     testSucceed = false;
     latch = new CountDownLatch(1);
-    LCUser.logOut();
   }
 
   @Override
   protected void tearDown() throws Exception {
-    ;
+    super.tearDown();
   }
 
   public void testStatusSerializer() throws Exception {

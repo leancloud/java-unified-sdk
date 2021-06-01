@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.auth.UserBasedTestCase;
 import cn.leancloud.json.JSON;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -10,12 +11,11 @@ import junit.framework.TestSuite;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-public class AVSubUserTest extends TestCase {
+public class AVSubUserTest extends UserBasedTestCase {
   private boolean operationSucceed = false;
   public AVSubUserTest(String name) {
     super(name);
     LCUser.alwaysUseSubUserClass(SubUser.class);
-    Configure.initializeRuntime();
   }
 
   public static Test suite() {
@@ -24,12 +24,13 @@ public class AVSubUserTest extends TestCase {
 
   @Override
   protected void setUp() throws Exception {
+    super.setUp();
     operationSucceed = false;
   }
 
   @Override
   protected void tearDown() throws Exception {
-    ;
+    super.tearDown();
   }
 
   public void testSingupWithEmail() throws Exception {
