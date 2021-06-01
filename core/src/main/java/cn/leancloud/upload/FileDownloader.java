@@ -10,6 +10,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.*;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
@@ -23,12 +24,12 @@ public class FileDownloader {
       return new LCException(new IllegalArgumentException("url is null"));
     }
     if (localFile.exists()) {
-      return new LCException(new FileNotFoundException("local file is not existed."));
+      return new LCException(new FileAlreadyExistsException("local file already existed."));
     }
     return downloadFileFromNetwork(url, localFile);
   }
 
-  private OkHttpClient getHttpClient() {
+  private OkHttpClient createHttpClient() {
     return new OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS)
@@ -42,7 +43,7 @@ public class FileDownloader {
     Request.Builder requestBuilder = new Request.Builder();
     requestBuilder.url(url);
 
-    OkHttpClient client = getHttpClient();
+    OkHttpClient client = createHttpClient();
     try {
       Response response = client.newCall(requestBuilder.build()).execute();
       int statusCode = response.code();

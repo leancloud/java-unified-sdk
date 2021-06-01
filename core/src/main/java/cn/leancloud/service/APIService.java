@@ -56,7 +56,6 @@ public interface APIService {
                                     @Body JSONObject object, @Query("fetchWhenSave") boolean fetchFlag,
                                     @Query("where") JSONObject where);
 
-//  @DELETEWITHBODY("/1.1/classes/{className}/{objectId}")
   @HTTP(method = "DELETE", path = "/1.1/classes/{className}/{objectId}", hasBody = true)
   Observable<LCNull> deleteObject(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
                                   @Path("className") String className, @Path("objectId") String objectId,
@@ -84,7 +83,6 @@ public interface APIService {
   Observable<LCObject> getWholeObject(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
                                       @Path("endpointClass") String endpointClass, @Path("objectId") String objectId,
                                       @Query("include") String includeKeys);
-//  @DELETE("/1.1/{endpointClass}/{objectId}")
   @HTTP(method = "DELETE", path = "/1.1/{endpointClass}/{objectId}", hasBody = true)
   Observable<LCNull> deleteWholeObject(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
                                        @Path("endpointClass") String endpointClass, @Path("objectId") String objectId,

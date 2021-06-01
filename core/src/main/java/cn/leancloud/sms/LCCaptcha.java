@@ -13,7 +13,8 @@ public class LCCaptcha {
     return PaasClient.getStorageClient().requestCaptcha(option);
   }
 
-  public static Observable<LCCaptchaValidateResult> verifyCaptchaCodeInBackground(String captchaCode, LCCaptchaDigest captchaDigest) {
+  public static Observable<LCCaptchaValidateResult> verifyCaptchaCodeInBackground(String captchaCode,
+                                                                                  LCCaptchaDigest captchaDigest) {
     if (StringUtil.isEmpty(captchaCode)) {
       throw new IllegalArgumentException("captcha code is empty");
     }

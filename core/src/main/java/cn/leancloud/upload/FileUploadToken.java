@@ -76,7 +76,7 @@ public class FileUploadToken {
     this.key = key;
   }
 
-  @java.lang.Override
+  @Override
   public java.lang.String toString() {
     return "FileUploadToken{" +
             "bucket='" + bucket + '\'' +

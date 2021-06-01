@@ -26,11 +26,7 @@ public class FileCache extends LocalStorage{
 
   @Override
   public File getCacheFile(String url) {
-    try {
-      String urlMd5 = MDFive.computeMD5(url.getBytes("UTF-8"));
-      return super.getCacheFile(urlMd5);
-    } catch (Exception ex) {
-      return null;
-    }
+    String urlMd5 = MDFive.computeMD5(url.getBytes());
+    return super.getCacheFile(urlMd5);
   }
 }

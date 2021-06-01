@@ -25,21 +25,7 @@ public abstract class HttpClientUploader implements Uploader {
   ProgressCallback progressCallback;
 
   private volatile boolean cancelled = false;
-//  static ThreadPoolExecutor executor;
-
-//  private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
-//  private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
-//  private static final int MAX_POOL_SIZE = CPU_COUNT * 2 + 1;
-//  private static final long KEEP_ALIVE_TIME = 1L;
   protected static final int DEFAULT_RETRY_TIMES = 6;
-
-//  static {
-//    executor = new ThreadPoolExecutor(
-//            CORE_POOL_SIZE,
-//            MAX_POOL_SIZE,
-//            KEEP_ALIVE_TIME, TimeUnit.SECONDS,
-//            new LinkedBlockingQueue<Runnable>());
-//  }
 
   protected synchronized OkHttpClient getOKHttpClient() {
     return client;

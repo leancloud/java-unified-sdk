@@ -136,8 +136,8 @@ public class LCACL {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof LCACL)) return false;
-    LCACL LCACL = (LCACL) o;
-    return Objects.equals(getPermissionsById(), LCACL.getPermissionsById());
+    LCACL realACL = (LCACL) o;
+    return Objects.equals(getPermissionsById(), realACL.getPermissionsById());
   }
 
   @Override

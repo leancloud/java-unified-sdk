@@ -68,7 +68,7 @@ public class QueryUnitTest extends TestCase {
   public void testBasicQuery() throws Exception {
     LCQuery<LCObject> query = new LCQuery<LCObject>(className);
     query.whereEqualTo("playerName", "player1");
-    FindCallback cb = new FindCallback<LCObject>() {
+    FindCallback<LCObject> cb = new FindCallback<LCObject>() {
       public void done(List<LCObject> avObjects, LCException e) {
         assertNull(e);
         for (LCObject obj : avObjects) {
@@ -76,7 +76,7 @@ public class QueryUnitTest extends TestCase {
         }
       }
     };
-    query.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(cb));
+    query.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(cb));
     List<LCObject> LCObjects = query.find();
     for (LCObject obj : LCObjects) {
       assertEquals("player1", obj.get("playerName"));
@@ -97,7 +97,7 @@ public class QueryUnitTest extends TestCase {
         }
       }
     };
-    query.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(cb));
+    query.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(cb));
 
     // whereGreaterThan
     query = new LCQuery<LCObject>(className);
@@ -241,7 +241,7 @@ public class QueryUnitTest extends TestCase {
       }
 
     };
-    query.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(cb));
+    query.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(cb));
   }
 
   public void testWhereMatchesQuery() throws Exception {
@@ -260,7 +260,7 @@ public class QueryUnitTest extends TestCase {
         }
       }
     };
-    query.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(cb));
+    query.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(cb));
   }
 
   public void testWhereDoesNotMatchQuery() throws Exception {
@@ -354,7 +354,7 @@ public class QueryUnitTest extends TestCase {
       }
 
     };
-    query.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(cb));
+    query.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(cb));
   }
 
   public void testCompondQuery() throws Exception {
@@ -374,7 +374,7 @@ public class QueryUnitTest extends TestCase {
         assertTrue(results.size() > 0);
       }
     };
-    mainQuery.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(cb));
+    mainQuery.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(cb));
   }
 
   public void testDeleteAll() throws Exception {

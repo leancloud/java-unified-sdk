@@ -9,14 +9,22 @@ import cn.leancloud.types.LCDate;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class AVRoleSerializerTest extends TestCase {
+public class LCRoleSerializerTest extends TestCase {
 
-  public AVRoleSerializerTest(String name) {
+  public LCRoleSerializerTest(String name) {
     super(name);
     Configure.initializeRuntime();
+  }
+
+  @Override
+  protected void tearDown() throws Exception {
+    LCQuery<LCRole> aclQuery = new LCQuery(LCRole.CLASS_NAME);
+    aclQuery.whereContainedIn("name", Arrays.asList("Everyone", "Developer", "Ops"));
+    aclQuery.deleteAll();
   }
 
   public void testRoleSerializer() {
@@ -28,15 +36,26 @@ public class AVRoleSerializerTest extends TestCase {
     String aclString = JSON.toJSONString(acl);
     System.out.println("jsonString of acl:" + aclString);
     LCACL otherACL = JSON.parseObject(aclString, LCACL.class);
-    System.out.println("jsonString of acl:" + aclString + ", deserializedObject: " + otherACL.toString());
+    System.out.println("jsonString of other acl:" + aclString + ", deserializedObject: " + otherACL.toString());
     assertEquals(acl, otherACL);
 
     LCRole role1 = new LCRole();
+    role1.setName("Everyone");
+    role1.getACL().setPublicReadAccess(true);
+    role1.getACL().setPublicWriteAccess(true);
+    role1.save();
+
+    HashMap<String, Boolean> permData = new HashMap<>();
+    permData.put("read", true);
+    permData.put("write", true);
+    HashMap<String, Object> aclMap = new HashMap<>();
+    aclMap.put("*", permData);
     LCRole role2 = new LCRole("Developer");
-    HashMap<String, Boolean> aclData = new HashMap<>();
-    aclData.put("read", true);
-    aclData.put("write", true);
-    LCRole role3 = new LCRole("Ops", new LCACL(aclData));
+    role2.setACL(new LCACL(aclMap));
+    role2.save();
+
+    LCRole role3 = new LCRole("Ops", new LCACL(aclMap));
+    role3.save();
 
     List<LCRole> roleList = new ArrayList<>(3);
     roleList.add(role1);
@@ -52,7 +71,7 @@ public class AVRoleSerializerTest extends TestCase {
     }
   }
 
-  public void testAVDate() {
+  public void testLCDate() {
     LCDate date = new LCDate();
     date.setIso("2020-06-06'T'00:00:00.533'Z'");
     String dateJson = date.toJSONString();
@@ -62,7 +81,7 @@ public class AVRoleSerializerTest extends TestCase {
     assertEquals(other.getIso().equals(date.getIso()), true);
   }
 
-  public void testAVObjectSerializer() {
+  public void testObjectSerializer() {
     LCObject object = new LCObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 18);
@@ -71,18 +90,10 @@ public class AVRoleSerializerTest extends TestCase {
     System.out.println("objectJSONString is: " + objectString);
   }
 
-  public void testAVObjectDeserialize() {
+  public void testObjectDeserialize() {
     String text = "{\"@type\":\"cn.leancloud.AVObject\",\"className\":\"Student\",\"version\":5,\"serverData\":{\"address\":\"Beijing City\",\"@type\":\"java.util.HashMap\",\"age\":5}}";
     LCObject object = GsonWrapper.parseObject(text, LCObject.class);
     System.out.println(object.toJSONString());
-  }
-
-  public void testAVUserSerializer() {
-
-  }
-
-  public void testSubClassSerializer() {
-    ;
   }
 
   public void testBaseOperatorSerializer() {
