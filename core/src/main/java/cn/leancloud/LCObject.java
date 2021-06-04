@@ -559,6 +559,9 @@ public class LCObject {
    */
   public void put(String key, Object value) {
     validFieldName(key);
+    if (null == value) {
+      return;
+    }
     internalPut(key, value);
   }
 

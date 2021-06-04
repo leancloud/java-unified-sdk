@@ -20,6 +20,15 @@ public class UserBasedTestCase extends TestCase {
     Configure.initializeRuntime();
   }
 
+  public UserBasedTestCase(String name, String appId, String appKey, String masterKey, String serverURL) {
+    super(name);
+    if (StringUtil.isEmpty(masterKey)) {
+      Configure.initializeWithApp(appId, appKey, serverURL);
+    } else {
+      Configure.initializeWithMasterKey(appId, masterKey, serverURL);
+    }
+  }
+
   protected void setAuthUser(String username, String passwd) {
     this.username = username;
     this.passwd = passwd;

@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.auth.UserBasedTestCase;
 import cn.leancloud.callback.LogInCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.callback.SignUpCallback;
@@ -10,7 +11,7 @@ import junit.framework.TestSuite;
 
 import java.util.concurrent.CountDownLatch;
 
-public class UserUnitTest extends TestCase {
+public class UserUnitTest extends UserBasedTestCase {
   public static final String username = "steve" + System.currentTimeMillis();
   public static final String password = "f32@ds*@&dsa";
   private CountDownLatch latch = null;
@@ -18,9 +19,8 @@ public class UserUnitTest extends TestCase {
 
   public UserUnitTest(String name) {
     super(name);
-
     LCObject.registerSubclass(SubUser.class);
-    Configure.initializeRuntime();
+    LCObject.registerSubclass(Armor.class);
   }
   public static Test suite() {
     return new TestSuite(UserUnitTest.class);
@@ -166,13 +166,21 @@ public class UserUnitTest extends TestCase {
   }
 
   public void testSignupSubUser() throws Exception {
+    LCObject armor = LCQuery.getQuery("Armor").getFirst();
+    if (null == armor) {
+      Armor newObj = new Armor();
+      newObj.setBroken(false);
+      newObj.setDisplayName("test at " + System.currentTimeMillis());
+      newObj.save();
+      armor = newObj;
+    }
     SubUser subUser = new SubUser();
     String username = "dennis" + System.currentTimeMillis();
     String nickName = "testSignupSubUser";
     subUser.setUsername(username);
     subUser.setPassword(password);
     subUser.setNickName(nickName);
-    subUser.setArmor(LCQuery.getQuery("Armor").getFirst());
+    subUser.setArmor(armor);
     subUser.signUp();
     System.out.println("signup success");
 
