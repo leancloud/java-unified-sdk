@@ -8,8 +8,8 @@ import junit.framework.TestSuite;
 import java.util.LinkedList;
 import java.util.List;
 
-import static cn.leancloud.AVUserTest.PASSWORD;
-import static cn.leancloud.AVUserTest.USERNAME;
+import static cn.leancloud.LCUserTest.PASSWORD;
+import static cn.leancloud.LCUserTest.USERNAME;
 
 public class FileUnitTest extends TestCase {
   public FileUnitTest(String name) {

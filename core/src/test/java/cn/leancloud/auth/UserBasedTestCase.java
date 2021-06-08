@@ -77,4 +77,8 @@ public class UserBasedTestCase extends TestCase {
   protected void tearDown() throws Exception {
     clearCurrentAuthenticatedUser();
   }
+
+  public void testDummy() throws Exception {
+    ;
+  }
 }

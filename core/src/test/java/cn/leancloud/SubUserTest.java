@@ -5,21 +5,20 @@ import cn.leancloud.json.JSON;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-public class AVSubUserTest extends UserBasedTestCase {
+public class SubUserTest extends UserBasedTestCase {
   private boolean operationSucceed = false;
-  public AVSubUserTest(String name) {
+  public SubUserTest(String name) {
     super(name);
     LCUser.alwaysUseSubUserClass(SubUser.class);
   }
 
   public static Test suite() {
-    return new TestSuite(AVSubUserTest.class);
+    return new TestSuite(SubUserTest.class);
   }
 
   @Override

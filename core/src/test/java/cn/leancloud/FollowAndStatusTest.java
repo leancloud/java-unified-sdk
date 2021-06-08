@@ -6,7 +6,6 @@ import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class FollowAndStatusTest extends UserBasedTestCase {
 
   public FollowAndStatusTest(String name) {
     super(name);
-    setAuthUser("jfeng", AVUserFollowshipTest.DEFAULT_PASSWD);
+    setAuthUser("jfeng", UserFollowshipTest.DEFAULT_PASSWD);
   }
 
   public static Test suite() {
@@ -564,7 +563,7 @@ public class FollowAndStatusTest extends UserBasedTestCase {
         System.out.println(avStatus);
         System.out.println("change login user and try to query inbox status...");
         try {
-          userLogin("jfeng001", AVUserFollowshipTest.DEFAULT_PASSWD);
+          userLogin("jfeng001", UserFollowshipTest.DEFAULT_PASSWD);
           LCStatus.inboxQuery(LCUser.currentUser(), LCStatus.INBOX_TYPE.TIMELINE.toString())
                   .findInBackground()
                   .subscribe(new Observer<List<LCStatus>>() {
@@ -639,13 +638,13 @@ public class FollowAndStatusTest extends UserBasedTestCase {
   public void testStatusQueryPagination() throws Exception {
     String jfengObjectId = LCUser.currentUser().getObjectId();
     System.out.println("follower-jfeng001 login...");
-    userLogin("jfeng001", AVUserFollowshipTest.DEFAULT_PASSWD);
+    userLogin("jfeng001", UserFollowshipTest.DEFAULT_PASSWD);
     LCUser jfeng001 = LCUser.currentUser();
     System.out.println("follower-jfeng001 follow jfeng...");
     jfeng001.followInBackground(jfengObjectId).blockingFirst();
 
     System.out.println("jfeng login...");
-    userLogin("jfeng", AVUserFollowshipTest.DEFAULT_PASSWD);
+    userLogin("jfeng", UserFollowshipTest.DEFAULT_PASSWD);
     LCUser jfeng = LCUser.currentUser();
 
     int pageSize = 50;
@@ -702,7 +701,7 @@ public class FollowAndStatusTest extends UserBasedTestCase {
     }
 
     System.out.println("follower-jfeng001 login...");
-    userLogin("jfeng001", AVUserFollowshipTest.DEFAULT_PASSWD);
+    userLogin("jfeng001", UserFollowshipTest.DEFAULT_PASSWD);
 
     List<LCStatus> inboxStatuses = new ArrayList<>();
 
@@ -747,7 +746,7 @@ public class FollowAndStatusTest extends UserBasedTestCase {
     }
 
     System.out.println("jfeng login...");
-    userLogin("jfeng", AVUserFollowshipTest.DEFAULT_PASSWD);
+    userLogin("jfeng", UserFollowshipTest.DEFAULT_PASSWD);
     System.out.println("jfeng delete owned status, count:" + ownedStatuses.size() + "...");
     int ownedDeleteError = 0;
     for (LCStatus sts : ownedStatuses) {

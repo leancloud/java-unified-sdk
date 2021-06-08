@@ -10,17 +10,17 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-public class AVRoleTest extends TestCase {
+public class RoleTest extends TestCase {
   private CountDownLatch latch = null;
   private boolean testSucceed = false;
 
-  public AVRoleTest(String name) {
+  public RoleTest(String name) {
     super(name);
     Configure.initializeRuntime();
   }
 
   public static Test suite() {
-    return new TestSuite(AVRoleTest.class);
+    return new TestSuite(RoleTest.class);
   }
 
   @Override

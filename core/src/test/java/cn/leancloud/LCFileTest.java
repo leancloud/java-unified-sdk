@@ -14,16 +14,16 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
-public class AVFileTest extends TestCase {
+public class LCFileTest extends TestCase {
   private boolean testSucceed = false;
   private CountDownLatch latch = null;
-  public AVFileTest(String name) {
+  public LCFileTest(String name) {
     super(name);
     Configure.initializeRuntime();
   }
 
   public static Test suite() {
-    return new TestSuite(AVFileTest.class);
+    return new TestSuite(LCFileTest.class);
   }
 
   @Override

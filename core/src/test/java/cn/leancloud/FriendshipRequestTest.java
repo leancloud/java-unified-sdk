@@ -6,7 +6,6 @@ import cn.leancloud.types.LCNull;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,15 +15,15 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class AVFriendshipRequestTest extends UserBasedTestCase {
+public class FriendshipRequestTest extends UserBasedTestCase {
   private boolean testSucceed = false;
   private CountDownLatch latch = null;
 
   private String testUser1ObjectId = "";
-  private String testUser1UserName = AVUserTest.USERNAME;
-  private String testUser1Password = AVUserTest.PASSWORD;
+  private String testUser1UserName = LCUserTest.USERNAME;
+  private String testUser1Password = LCUserTest.PASSWORD;
 
-  public AVFriendshipRequestTest(String name) {
+  public FriendshipRequestTest(String name) {
     super(name);
     final CountDownLatch tmpLatch = new CountDownLatch(1);
     LCUser.logIn(testUser1UserName, testUser1Password).subscribe(new Observer<LCUser>() {
@@ -57,7 +56,7 @@ public class AVFriendshipRequestTest extends UserBasedTestCase {
   }
 
   public static Test suite() {
-    return new TestSuite(AVFriendshipRequestTest.class);
+    return new TestSuite(FriendshipRequestTest.class);
   }
 
   @Override

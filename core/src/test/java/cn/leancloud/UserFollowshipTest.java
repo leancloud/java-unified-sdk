@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-public class AVUserFollowshipTest extends TestCase {
+public class UserFollowshipTest extends TestCase {
   private boolean operationSucceed = false;
   public static final String JFENG_EMAIL = "jfeng@test.com";
   public static final String DENNIS_EMAIL = "dennis@test.com";
@@ -23,13 +23,13 @@ public class AVUserFollowshipTest extends TestCase {
   private static String JFENG_OBJECT_ID = "5bff479067f3560066d00676";
   private static String DENNIS_OBJECT_ID = "5bff452afb4ffe0069a9893e";
 
-  public AVUserFollowshipTest(String name) {
+  public UserFollowshipTest(String name) {
     super(name);
     Configure.initializeRuntime();
   }
 
   public static Test suite() {
-    return new TestSuite(AVUserFollowshipTest.class);
+    return new TestSuite(UserFollowshipTest.class);
   }
 
   @Override

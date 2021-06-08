@@ -13,9 +13,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
-public class AVInstallationTest extends TestCase {
+public class InstallationTest extends TestCase {
   private boolean testSucceed = false;
-  public AVInstallationTest(String testName) {
+  public InstallationTest(String testName) {
     super(testName);
     Configure.initializeRuntime();
   }

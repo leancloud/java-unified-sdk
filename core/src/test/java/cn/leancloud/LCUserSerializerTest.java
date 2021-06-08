@@ -1,39 +1,45 @@
 package cn.leancloud;
 
+import cn.leancloud.auth.UserBasedTestCase;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.util.concurrent.CountDownLatch;
 
-public class AVUserSerializerTest extends TestCase {
+public class LCUserSerializerTest extends UserBasedTestCase {
   private CountDownLatch latch = null;
   private boolean testSucceed = false;
+  private String testUserObjectId = null;
 
-  public AVUserSerializerTest(String name) {
+  public LCUserSerializerTest(String name) {
     super(name);
-    Configure.initializeWithMasterKey("xtuccgojwm9z701f4wzyu579klvlmag2pugywe39rg5iyqug",
-            "uzhzd5etmy4i6r3hbnzxhzbfojhfy8pw87fx8ve04w2h6id0", "https://lc.i7play.com");
   }
 
   public static Test suite() {
-    return new TestSuite(AVUserSerializerTest.class);
+    return new TestSuite(LCUserSerializerTest.class);
   }
 
   @Override
   protected void setUp() throws Exception {
+    super.setUp();
     testSucceed = false;
     latch = new CountDownLatch(1);
+    if (null != LCUser.getCurrentUser()) {
+      testUserObjectId = LCUser.getCurrentUser().getObjectId();
+    } else {
+      testUserObjectId = null;
+    }
   }
 
   @Override
   protected void tearDown() throws Exception {
+    super.tearDown();
   }
 
   public void testUserFetch() throws Exception {
-    final LCUser user = LCObject.createWithoutData(LCUser.class, "5c83c5b9303f390065666111");
+    final LCUser user = LCObject.createWithoutData(LCUser.class, testUserObjectId);
     user.fetchInBackground("author,kuolie,black").subscribe(new Observer<LCObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {

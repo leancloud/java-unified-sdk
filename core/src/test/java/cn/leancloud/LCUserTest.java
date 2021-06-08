@@ -15,18 +15,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-public class AVUserTest extends TestCase {
+public class LCUserTest extends TestCase {
   private boolean operationSucceed = false;
-  public static final String USERNAME = "jfeng20200618";
+  public static final String USERNAME = "jfeng";
   public static final String PASSWORD = "FER$@$@#Ffwe";
   private static final String EMAIL = "jfeng20200618@test.com";
-  public AVUserTest(String name) {
+  public LCUserTest(String name) {
     super(name);
     Configure.initializeRuntime();
   }
 
   public static Test suite() {
-    return new TestSuite(AVUserTest.class);
+    return new TestSuite(LCUserTest.class);
   }
 
   @Override
