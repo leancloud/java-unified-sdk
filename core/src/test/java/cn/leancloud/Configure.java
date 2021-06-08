@@ -34,12 +34,14 @@ public class Configure {
     LeanCloud.setLogLevel(LCLogger.Level.VERBOSE);
 //    AppConfiguration.setEnableLocalCache(false);
     LeanCloud.initialize(appId, appKey);
+    LeanCloud.setMasterKey("");
   }
 
   public static void initializeWithApp(String appId, String appKey, String serverUrl) {
     LeanCloud.setLogLevel(LCLogger.Level.VERBOSE);
 //    AppConfiguration.setEnableLocalCache(false);
     LeanCloud.initialize(appId, appKey, serverUrl);
+    LeanCloud.setMasterKey("");
   }
 
   public static void initializeWithMasterKey(String appId, String masterKey, String serverUrl) {
@@ -56,5 +58,6 @@ public class Configure {
     }
     LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
     LeanCloud.initialize(TEST_APP_ID, TEST_APP_KEY);
+    LeanCloud.setMasterKey("");
   }
 }
