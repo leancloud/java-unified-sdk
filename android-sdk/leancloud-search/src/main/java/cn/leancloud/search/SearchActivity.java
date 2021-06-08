@@ -90,7 +90,7 @@ public class SearchActivity extends AppCompatActivity {
                     }
                 }
             };
-            searchQuery.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(searchCallback));
+            searchQuery.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(searchCallback));
         }
     }
 
@@ -264,7 +264,7 @@ public class SearchActivity extends AppCompatActivity {
                 && scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
                 showLoadingView();
                 if (null != searchQuery) {
-                    searchQuery.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(searchCallback));
+                    searchQuery.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(searchCallback));
                 }
             } else {
                 hideLoadingView();

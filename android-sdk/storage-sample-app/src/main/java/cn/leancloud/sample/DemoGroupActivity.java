@@ -102,7 +102,7 @@ public class DemoGroupActivity extends ListActivity {
     array.add("User");
     array.add("File");
     array.add("Pointer");
-    array.add("AVRelation");
+//    array.add("LCRelation");
     array.add("Subclass");
     array.add("CQL");
     array.add("Engine");

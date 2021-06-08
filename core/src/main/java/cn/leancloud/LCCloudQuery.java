@@ -10,7 +10,7 @@ import io.reactivex.functions.Function;
 
 import java.util.*;
 
-class LCCloudQuery {
+public class LCCloudQuery {
   private LCCloudQuery() {
   }
 

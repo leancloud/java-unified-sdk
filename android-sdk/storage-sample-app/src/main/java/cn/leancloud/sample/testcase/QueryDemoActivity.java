@@ -226,7 +226,7 @@ public class QueryDemoActivity extends DemoBaseActivity {
     // 单位毫秒
     q.setMaxCacheAge(1000 * 60 * 60); // 一小时
     q.limit(1);
-    q.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(new FindCallback<Student>() {
+    q.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(new FindCallback<Student>() {
       int count = 0;
 
       @Override

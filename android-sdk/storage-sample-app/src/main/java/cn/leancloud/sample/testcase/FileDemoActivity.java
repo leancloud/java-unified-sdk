@@ -376,7 +376,7 @@ public class FileDemoActivity extends DemoBaseActivity {
     LCQuery<LCObject> query = new LCQuery<>("Todo");
     query.whereEqualTo("topic", "明星");
     query.include("girl");
-    query.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(new FindCallback<LCObject>() {
+    query.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(new FindCallback<LCObject>() {
       @Override
       public void done(List<LCObject> list, LCException e) {
         if(null != list && list.size() > 0) {
