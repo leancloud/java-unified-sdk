@@ -11,11 +11,13 @@ public class Configure {
     LeanCloud.setRegion(LeanCloud.REGION.NorthChina);
     LeanCloud.setLogLevel(LCLogger.Level.VERBOSE);
     LeanCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    LeanCloud.setMasterKey(null);
   }
 
   public static void initializeWithApp(String appId, String appKey) {
     LeanCloud.setRegion(LeanCloud.REGION.NorthChina);
     LeanCloud.setLogLevel(LCLogger.Level.VERBOSE);
     LeanCloud.initialize(appId, appKey);
+    LeanCloud.setMasterKey(null);
   }
 }

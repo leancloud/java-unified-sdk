@@ -6,8 +6,8 @@ import junit.framework.TestCase;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AVIMTypedMessageTest extends TestCase {
-  public AVIMTypedMessageTest(String name) {
+public class IMTypedMessageTest extends TestCase {
+  public IMTypedMessageTest(String name) {
     super(name);
   }
 
