@@ -33,8 +33,8 @@
   </developers>
 
   <scm>
-    <connection>scm:git:https://github.com/leancloud/java-unified-sdk.git</connection>
-    <developerConnection>scm:git:https://github.com/leancloud/java-unified-sdk.git</developerConnection>
+    <connection>scm:git:git@github.com:leancloud/java-unified-sdk.git</connection>
+    <developerConnection>scm:git:git@github.com:leancloud/java-unified-sdk.git</developerConnection>
     <url>http://github.com/leancloud/java-unified-sdk/tree/master</url>
     <tag>HEAD</tag>
   </scm>
