@@ -20,6 +20,30 @@ Following is change logs for recently release versions, you can refer to [releas
 #### Optimization and fixed bugs
 - upgrade sqlite database version for saving conversation create/update timestamp correctly.
 
+## 7.2.7 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- bugfix: can't get createdAt/updatedAt from cached AVIMConversation with Cache_Only policy.
+
+
+## 7.2.6 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- bugfix: can't deserialize AVUser with AVFile attribute from cache.
+- bugfix: AVObject.saveEventually will run more times bcz not deleting cache file correctly.
+
 ## 7.2.5 release
 
 #### Break changes
