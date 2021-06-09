@@ -37,6 +37,23 @@ SDK 中所有存储 API 接口与 LeanCloud 云端交互严格遵循 LeanCloud R
 - [x] 魅族推送
 - [x] Firebase Cloud Messaging
 
+## Migration to 8.x
+
+从 8.x 版本开始，我们把公开类名字前缀由 `AV` 改为了 `LC`，同时也删除了一些长期处于 `deprecated` 状态的接口。开发者升级到 8.x 版本，要做的主要改动包括：
+
+1. 将公开类名前缀由 `AV` 改为了 `LC`，例如：
+
+  - `AVDate` -> `LCDate`，`AVClassName` -> `LCClassName`，`AVGeoPoint` -> `LCGeoPoint`
+  - `AVObject` -> `LCObject`，`AVUser` -> `LCUser`，`AVFile` -> `LCFile`
+  - `AVQuery` -> `LCQuery`，`AVCloud` -> `LCCloud`，
+  - `AVException` -> `LCException`
+  - `AVOSCloud` -> `LeanCloud`
+  - 其他
+
+2. 如果开发者通过 SDK 提供的辅助类 `ObserverBuilder` 将 FindCallback 实例转为了订阅者实例，就需要将原来的 `ObserverBuilder#buildSingleObserver` 变为 `ObserverBuilder#buildCollectionObserver`（因为 `ObserverBuilder#buildSingleObserver(FindCallback)` 已经被移除了）。
+
+3. 如果开发者使用了 CQL 查询，那么需要将原来的 `AVQuery#doCloudQueryInBackground` 调用改为 `LCCloudQuery#executeInBackground`。
+
 ## Migration to 7.x
 从 7.0.0 版本开始，我们将 Java Unified SDK 底层的 JSON 解析模块完全切换到了 Gson，开发者在业务层使用 Java Unified SDK 与 JSON 解析库，主要有如下三种情形：
 
