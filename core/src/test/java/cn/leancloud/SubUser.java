@@ -1,15 +1,15 @@
 package cn.leancloud;
 
-import cn.leancloud.annotation.AVClassName;
+import cn.leancloud.annotation.LCClassName;
 
 //@JSONType(ignores = {"blackListRelation"})
-@AVClassName("SubUser")
-public class SubUser extends AVUser {
-  public AVObject getArmor() {
-    return getAVObject("armor");
+@LCClassName("SubUser")
+public class SubUser extends LCUser {
+  public LCObject getArmor() {
+    return getLCObject("armor");
   }
 
-  public void setArmor(AVObject armor) {
+  public void setArmor(LCObject armor) {
     this.put("armor", armor);
   }
 
@@ -21,7 +21,7 @@ public class SubUser extends AVUser {
     return this.getString("nickName");
   }
 
-  public AVRelation<AVObject> getBlackListRelation() {
+  public LCRelation<LCObject> getBlackListRelation() {
     return this.getRelation("blacklist");
   }
 

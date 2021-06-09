@@ -1,6 +1,6 @@
 package cn.leancloud.session;
 
-import cn.leancloud.im.AVIMOptions;
+import cn.leancloud.im.LCIMOptions;
 import junit.framework.TestCase;
 
 import java.util.concurrent.CountDownLatch;
@@ -25,7 +25,7 @@ public class RequestStormSuppressionTests extends TestCase {
     String identifier = "{'data': {'conversation': 'conv-111fheifhie'}}";
     boolean result = RequestStormSuppression.getInstance().postpone(null);
     assertTrue(!result);
-    AVIMOperationQueue.Operation op1 = new AVIMOperationQueue.Operation();
+    IMOperationQueue.Operation op1 = new IMOperationQueue.Operation();
     op1.setIdentifier(identifier);
     op1.sessionId = sessionId;
     op1.conversationId = conversationId;
@@ -34,7 +34,7 @@ public class RequestStormSuppressionTests extends TestCase {
     assertTrue(!result);
     result = RequestStormSuppression.getInstance().postpone(op1);
     assertTrue(result);
-    AVIMOperationQueue.Operation op2 = new AVIMOperationQueue.Operation();
+    IMOperationQueue.Operation op2 = new IMOperationQueue.Operation();
     op2.setIdentifier(identifier);
     op2.sessionId = sessionId;
     op2.conversationId = conversationId;
@@ -45,7 +45,7 @@ public class RequestStormSuppressionTests extends TestCase {
     final CountDownLatch countDownLatch = new CountDownLatch(3);
     RequestStormSuppression.getInstance().release(op1, new RequestStormSuppression.RequestCallback() {
       @Override
-      public void done(AVIMOperationQueue.Operation operation) {
+      public void done(IMOperationQueue.Operation operation) {
         System.out.println("Callback is running....");
         countDownLatch.countDown();
       }
@@ -59,7 +59,7 @@ public class RequestStormSuppressionTests extends TestCase {
     String identifier = "{'data': {'conversation': 'conv-111fheifhie'}}";
     boolean result = RequestStormSuppression.getInstance().postpone(null);
     assertTrue(!result);
-    AVIMOperationQueue.Operation op1 = new AVIMOperationQueue.Operation();
+    IMOperationQueue.Operation op1 = new IMOperationQueue.Operation();
     op1.setIdentifier(identifier);
     op1.sessionId = sessionId;
     op1.conversationId = conversationId;
@@ -68,7 +68,7 @@ public class RequestStormSuppressionTests extends TestCase {
     assertTrue(!result);
     result = RequestStormSuppression.getInstance().postpone(op1);
     assertTrue(result);
-    AVIMOperationQueue.Operation op2 = new AVIMOperationQueue.Operation();
+    IMOperationQueue.Operation op2 = new IMOperationQueue.Operation();
     op2.setIdentifier(identifier);
     op2.sessionId = sessionId;
     op2.conversationId = conversationId;
@@ -79,21 +79,21 @@ public class RequestStormSuppressionTests extends TestCase {
     final CountDownLatch countDownLatch = new CountDownLatch(3);
     RequestStormSuppression.getInstance().release(op1, new RequestStormSuppression.RequestCallback() {
       @Override
-      public void done(AVIMOperationQueue.Operation operation) {
+      public void done(IMOperationQueue.Operation operation) {
         System.out.println("Callback for op1 is running....");
         countDownLatch.countDown();
       }
     });
     RequestStormSuppression.getInstance().release(op2, new RequestStormSuppression.RequestCallback() {
       @Override
-      public void done(AVIMOperationQueue.Operation operation) {
+      public void done(IMOperationQueue.Operation operation) {
         System.out.println("Callback for op2 is running....");
         countDownLatch.countDown();
       }
     });
     RequestStormSuppression.getInstance().release(op2, new RequestStormSuppression.RequestCallback() {
       @Override
-      public void done(AVIMOperationQueue.Operation operation) {
+      public void done(IMOperationQueue.Operation operation) {
         System.out.println("Callback for op2 is running(wrong)....");
         countDownLatch.countDown();
       }
@@ -112,7 +112,7 @@ public class RequestStormSuppressionTests extends TestCase {
       new Thread(new Runnable() {
         @Override
         public void run() {
-          AVIMOperationQueue.Operation op1 = new AVIMOperationQueue.Operation();
+          IMOperationQueue.Operation op1 = new IMOperationQueue.Operation();
           op1.setIdentifier(identifier);
           op1.sessionId = sessionId;
           op1.conversationId = conversationId + Thread.currentThread().getId();
@@ -139,14 +139,14 @@ public class RequestStormSuppressionTests extends TestCase {
       new Thread(new Runnable() {
         @Override
         public void run() {
-          AVIMOperationQueue.Operation op1 = new AVIMOperationQueue.Operation();
+          IMOperationQueue.Operation op1 = new IMOperationQueue.Operation();
           op1.setIdentifier(identifier);
           op1.sessionId = sessionId;
           op1.conversationId = conversationId;
           op1.operation = operationCodes[current % 2];
           RequestStormSuppression.getInstance().release(op1, new RequestStormSuppression.RequestCallback() {
             @Override
-            public void done(AVIMOperationQueue.Operation operation) {
+            public void done(IMOperationQueue.Operation operation) {
               System.out.println("thread " + current + " release operation(" + operation.conversationId + ")...");
             }
           });
@@ -166,7 +166,7 @@ public class RequestStormSuppressionTests extends TestCase {
     final String conversationId = "conv-111-thread-";
     final String identifier = "{'data': {'conversation': 'conv-111fheifhie'}}";
 
-    AVIMOptions.getGlobalOptions().setTimeoutInSecs(3);
+    LCIMOptions.getGlobalOptions().setTimeoutInSecs(3);
     System.out.println("getGlobalOptions().setTimeoutInSecs=3");
 
     final int [] operationCodes = new int[]{11, 23};
@@ -176,7 +176,7 @@ public class RequestStormSuppressionTests extends TestCase {
       new Thread(new Runnable() {
         @Override
         public void run() {
-          AVIMOperationQueue.Operation op1 = new AVIMOperationQueue.Operation();
+          IMOperationQueue.Operation op1 = new IMOperationQueue.Operation();
           op1.setIdentifier(identifier);
           op1.sessionId = sessionId;
           op1.conversationId = conversationId + Thread.currentThread().getId();
@@ -209,14 +209,14 @@ public class RequestStormSuppressionTests extends TestCase {
       new Thread(new Runnable() {
         @Override
         public void run() {
-          AVIMOperationQueue.Operation op1 = new AVIMOperationQueue.Operation();
+          IMOperationQueue.Operation op1 = new IMOperationQueue.Operation();
           op1.setIdentifier(identifier);
           op1.sessionId = sessionId;
           op1.conversationId = conversationId;
           op1.operation = operationCodes[current % 2];
           RequestStormSuppression.getInstance().release(op1, new RequestStormSuppression.RequestCallback() {
             @Override
-            public void done(AVIMOperationQueue.Operation operation) {
+            public void done(IMOperationQueue.Operation operation) {
               System.out.println("thread " + current + " release operation(" + operation.conversationId + ")...");
             }
           });

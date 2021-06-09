@@ -54,8 +54,7 @@ public class StringUtil {
 
     SimpleDateFormat df = new SimpleDateFormat(dateFormat);
     df.setTimeZone(TimeZone.getTimeZone("UTC"));
-    String isoDate = df.format(date);
-    return isoDate;
+    return df.format(date);
   }
 
   public static Date dateFromString(String content) {

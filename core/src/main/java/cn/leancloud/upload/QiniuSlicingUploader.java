@@ -1,9 +1,9 @@
 package cn.leancloud.upload;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCException;
+import cn.leancloud.LCLogger;
 import cn.leancloud.callback.ProgressCallback;
-import cn.leancloud.AVFile;
+import cn.leancloud.LCFile;
 import cn.leancloud.utils.LogUtil;
 
 import java.io.InputStream;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
  */
 
 class QiniuSlicingUploader extends HttpClientUploader {
-  private static AVLogger LOGGER = LogUtil.getLogger(QiniuSlicingUploader.class);
+  private static LCLogger LOGGER = LogUtil.getLogger(QiniuSlicingUploader.class);
 
   private final String token;
   private FileUploader.ProgressCalculator progressCalculator;
@@ -26,7 +26,7 @@ class QiniuSlicingUploader extends HttpClientUploader {
   private String fileKey = null;
   private QiniuAccessor qiniuAccessor;
 
-  QiniuSlicingUploader(AVFile avFile, String token, String uploadUrl, ProgressCallback progressCallback) {
+  QiniuSlicingUploader(LCFile avFile, String token, String uploadUrl, ProgressCallback progressCallback) {
     super(avFile, progressCallback);
     this.token = token;
     this.fileKey = avFile.getKey();
@@ -34,7 +34,7 @@ class QiniuSlicingUploader extends HttpClientUploader {
     LOGGER.d("Constructor with token=" + token + ", key=" + fileKey + ", accessor=" + qiniuAccessor);
   }
 
-  public AVException execute() {
+  public LCException execute() {
     boolean isWifi = true;
     if (!isWifi) {
       // 从七牛的接口来看block size为4M不可变，但是chunkSize是可以调整的
@@ -97,16 +97,16 @@ class QiniuSlicingUploader extends HttpClientUploader {
           LOGGER.d("finished to upload block(" + i + "), ctx=" + lastResponse.getCtx());
         } else {
           // error.
-          return new AVException(AVException.FILE_UPLOAD_FAILURE, "failed to upload file to qiniu.");
+          return new LCException(LCException.FILE_UPLOAD_FAILURE, "failed to upload file to qiniu.");
         }
       }
       QiniuAccessor.QiniuMKFileResponseData finalResponse = this.qiniuAccessor.makeFile(fileSize, uploadFileCtxs, DEFAULT_RETRY_TIMES);
       LOGGER.d("makeFile(fileSize=" + fileSize + ") result=" + finalResponse);
       if (finalResponse == null || !finalResponse.key.equals(fileKey)) {
-        return new AVException(AVException.OTHER_CAUSE, "upload file failure");
+        return new LCException(LCException.OTHER_CAUSE, "upload file failure");
       }
     } catch (Exception ex) {
-      return new AVException(ex);
+      return new LCException(ex);
     } finally {
       try {
         if (null != is) {

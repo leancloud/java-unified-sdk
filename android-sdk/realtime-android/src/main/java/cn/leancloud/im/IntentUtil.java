@@ -7,9 +7,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.HashMap;
 
-import cn.leancloud.AVOSCloud;
+import cn.leancloud.LeanCloud;
 import cn.leancloud.im.v2.Conversation;
-import cn.leancloud.livequery.AVLiveQuery;
+import cn.leancloud.livequery.LCLiveQuery;
 import cn.leancloud.utils.StringUtil;
 
 /**
@@ -28,23 +28,23 @@ public class IntentUtil {
   }
 
   public static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId,
-                                          Conversation.AVIMOperation operation) {
+                                          Conversation.LCIMOperation operation) {
     sendIMLocalBroadcast(clientId, conversationId, requestId, null, null, operation);
   }
 
   public static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId,
-                                          Throwable throwable, Conversation.AVIMOperation operation) {
+                                          Throwable throwable, Conversation.LCIMOperation operation) {
     sendIMLocalBroadcast(clientId, conversationId, requestId, null, throwable, operation);
   }
 
   public static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId,
-                                          Bundle bundle, Conversation.AVIMOperation operation) {
+                                          Bundle bundle, Conversation.LCIMOperation operation) {
     sendIMLocalBroadcast(clientId, conversationId, requestId, bundle, null, operation);
   }
 
   public static void sendMap2LocalBroadcase(String clientId, String conversationId, int requestId,
                                           HashMap<String, Object> result, Throwable throwable,
-                                          Conversation.AVIMOperation operation) {
+                                          Conversation.LCIMOperation operation) {
     if (isOperationValid(operation)) {
       String keyHeader = operation.getOperation();
       Intent callbackIntent = new Intent(keyHeader + requestId);
@@ -58,24 +58,24 @@ public class IntentUtil {
       if (null != result) {
         callbackIntent.putExtra(CALLBACK_RESULT_KEY, result);
       }
-      if (AVOSCloud.getContext() != null) {
-        LocalBroadcastManager.getInstance(AVOSCloud.getContext()).sendBroadcast(callbackIntent);
+      if (LeanCloud.getContext() != null) {
+        LocalBroadcastManager.getInstance(LeanCloud.getContext()).sendBroadcast(callbackIntent);
       }
     }
   }
 
   public static void sendLiveQueryLocalBroadcast(int requestId, Throwable throwable) {
-    Intent callbackIntent = new Intent(AVLiveQuery.LIVEQUERY_PRIFIX + requestId);
+    Intent callbackIntent = new Intent(LCLiveQuery.LIVEQUERY_PRIFIX + requestId);
     if (null != throwable) {
       callbackIntent.putExtra(Conversation.callbackExceptionKey, throwable);
     }
-    if (AVOSCloud.getContext() != null) {
-      LocalBroadcastManager.getInstance(AVOSCloud.getContext()).sendBroadcast(callbackIntent);
+    if (LeanCloud.getContext() != null) {
+      LocalBroadcastManager.getInstance(LeanCloud.getContext()).sendBroadcast(callbackIntent);
     }
   }
 
   private static void sendIMLocalBroadcast(String clientId, String conversationId, int requestId,
-                                           Bundle bundle, Throwable throwable, Conversation.AVIMOperation operation) {
+                                           Bundle bundle, Throwable throwable, Conversation.LCIMOperation operation) {
     if (isOperationValid(operation)) {
       String keyHeader = operation.getOperation();
 
@@ -93,14 +93,14 @@ public class IntentUtil {
       if (null != bundle) {
         callbackIntent.putExtras(bundle);
       }
-      if (AVOSCloud.getContext() != null) {
-        LocalBroadcastManager.getInstance(AVOSCloud.getContext()).sendBroadcast(callbackIntent);
+      if (LeanCloud.getContext() != null) {
+        LocalBroadcastManager.getInstance(LeanCloud.getContext()).sendBroadcast(callbackIntent);
       }
     }
   }
 
-  private static boolean isOperationValid(Conversation.AVIMOperation operation) {
+  private static boolean isOperationValid(Conversation.LCIMOperation operation) {
     return null != operation &&
-        Conversation.AVIMOperation.CONVERSATION_UNKNOWN.getCode() != operation.getCode();
+        Conversation.LCIMOperation.CONVERSATION_UNKNOWN.getCode() != operation.getCode();
   }
 }

@@ -16,17 +16,17 @@ import java.util.HashMap;
 import java.util.List;
 
 import ar.com.daidalos.afiledialog.FileChooserDialog;
-import cn.leancloud.AVException;
-import cn.leancloud.AVFile;
-import cn.leancloud.AVObject;
-import cn.leancloud.AVQuery;
+import cn.leancloud.LCException;
+import cn.leancloud.LCFile;
+import cn.leancloud.LCObject;
+import cn.leancloud.LCQuery;
 import cn.leancloud.sample.DemoBaseActivity;
 import cn.leancloud.sample.DemoUtils;
 import cn.leancloud.sample.R;
 import cn.leancloud.callback.FindCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.convertor.ObserverBuilder;
-import cn.leancloud.types.AVNull;
+import cn.leancloud.types.LCNull;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -46,16 +46,16 @@ public class FileDemoActivity extends DemoBaseActivity {
 
   public void testUploaderContentWithObserver() throws Exception {
     String contents = StringUtil.getRandomString(64);
-    AVFile file = new AVFile("test", contents.getBytes());
-    Observable<AVFile> result = file.saveInBackground();
-    result.subscribe(new Observer<AVFile>() {
+    LCFile file = new LCFile("test", contents.getBytes());
+    Observable<LCFile> result = file.saveInBackground();
+    result.subscribe(new Observer<LCFile>() {
       @Override
       public void onSubscribe(Disposable d) {
         ;
       }
 
       @Override
-      public void onNext(AVFile avFile) {
+      public void onNext(LCFile avFile) {
         log("Thread:" + Thread.currentThread().getId());
         log("保存了一个File：" + avFile.getObjectId());
         Toast.makeText(FileDemoActivity.this, "上传成功", Toast.LENGTH_SHORT).show();
@@ -74,16 +74,16 @@ public class FileDemoActivity extends DemoBaseActivity {
   }
 
   public void testUploaderExternelUrlWithObserver() throws Exception {
-    AVFile file = new AVFile("test", "http://cms-bucket.ws.126.net/2020/0401/8666ec9dp00q83fid008oc000m801n8c.png");
-    Observable<AVFile> result = file.saveInBackground();
-    result.subscribe(new Observer<AVFile>() {
+    LCFile file = new LCFile("test", "http://cms-bucket.ws.126.net/2020/0401/8666ec9dp00q83fid008oc000m801n8c.png");
+    Observable<LCFile> result = file.saveInBackground();
+    result.subscribe(new Observer<LCFile>() {
       @Override
       public void onSubscribe(Disposable d) {
         ;
       }
 
       @Override
-      public void onNext(AVFile avFile) {
+      public void onNext(LCFile avFile) {
         log("Thread:" + Thread.currentThread().getId());
         log("保存了一个File：" + avFile.getObjectId());
         Toast.makeText(FileDemoActivity.this, "上传成功", Toast.LENGTH_SHORT).show();
@@ -103,11 +103,11 @@ public class FileDemoActivity extends DemoBaseActivity {
 
   public void testUploaderContentWithCallback() throws Exception {
     String contents = StringUtil.getRandomString(64);
-    AVFile file = new AVFile("test", contents.getBytes());
-    Observable<AVFile> result = file.saveInBackground();
-    result.subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback<AVFile>() {
+    LCFile file = new LCFile("test", contents.getBytes());
+    Observable<LCFile> result = file.saveInBackground();
+    result.subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback<LCFile>() {
       @Override
-      public void done(AVException e) {
+      public void done(LCException e) {
         log("Thread:" + Thread.currentThread().getId());
         Toast.makeText(FileDemoActivity.this, "上传成功：" + (null == e), Toast.LENGTH_SHORT).show();
       }
@@ -115,11 +115,11 @@ public class FileDemoActivity extends DemoBaseActivity {
   }
 
   public void testUploaderExternelUrlWithCallback() throws Exception {
-    AVFile file = new AVFile("test", "http://cms-bucket.ws.126.net/2020/0401/8666ec9dp00q83fid008oc000m801n8c.png");
-    Observable<AVFile> result = file.saveInBackground();
-    result.subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback<AVFile>() {
+    LCFile file = new LCFile("test", "http://cms-bucket.ws.126.net/2020/0401/8666ec9dp00q83fid008oc000m801n8c.png");
+    Observable<LCFile> result = file.saveInBackground();
+    result.subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback<LCFile>() {
       @Override
-      public void done(AVException e) {
+      public void done(LCException e) {
         log("Thread:" + Thread.currentThread().getId());
         Toast.makeText(FileDemoActivity.this, "上传成功：" + (null == e), Toast.LENGTH_SHORT).show();
       }
@@ -150,15 +150,15 @@ public class FileDemoActivity extends DemoBaseActivity {
     });
   }
 
-  public void testFileUpload() throws AVException {
+  public void testFileUpload() throws LCException {
     selectFile(new SelectFileCallback() {
       @Override
       public void onFileSelect(File file) {
         byte[] data = DemoUtils.readFile(file);
-        final AVFile avFile = new AVFile(file.getName(), data);
+        final LCFile avFile = new LCFile(file.getName(), data);
         avFile.saveInBackground().subscribe(ObserverBuilder.buildSingleObserver(new SaveCallback() {
           @Override
-          public void done(AVException e) {
+          public void done(LCException e) {
             if (e == null) {
               fileUrl = avFile.getUrl();
               objectId = avFile.getObjectId();
@@ -173,12 +173,12 @@ public class FileDemoActivity extends DemoBaseActivity {
   }
 
   // create an object and query it.
-  public void testFileDownload() throws AVException {
+  public void testFileDownload() throws LCException {
     if (DemoUtils.isBlankString(fileUrl)) {
       log("Please upload file at first.");
       return;
     }
-    AVFile avFile = new AVFile("my_download_file", fileUrl, null);
+    LCFile avFile = new LCFile("my_download_file", fileUrl, null);
     byte[] bytes = avFile.getData();
     log("下载文件完毕，总字节数：" + bytes.length);
   }
@@ -189,13 +189,13 @@ public class FileDemoActivity extends DemoBaseActivity {
       log("Please upload file at first.");
       return;
     }
-    AVFile avFile = AVFile.createWithoutData(AVFile.class, objectId);
+    LCFile avFile = LCFile.createWithoutData(LCFile.class, objectId);
     avFile.delete();
     log("删除成功，被删掉的文件的 objectId 为 " + objectId);
   }
 
-  public void testCreateFileFromBytes() throws AVException {
-    AVFile file = new AVFile("testCreateFileFromBytes", getAvatarBytes());
+  public void testCreateFileFromBytes() throws LCException {
+    LCFile file = new LCFile("testCreateFileFromBytes", getAvatarBytes());
     file.save();
     log("从 bytes 中创建了文件 file:" + toString(file));
     logThreadTips();
@@ -210,46 +210,46 @@ public class FileDemoActivity extends DemoBaseActivity {
     return tmpFile;
   }
 
-  public void testCreateFileFromPath() throws IOException, AVException {
+  public void testCreateFileFromPath() throws IOException, LCException {
     File tmpFile = createCacheFile("testCreateFileFromPath");
 
-    AVFile file = AVFile.withAbsoluteLocalPath("testCreateFileFromPath", tmpFile.getAbsolutePath());
+    LCFile file = LCFile.withAbsoluteLocalPath("testCreateFileFromPath", tmpFile.getAbsolutePath());
     file.save();
-    log("从文件的路径中构造了 AVFile，并保存成功。file:" + toString(file));
+    log("从文件的路径中构造了 LCFile，并保存成功。file:" + toString(file));
   }
 
-  public void testCreateAVFileFromFile() throws IOException, AVException {
-    File tmpFile = createCacheFile("testCreateAVFileFromFile");
+  public void testCreateLCFileFromFile() throws IOException, LCException {
+    File tmpFile = createCacheFile("testCreateLCFileFromFile");
 
-    AVFile file = AVFile.withFile("testCreateAVFileFromFile", tmpFile);
+    LCFile file = LCFile.withFile("testCreateLCFileFromFile", tmpFile);
     file.save();
-    log("用文件构造了 AVFile，并保存成功。file:" + toString(file));
+    log("用文件构造了 LCFile，并保存成功。file:" + toString(file));
   }
 
-  String toString(AVFile file) {
-    return "AVFile, url: " + file.getUrl() + " objectId:" + file.getObjectId() + " metaData" + file.getMetaData() +
+  String toString(LCFile file) {
+    return "LCFile, url: " + file.getUrl() + " objectId:" + file.getObjectId() + " metaData" + file.getMetaData() +
         "name:" + file.getName();
   }
 
-  public void testCreateFileFromAVObject() throws AVException {
-    AVQuery<AVFile> q = new AVQuery<>(AVFile.CLASS_NAME);
-    AVObject first = q.getFirst();
-    log("获取了文件 AVObject：" + first);
+  public void testCreateFileFromLCObject() throws LCException {
+    LCQuery<LCFile> q = new LCQuery<>(LCFile.CLASS_NAME);
+    LCObject first = q.getFirst();
+    log("获取了文件 LCObject：" + first);
   }
 
-  public void testCreateFileWithObjectId() throws AVException, FileNotFoundException {
-    AVQuery<AVFile> q = new AVQuery<>(AVFile.CLASS_NAME);
-    AVObject first = q.getFirst();
-    log("获取了文件 AVObject：" + first);
+  public void testCreateFileWithObjectId() throws LCException, FileNotFoundException {
+    LCQuery<LCFile> q = new LCQuery<>(LCFile.CLASS_NAME);
+    LCObject first = q.getFirst();
+    log("获取了文件 LCObject：" + first);
   }
 
-  public void testFileMetaData() throws AVException {
+  public void testFileMetaData() throws LCException {
     Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.avatar);
     ByteArrayOutputStream output = new ByteArrayOutputStream();
     bitmap.compress(Bitmap.CompressFormat.JPEG, 80, output);
     byte[] bytes = output.toByteArray();
 
-    AVFile file = new AVFile("avatar", bytes);
+    LCFile file = new LCFile("avatar", bytes);
     file.addMetaData("width", bitmap.getWidth());
     file.addMetaData("height", bitmap.getHeight());
     file.save();
@@ -257,15 +257,15 @@ public class FileDemoActivity extends DemoBaseActivity {
     log("保存了文件及其 MetaData, file:" + toString(file));
   }
 
-  AVFile saveAvatar() throws AVException {
+  LCFile saveAvatar() throws LCException {
     byte[] bytes = getAvatarBytes();
-    AVFile file = new AVFile("avatar", bytes);
+    LCFile file = new LCFile("avatar", bytes);
     file.save();
     return file;
   }
 
-  public void testThumbnail() throws AVException {
-    AVFile avatar = saveAvatar();
+  public void testThumbnail() throws LCException {
+    LCFile avatar = saveAvatar();
     String url = avatar.getThumbnailUrl(true, 200, 200);
     log("最大宽度为200 、最大高度为200的缩略图 url:" + url);
     // http://docs.qiniu.com/api/v6/image-process.html
@@ -273,7 +273,7 @@ public class FileDemoActivity extends DemoBaseActivity {
   }
 
   public void testGetDataInBackground() throws Exception {
-    AVFile portrait = new AVFile("thumbnail", "http://file.everydaydiary.luyunxinchen.cn/437K25F9DpoWnJcJgbQECCV994ntJKpCGGudo6af.png");
+    LCFile portrait = new LCFile("thumbnail", "http://file.everydaydiary.luyunxinchen.cn/437K25F9DpoWnJcJgbQECCV994ntJKpCGGudo6af.png");
     portrait.getDataInBackground().subscribe(new Observer<byte[]>() {
       @Override
       public void onSubscribe(Disposable d) {
@@ -298,7 +298,7 @@ public class FileDemoActivity extends DemoBaseActivity {
   }
 
   public void testGetDataStreamInBackground() throws Exception {
-    AVFile portrait = new AVFile("thumbnail", "http://file.everydaydiary.luyunxinchen.cn/437K25F9DpoWnJcJgbQECCV994ntJKpCGGudo6af.png");
+    LCFile portrait = new LCFile("thumbnail", "http://file.everydaydiary.luyunxinchen.cn/437K25F9DpoWnJcJgbQECCV994ntJKpCGGudo6af.png");
     portrait.getDataStreamInBackground().subscribe(new Observer<InputStream>() {
       @Override
       public void onSubscribe(Disposable d) {
@@ -329,18 +329,18 @@ public class FileDemoActivity extends DemoBaseActivity {
     });
   }
 
-  public void testSample1() throws AVException {
+  public void testSample1() throws LCException {
     String contents = StringUtil.getRandomString(64);
-    final AVFile file = new AVFile("test", contents.getBytes());
-    file.saveInBackground().subscribe(new Observer<AVFile>() {
+    final LCFile file = new LCFile("test", contents.getBytes());
+    file.saveInBackground().subscribe(new Observer<LCFile>() {
       public void onSubscribe(Disposable disposable) {
       }
-      public void onNext(AVFile avFile) {
+      public void onNext(LCFile avFile) {
         System.out.println("succeed to upload file. objectId=" + avFile.getObjectId());
-        file.deleteInBackground().subscribe(new Observer<AVNull>() {
+        file.deleteInBackground().subscribe(new Observer<LCNull>() {
           public void onSubscribe(Disposable disposable) {
           }
-          public void onNext(AVNull avNull) {
+          public void onNext(LCNull avNull) {
             System.out.println("succeed to delete file");
           }
           public void onError(Throwable throwable) {
@@ -357,30 +357,30 @@ public class FileDemoActivity extends DemoBaseActivity {
       }
     });
   }
-  public void testSample2() throws AVException,FileNotFoundException {
-    AVFile file = AVFile.withAbsoluteLocalPath("test.jpg", Environment.getExternalStorageDirectory() + "/xxx.jpg");
+  public void testSample2() throws LCException,FileNotFoundException {
+    LCFile file = LCFile.withAbsoluteLocalPath("test.jpg", Environment.getExternalStorageDirectory() + "/xxx.jpg");
     file.addMetaData("width", 100);
     file.addMetaData("height", 100);
     file.addMetaData("author", "LeanCloud");
     file.saveInBackground().blockingSubscribe();
 
-    file = new AVFile("Satomi_Ishihara.gif", "http://ww3.sinaimg.cn/bmiddle/596b0666gw1ed70eavm5tg20bq06m7wi.gif",
+    file = new LCFile("Satomi_Ishihara.gif", "http://ww3.sinaimg.cn/bmiddle/596b0666gw1ed70eavm5tg20bq06m7wi.gif",
         new HashMap<String, Object>());
-    AVObject todo = new AVObject("Todo");
+    LCObject todo = new LCObject("Todo");
     todo.put("girl", file);
     todo.put("topic", "明星");
     todo.save();
   }
 
-  public void testSample3() throws AVException {
-    AVQuery<AVObject> query = new AVQuery<>("Todo");
+  public void testSample3() throws LCException {
+    LCQuery<LCObject> query = new LCQuery<>("Todo");
     query.whereEqualTo("topic", "明星");
     query.include("girl");
-    query.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(new FindCallback<AVObject>() {
+    query.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(new FindCallback<LCObject>() {
       @Override
-      public void done(List<AVObject> list, AVException e) {
+      public void done(List<LCObject> list, LCException e) {
         if(null != list && list.size() > 0) {
-          list.get(0).getAVFile("girl").getUrl();
+          list.get(0).getLCFile("girl").getUrl();
         }
       }
     }));

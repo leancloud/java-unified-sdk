@@ -6,7 +6,7 @@ import java.util.*;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.LeanCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.GeneralRequestSignature;
 import cn.leancloud.logging.Log4jAdapter;
@@ -45,15 +45,15 @@ public class LeanEngine {
 
   protected static void initialize(String applicationId, String clientKey, String masterKey, String hookKey,
                                    String androidxKey) {
-    AVOSCloud.setLogLevel(AVLogger.Level.ALL); // let log4j make decision.
+    LeanCloud.setLogLevel(LCLogger.Level.ALL); // let log4j make decision.
     AppConfiguration.setLogAdapter(new Log4jAdapter());
     AppConfiguration.setIncognitoMode(true);   // always ignore current user's sessionToken in requests.
-    AVOSCloud.initialize(applicationId, clientKey);
+    LeanCloud.initialize(applicationId, clientKey);
     if (!StringUtil.isEmpty(hookKey)) {
-      AVOSCloud.setHookKey(hookKey);
+      LeanCloud.setHookKey(hookKey);
     }
     // always remove current user cache.
-    AVUser.changeCurrentUser(null, true);
+    LCUser.changeCurrentUser(null, true);
 
     Map<String, String> affiliatedKeys = null;
     if (!StringUtil.isEmpty(androidxKey)) {

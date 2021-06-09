@@ -22,7 +22,7 @@ import cn.leancloud.EndpointParser.EndpointInfo;
 public class CloudCodeServlet extends HttpServlet {
 
   private static final long serialVersionUID = -5828358153354045625L;
-  private static final AVLogger LOGGER = LogUtil.getLogger(CloudCodeServlet.class);
+  private static final LCLogger LOGGER = LogUtil.getLogger(CloudCodeServlet.class);
 
   @Override
   protected void doOptions(HttpServletRequest req, HttpServletResponse resp)
@@ -76,8 +76,8 @@ public class CloudCodeServlet extends HttpServlet {
         if (internalEndpoint.isNeedResponse()) {
           resp.setContentType(LeanEngine.JSON_CONTENT_TYPE);
           JSONObject result = JSONObject.Builder.create(null);
-          if (e.getCause() instanceof AVException) {
-            AVException ave = (AVException) e.getCause();
+          if (e.getCause() instanceof LCException) {
+            LCException ave = (LCException) e.getCause();
             result.put("code", ave.getCode());
             result.put("error", ave.getMessage());
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);

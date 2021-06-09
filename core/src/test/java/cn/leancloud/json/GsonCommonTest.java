@@ -1,10 +1,10 @@
 package cn.leancloud.json;
 
-import cn.leancloud.AVObject;
+import cn.leancloud.LCObject;
 import cn.leancloud.gson.GsonWrapper;
 import cn.leancloud.gson.NumberDeserializerDoubleAsIntFix;
 import cn.leancloud.service.AppAccessEndpoint;
-import cn.leancloud.sms.AVCaptchaDigest;
+import cn.leancloud.sms.LCCaptchaDigest;
 import com.google.gson.reflect.TypeToken;
 import junit.framework.TestCase;
 
@@ -99,7 +99,7 @@ public class GsonCommonTest extends TestCase {
     Map<String, Object> map = new HashMap<String, Object>();
     map.put("className", "Student");
     map.put("version", 5);
-    map.put("@type", AVObject.class.getName());
+    map.put("@type", LCObject.class.getName());
 
     Map<String, Object> data = new HashMap<String, Object>();
     data.put("@type", HashMap.class.getName());
@@ -148,7 +148,7 @@ public class GsonCommonTest extends TestCase {
 
   public void testAVCaptchaDigest() {
     String text = "{\"captcha_token\":\"fhaeifhepfewifh\", \"captcha_url\": \"https://captcha_url\"}";
-    AVCaptchaDigest digest = JSON.parseObject(text, AVCaptchaDigest.class);
+    LCCaptchaDigest digest = JSON.parseObject(text, LCCaptchaDigest.class);
     System.out.println(JSON.toJSONString(digest));
     assertTrue(digest.getCaptchaUrl().startsWith("https"));
   }

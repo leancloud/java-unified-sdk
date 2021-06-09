@@ -1,14 +1,14 @@
 package cn.leancloud.im;
 
-import cn.leancloud.im.v2.AVIMClient;
-import cn.leancloud.im.v2.AVIMConversation;
-import cn.leancloud.im.v2.AVIMConversationEventHandler;
-import cn.leancloud.im.v2.AVIMMessage;
+import cn.leancloud.im.v2.LCIMClient;
+import cn.leancloud.im.v2.LCIMConversation;
+import cn.leancloud.im.v2.LCIMConversationEventHandler;
+import cn.leancloud.im.v2.LCIMMessage;
 import cn.leancloud.utils.StringUtil;
 
 import java.util.List;
 
-public class DummyConversationEventHandler extends AVIMConversationEventHandler {
+public class DummyConversationEventHandler extends LCIMConversationEventHandler {
   static final int NOTIFY_INDEX_INVITED = 1;
   static final int NOTIFY_INDEX_KICKED = 2;
   static final int NOTIFY_INDEX_MUTED = 3;
@@ -70,46 +70,46 @@ public class DummyConversationEventHandler extends AVIMConversationEventHandler 
     return result;
   }
 
-  public void onMemberLeft(AVIMClient client,
-                           AVIMConversation conversation, List<String> members, String kickedBy) {
+  public void onMemberLeft(LCIMClient client,
+                           LCIMConversation conversation, List<String> members, String kickedBy) {
     LOGGER.d("Notification --- onMemberLeft. client=" + client.getClientId() + ", convId=" + conversation.getConversationId() + ", by=" + kickedBy );
     if ((notifyConfig & FLAG_NOTIFY_MEMBERLEFT) == FLAG_NOTIFY_MEMBERLEFT) {
       count[NOTIFY_INDEX_MEMBERLEFT] ++;
     }
   }
 
-  public void onMemberJoined(AVIMClient client,
-                                      AVIMConversation conversation, List<String> members, String invitedBy) {
+  public void onMemberJoined(LCIMClient client,
+                             LCIMConversation conversation, List<String> members, String invitedBy) {
     LOGGER.d("Notification --- onMemberJoined. client=" + client.getClientId() + ", convId=" + conversation.getConversationId() + ", by=" + invitedBy );
     if ((notifyConfig & FLAG_NOTIFY_MEMBERJOINED) == FLAG_NOTIFY_MEMBERJOINED) {
       count[NOTIFY_INDEX_MEMBERJOINED] ++;
     }
   }
 
-  public void onKicked(AVIMClient client, AVIMConversation conversation,
-                                String kickedBy) {
+  public void onKicked(LCIMClient client, LCIMConversation conversation,
+                       String kickedBy) {
     LOGGER.d("Notification --- onKicked. client=" + client.getClientId() + ", convId=" + conversation.getConversationId() + ", by=" + kickedBy );
     if ((notifyConfig & FLAG_NOTIFY_KICKED) == FLAG_NOTIFY_KICKED) {
       count[NOTIFY_INDEX_KICKED] ++;
     }
   }
 
-  public void onInvited(AVIMClient client, AVIMConversation conversation,
-                                 String operator) {
+  public void onInvited(LCIMClient client, LCIMConversation conversation,
+                        String operator) {
     LOGGER.d("Notification --- onInvited. client=" + client.getClientId() + ", convId=" + conversation.getConversationId() + ", by=" + operator );
     if ((notifyConfig & FLAG_NOTIFY_INVITED) == FLAG_NOTIFY_INVITED) {
       count[NOTIFY_INDEX_INVITED] ++;
     }
   }
 
-  public void onMuted(AVIMClient client, AVIMConversation conversation, String operator) {
+  public void onMuted(LCIMClient client, LCIMConversation conversation, String operator) {
     LOGGER.d("Notification --- " + " you are muted by " + operator );
     if ((notifyConfig & FLAG_NOTIFY_MUTED) == FLAG_NOTIFY_MUTED) {
       count[NOTIFY_INDEX_MUTED] ++;
     }
   }
 
-  public void onUnmuted(AVIMClient client, AVIMConversation conversation, String operator) {
+  public void onUnmuted(LCIMClient client, LCIMConversation conversation, String operator) {
     LOGGER.d("Notification --- " + " you are unmuted by " + operator );
     if ((notifyConfig & FLAG_NOTIFY_UNMUTED) == FLAG_NOTIFY_UNMUTED) {
       count[NOTIFY_INDEX_UNMUTED] ++;
@@ -123,7 +123,7 @@ public class DummyConversationEventHandler extends AVIMConversationEventHandler 
    * @param members       成员列表
    * @param operator      操作者 id
    */
-  public void onMemberMuted(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){
+  public void onMemberMuted(LCIMClient client, LCIMConversation conversation, List<String> members, String operator){
     LOGGER.d("Notification --- " + operator + " muted members: " + StringUtil.join(", ", members));
     if ((notifyConfig & FLAG_NOTIFY_MEMBERMUTED) == FLAG_NOTIFY_MEMBERMUTED) {
       count[NOTIFY_INDEX_MEMBERMUTED] ++;
@@ -137,7 +137,7 @@ public class DummyConversationEventHandler extends AVIMConversationEventHandler 
    * @param members       成员列表
    * @param operator      操作者 id
    */
-  public void onMemberUnmuted(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){
+  public void onMemberUnmuted(LCIMClient client, LCIMConversation conversation, List<String> members, String operator){
     LOGGER.d("Notification --- " + operator + " unmuted members: " + StringUtil.join(", ", members));
     if ((notifyConfig & FLAG_NOTIFY_MEMBERUNMUTED) == FLAG_NOTIFY_MEMBERUNMUTED) {
       count[NOTIFY_INDEX_MEMBERUNMUTED] ++;
@@ -150,7 +150,7 @@ public class DummyConversationEventHandler extends AVIMConversationEventHandler 
    * @param conversation  对话
    * @param operator      操作者 id
    */
-  public void onBlocked(AVIMClient client, AVIMConversation conversation, String operator) {
+  public void onBlocked(LCIMClient client, LCIMConversation conversation, String operator) {
     LOGGER.d("Notification --- " + " you are blocked by " + operator );
     if ((notifyConfig & FLAG_NOTIFY_BLOCKED) == FLAG_NOTIFY_BLOCKED) {
       count[NOTIFY_INDEX_BLOCKED] ++;
@@ -163,7 +163,7 @@ public class DummyConversationEventHandler extends AVIMConversationEventHandler 
    * @param conversation  对话
    * @param operator      操作者 id
    */
-  public void onUnblocked(AVIMClient client, AVIMConversation conversation, String operator) {
+  public void onUnblocked(LCIMClient client, LCIMConversation conversation, String operator) {
     LOGGER.d("Notification --- " + " you are unblocked by " + operator );
     if ((notifyConfig & FLAG_NOTIFY_UNBLOCKED) == FLAG_NOTIFY_UNBLOCKED) {
       count[NOTIFY_INDEX_UNBLOCKED] ++;
@@ -177,7 +177,7 @@ public class DummyConversationEventHandler extends AVIMConversationEventHandler 
    * @param members       成员列表
    * @param operator      操作者 id
    */
-  public void onMemberBlocked(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){
+  public void onMemberBlocked(LCIMClient client, LCIMConversation conversation, List<String> members, String operator){
     LOGGER.d("Notification --- " + operator + " blocked members: " + StringUtil.join(", ", members));
     if ((notifyConfig & FLAG_NOTIFY_MEMBERBLOCKED) == FLAG_NOTIFY_MEMBERBLOCKED) {
       count[NOTIFY_INDEX_MEMBERBLOCKED] ++;
@@ -191,7 +191,7 @@ public class DummyConversationEventHandler extends AVIMConversationEventHandler 
    * @param members       成员列表
    * @param operator      操作者 id
    */
-  public void onMemberUnblocked(AVIMClient client, AVIMConversation conversation, List<String> members, String operator){
+  public void onMemberUnblocked(LCIMClient client, LCIMConversation conversation, List<String> members, String operator){
     LOGGER.d("Notification --- " + operator + " unblocked members: " + StringUtil.join(", ", members));
     if ((notifyConfig & FLAG_NOTIFY_MEMBERUNBLOCKED) == FLAG_NOTIFY_MEMBERUNBLOCKED) {
       count[NOTIFY_INDEX_MEMBERUNBLOCKED] ++;
@@ -203,21 +203,21 @@ public class DummyConversationEventHandler extends AVIMConversationEventHandler 
    * @param client
    * @param conversation
    */
-  public void onUnreadMessagesCountUpdated(AVIMClient client, AVIMConversation conversation) {
+  public void onUnreadMessagesCountUpdated(LCIMClient client, LCIMConversation conversation) {
     LOGGER.d("Notification --- onUnreadMessagesCountUpdated. client=" + client.getClientId() + ", convId=" + conversation.getConversationId());
   }
 
   /**
    * 实现本地方法来处理对方已经接收消息的通知
    */
-  public void onLastDeliveredAtUpdated(AVIMClient client, AVIMConversation conversation) {
+  public void onLastDeliveredAtUpdated(LCIMClient client, LCIMConversation conversation) {
     LOGGER.d("Notification --- onLastDeliveredAtUpdated. client=" + client.getClientId() + ", convId=" + conversation.getConversationId());
   }
 
   /**
    * 实现本地方法来处理对方已经阅读消息的通知
    */
-  public void onLastReadAtUpdated(AVIMClient client, AVIMConversation conversation) {
+  public void onLastReadAtUpdated(LCIMClient client, LCIMConversation conversation) {
     LOGGER.d("Notification --- onLastReadAtUpdated. client=" + client.getClientId() + ", convId=" + conversation.getConversationId());
   }
 
@@ -227,7 +227,7 @@ public class DummyConversationEventHandler extends AVIMConversationEventHandler 
    * @param conversation
    * @param message
    */
-  public void onMessageUpdated(AVIMClient client, AVIMConversation conversation, AVIMMessage message) {
+  public void onMessageUpdated(LCIMClient client, LCIMConversation conversation, LCIMMessage message) {
     LOGGER.d("Notification --- onMessageUpdated. client=" + client.getClientId() + ", convId=" + conversation.getConversationId());
     if ((notifyConfig & FLAG_NOTIFY_MSGUPDATED) == FLAG_NOTIFY_MSGUPDATED) {
       count[NOTIFY_INDEX_MSGUPDATED] ++;
@@ -240,7 +240,7 @@ public class DummyConversationEventHandler extends AVIMConversationEventHandler 
    * @param conversation
    * @param message
    */
-  public void onMessageRecalled(AVIMClient client, AVIMConversation conversation, AVIMMessage message) {
+  public void onMessageRecalled(LCIMClient client, LCIMConversation conversation, LCIMMessage message) {
     LOGGER.d("Notification --- onMessageRecalled. client=" + client.getClientId() + ", convId=" + conversation.getConversationId());
     if ((notifyConfig & FLAG_NOTIFY_MSGRECALLED) == FLAG_NOTIFY_MSGRECALLED) {
       count[NOTIFY_INDEX_MSGRECALLED] ++;

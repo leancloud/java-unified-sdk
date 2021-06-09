@@ -27,7 +27,7 @@ public class EngineFunctionParamInfo {
   }
 
   public Object parseParams(String content) {
-    if (AVObject.class.isAssignableFrom(type)) {
+    if (LCObject.class.isAssignableFrom(type)) {
       return Utils.getObjectFrom(JSON.parseObject(content));
     } else {
       if (Map.class.isAssignableFrom(type)) {
@@ -58,7 +58,7 @@ public class EngineFunctionParamInfo {
     if (map != null && map.containsKey("className") && map.containsKey("__type")
         && "Object".equals(map.get("__type"))) {
       // 这肯定是一个AVObject吧
-      AVObject object = Transformer.objectFromClassName((String) map.get("className"));
+      LCObject object = Transformer.objectFromClassName((String) map.get("className"));
       object.resetServerData(map);
       return object;
     } else if (map != null) {

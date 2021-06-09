@@ -1,6 +1,6 @@
 package cn.leancloud.logging;
 
-import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.LeanCloud;
 import cn.leancloud.utils.StringUtil;
 
 import java.util.logging.Level;
@@ -17,7 +17,7 @@ public class SimpleLoggerAdapter extends InternalLoggerAdapter {
     Logger logger = StringUtil.isEmpty(tag)?Logger.getAnonymousLogger():Logger.getLogger(tag);
     logger.addHandler(consoleHandler);
     InternalLogger ret = new SimpleLogger(logger);
-    ret.setLevel(AVOSCloud.getLogLevel());
+    ret.setLevel(LeanCloud.getLogLevel());
     return ret;
   }
 }

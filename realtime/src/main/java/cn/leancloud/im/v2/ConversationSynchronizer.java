@@ -7,27 +7,27 @@ import java.util.List;
 import java.util.Map;
 
 public class ConversationSynchronizer {
-  public static void mergeMembers(AVIMConversation conversation, List<String> members) {
+  public static void mergeMembers(LCIMConversation conversation, List<String> members) {
     if (null == conversation) {
       return;
     }
     conversation.internalMergeMembers(members);
   }
 
-  public static void removeMembers(AVIMConversation conversation, List<String> members) {
+  public static void removeMembers(LCIMConversation conversation, List<String> members) {
     if (null == conversation) {
       return;
     }
     conversation.internalRemoveMembers(members);
   }
 
-  public static void changeUpdatedTime(AVIMConversation conversation, String updatedAt) {
+  public static void changeUpdatedTime(LCIMConversation conversation, String updatedAt) {
     if (null != conversation && !StringUtil.isEmpty(updatedAt)) {
       conversation.setUpdatedAt(updatedAt);
     }
   }
 
-  public static void mergeConversationFromJsonObject(AVIMConversation conversation, JSONObject postObj, JSONObject allAttrs) {
+  public static void mergeConversationFromJsonObject(LCIMConversation conversation, JSONObject postObj, JSONObject allAttrs) {
     if (null == conversation || (null == postObj && null == allAttrs)) {
       return;
     }

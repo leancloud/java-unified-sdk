@@ -2,12 +2,12 @@ package cn.leancloud.sample.testcase;
 
 import android.content.Intent;
 
+import cn.leancloud.LCParcelableObject;
 import cn.leancloud.json.JSON;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVObject;
-import cn.leancloud.AVParcelableObject;
-import cn.leancloud.AVQuery;
+import cn.leancloud.LCException;
+import cn.leancloud.LCObject;
+import cn.leancloud.LCQuery;
 import cn.leancloud.sample.DemoBaseActivity;
 
 /**
@@ -15,12 +15,12 @@ import cn.leancloud.sample.DemoBaseActivity;
  */
 
 public class ObjectTransferDemoActivity extends DemoBaseActivity {
-  public void testTransferObject() throws AVException {
-    AVQuery q = new AVQuery("Student");
+  public void testTransferObject() throws LCException {
+    LCQuery q = new LCQuery("Student");
     q.addDescendingOrder("createdAt");
-    AVObject student = q.getFirst();
+    LCObject student = q.getFirst();
     if (student == null) {
-      student = new AVObject("Student");
+      student = new LCObject("Student");
       student.put("age", 12);
       student.put("name", "Mike");
     }
@@ -28,19 +28,19 @@ public class ObjectTransferDemoActivity extends DemoBaseActivity {
     System.out.println("sender: " + student.toJSONString());
     System.out.println("sender objectId:" + student.getObjectId());
 
-    AVParcelableObject parcelableObject = new AVParcelableObject(student);
+    LCParcelableObject parcelableObject = new LCParcelableObject(student);
     Intent intent = new Intent(this, ObjectTransferTargetActivity.class);
     intent.putExtra("attached", parcelableObject);
     this.startActivity(intent);
   }
-  public void testTransferSubObject() throws AVException {
+  public void testTransferSubObject() throws LCException {
 
   }
-  public void testTransferUser() throws AVException {
+  public void testTransferUser() throws LCException {
 
   }
 
-  public void testJsonDeserialization() throws AVException {
+  public void testJsonDeserialization() throws LCException {
     double a = 2.65D;
     System.out.println(a);
 

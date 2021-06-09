@@ -1,8 +1,8 @@
 package cn.leancloud.ops;
 
-import cn.leancloud.AVObject;
+import cn.leancloud.LCObject;
 import cn.leancloud.Configure;
-import cn.leancloud.AVACL;
+import cn.leancloud.LCACL;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.json.JSONObject;
 import io.reactivex.Scheduler;
@@ -23,7 +23,7 @@ public class SetOperationTests extends TestCase {
   }
 
   public void testSetACL() {
-    AVACL acl = new AVACL();
+    LCACL acl = new LCACL();
     acl.setPublicReadAccess(true);
     acl.setPublicWriteAccess(false);
     System.out.println(acl.toJSONObject().toJSONString());
@@ -36,7 +36,7 @@ public class SetOperationTests extends TestCase {
   }
 
   public void testSetObject() {
-    AVObject p = new AVObject("Student");
+    LCObject p = new LCObject("Student");
     p.setObjectId("fewruwpr");
 
     SetOperation op = (SetOperation) OperationBuilder.gBuilder.create(

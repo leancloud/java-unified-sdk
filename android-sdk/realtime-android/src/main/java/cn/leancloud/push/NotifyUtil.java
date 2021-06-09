@@ -12,8 +12,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVOSCloud;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LeanCloud;
 import cn.leancloud.cache.PersistenceUtil;
 import cn.leancloud.codec.Base64Decoder;
 import cn.leancloud.codec.Base64Encoder;
@@ -25,7 +25,7 @@ import cn.leancloud.utils.StringUtil;
  */
 
 public class NotifyUtil {
-  private static AVLogger LOGGER = LogUtil.getLogger(NotifyUtil.class);
+  private static LCLogger LOGGER = LogUtil.getLogger(NotifyUtil.class);
 
   protected static HandlerThread thread = new HandlerThread("com.avos.avoscloud.notify");
   static final int SERVICE_RESTART = 1024;
@@ -37,20 +37,20 @@ public class NotifyUtil {
   static Handler notifyHandler = new Handler(thread.getLooper()) {
     @Override
     public void handleMessage(Message m) {
-      if (m.what == SERVICE_RESTART && AVOSCloud.getContext() != null) {
+      if (m.what == SERVICE_RESTART && LeanCloud.getContext() != null) {
         this.removeMessages(SERVICE_RESTART);
         try {
           Set<String> registeredApps = getRegisteredApps();
           for (String encodedAppPackage : registeredApps) {
             String appPackage = Base64Decoder.decode(encodedAppPackage);
-            if (!AVOSCloud.getContext().getPackageName().equals(appPackage)) {
+            if (!LeanCloud.getContext().getPackageName().equals(appPackage)) {
               Intent intent = new Intent();
               intent.setClassName(appPackage, PushService.class.getName());
               intent.setAction(SERVICE_RESTART_ACTION);
               LOGGER.d("try to start:" + appPackage + " from:"
-                  + AVOSCloud.getContext().getPackageName());
+                  + LeanCloud.getContext().getPackageName());
               try {
-                AVOSCloud.getContext().startService(intent);
+                LeanCloud.getContext().startService(intent);
               } catch (Exception ex) {
                 LOGGER.e("failed to startService. cause: " + ex.getMessage());
               }
@@ -66,15 +66,15 @@ public class NotifyUtil {
 
   private static void registerApp() {
     Set<String> appSet = getRegisteredApps();
-    if (appSet != null && AVOSCloud.getContext() != null) {
-      appSet.add(Base64Encoder.encode(AVOSCloud.getContext().getPackageName()));
+    if (appSet != null && LeanCloud.getContext() != null) {
+      appSet.add(Base64Encoder.encode(LeanCloud.getContext().getPackageName()));
       PersistenceUtil.sharedInstance().saveContentToFile(JSON.toJSONString(appSet),
           getRegisterAppsFile());
     }
   }
 
   private static Set<String> getRegisteredApps() {
-    if (AVOSCloud.getContext() == null) {
+    if (LeanCloud.getContext() == null) {
       return null;
     }
     File registerFile = getRegisterAppsFile();

@@ -1,7 +1,7 @@
 package cn.leancloud.command;
 
 import cn.leancloud.Messages;
-import cn.leancloud.im.v2.AVIMClient;
+import cn.leancloud.im.v2.LCIMClient;
 import cn.leancloud.utils.StringUtil;
 import com.google.protobuf.ByteString;
 
@@ -73,7 +73,7 @@ public class MessagePatchModifyPacket extends PeerBasedCommandPacket {
     packet.mentionAll = mentionAll;
     packet.mentionList = mentionList;
     packet.setRequestId(requestId);
-    if (AVIMClient.getClientsCount() > 1) {
+    if (LCIMClient.getClientsCount() > 1) {
       // peerId is necessary only when more than 1 client logined.
       packet.setPeerId(peerId);
     }
@@ -88,7 +88,7 @@ public class MessagePatchModifyPacket extends PeerBasedCommandPacket {
     packet.timestamp = timestamp;
     packet.isRecall = true;
     packet.setRequestId(requestId);
-    if (AVIMClient.getClientsCount() > 1) {
+    if (LCIMClient.getClientsCount() > 1) {
       // peerId is necessary only when more than 1 client logined.
       packet.setPeerId(peerId);
     }

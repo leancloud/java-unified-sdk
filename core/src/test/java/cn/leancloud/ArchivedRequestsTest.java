@@ -35,7 +35,7 @@ public class ArchivedRequestsTest extends TestCase {
     boolean[] results = {false, true, true, false};
     for (int i = 0; i < files.length; i++) {
       System.out.println("verify " + files[i]);
-      boolean ret = AVObject.verifyInternalId(files[i]);
+      boolean ret = LCObject.verifyInternalId(files[i]);
       assertEquals(results[i], ret);
     }
   }
@@ -68,25 +68,25 @@ public class ArchivedRequestsTest extends TestCase {
     testSucceed = false;
     latch = new CountDownLatch(1);
 
-    AVObject object = new AVObject("Student");
+    LCObject object = new LCObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 19);
     object.add("course", "Art");
 
     String archivedJSON = ArchivedRequests.getArchiveContent(object, false);
 
-    AVObject tmp = ArchivedRequests.parseAVObject(archivedJSON);
+    LCObject tmp = ArchivedRequests.parseAVObject(archivedJSON);
     assertEquals(object.internalId(), tmp.internalId());
 
-    tmp.saveInBackground().subscribe(new Observer<AVObject>() {
+    tmp.saveInBackground().subscribe(new Observer<LCObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVObject avObject) {
-        avObject.delete();
+      public void onNext(LCObject LCObject) {
+        LCObject.delete();
         testSucceed = true;
         latch.countDown();
       }
@@ -124,7 +124,7 @@ public class ArchivedRequestsTest extends TestCase {
     Thread.sleep(60000);
   }
   public void testCompoundRequestSerialize() {
-    AVObject object = new AVObject("Student");
+    LCObject object = new LCObject("Student");
     object.put("name", "Automatic Tester");
     object.add("course", "Art");
     object.increment("age", 23);
@@ -132,33 +132,33 @@ public class ArchivedRequestsTest extends TestCase {
     object.addUnique("course", "Math");
     String archivedJSON = ArchivedRequests.getArchiveContent(object, false);
 
-    AVObject tmp = ArchivedRequests.parseAVObject(archivedJSON);
+    LCObject tmp = ArchivedRequests.parseAVObject(archivedJSON);
     assertEquals(object.internalId(), tmp.internalId());
   }
 
   public void testRequestSerializeWithSingleObjectValue() {
-    AVObject object = new AVObject("Student");
+    LCObject object = new LCObject("Student");
     object.put("name", "Automatic Tester");
     object.add("birthday", new Date());
-    object.put("friend", AVObject.createWithoutData("Student", "fakeObjectId"));
+    object.put("friend", LCObject.createWithoutData("Student", "fakeObjectId"));
 
     String archivedJSON = ArchivedRequests.getArchiveContent(object, false);
 
-    AVObject tmp = ArchivedRequests.parseAVObject(archivedJSON);
+    LCObject tmp = ArchivedRequests.parseAVObject(archivedJSON);
     assertEquals(object.internalId(), tmp.internalId());
     assertEquals(object.operations.size(), tmp.operations.size());
   }
 
   public void testRequestSerializeWithObjectValueArray() {
-    AVObject object = new AVObject("Student");
+    LCObject object = new LCObject("Student");
     object.put("name", "Automatic Tester");
     object.add("birthday", new Date());
-    object.add("friend", AVObject.createWithoutData("Student", "fakeObjectId"));
+    object.add("friend", LCObject.createWithoutData("Student", "fakeObjectId"));
 
     String archivedJSON = ArchivedRequests.getArchiveContent(object, false);
     System.out.println("archived jsonString: " + archivedJSON);
 
-    AVObject tmp = ArchivedRequests.parseAVObject(archivedJSON);
+    LCObject tmp = ArchivedRequests.parseAVObject(archivedJSON);
     assertEquals(object.internalId(), tmp.internalId());
     assertEquals(object.operations.size(), tmp.operations.size());
   }

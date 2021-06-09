@@ -1,6 +1,6 @@
 package cn.leancloud.service;
 
-import cn.leancloud.core.AVOSService;
+import cn.leancloud.core.LeanService;
 import cn.leancloud.utils.StringUtil;
 
 public class AppAccessEndpoint {
@@ -64,7 +64,7 @@ public class AppAccessEndpoint {
     this.engineServer = engineServer;
   }
 
-  public String getServerHost(AVOSService service) {
+  public String getServerHost(LeanService service) {
     String result = "";
     switch (service) {
       case API:
@@ -91,7 +91,7 @@ public class AppAccessEndpoint {
             || !StringUtil.isEmpty(rtmRouterServer);
   }
 
-  public void freezeEndpoint(AVOSService service, String host) {
+  public void freezeEndpoint(LeanService service, String host) {
     switch (service) {
       case API:
         this.setApiServer(host);

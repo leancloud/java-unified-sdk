@@ -1,14 +1,14 @@
 package cn.leancloud.callback;
 
-import cn.leancloud.AVException;
-import cn.leancloud.types.AVNull;
+import cn.leancloud.LCException;
+import cn.leancloud.types.LCNull;
 
-public abstract class RequestMobileCodeCallback extends AVCallback<AVNull> {
+public abstract class RequestMobileCodeCallback extends LCCallback<LCNull> {
 
-  public abstract void done(AVException e);
+  public abstract void done(LCException e);
 
   @Override
-  protected final void internalDone0(AVNull t, AVException avException) {
-    this.done(avException);
+  protected final void internalDone0(LCNull t, LCException LCException) {
+    this.done(LCException);
   }
 }

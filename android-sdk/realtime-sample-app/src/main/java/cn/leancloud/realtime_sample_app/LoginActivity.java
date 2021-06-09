@@ -33,10 +33,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.im.v2.AVIMClient;
-import cn.leancloud.im.v2.AVIMException;
-import cn.leancloud.im.v2.callback.AVIMClientCallback;
+import cn.leancloud.LCLogger;
+import cn.leancloud.im.v2.LCIMClient;
+import cn.leancloud.im.v2.LCIMException;
+import cn.leancloud.im.v2.callback.LCIMClientCallback;
 import cn.leancloud.utils.LogUtil;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -45,7 +45,7 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
-  private static final AVLogger LOGGER = LogUtil.getLogger(LoginActivity.class);
+  private static final LCLogger LOGGER = LogUtil.getLogger(LoginActivity.class);
 
   /**
    * Id to identity READ_CONTACTS permission request.
@@ -341,10 +341,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
       showProgress(false);
 
       if (success) {
-        AVIMClient client = AVIMClient.getInstance(mEmail);
-        client.open(new AVIMClientCallback() {
+        LCIMClient client = LCIMClient.getInstance(mEmail);
+        client.open(new LCIMClientCallback() {
           @Override
-          public void done(AVIMClient client, AVIMException e) {
+          public void done(LCIMClient client, LCIMException e) {
             if (null != e) {
               LOGGER.w("failed to open client.", e);
             } else {

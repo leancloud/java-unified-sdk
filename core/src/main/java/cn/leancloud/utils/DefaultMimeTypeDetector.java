@@ -27,6 +27,7 @@ public class DefaultMimeTypeDetector implements FileUtil.MimeTypeDetector{
 
     return "";
   }
+
   public String getMimeTypeFromPath(String localPath) {
     try {
       return Files.probeContentType(new File(localPath).toPath());
@@ -34,6 +35,7 @@ public class DefaultMimeTypeDetector implements FileUtil.MimeTypeDetector{
       return "";
     }
   }
+
   public String getMimeTypeFromExtension(String extension) {
     if (StringUtil.isEmpty(extension)) {
       return "";

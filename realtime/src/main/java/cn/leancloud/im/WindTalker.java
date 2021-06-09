@@ -1,12 +1,12 @@
 package cn.leancloud.im;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.command.CommandPacket;
 import cn.leancloud.command.LiveQueryLoginPacket;
 import cn.leancloud.command.PushAckPacket;
 import cn.leancloud.command.SessionControlPacket;
-import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.LeanCloud;
 import cn.leancloud.utils.LogUtil;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class WindTalker {
-  private static final AVLogger LOGGER = LogUtil.getLogger(WindTalker.class);
+  private static final LCLogger LOGGER = LogUtil.getLogger(WindTalker.class);
   private static WindTalker instance = null;
   static AtomicInteger acu = new AtomicInteger(-65536);
   public static WindTalker getInstance() {
@@ -47,7 +47,7 @@ public class WindTalker {
             null, lastNotifyTime, lastPatchTime, requestId);
     scp.setSessionToken(sessionToken);
     scp.setReconnectionRequest(reConnect);
-    scp.setAppId(AVOSCloud.getApplicationId());
+    scp.setAppId(LeanCloud.getApplicationId());
     return scp;
   }
 
@@ -59,7 +59,7 @@ public class WindTalker {
             lastNotifyTime, lastPatchTime, requestId);
     scp.setTag(tag);
 //    if (AVIMOptions.getGlobalOptions().isDisableAutoLogin4Push() || AVIMClient.getClientsCount() > 1) {
-      scp.setAppId(AVOSCloud.getApplicationId());
+      scp.setAppId(LeanCloud.getApplicationId());
 //    }
     scp.setReconnectionRequest(reConnect);
     return scp;

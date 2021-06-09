@@ -9,7 +9,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import androidx.core.app.ActivityCompat;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.utils.LogUtil;
 
 /**
@@ -17,7 +17,7 @@ import cn.leancloud.utils.LogUtil;
  */
 
 public class AndroidNetworkingDetector implements NetworkingDetector {
-  private static AVLogger LOGGER = LogUtil.getLogger(AndroidNetworkingDetector.class);
+  private static LCLogger LOGGER = LogUtil.getLogger(AndroidNetworkingDetector.class);
 
   private Context context = null;
   public AndroidNetworkingDetector(Context context) {

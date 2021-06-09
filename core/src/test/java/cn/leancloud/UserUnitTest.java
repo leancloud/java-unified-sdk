@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.auth.UserBasedTestCase;
 import cn.leancloud.callback.LogInCallback;
 import cn.leancloud.callback.SaveCallback;
 import cn.leancloud.callback.SignUpCallback;
@@ -10,7 +11,7 @@ import junit.framework.TestSuite;
 
 import java.util.concurrent.CountDownLatch;
 
-public class UserUnitTest extends TestCase {
+public class UserUnitTest extends UserBasedTestCase {
   public static final String username = "steve" + System.currentTimeMillis();
   public static final String password = "f32@ds*@&dsa";
   private CountDownLatch latch = null;
@@ -18,9 +19,8 @@ public class UserUnitTest extends TestCase {
 
   public UserUnitTest(String name) {
     super(name);
-
-    AVObject.registerSubclass(SubUser.class);
-    Configure.initializeRuntime();
+    LCObject.registerSubclass(SubUser.class);
+    LCObject.registerSubclass(Armor.class);
   }
   public static Test suite() {
     return new TestSuite(UserUnitTest.class);
@@ -40,7 +40,7 @@ public class UserUnitTest extends TestCase {
   }
 
   public void testSignupLogin() throws Exception {
-    AVUser user = new AVUser();
+    LCUser user = new LCUser();
     assertTrue(user.getSessionToken() == null);
     user.setUsername(username);
     user.setPassword(password);
@@ -50,7 +50,7 @@ public class UserUnitTest extends TestCase {
 
     SignUpCallback cb = new SignUpCallback() {
       @Override
-      public void done(AVException e) {
+      public void done(LCException e) {
         if (e != null) {
           e.printStackTrace();
         } else {
@@ -69,13 +69,13 @@ public class UserUnitTest extends TestCase {
     testSucceed = false;
 
     // signup twice should fail
-    AVUser newUser = new AVUser();
+    LCUser newUser = new LCUser();
     assertTrue(newUser.getSessionToken() == null);
     newUser.setUsername(username);
     newUser.setPassword(password);
     cb = new SignUpCallback() {
       @Override
-      public void done(AVException e) {
+      public void done(LCException e) {
         if (null != e) {
           testSucceed = true;
         }
@@ -92,9 +92,9 @@ public class UserUnitTest extends TestCase {
     logout(user);
   }
 
-  public void login(AVUser user) throws Exception {
+  public void login(LCUser user) throws Exception {
 
-    AVUser cloudUser = AVUser.logIn(username, password).blockingFirst();
+    LCUser cloudUser = LCUser.logIn(username, password).blockingFirst();
     assertTrue(cloudUser.getSessionToken() != null);
     assertEquals(cloudUser.getObjectId(), user.getObjectId());
     assertEquals(cloudUser.getSessionToken(), user.getSessionToken());
@@ -103,10 +103,10 @@ public class UserUnitTest extends TestCase {
     latch = new CountDownLatch(1);
     testSucceed = false;
 
-    LogInCallback cb = new LogInCallback<AVUser>() {
+    LogInCallback cb = new LogInCallback<LCUser>() {
 
       @Override
-      public void done(AVUser user, AVException e) {
+      public void done(LCUser user, LCException e) {
         if (null != e) {
           e.printStackTrace();
           testSucceed = true;
@@ -114,23 +114,23 @@ public class UserUnitTest extends TestCase {
         latch.countDown();
       }
     };
-    AVUser.logIn(username, password+1).subscribe(ObserverBuilder.buildSingleObserver(cb));
+    LCUser.logIn(username, password+1).subscribe(ObserverBuilder.buildSingleObserver(cb));
     latch.await();
     assertTrue(testSucceed);
   }
 
-  public void currentUser(AVUser user) {
-    AVUser currentUser = AVUser.getCurrentUser();
+  public void currentUser(LCUser user) {
+    LCUser currentUser = LCUser.getCurrentUser();
     assertEquals(currentUser.getObjectId(), user.getObjectId());
     assertEquals(currentUser.getSessionToken(), user.getSessionToken());
     assertEquals(username, currentUser.getUsername());
   }
 
-  public void logout(AVUser user) throws Exception{
-    AVUser.logOut();
-    assertNull(AVUser.getCurrentUser());
-    AVUser cloudUser = AVUser.logIn(username, password).blockingFirst();
-    AVUser currentUser = AVUser.getCurrentUser();
+  public void logout(LCUser user) throws Exception{
+    LCUser.logOut();
+    assertNull(LCUser.getCurrentUser());
+    LCUser cloudUser = LCUser.logIn(username, password).blockingFirst();
+    LCUser currentUser = LCUser.getCurrentUser();
     assertNotNull(currentUser);
     assertEquals(currentUser, cloudUser);
     assertEquals(currentUser.getObjectId(), user.getObjectId());
@@ -138,10 +138,10 @@ public class UserUnitTest extends TestCase {
     assertEquals(username, currentUser.getUsername());
   }
 
-  public void currentUserWithRelation(AVUser user) throws Exception {
+  public void currentUserWithRelation(LCUser user) throws Exception {
 
     // User has a pointer,and that pointer has a relation field
-    AVObject object = new AVObject("UserUnitTest");
+    LCObject object = new LCObject("UserUnitTest");
     object.put("name", "UserUnitTest");
     // save itself.
     object.save();
@@ -154,25 +154,33 @@ public class UserUnitTest extends TestCase {
     user.save();
 
     // clear current user in memory
-    AVUser.changeCurrentUser(null,false);
+    LCUser.changeCurrentUser(null,false);
     // get current user
-    AVUser currentUser = AVUser.getCurrentUser();
+    LCUser currentUser = LCUser.getCurrentUser();
 
-    AVObject unitTest = currentUser.getAVObject("UserUnitTest");
+    LCObject unitTest = currentUser.getLCObject("UserUnitTest");
     assertNotNull(unitTest);
-    AVRelation<AVObject> relation = unitTest.getRelation("me");
+    LCRelation<LCObject> relation = unitTest.getRelation("me");
     assertNotNull(relation);
     assertEquals(1,relation.getQuery().find().size());
   }
 
   public void testSignupSubUser() throws Exception {
+    LCObject armor = LCQuery.getQuery("Armor").getFirst();
+    if (null == armor) {
+      Armor newObj = new Armor();
+      newObj.setBroken(false);
+      newObj.setDisplayName("test at " + System.currentTimeMillis());
+      newObj.save();
+      armor = newObj;
+    }
     SubUser subUser = new SubUser();
     String username = "dennis" + System.currentTimeMillis();
     String nickName = "testSignupSubUser";
     subUser.setUsername(username);
     subUser.setPassword(password);
     subUser.setNickName(nickName);
-    subUser.setArmor(AVQuery.getQuery("Armor").getFirst());
+    subUser.setArmor(armor);
     subUser.signUp();
     System.out.println("signup success");
 
@@ -180,7 +188,7 @@ public class UserUnitTest extends TestCase {
       assertFalse(subUser.getObjectId().isEmpty());
       assertFalse(subUser.getSessionToken().isEmpty());
 
-      SubUser cloudUser = AVUser.logIn(username, password,
+      SubUser cloudUser = LCUser.logIn(username, password,
               SubUser.class).blockingFirst();
       assertTrue(cloudUser.getSessionToken() != null);
       assertEquals(cloudUser.getObjectId(), subUser.getObjectId());
@@ -193,32 +201,32 @@ public class UserUnitTest extends TestCase {
     }
 
     // test currentUser
-    AVUser currentUser = AVUser.getCurrentUser();
+    LCUser currentUser = LCUser.getCurrentUser();
     assertTrue(currentUser instanceof SubUser);
 
-    AVUser.changeCurrentUser(null,false);
+    LCUser.changeCurrentUser(null,false);
     // Then we will get the user from local file storage.
-    SubUser theUser = AVUser.getCurrentUser(SubUser.class);
+    SubUser theUser = LCUser.getCurrentUser(SubUser.class);
     assertNotNull(theUser);
     assertEquals(username, theUser.getUsername());
     assertEquals(nickName, theUser.getNickName());
   }
 
-  public void withFile(AVUser user) throws Exception {
-    final AVUser currentUser = AVUser.getCurrentUser();
-    final AVFile file = new AVFile("test", "hello".getBytes());
+  public void withFile(LCUser user) throws Exception {
+    final LCUser currentUser = LCUser.getCurrentUser();
+    final LCFile file = new LCFile("test", "hello".getBytes());
     SaveCallback cb = new SaveCallback() {
 
       @Override
-      public void done(AVException e) {
+      public void done(LCException e) {
         assertNull(e);
         SaveCallback cb2 = new SaveCallback() {
 
           @Override
-          public void done(AVException e) {
+          public void done(LCException e) {
             assertNull(e);
-            AVFile theFile = currentUser
-                    .getAVFile("test_file");
+            LCFile theFile = currentUser
+                    .getLCFile("test_file");
             assertNotNull(theFile);
             assertEquals("test", theFile.getName());
             assertNotNull(theFile.getUrl());

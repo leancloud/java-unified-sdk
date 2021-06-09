@@ -1,7 +1,7 @@
 package cn.leancloud.command;
 
 import cn.leancloud.Messages;
-import cn.leancloud.im.v2.AVIMClient;
+import cn.leancloud.im.v2.LCIMClient;
 import cn.leancloud.utils.StringUtil;
 
 public class ConversationMessageQueryPacket extends PeerBasedCommandPacket {
@@ -162,7 +162,7 @@ public class ConversationMessageQueryPacket extends PeerBasedCommandPacket {
                                                                                  String toMsgId, long toTimestamp, boolean tclosed,
                                                                                  int direct, int limit, int msgType, int requestId) {
     ConversationMessageQueryPacket cqp = new ConversationMessageQueryPacket();
-    if (AVIMClient.getClientsCount() > 1) {
+    if (LCIMClient.getClientsCount() > 1) {
       // peerId is necessary only when more than 1 client logined.
       cqp.setPeerId(peerId);
     }

@@ -20,7 +20,7 @@ import io.reactivex.disposables.Disposable;
  */
 @Deprecated
 class RequestUserParser {
-  private static AVLogger LOGGER = LogUtil.getLogger(RequestUserParser.class);
+  private static LCLogger LOGGER = LogUtil.getLogger(RequestUserParser.class);
 
   public static void parse(final HttpServletRequest req) {
     if (req.getAttribute(EngineRequestContext.ATTRIBUTE_KEY_AUTHENTICATION) == null) {
@@ -31,13 +31,13 @@ class RequestUserParser {
     if (sessionToken != null && !StringUtil.isEmpty(sessionToken)) {
       Map<String, String> header = new HashMap<String, String>();
       header.put("X-LC-Session", sessionToken);
-      PaasClient.getStorageClient().createUserBySession(sessionToken, AVUser.class)
-              .subscribe(new Observer<AVUser>() {
+      PaasClient.getStorageClient().createUserBySession(sessionToken, LCUser.class)
+              .subscribe(new Observer<LCUser>() {
                 public void onSubscribe(Disposable disposable) {
 
                 }
 
-                public void onNext(AVUser avUser) {
+                public void onNext(LCUser avUser) {
 //                  AVUser.changeCurrentUser(avUser, true);
                   req.setAttribute(EngineRequestContext.ATTRIBUTE_KEY_SESSION_TOKEN, avUser);
                 }

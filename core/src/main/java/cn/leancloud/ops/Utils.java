@@ -4,7 +4,7 @@ import java.util.*;
 
 import cn.leancloud.*;
 import cn.leancloud.gson.ObjectDeserializer;
-import cn.leancloud.types.AVGeoPoint;
+import cn.leancloud.types.LCGeoPoint;
 import cn.leancloud.utils.StringUtil;
 
 import cn.leancloud.codec.Base64;
@@ -14,11 +14,11 @@ public class Utils {
   private static final String typeTag = "__type";
 
   public static Map<String, Object> createPointerArrayOpMap(String key, String op,
-                                                            Collection<AVObject> objects) {
+                                                            Collection<LCObject> objects) {
     Map<String, Object> map = new HashMap<String, Object>();
     map.put("__op", op);
     List<Map<String, ?>> list = new ArrayList<Map<String, ?>>();
-    for (AVObject obj : objects) {
+    for (LCObject obj : objects) {
       list.add(mapFromPointerObject(obj));
     }
     map.put("objects", list);
@@ -27,11 +27,11 @@ public class Utils {
     return result;
   }
 
-  public static Map<String, Object> mapFromPointerObject(AVObject object) {
+  public static Map<String, Object> mapFromPointerObject(LCObject object) {
     return mapFromAVObject(object, false);
   }
 
-  public static Map<String, Object> mapFromGeoPoint(AVGeoPoint point) {
+  public static Map<String, Object> mapFromGeoPoint(LCGeoPoint point) {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put(typeTag, "GeoPoint");
     result.put("latitude", point.getLatitude());
@@ -39,18 +39,18 @@ public class Utils {
     return result;
   }
 
-  public static AVGeoPoint geoPointFromMap(Map<String, Object> map) {
+  public static LCGeoPoint geoPointFromMap(Map<String, Object> map) {
     double la = ((Number) map.get("latitude")).doubleValue();
     double lo = ((Number) map.get("longitude")).doubleValue();
-    AVGeoPoint point = new AVGeoPoint(la, lo);
+    LCGeoPoint point = new LCGeoPoint(la, lo);
     return point;
   }
 
-  public static AVObject parseObjectFromMap(Map<String, Object> map) {
-    AVObject avObject = Transformer.objectFromClassName((String) map.get("className"));
+  public static LCObject parseObjectFromMap(Map<String, Object> map) {
+    LCObject LCObject = Transformer.objectFromClassName((String) map.get("className"));
     map.remove("__type");
-    avObject.resetServerData(map);
-    return avObject;
+    LCObject.resetServerData(map);
+    return LCObject;
   }
 
   public static byte[] dataFromMap(Map<String, Object> map) {
@@ -77,7 +77,7 @@ public class Utils {
     return result;
   }
 
-  public static Map<String, Object> mapFromFile(AVFile file) {
+  public static Map<String, Object> mapFromFile(LCFile file) {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("__type", "_File");
     result.put("metaData", file.getMetaData());
@@ -85,7 +85,7 @@ public class Utils {
     return result;
   }
 
-  public static Map<String, Object> mapFromAVObject(AVObject object, boolean topObject) {
+  public static Map<String, Object> mapFromAVObject(LCObject object, boolean topObject) {
     Map<String, Object> result = new HashMap<String, Object>();
     result.put("className", object.internalClassName());
 
@@ -156,20 +156,20 @@ public class Utils {
       return getParsedMap((Map<String, Object>) object, topObject);
     } else if (object instanceof Collection) {
       return getParsedList((Collection) object, topObject);
-    } else if (object instanceof AVObject) {
+    } else if (object instanceof LCObject) {
       if (!topObject) {
-        return mapFromPointerObject((AVObject) object);
+        return mapFromPointerObject((LCObject) object);
       } else {
-        return mapFromAVObject((AVObject) object, true);
+        return mapFromAVObject((LCObject) object, true);
       }
-    } else if (object instanceof AVGeoPoint) {
-      return mapFromGeoPoint((AVGeoPoint) object);
+    } else if (object instanceof LCGeoPoint) {
+      return mapFromGeoPoint((LCGeoPoint) object);
     } else if (object instanceof Date) {
       return mapFromDate((Date) object);
     } else if (object instanceof byte[]) {
       return mapFromByteArray((byte[]) object);
-    } else if (object instanceof AVFile) {
-      return mapFromFile((AVFile) object);
+    } else if (object instanceof LCFile) {
+      return mapFromFile((LCFile) object);
     } else {
       return object;
     }
@@ -188,13 +188,13 @@ public class Utils {
     return ops;
   }
 
-  public static AVRelation objectFromRelationMap(Map<String, Object> map) {
+  public static LCRelation objectFromRelationMap(Map<String, Object> map) {
     String className = (String) map.get("className");
-    return new AVRelation(className);
+    return new LCRelation(className);
   }
 
-  public static AVFile fileFromMap(Map<String, Object> map) {
-    AVFile file = new AVFile("", "");
+  public static LCFile fileFromMap(Map<String, Object> map) {
+    LCFile file = new LCFile("", "");
     file.resetServerData(map);
     Object metadata = map.get("metaData");
     if (metadata != null && metadata instanceof Map) {
@@ -216,14 +216,14 @@ public class Utils {
   public static Object getObjectFrom(Map<String, Object> map) {
     Object type = map.get("__type");
     if (null == type || !(type instanceof String)) {
-      if(map.containsKey(AVObject.KEY_CLASSNAME) && map.containsKey(ObjectDeserializer.KEY_SERVERDATA)) {
+      if(map.containsKey(LCObject.KEY_CLASSNAME) && map.containsKey(ObjectDeserializer.KEY_SERVERDATA)) {
         // support new version jsonString of AVObject.
-        String className = map.containsKey(AVObject.KEY_CLASSNAME)?
-                (String) map.get(AVObject.KEY_CLASSNAME) : (String) map.get("@type");
-        AVObject avObject = Transformer.objectFromClassName(className);
+        String className = map.containsKey(LCObject.KEY_CLASSNAME)?
+                (String) map.get(LCObject.KEY_CLASSNAME) : (String) map.get("@type");
+        LCObject LCObject = Transformer.objectFromClassName(className);
         Map<String, Object> serverData = (Map) map.get(ObjectDeserializer.KEY_SERVERDATA);
-        if (serverData.containsKey(AVObject.KEY_CLASSNAME)) {
-          serverData.remove(AVObject.KEY_CLASSNAME);
+        if (serverData.containsKey(LCObject.KEY_CLASSNAME)) {
+          serverData.remove(LCObject.KEY_CLASSNAME);
         }
         Map<String, Object> decodedValues = new HashMap<>();
         for(Map.Entry<String, Object> entry: serverData.entrySet()) {
@@ -240,13 +240,13 @@ public class Utils {
             decodedValues.put(k, v);
           }
         }
-        avObject.resetServerData(decodedValues);
-        return avObject;
+        LCObject.resetServerData(decodedValues);
+        return LCObject;
       } else if (map.containsKey("@type") && map.get("@type") instanceof String) {
         String classType = (String) map.get("@type");
         if (null != classType && classType.startsWith("cn.leancloud.")) {
           try {
-            AVObject avObject = (AVObject) Class.forName(classType).newInstance();
+            LCObject LCObject = (LCObject) Class.forName(classType).newInstance();
             map.remove("@type");
             Map<String, Object> decodedValues = new HashMap<>();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -263,8 +263,8 @@ public class Utils {
                 decodedValues.put(k, v);
               }
             }
-            avObject.resetServerData(decodedValues);
-            return avObject;
+            LCObject.resetServerData(decodedValues);
+            return LCObject;
           } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
           } catch (IllegalAccessException e) {
@@ -285,7 +285,7 @@ public class Utils {
     }
     map.remove("__type");
     if (type.equals("Pointer") || type.equals("Object")) {
-      AVObject avObject = Transformer.objectFromClassName((String) map.get("className"));
+      LCObject LCObject = Transformer.objectFromClassName((String) map.get("className"));
 //      avObject.resetServerData(map);
       map.remove("className");
       for (Map.Entry<String, Object> entry: map.entrySet()) {
@@ -293,16 +293,16 @@ public class Utils {
         Object v = entry.getValue();
         if (v instanceof String || v instanceof Number || v instanceof Boolean || v instanceof Byte || v instanceof Character) {
           // primitive type
-          avObject.getServerData().put(k, v);
+          LCObject.getServerData().put(k, v);
         } else if (v instanceof Map || v instanceof JSONObject) {
-          avObject.getServerData().put(k, Utils.getObjectFrom(v));
+          LCObject.getServerData().put(k, Utils.getObjectFrom(v));
         } else if (v instanceof Collection) {
-          avObject.getServerData().put(k, Utils.getObjectFrom(v));
+          LCObject.getServerData().put(k, Utils.getObjectFrom(v));
         } else if (null != v) {
-          avObject.getServerData().put(k, v);
+          LCObject.getServerData().put(k, v);
         }
       }
-      return avObject;
+      return LCObject;
     } else if (type.equals("GeoPoint")) {
       return geoPointFromMap(map);
     } else if (type.equals("Bytes")) {

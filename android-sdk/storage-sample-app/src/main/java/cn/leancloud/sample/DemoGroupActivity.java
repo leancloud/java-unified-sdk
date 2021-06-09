@@ -35,7 +35,7 @@ public class DemoGroupActivity extends ListActivity {
 
   private void setupAVOSCloud(boolean config) {
     if (!config) {
-      AVOSCloud.initialize(this.getApplication(),
+      LeanCloud.initialize(this.getApplication(),
           Config.APP_ID, Config.APP_KEY, Config.SERVER_HOST);
       return;
     }
@@ -55,7 +55,7 @@ public class DemoGroupActivity extends ListActivity {
           Toast.makeText(DemoGroupActivity.this, "Empty key.", Toast.LENGTH_LONG).show();
           return;
         }
-        AVOSCloud.initialize(getApplication(),
+        LeanCloud.initialize(getApplication(),
             appId.getText().toString(),
             clientKey.getText().toString());
       }
@@ -102,7 +102,7 @@ public class DemoGroupActivity extends ListActivity {
     array.add("User");
     array.add("File");
     array.add("Pointer");
-    array.add("AVRelation");
+//    array.add("LCRelation");
     array.add("Subclass");
     array.add("CQL");
     array.add("Engine");

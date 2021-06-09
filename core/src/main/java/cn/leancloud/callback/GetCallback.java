@@ -1,13 +1,12 @@
 package cn.leancloud.callback;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVObject;
-import cn.leancloud.callback.AVCallback;
+import cn.leancloud.LCException;
+import cn.leancloud.LCObject;
 
-public abstract class GetCallback<T extends AVObject> extends AVCallback<T> {
-  public abstract void done(T object, AVException e);
+public abstract class GetCallback<T extends LCObject> extends LCCallback<T> {
+  public abstract void done(T object, LCException e);
 
-  protected final void internalDone0(T returnValue, AVException e) {
+  protected final void internalDone0(T returnValue, LCException e) {
     done(returnValue, e);
   }
 }

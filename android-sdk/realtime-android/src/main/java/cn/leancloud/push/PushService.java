@@ -21,6 +21,7 @@ import android.os.Message;
 import android.os.SystemClock;
 import androidx.core.app.ActivityCompat;
 
+import cn.leancloud.LeanCloud;
 import cn.leancloud.json.JSON;
 
 import java.util.Arrays;
@@ -30,37 +31,36 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVInstallation;
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVOSCloud;
-import cn.leancloud.AVObject;
-import cn.leancloud.callback.AVCallback;
+import cn.leancloud.LCException;
+import cn.leancloud.LCInstallation;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LCObject;
+import cn.leancloud.callback.LCCallback;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.AndroidInitializer;
 import cn.leancloud.im.DirectlyOperationTube;
 import cn.leancloud.im.InternalConfiguration;
-import cn.leancloud.im.v2.AVIMMessage;
-import cn.leancloud.im.v2.AVIMMessageOption;
+import cn.leancloud.im.v2.LCIMMessage;
+import cn.leancloud.im.v2.LCIMMessageOption;
 import cn.leancloud.im.v2.Conversation;
-import cn.leancloud.im.v2.Conversation.AVIMOperation;
-import cn.leancloud.im.v2.AVIMClient.AVIMClientStatus;
-import cn.leancloud.livequery.AVLiveQuery;
-import cn.leancloud.session.AVConnectionManager;
-import cn.leancloud.session.AVSession;
-import cn.leancloud.session.AVSessionManager;
+import cn.leancloud.im.v2.Conversation.LCIMOperation;
+import cn.leancloud.im.v2.LCIMClient.LCIMClientStatus;
+import cn.leancloud.livequery.LCLiveQuery;
+import cn.leancloud.session.LCConnectionManager;
+import cn.leancloud.session.LCSession;
+import cn.leancloud.session.LCSessionManager;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
-import static cn.leancloud.im.v2.AVIMClient.AVIMClientStatus.AVIMClientStatusNone;
+import static cn.leancloud.im.v2.LCIMClient.LCIMClientStatus.LCIMClientStatusNone;
 
 /**
  * PushService
  */
 public class PushService extends Service {
-  private static final AVLogger LOGGER = LogUtil.getLogger(PushService.class);
+  private static final LCLogger LOGGER = LogUtil.getLogger(PushService.class);
 
   static final String AV_PUSH_SERVICE_APPLICATION_ID = "AV_APPLICATION_ID";
   static final String AV_PUSH_SERVICE_DEFAULT_CALLBACK = "AV_DEFAULT_CALLBACK";
@@ -69,7 +69,7 @@ public class PushService extends Service {
   // 是否需要唤醒其他同样使用 LeanCloud 服务的 app，此变量用于缓存结果，避免无意义调用
   private static boolean isNeedNotifyApplication = true;
 
-  private AVConnectionManager connectionManager = null;
+  private LCConnectionManager connectionManager = null;
   private static Object connecting = new Object();
   private volatile static boolean isStarted = false;
 
@@ -80,8 +80,8 @@ public class PushService extends Service {
   static int foregroundIdentifier = 0;
   static Notification foregroundNotification = null;
 
-  AVConnectivityReceiver connectivityReceiver;
-  AVShutdownReceiver shutdownReceiver;
+  LCConnectivityReceiver connectivityReceiver;
+  LCShutdownReceiver shutdownReceiver;
   DirectlyOperationTube directlyOperationTube;
   private Timer cleanupTimer = new Timer();
 
@@ -95,13 +95,13 @@ public class PushService extends Service {
 
     directlyOperationTube = new DirectlyOperationTube(true);
 
-    connectionManager = AVConnectionManager.getInstance();
+    connectionManager = LCConnectionManager.getInstance();
     new Thread(new Runnable() {
       @Override
       public void run() {
-        connectionManager.startConnection(new AVCallback() {
+        connectionManager.startConnection(new LCCallback() {
           @Override
-          protected void internalDone0(Object o, AVException avException) {
+          protected void internalDone0(Object o, LCException avException) {
             if (null != avException) {
               LOGGER.w("failed to start websocket connection, cause: " + avException.getMessage());
             } else {
@@ -112,7 +112,7 @@ public class PushService extends Service {
       }
     }).start();
 
-    connectivityReceiver = new AVConnectivityReceiver(new AVConnectivityListener() {
+    connectivityReceiver = new LCConnectivityReceiver(new LCConnectivityListener() {
       private volatile boolean connectionEstablished = false;
 
       @Override
@@ -165,7 +165,7 @@ public class PushService extends Service {
       LOGGER.w("failed to register CONNECTIVITY receiver. cause: " + ex.getMessage());
     }
 
-    shutdownReceiver = new AVShutdownReceiver(new AVShutdownListener() {
+    shutdownReceiver = new LCShutdownReceiver(new LCShutdownListener() {
       @Override
       public void onShutdown(Context context) {
         connectionManager.cleanup();
@@ -197,9 +197,9 @@ public class PushService extends Service {
     if (connected && !connectionManager.isConnectionEstablished()) {
       LOGGER.d("networking is fine and try to start connection to leancloud.");
       synchronized (connecting) {
-        connectionManager.startConnection(new AVCallback<Integer>() {
+        connectionManager.startConnection(new LCCallback<Integer>() {
           @Override
-          protected void internalDone0(Integer resultCode, AVException exception) {
+          protected void internalDone0(Integer resultCode, LCException exception) {
             if (null == exception) {
               processIMRequests(intent);
             } else {
@@ -215,9 +215,9 @@ public class PushService extends Service {
         connectionManager.cleanup();
       }
       synchronized (connecting) {
-        connectionManager.startConnection(new AVCallback<Integer>() {
+        connectionManager.startConnection(new LCCallback<Integer>() {
           @Override
-          protected void internalDone0(Integer resultCode, AVException exception) {
+          protected void internalDone0(Integer resultCode, LCException exception) {
             if (null == exception) {
               processIMRequests(intent);
             } else {
@@ -254,7 +254,7 @@ public class PushService extends Service {
       if (isAutoWakeUp && Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
         try {
           LOGGER.i("Let's try to wake PushService again");
-          Intent i = new Intent(AVOSCloud.getContext(), PushService.class);
+          Intent i = new Intent(LeanCloud.getContext(), PushService.class);
           i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
           startService(i);
         } catch (Exception ex) {
@@ -322,16 +322,16 @@ public class PushService extends Service {
                                             java.lang.String channel, java.lang.Class<? extends android.app.Activity> cls) {
     startServiceIfRequired(context, cls);
     final String finalChannel = channel;
-    AVInstallation.getCurrentInstallation().addUnique("channels", finalChannel);
+    LCInstallation.getCurrentInstallation().addUnique("channels", finalChannel);
     _installationSaveHandler.sendMessage(Message.obtain());
 
     if (cls != null) {
-      AVNotificationManager manager = AVPushMessageListener.getInstance().getNotificationManager();
+      LCNotificationManager manager = LCPushMessageListener.getInstance().getNotificationManager();
       manager.addDefaultPushCallback(channel, cls.getName());
 
       // set default push callback if it's not exist yet
-      if (manager.getDefaultPushCallback(AVOSCloud.getApplicationId()) == null) {
-        manager.addDefaultPushCallback(AVOSCloud.getApplicationId(), cls.getName());
+      if (manager.getDefaultPushCallback(LeanCloud.getApplicationId()) == null) {
+        manager.addDefaultPushCallback(LeanCloud.getApplicationId(), cls.getName());
       }
     }
   }
@@ -343,7 +343,7 @@ public class PushService extends Service {
    * @since 1.4.4
    */
   public static void setNotificationIcon(int icon) {
-    AVPushMessageListener.getInstance().getNotificationManager().setNotificationIcon(icon);
+    LCPushMessageListener.getInstance().getNotificationManager().setNotificationIcon(icon);
   }
 
   /**
@@ -391,7 +391,7 @@ public class PushService extends Service {
                                             java.lang.Class<? extends android.app.Activity> cls) {
     LOGGER.d("setDefaultPushCallback cls=" + cls.getName());
     startServiceIfRequired(context, cls);
-    AVPushMessageListener.getInstance().getNotificationManager().addDefaultPushCallback(AVOSCloud.getApplicationId(), cls.getName());
+    LCPushMessageListener.getInstance().getNotificationManager().addDefaultPushCallback(LeanCloud.getApplicationId(), cls.getName());
   }
 
   /**
@@ -482,18 +482,18 @@ public class PushService extends Service {
     if (channel == null) {
       return;
     }
-    AVPushMessageListener.getInstance().getNotificationManager().removeDefaultPushCallback(channel);
+    LCPushMessageListener.getInstance().getNotificationManager().removeDefaultPushCallback(channel);
     final java.lang.String finalChannel = channel;
-    if (StringUtil.isEmpty(AVInstallation.getCurrentInstallation().getObjectId())) {
-      AVInstallation.getCurrentInstallation().saveInBackground().subscribe(new Observer<AVObject>() {
+    if (StringUtil.isEmpty(LCInstallation.getCurrentInstallation().getObjectId())) {
+      LCInstallation.getCurrentInstallation().saveInBackground().subscribe(new Observer<LCObject>() {
         @Override
         public void onSubscribe(Disposable d) {
 
         }
 
         @Override
-        public void onNext(AVObject avObject) {
-          AVInstallation.getCurrentInstallation().removeAll("channels", Arrays.asList(finalChannel));
+        public void onNext(LCObject avObject) {
+          LCInstallation.getCurrentInstallation().removeAll("channels", Arrays.asList(finalChannel));
           _installationSaveHandler.sendMessage(Message.obtain());
         }
 
@@ -508,7 +508,7 @@ public class PushService extends Service {
         }
       });
     } else {
-      AVInstallation.getCurrentInstallation().removeAll("channels", Arrays.asList(finalChannel));
+      LCInstallation.getCurrentInstallation().removeAll("channels", Arrays.asList(finalChannel));
       _installationSaveHandler.sendMessage(Message.obtain());
     }
   }
@@ -562,7 +562,7 @@ public class PushService extends Service {
         LOGGER.d( "Start service");
         try {
           Intent intent = new Intent(context, PushService.class);
-          intent.putExtra(AV_PUSH_SERVICE_APPLICATION_ID, AVOSCloud.getApplicationId());
+          intent.putExtra(AV_PUSH_SERVICE_APPLICATION_ID, LeanCloud.getApplicationId());
           if (cls != null) {
             intent.putExtra(AV_PUSH_SERVICE_DEFAULT_CALLBACK, cls.getName());
           }
@@ -597,7 +597,7 @@ public class PushService extends Service {
       LOGGER.w("intent is null, invalid operation.");
       return;
     }
-    if (Conversation.AV_CONVERSATION_INTENT_ACTION.equalsIgnoreCase(intent.getAction())) {
+    if (Conversation.LC_CONVERSATION_INTENT_ACTION.equalsIgnoreCase(intent.getAction())) {
       processIMRequestsFromClient(intent);
     } else {
       processLiveQueryRequestsFromClient(intent);
@@ -610,11 +610,11 @@ public class PushService extends Service {
     String clientId = intent.getExtras().getString(Conversation.INTENT_KEY_CLIENT);
 
     int requestId = intent.getExtras().getInt(Conversation.INTENT_KEY_REQUESTID);
-    Conversation.AVIMOperation operation = AVIMOperation.getAVIMOperation(
+    Conversation.LCIMOperation operation = LCIMOperation.getIMOperation(
         intent.getExtras().getInt(Conversation.INTENT_KEY_OPERATION));
 
     String keyData = intent.getExtras().getString(Conversation.INTENT_KEY_DATA);
-    AVIMMessage existedMessage = null;
+    LCIMMessage existedMessage = null;
     Map<String, Object> param = null;
     if (!StringUtil.isEmpty(keyData)) {
       param = JSON.parseObject(keyData, Map.class);
@@ -636,17 +636,17 @@ public class PushService extends Service {
         this.directlyOperationTube.renewSessionTokenDirectly(connectionManager, clientId, requestId);
         break;
       case CLIENT_STATUS:
-        AVSession session = AVSessionManager.getInstance().getOrCreateSession(clientId, AVInstallation.getCurrentInstallation().getInstallationId(), connectionManager);
-        AVIMClientStatus status = AVIMClientStatusNone;
-        if (AVSession.Status.Opened != session.getCurrentStatus()) {
-          status = AVIMClientStatus.AVIMClientStatusPaused;
+        LCSession session = LCSessionManager.getInstance().getOrCreateSession(clientId, LCInstallation.getCurrentInstallation().getInstallationId(), connectionManager);
+        LCIMClientStatus status = LCIMClientStatusNone;
+        if (LCSession.Status.Opened != session.getCurrentStatus()) {
+          status = LCIMClientStatus.LCIMClientStatusPaused;
         } else {
-          status = AVIMClientStatus.AVIMClientStatusOpened;
+          status = LCIMClientStatus.LCIMClientStatusOpened;
         }
         HashMap<String, Object> bundle = new HashMap<>();
         bundle.put(Conversation.callbackClientStatus, status.getCode());
         InternalConfiguration.getOperationTube().onOperationCompletedEx(clientId, null,
-            requestId, AVIMOperation.CLIENT_STATUS, bundle);
+            requestId, LCIMOperation.CLIENT_STATUS, bundle);
         break;
       case CLIENT_ONLINE_QUERY:
         List<String> idList = (List<String>) param.get(Conversation.PARAM_ONLINE_CLIENTS);
@@ -700,25 +700,25 @@ public class PushService extends Service {
         break;
       case CONVERSATION_MESSAGE_QUERY:
         this.directlyOperationTube.queryMessagesDirectly(connectionManager, clientId, conversationId, convType, keyData,
-            AVIMOperation.CONVERSATION_MESSAGE_QUERY, requestId);
+            LCIMOperation.CONVERSATION_MESSAGE_QUERY, requestId);
         break;
       case CONVERSATION_READ:
         this.directlyOperationTube.markConversationReadDirectly(connectionManager, clientId, conversationId, convType,
             param, requestId);
         break;
       case CONVERSATION_RECALL_MESSAGE:
-        existedMessage = AVIMMessage.parseJSONString(keyData);
+        existedMessage = LCIMMessage.parseJSONString(keyData);
         this.directlyOperationTube.recallMessageDirectly(connectionManager, clientId, convType, existedMessage, requestId);
         break;
       case CONVERSATION_SEND_MESSAGE:
-        existedMessage = AVIMMessage.parseJSONString(keyData);;
-        AVIMMessageOption option = AVIMMessageOption.parseJSONString(intent.getExtras().getString(Conversation.INTENT_KEY_MESSAGE_OPTION));
+        existedMessage = LCIMMessage.parseJSONString(keyData);;
+        LCIMMessageOption option = LCIMMessageOption.parseJSONString(intent.getExtras().getString(Conversation.INTENT_KEY_MESSAGE_OPTION));
         this.directlyOperationTube.sendMessageDirectly(connectionManager, clientId, conversationId, convType,
             existedMessage, option, requestId);
         break;
       case CONVERSATION_UPDATE_MESSAGE:
-        existedMessage = AVIMMessage.parseJSONString(keyData);;
-        AVIMMessage secondMessage = AVIMMessage.parseJSONString(intent.getExtras().getString(Conversation.INTENT_KEY_MESSAGE_EX));
+        existedMessage = LCIMMessage.parseJSONString(keyData);;
+        LCIMMessage secondMessage = LCIMMessage.parseJSONString(intent.getExtras().getString(Conversation.INTENT_KEY_MESSAGE_EX));
         this.directlyOperationTube.updateMessageDirectly(connectionManager, clientId, convType, existedMessage, secondMessage, requestId);
         break;
       default:
@@ -727,16 +727,16 @@ public class PushService extends Service {
     }
   }
 
-  private void processRequestsWithException(Intent intent, AVException exception) {
+  private void processRequestsWithException(Intent intent, LCException exception) {
     if (intent != null
-        && Conversation.AV_CONVERSATION_INTENT_ACTION.equalsIgnoreCase(intent.getAction())) {
+        && Conversation.LC_CONVERSATION_INTENT_ACTION.equalsIgnoreCase(intent.getAction())) {
       int operationCode = intent.getExtras().getInt(Conversation.INTENT_KEY_OPERATION);
       String clientId = intent.getExtras().getString(Conversation.INTENT_KEY_CLIENT);
       String conversationId = intent.getExtras().getString(Conversation.INTENT_KEY_CONVERSATION);
       int requestId = intent.getExtras().getInt(Conversation.INTENT_KEY_REQUESTID);
 
       InternalConfiguration.getOperationTube().onOperationCompleted(clientId, conversationId, requestId,
-          Conversation.AVIMOperation.getAVIMOperation(operationCode), exception);
+          Conversation.LCIMOperation.getIMOperation(operationCode), exception);
     }
   }
 
@@ -746,9 +746,9 @@ public class PushService extends Service {
       return;
     }
     String action = intent.getAction();
-    if (AVLiveQuery.ACTION_LIVE_QUERY_LOGIN.equals(action)) {
+    if (LCLiveQuery.ACTION_LIVE_QUERY_LOGIN.equals(action)) {
       int requestId = intent.getExtras().getInt(Conversation.INTENT_KEY_REQUESTID);
-      String subscriptionId = intent.getExtras().getString(AVLiveQuery.SUBSCRIBE_ID);
+      String subscriptionId = intent.getExtras().getString(LCLiveQuery.SUBSCRIBE_ID);
       this.directlyOperationTube.loginLiveQueryDirectly(connectionManager, subscriptionId, requestId);
     } else {
       LOGGER.w("unknown action: " + action);
@@ -759,14 +759,14 @@ public class PushService extends Service {
 
     public void handleMessage(Message m) {
 
-      AVInstallation.getCurrentInstallation().saveInBackground().subscribe(new Observer<AVObject>() {
+      LCInstallation.getCurrentInstallation().saveInBackground().subscribe(new Observer<LCObject>() {
         @Override
         public void onSubscribe(Disposable d) {
 
         }
 
         @Override
-        public void onNext(AVObject avObject) {
+        public void onNext(LCObject avObject) {
 
         }
 

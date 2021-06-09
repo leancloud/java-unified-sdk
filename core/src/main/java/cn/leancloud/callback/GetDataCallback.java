@@ -1,11 +1,11 @@
 package cn.leancloud.callback;
 
-import cn.leancloud.AVException;
+import cn.leancloud.LCException;
 
-public abstract class GetDataCallback extends AVCallback<byte[]> {
-  public abstract void done(byte[] data, AVException e);
+public abstract class GetDataCallback extends LCCallback<byte[]> {
+  public abstract void done(byte[] data, LCException e);
 
-  protected final void internalDone0(byte[] returnValue, AVException e) {
+  protected final void internalDone0(byte[] returnValue, LCException e) {
     done(returnValue, e);
   }
 }

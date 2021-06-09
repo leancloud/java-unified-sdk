@@ -1,6 +1,6 @@
 package cn.leancloud.core;
 
-import cn.leancloud.AVACL;
+import cn.leancloud.LCACL;
 import cn.leancloud.gson.GSONConverterFactory;
 import cn.leancloud.json.ConverterFactory;
 import cn.leancloud.json.JSONParser;
@@ -22,7 +22,7 @@ public class AppConfiguration {
   }
   public static final int DEFAULT_NETWORK_TIMEOUT = 30;
 
-  private static AVACL defaultACL;
+  private static LCACL defaultACL;
   private static int networkTimeout = DEFAULT_NETWORK_TIMEOUT;
   private static InternalLoggerAdapter logAdapter = new SimpleLoggerAdapter();
   private static boolean asynchronized = false;
@@ -62,10 +62,10 @@ public class AppConfiguration {
     return LastModifyCache.getInstance().isLastModifyEnabled();
   }
 
-  public static AVACL getDefaultACL() {
+  public static LCACL getDefaultACL() {
     return defaultACL;
   }
-  public static void setDefaultACL(AVACL acl) {
+  public static void setDefaultACL(LCACL acl) {
     defaultACL = acl;
   }
 

@@ -1,12 +1,12 @@
 package cn.leancloud.im;
 
-import cn.leancloud.callback.AVCallback;
-import cn.leancloud.im.v2.AVIMMessage;
-import cn.leancloud.im.v2.AVIMMessageOption;
+import cn.leancloud.callback.LCCallback;
+import cn.leancloud.im.v2.LCIMMessage;
+import cn.leancloud.im.v2.LCIMMessageOption;
 import cn.leancloud.im.v2.Conversation;
 import cn.leancloud.im.v2.callback.*;
-import cn.leancloud.livequery.AVLiveQuerySubscribeCallback;
-import cn.leancloud.session.AVConnectionManager;
+import cn.leancloud.livequery.LCLiveQuerySubscribeCallback;
+import cn.leancloud.session.LCConnectionManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,47 +14,47 @@ import java.util.Map;
 
 public interface OperationTube {
   // request sender
-  boolean openClient(AVConnectionManager connectionManager, String clientId, String tag, String userSessionToken,
-                     boolean reConnect, final AVIMClientCallback callback);
-  boolean queryClientStatus(AVConnectionManager connectionManager, String clientId, final AVIMClientStatusCallback callback);
-  boolean closeClient(AVConnectionManager connectionManager, String self, final AVIMClientCallback callback);
-  boolean renewSessionToken(AVConnectionManager connectionManager, String clientId, final AVIMClientCallback callback);
-  boolean queryOnlineClients(AVConnectionManager connectionManager, String self, List<String> clients, final AVIMOnlineClientsCallback callback);
+  boolean openClient(LCConnectionManager connectionManager, String clientId, String tag, String userSessionToken,
+                     boolean reConnect, final LCIMClientCallback callback);
+  boolean queryClientStatus(LCConnectionManager connectionManager, String clientId, final LCIMClientStatusCallback callback);
+  boolean closeClient(LCConnectionManager connectionManager, String self, final LCIMClientCallback callback);
+  boolean renewSessionToken(LCConnectionManager connectionManager, String clientId, final LCIMClientCallback callback);
+  boolean queryOnlineClients(LCConnectionManager connectionManager, String self, List<String> clients, final LCIMOnlineClientsCallback callback);
 
-  boolean createConversation(AVConnectionManager connectionManager, final String self, final List<String> members,
+  boolean createConversation(LCConnectionManager connectionManager, final String self, final List<String> members,
                              final Map<String, Object> attributes, final boolean isTransient, final boolean isUnique,
-                             final boolean isTemp, int tempTTL, final AVIMCommonJsonCallback callback);
+                             final boolean isTemp, int tempTTL, final LCIMCommonJsonCallback callback);
 
-  boolean updateConversation(AVConnectionManager connectionManager, final String clientId, String conversationId, int convType, final Map<String, Object> param,
-                             final AVIMCommonJsonCallback callback);
+  boolean updateConversation(LCConnectionManager connectionManager, final String clientId, String conversationId, int convType, final Map<String, Object> param,
+                             final LCIMCommonJsonCallback callback);
 
-  boolean participateConversation(AVConnectionManager connectionManager, final String clientId, String conversationId, int convType, final Map<String, Object> param,
-                                  Conversation.AVIMOperation operation, final AVIMConversationCallback callback);
+  boolean participateConversation(LCConnectionManager connectionManager, final String clientId, String conversationId, int convType, final Map<String, Object> param,
+                                  Conversation.LCIMOperation operation, final LCIMConversationCallback callback);
 
-  boolean queryConversations(AVConnectionManager connectionManager, final String clientId, final String queryString, final AVIMCommonJsonCallback callback);
-  boolean queryConversationsInternally(AVConnectionManager connectionManager, final String clientId, final String queryString, final AVIMCommonJsonCallback callback);
+  boolean queryConversations(LCConnectionManager connectionManager, final String clientId, final String queryString, final LCIMCommonJsonCallback callback);
+  boolean queryConversationsInternally(LCConnectionManager connectionManager, final String clientId, final String queryString, final LCIMCommonJsonCallback callback);
 
-  boolean sendMessage(AVConnectionManager connectionManager, String clientId, String conversationId, int convType, final AVIMMessage message, final AVIMMessageOption messageOption,
-                      final AVIMCommonJsonCallback callback);
-  boolean updateMessage(AVConnectionManager connectionManager, String clientId, int convType, AVIMMessage oldMessage, AVIMMessage newMessage,
-                        final AVIMCommonJsonCallback callback);
-  boolean recallMessage(AVConnectionManager connectionManager, String clientId, int convType, AVIMMessage message, final AVIMCommonJsonCallback callback);
-  boolean fetchReceiptTimestamps(AVConnectionManager connectionManager, String clientId, String conversationId, int convType, Conversation.AVIMOperation operation,
-                                 final AVIMCommonJsonCallback callback);
-  boolean queryMessages(AVConnectionManager connectionManager, String clientId, String conversationId, int convType, String params,
-                        Conversation.AVIMOperation operation, final AVIMMessagesQueryCallback callback);
+  boolean sendMessage(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, final LCIMMessage message, final LCIMMessageOption messageOption,
+                      final LCIMCommonJsonCallback callback);
+  boolean updateMessage(LCConnectionManager connectionManager, String clientId, int convType, LCIMMessage oldMessage, LCIMMessage newMessage,
+                        final LCIMCommonJsonCallback callback);
+  boolean recallMessage(LCConnectionManager connectionManager, String clientId, int convType, LCIMMessage message, final LCIMCommonJsonCallback callback);
+  boolean fetchReceiptTimestamps(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, Conversation.LCIMOperation operation,
+                                 final LCIMCommonJsonCallback callback);
+  boolean queryMessages(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, String params,
+                        Conversation.LCIMOperation operation, final LCIMMessagesQueryCallback callback);
 
-  boolean processMembers(AVConnectionManager connectionManager, String clientId, String conversationId, int convType, String params, Conversation.AVIMOperation op,
-                         final AVCallback callback);
+  boolean processMembers(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, String params, Conversation.LCIMOperation op,
+                         final LCCallback callback);
 
-  boolean markConversationRead(AVConnectionManager connectionManager, String clientId, String conversationId, int convType, Map<String, Object> lastMessageParam);
+  boolean markConversationRead(LCConnectionManager connectionManager, String clientId, String conversationId, int convType, Map<String, Object> lastMessageParam);
 
-  boolean loginLiveQuery(AVConnectionManager connectionManager, String subscriptionId, final AVLiveQuerySubscribeCallback callback);
+  boolean loginLiveQuery(LCConnectionManager connectionManager, String subscriptionId, final LCLiveQuerySubscribeCallback callback);
   
   // response notifier
   void onOperationCompleted(String clientId, String conversationId, int requestId,
-                            Conversation.AVIMOperation operation, Throwable throwable);
+                            Conversation.LCIMOperation operation, Throwable throwable);
   void onOperationCompletedEx(String clientId, String conversationId, int requestId,
-                              Conversation.AVIMOperation operation, HashMap<String, Object> resultData);
+                              Conversation.LCIMOperation operation, HashMap<String, Object> resultData);
   void onLiveQueryCompleted(int requestId, Throwable throwable);
 }

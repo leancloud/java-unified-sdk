@@ -1,7 +1,7 @@
 package cn.leancloud.upload;
 
 import cn.leancloud.*;
-import cn.leancloud.AVFile;
+import cn.leancloud.LCFile;
 import cn.leancloud.callback.ProgressCallback;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.utils.LogUtil;
@@ -11,7 +11,7 @@ import cn.leancloud.json.JSONObject;
 import java.util.*;
 
 public class FileUploader extends HttpClientUploader {
-  private static AVLogger logger = LogUtil.getLogger(FileUploader.class);
+  private static LCLogger logger = LogUtil.getLogger(FileUploader.class);
 
   static final int gProgressGotToken = 10;
   static final int gProgressUploadedFile = 90;
@@ -24,7 +24,7 @@ public class FileUploader extends HttpClientUploader {
   private String uploadUrl;
   private String provider;
 
-  public FileUploader(AVFile avFile, FileUploadToken uploadToken, ProgressCallback progressCallback) {
+  public FileUploader(LCFile avFile, FileUploadToken uploadToken, ProgressCallback progressCallback) {
     super(avFile, progressCallback);
     this.token = uploadToken.getToken();
     this.bucket = uploadToken.getBucket();
@@ -32,14 +32,14 @@ public class FileUploader extends HttpClientUploader {
     this.provider = uploadToken.getProvider();
   }
 
-  public AVException execute() {
+  public LCException execute() {
     publishProgress(gProgressGotToken);
     Uploader uploader = getUploaderImplementation();
     if (null == uploader) {
-      return new AVException(new Throwable("Uploader can not be instantiated."));
+      return new LCException(new Throwable("Uploader can not be instantiated."));
     }
 
-    AVException uploadException = uploader.execute();
+    LCException uploadException = uploader.execute();
     if (uploadException == null) {
       publishProgress(gProgressComplete);
       completeFileUpload(true);

@@ -4,8 +4,8 @@ import cn.leancloud.*;
 import cn.leancloud.json.JSONObject;
 import cn.leancloud.ops.*;
 import cn.leancloud.service.AppAccessEndpoint;
-import cn.leancloud.sms.AVCaptchaDigest;
-import cn.leancloud.sms.AVCaptchaValidateResult;
+import cn.leancloud.sms.LCCaptchaDigest;
+import cn.leancloud.sms.LCCaptchaValidateResult;
 import cn.leancloud.upload.FileUploadToken;
 import com.google.gson.*;
 import com.google.gson.internal.Primitives;
@@ -25,14 +25,14 @@ public class GsonWrapper {
   static final JSONArrayAdapter jsonArrayAdapter = new JSONArrayAdapter();
   static final Gson gson = new GsonBuilder().serializeNulls()
           .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE)
-          .registerTypeAdapter(AVObject.class, objectDeserializer)
-          .registerTypeAdapter(AVUser.class, objectDeserializer)
-          .registerTypeAdapter(AVFile.class, objectDeserializer)
-          .registerTypeAdapter(AVRole.class, objectDeserializer)
-          .registerTypeAdapter(AVStatus.class, objectDeserializer)
-          .registerTypeAdapter(AVInstallation.class, objectDeserializer)
-          .registerTypeAdapter(AVFriendshipRequest.class, objectDeserializer)
-          .registerTypeAdapter(AVFriendship.class, objectDeserializer)
+          .registerTypeAdapter(LCObject.class, objectDeserializer)
+          .registerTypeAdapter(LCUser.class, objectDeserializer)
+          .registerTypeAdapter(LCFile.class, objectDeserializer)
+          .registerTypeAdapter(LCRole.class, objectDeserializer)
+          .registerTypeAdapter(LCStatus.class, objectDeserializer)
+          .registerTypeAdapter(LCInstallation.class, objectDeserializer)
+          .registerTypeAdapter(LCFriendshipRequest.class, objectDeserializer)
+          .registerTypeAdapter(LCFriendship.class, objectDeserializer)
           .registerTypeAdapter(BaseOperation.class, baseOperationAdapter)
           .registerTypeAdapter(AddOperation.class, baseOperationAdapter)
           .registerTypeAdapter(AddRelationOperation.class, baseOperationAdapter)
@@ -55,12 +55,12 @@ public class GsonWrapper {
           .registerTypeAdapter(AppAccessEndpoint.class,
                   new GeneralObjectAdapter<>(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES,
                           TypeToken.get(AppAccessEndpoint.class)))
-          .registerTypeAdapter(AVCaptchaDigest.class,
+          .registerTypeAdapter(LCCaptchaDigest.class,
                   new GeneralObjectAdapter<>(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES,
-                          TypeToken.get(AVCaptchaDigest.class)))
-          .registerTypeAdapter(AVCaptchaValidateResult.class,
+                          TypeToken.get(LCCaptchaDigest.class)))
+          .registerTypeAdapter(LCCaptchaValidateResult.class,
                   new GeneralObjectAdapter<>(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES,
-                          TypeToken.get(AVCaptchaValidateResult.class)))
+                          TypeToken.get(LCCaptchaValidateResult.class)))
           .registerTypeAdapter(new TypeToken<Map<String, Object>>(){}.getType(),  new MapDeserializerDoubleAsIntFix())
           .registerTypeAdapter(Map.class,  new MapDeserializerDoubleAsIntFix())
           .create();

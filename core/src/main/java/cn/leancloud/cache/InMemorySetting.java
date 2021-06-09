@@ -66,6 +66,6 @@ public class InMemorySetting implements SystemSetting {
     this.dataMap.remove(key);
   }
   public void removeKeyZone(String keyZone) {
-    //
+    // do nothing
   }
 }

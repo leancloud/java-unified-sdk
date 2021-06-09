@@ -1,6 +1,6 @@
 package cn.leancloud.ops;
 
-import cn.leancloud.AVObject;
+import cn.leancloud.LCObject;
 import java.util.Map;
 
 public interface ObjectFieldOperation {
@@ -8,7 +8,7 @@ public interface ObjectFieldOperation {
   String getField();
   Object getValue();
 
-  boolean checkCircleReference(Map<AVObject, Boolean> markMap);
+  boolean checkCircleReference(Map<LCObject, Boolean> markMap);
 
   /**
    * apply operation to object, in order to generate new attribute value.

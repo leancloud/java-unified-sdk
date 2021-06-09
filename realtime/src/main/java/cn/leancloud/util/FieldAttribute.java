@@ -1,13 +1,13 @@
 package cn.leancloud.util;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
 import java.lang.reflect.Method;
 
 public class FieldAttribute {
-  private static final AVLogger LOGGER = LogUtil.getLogger(FieldAttribute.class);
+  private static final LCLogger LOGGER = LogUtil.getLogger(FieldAttribute.class);
 
   String fieldName;
   Method getterMethod;

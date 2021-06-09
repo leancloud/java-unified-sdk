@@ -1,6 +1,6 @@
 package cn.leancloud;
 
-import cn.leancloud.core.AVOSCloud;
+import cn.leancloud.core.LeanCloud;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.logging.Log4jAdapter;
 import io.reactivex.Observer;
@@ -13,22 +13,22 @@ public class LoggerTest extends TestCase {
   public LoggerTest(String name) {
     super(name);
     AppConfiguration.setLogAdapter(new Log4jAdapter());
-    AVOSCloud.setRegion(AVOSCloud.REGION.NorthChina);
-    AVOSCloud.setLogLevel(AVLogger.Level.VERBOSE);
-    AVOSCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
+    LeanCloud.setRegion(LeanCloud.REGION.NorthChina);
+    LeanCloud.setLogLevel(LCLogger.Level.VERBOSE);
+    LeanCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
   }
 
   public void testFindObject() {
-    AVQuery query = new AVQuery("Student");
+    LCQuery query = new LCQuery("Student");
     query.limit(4);
-    query.orderByDescending(AVObject.KEY_CREATED_AT);
-    query.findInBackground().subscribe(new Observer<List<AVObject>>() {
+    query.orderByDescending(LCObject.KEY_CREATED_AT);
+    query.findInBackground().subscribe(new Observer<List<LCObject>>() {
       public void onSubscribe(Disposable disposable) {
 
       }
 
-      public void onNext(List<AVObject> o) {
-        for(AVObject obj: o) {
+      public void onNext(List<LCObject> o) {
+        for(LCObject obj: o) {
           System.out.println("Query of Student is: " + obj.toString());
         }
       }

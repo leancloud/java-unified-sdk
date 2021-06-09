@@ -1,24 +1,24 @@
 package cn.leancloud.callback;
 
-import cn.leancloud.AVException;
-import cn.leancloud.types.AVNull;
+import cn.leancloud.LCException;
+import cn.leancloud.types.LCNull;
 
-public abstract class MobilePhoneVerifyCallback extends AVCallback<AVNull> {
+public abstract class MobilePhoneVerifyCallback extends LCCallback<LCNull> {
 
   /**
    * <p>
-   * AVMobilePhoneVerifyCallback 用来验证用户的手机号码
+   * MobilePhoneVerifyCallback 用来验证用户的手机号码
    * </p>
    * @param t null object.
-   * @param avException  exception.
+   * @param LCException  exception.
    * <p>
    * 　调用的范例如下
    * </p>
    *
    * <pre>
-   * AVUser.verifyMobilePhoneInBackgroud(&quot;123456&quot;,
-   *     new AVMobilePhoneVerifyCallback() {
-   *       public void done(AVException e) {
+   * LCUser.verifyMobilePhoneInBackgroud(&quot;123456&quot;,
+   *     new MobilePhoneVerifyCallback() {
+   *       public void done(LCException e) {
    *         if (e == null) {
    *           requestedSuccessfully();
    *         } else {
@@ -29,9 +29,9 @@ public abstract class MobilePhoneVerifyCallback extends AVCallback<AVNull> {
    * </pre>
    */
   @Override
-  protected final void internalDone0(AVNull t, AVException avException) {
-    this.done(avException);
+  protected final void internalDone0(LCNull t, LCException LCException) {
+    this.done(LCException);
   }
 
-  public abstract void done(AVException e);
+  public abstract void done(LCException e);
 }

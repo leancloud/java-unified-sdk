@@ -1,7 +1,7 @@
 package cn.leancloud.im;
 
-import cn.leancloud.im.v2.AVIMConversation;
-import cn.leancloud.im.v2.AVIMMessageStorage;
+import cn.leancloud.im.v2.LCIMConversation;
+import cn.leancloud.im.v2.LCIMMessageStorage;
 
 import java.util.List;
 import java.util.Map;
@@ -14,9 +14,9 @@ public interface DatabaseDelegate {
             String[] selectionArgs, String groupBy, String having,
             String orderBy);
   long countForQuery(String query, String[] selectionArgs);
-  AVIMMessageStorage.MessageQueryResult queryMessages(String[] columns, String selection, String[] selectionArgs,
+  LCIMMessageStorage.MessageQueryResult queryMessages(String[] columns, String selection, String[] selectionArgs,
                                                       String groupBy, String having, String orderBy, String limit);
-  List<AVIMConversation> queryConversations(String[] columns, String selection, String[] selectionArgs,
+  List<LCIMConversation> queryConversations(String[] columns, String selection, String[] selectionArgs,
                                             String groupBy, String having, String orderBy, String limit);
-  List<AVIMConversation> rawQueryConversations(String sql, String[] selectionArgs);
+  List<LCIMConversation> rawQueryConversations(String sql, String[] selectionArgs);
 }

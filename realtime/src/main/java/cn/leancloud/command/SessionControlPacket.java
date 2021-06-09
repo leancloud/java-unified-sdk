@@ -3,8 +3,7 @@ package cn.leancloud.command;
 import cn.leancloud.Messages;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.im.Signature;
-import cn.leancloud.im.v2.AVIMClient;
-import cn.leancloud.AVInstallation;
+import cn.leancloud.im.v2.LCIMClient;
 import cn.leancloud.utils.StringUtil;
 
 import java.util.Collection;
@@ -184,7 +183,7 @@ public class SessionControlPacket extends PeerBasedCommandPacket {
       // selfId is mandotary for session/open
       scp.sessionConfig |= PATCH_FLAG_BIND_INSTALLATION_TO_SESSION;
       scp.setPeerId(selfId);
-    } else if (AVIMClient.getClientsCount() > 1) {
+    } else if (LCIMClient.getClientsCount() > 1) {
       // selfId is necessary only when more than one client logins.
       scp.setPeerId(selfId);
     }

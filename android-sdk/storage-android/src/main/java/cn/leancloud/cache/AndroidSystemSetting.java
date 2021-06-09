@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import java.util.Map;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.utils.LogUtil;
 
 /**
@@ -13,7 +13,7 @@ import cn.leancloud.utils.LogUtil;
  */
 
 public class AndroidSystemSetting implements SystemSetting {
-  private static AVLogger LOGGER = LogUtil.getLogger(AndroidSystemSetting.class);
+  private static LCLogger LOGGER = LogUtil.getLogger(AndroidSystemSetting.class);
 
   private Context context;
 

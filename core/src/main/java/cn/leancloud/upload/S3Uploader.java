@@ -1,8 +1,8 @@
 package cn.leancloud.upload;
 
-import cn.leancloud.AVException;
+import cn.leancloud.LCException;
+import cn.leancloud.LCFile;
 import cn.leancloud.callback.ProgressCallback;
-import cn.leancloud.AVFile;
 import cn.leancloud.utils.FileUtil;
 import okhttp3.*;
 
@@ -14,7 +14,7 @@ class S3Uploader extends HttpClientUploader {
   private static String DEFAULT_HEADER_CACHE_CONTROL = "Cache-Control";
   private static String DEFAULT_HEADER_CACHE_CONTROL_VALUE = "public, max-age=31536000";
 
-  private volatile Call call;
+  private Call call;
   private String uploadUrl;
   private int retryTimes = DEFAULT_RETRY_TIMES;
 
@@ -38,22 +38,22 @@ class S3Uploader extends HttpClientUploader {
    */
   private static int writeTimeout = 0;
 
-  S3Uploader(AVFile avFile, String uploadUrl, ProgressCallback progressCallback) {
+  S3Uploader(LCFile avFile, String uploadUrl, ProgressCallback progressCallback) {
     super(avFile, progressCallback);
     this.uploadUrl = uploadUrl;
   }
 
-  public AVException execute() {
+  public LCException execute() {
     try {
       byte[] bytes = avFile.getData();
 
       return executeWithRetry(bytes);
     } catch (Exception e) {
-      return new AVException(e.getCause());
+      return new LCException(e.getCause());
     }
   }
 
-  private AVException executeWithRetry(byte[] data){
+  private LCException executeWithRetry(byte[] data){
     if (null != data && data.length > 0) {
       OkHttpClient.Builder okhttpBuilder = getOKHttpClient().newBuilder();
 
@@ -98,7 +98,7 @@ class S3Uploader extends HttpClientUploader {
             retryTimes -- ;
             executeWithRetry(data);
           }else {
-            return new AVException(AVException.OTHER_CAUSE, "upload file failure:" + response.code());
+            return new LCException(LCException.OTHER_CAUSE, "upload file failure:" + response.code());
           }
         }
       }catch (IOException exception){
@@ -106,7 +106,7 @@ class S3Uploader extends HttpClientUploader {
           retryTimes -- ;
           return executeWithRetry(data);
         }else {
-          return new AVException(exception.getCause());
+          return new LCException(exception.getCause());
         }
       }
     }
@@ -132,14 +132,14 @@ class S3Uploader extends HttpClientUploader {
   /**
    * Sets the write timeout for s3
    * @param seconds
-   * @throws AVException
+   * @throws LCException
    */
-  public static void setWriteTimeout(int seconds) throws AVException {
+  public static void setWriteTimeout(int seconds) throws LCException {
     if (seconds <= 0) {
-      throw new AVException(new IllegalArgumentException("Timeout too small"));
+      throw new LCException(new IllegalArgumentException("Timeout too small"));
     }
     if (seconds > 60 * 60) {
-      throw new AVException(new IllegalArgumentException("Timeout too large"));
+      throw new LCException(new IllegalArgumentException("Timeout too large"));
     }
     writeTimeout = seconds;
   }

@@ -1,10 +1,10 @@
 package cn.leancloud.cache;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVObject;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LCObject;
 import cn.leancloud.codec.MDFive;
 import cn.leancloud.core.AppConfiguration;
-import cn.leancloud.query.AVQueryResult;
+import cn.leancloud.query.LCQueryResult;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observable;
@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 public class QueryResultCache extends LocalStorage {
-  private static final AVLogger LOGGER = LogUtil.getLogger(QueryResultCache.class);
+  private static final LCLogger LOGGER = LogUtil.getLogger(QueryResultCache.class);
   private static QueryResultCache INSTANCE = null;
   private ExecutorService executor = Executors.newFixedThreadPool(2);
 
@@ -147,11 +147,11 @@ public class QueryResultCache extends LocalStorage {
     return result;
   }
 
-  public Observable<List<AVObject>> getCacheResult(final String className, final Map<String, String> query,
+  public Observable<List<LCObject>> getCacheResult(final String className, final Map<String, String> query,
                                                    final long maxAgeInMilliseconds, final boolean isFinal) {
     LOGGER.d("try to get cache result for class:" + className);
-    Callable<List<AVObject>> callable = new Callable<List<AVObject>>() {
-      public List<AVObject> call() throws Exception {
+    Callable<List<LCObject>> callable = new Callable<List<LCObject>>() {
+      public List<LCObject> call() throws Exception {
         String cacheKey = generateKeyForQueryCondition(className, query);
         File cacheFile = getCacheFile(cacheKey);
         if (null == cacheFile || !cacheFile.exists()) {
@@ -181,11 +181,11 @@ public class QueryResultCache extends LocalStorage {
         }
         String content = new String(data, 0, data.length, "UTF-8");
         LOGGER.d("cache file(key=" + cacheKey + "), content: " + content);
-        AVQueryResult result = AVQueryResult.fromJSONString(content);
+        LCQueryResult result = LCQueryResult.fromJSONString(content);
         return result.getResults();
       }
     };
-    FutureTask<List<AVObject>> futureTask = new FutureTask<List<AVObject>>(callable);
+    FutureTask<List<LCObject>> futureTask = new FutureTask<List<LCObject>>(callable);
     executor.submit(futureTask);
     return Observable.fromFuture(futureTask);
   }

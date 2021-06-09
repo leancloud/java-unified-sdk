@@ -16,8 +16,8 @@ import androidx.core.app.NotificationCompat;
 
 import java.util.Random;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVOSCloud;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LeanCloud;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
@@ -25,8 +25,8 @@ import cn.leancloud.utils.StringUtil;
  * Created by fengjunwen on 2018/8/18.
  */
 
-public class AndroidNotificationManager extends AVNotificationManager {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AndroidNotificationManager.class);
+public class AndroidNotificationManager extends LCNotificationManager {
+  private static final LCLogger LOGGER = LogUtil.getLogger(AndroidNotificationManager.class);
   private static final String PUSH_INTENT_KEY = "com.avoscloud.push";
   private static final Random random = new Random();
   private static final AndroidNotificationManager INSTANCE = new AndroidNotificationManager();
@@ -53,8 +53,8 @@ public class AndroidNotificationManager extends AVNotificationManager {
     updateIntent.putExtra("com.avoscloud.Channel", channel);
     updateIntent.putExtra("com.avos.avoscloud.Data", msg);
     updateIntent.putExtra("com.avoscloud.Data", msg);
-    if (null != AVOSCloud.getContext()) {
-      updateIntent.setPackage(AVOSCloud.getContext().getPackageName());
+    if (null != LeanCloud.getContext()) {
+      updateIntent.setPackage(LeanCloud.getContext().getPackageName());
     } else {
       updateIntent.setPackage(this.serviceContext.getPackageName());
     }
@@ -78,7 +78,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
       throw new IllegalArgumentException(
           "No default callback found, did you forget to invoke setDefaultPushCallback?");
     }
-    Context context = null != AVOSCloud.getContext()? AVOSCloud.getContext() : serviceContext;
+    Context context = null != LeanCloud.getContext()? LeanCloud.getContext() : serviceContext;
     int lastIndex = clsName.lastIndexOf(".");
     if (lastIndex != -1) {
       // String packageName = clsName.substring(0, lastIndex);
@@ -132,7 +132,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
 
   @Override
   String getApplicationName() {
-    Context context = null != AVOSCloud.getContext()? AVOSCloud.getContext() : serviceContext;
+    Context context = null != LeanCloud.getContext()? LeanCloud.getContext() : serviceContext;
     final PackageManager pm = context.getPackageManager();
     ApplicationInfo ai;
     try {
@@ -149,7 +149,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
   void sendBroadcast(String channel, String msg, String action) {
     Intent updateIntent = buildUpdateIntent(channel, msg, action);
     LOGGER.d("action: " + updateIntent.getAction());
-    Context context = null != AVOSCloud.getContext()? AVOSCloud.getContext() : serviceContext;
+    Context context = null != LeanCloud.getContext()? LeanCloud.getContext() : serviceContext;
     context.sendBroadcast(updateIntent);
     LOGGER.d("sent broadcast");
   }
@@ -162,7 +162,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
     if (!StringUtil.isEmpty(message)) {
       String channel = getChannel(message);
       if (channel == null || !containsDefaultPushCallback(channel)) {
-        channel = AVOSCloud.getApplicationId();
+        channel = LeanCloud.getApplicationId();
       }
 
       String action = getAction(message);
@@ -186,7 +186,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
     if (!StringUtil.isEmpty(message) && !StringUtil.isEmpty(action)) {
       String channel = getChannel(message);
       if (channel == null || !containsDefaultPushCallback(channel)) {
-        channel = AVOSCloud.getApplicationId();
+        channel = LeanCloud.getApplicationId();
       }
 
       sendNotificationBroadcast(channel, message, action);
@@ -204,7 +204,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
     } else {
       String channel = getChannel(message);
       if (channel == null || !containsDefaultPushCallback(channel)) {
-        channel = AVOSCloud.getApplicationId();
+        channel = LeanCloud.getApplicationId();
       }
 
       String action = getAction(message);
@@ -215,7 +215,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
         if (StringUtil.isEmpty(clsName)) {
           LOGGER.e("className is empty, ignore.");
         } else {
-          Context context = null != AVOSCloud.getContext()? AVOSCloud.getContext() : serviceContext;
+          Context context = null != LeanCloud.getContext()? LeanCloud.getContext() : serviceContext;
           Intent intent = buildUpdateIntent(channel, message, null);
           ComponentName cn = new ComponentName(context, clsName);
           intent.setComponent(cn);
@@ -241,7 +241,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
   public void processFcmMessage(String channel, String action, String message) {
     if (!StringUtil.isEmpty(message)) {
       if (channel == null || !containsDefaultPushCallback(channel)) {
-        channel = AVOSCloud.getApplicationId();
+        channel = LeanCloud.getApplicationId();
       }
 
       if (action != null) {
@@ -260,7 +260,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
   private void sendNotificationBroadcast(String channel, String msg, String action) {
     Intent updateIntent = buildUpdateIntent(channel, msg, action);
     LOGGER.d("action: " + updateIntent.getAction());
-    Context context = null != AVOSCloud.getContext()? AVOSCloud.getContext() : serviceContext;
+    Context context = null != LeanCloud.getContext()? LeanCloud.getContext() : serviceContext;
     context.sendBroadcast(updateIntent);
     LOGGER.d("sent broadcast");
   }

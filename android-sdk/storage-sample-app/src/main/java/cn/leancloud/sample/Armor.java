@@ -1,14 +1,14 @@
 package cn.leancloud.sample;
 
-import cn.leancloud.AVObject;
-import cn.leancloud.annotation.AVClassName;
+import cn.leancloud.LCObject;
+import cn.leancloud.annotation.LCClassName;
 
 /**
  * Created by fengjunwen on 2018/5/10.
  */
 
-@AVClassName("Armor")
-public class Armor extends AVObject {
+@LCClassName("Armor")
+public class Armor extends LCObject {
   public String getDisplayName() {
     return getString("displayName");
   }

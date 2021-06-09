@@ -19,7 +19,7 @@ public class MDFive {
   }
   public static String computeMD5(byte[] data) {
     if (null == data) {
-      return null;
+      return "";
     }
     try {
       MessageDigest md = MessageDigest.getInstance("MD5");
@@ -28,7 +28,7 @@ public class MDFive {
 
       return hexEncodeBytes(md5bytes);
     } catch (NoSuchAlgorithmException ex) {
-      throw new RuntimeException(ex);
+      return "";
     }
   }
 

@@ -3,12 +3,12 @@ package cn.leancloud.im;
 import android.content.Context;
 import android.os.Build;
 
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVOSCloud;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LeanCloud;
 import cn.leancloud.internal.ThreadModel.MainThreadChecker;
 import cn.leancloud.internal.ThreadModel.ThreadShuttle;
-import cn.leancloud.livequery.AVLiveQueryEventHandler;
-import cn.leancloud.push.AVPushMessageListener;
+import cn.leancloud.livequery.LCLiveQueryEventHandler;
+import cn.leancloud.push.LCPushMessageListener;
 import cn.leancloud.push.AndroidNotificationManager;
 import cn.leancloud.util.AndroidUtil;
 import cn.leancloud.utils.LogUtil;
@@ -18,7 +18,7 @@ import cn.leancloud.utils.LogUtil;
  */
 
 public class AndroidInitializer {
-  private static AVLogger LOGGER = LogUtil.getLogger(AndroidInitializer.class);
+  private static LCLogger LOGGER = LogUtil.getLogger(AndroidInitializer.class);
 
   private static class AndroidSystemReporter implements SystemReporter {
     public AndroidSystemReporter() {
@@ -55,16 +55,16 @@ public class AndroidInitializer {
     ThreadShuttle shuttle = new ThreadShuttle() {
       @Override
       public void launch(Runnable runnable) {
-        AVOSCloud.getHandler().post(runnable);
+        LeanCloud.getHandler().post(runnable);
       }
     };
     LOGGER.i("[LeanCloud] initialize mainThreadChecker and threadShuttle within AVIMEventHandler.");
-    AVIMEventHandler.setMainThreadChecker(checker, shuttle);
+    LCIMEventHandler.setMainThreadChecker(checker, shuttle);
     LOGGER.i("[LeanCloud] initialize mainThreadChecker and threadShuttle within AVLiveQueryEventHandler.");
-    AVLiveQueryEventHandler.setMainThreadChecker(checker, shuttle);
-    AVPushMessageListener.getInstance().setNotificationManager(AndroidNotificationManager.getInstance());
+    LCLiveQueryEventHandler.setMainThreadChecker(checker, shuttle);
+    LCPushMessageListener.getInstance().setNotificationManager(AndroidNotificationManager.getInstance());
     LOGGER.i("[LeanCloud] initialize Android System Reporter.");
-    AVIMOptions.getGlobalOptions().setSystemReporter(new AndroidSystemReporter());
+    LCIMOptions.getGlobalOptions().setSystemReporter(new AndroidSystemReporter());
   }
 
   public static void init(Context context) {
@@ -76,7 +76,7 @@ public class AndroidInitializer {
     init();
 
     LOGGER.i("[LeanCloud] initialize InternalConfiguration within AVIMEventHandler.");
-    AVIMOptions.getGlobalOptions().setMessageQueryCacheEnabled(true);
+    LCIMOptions.getGlobalOptions().setMessageQueryCacheEnabled(true);
     InternalConfiguration.setFileMetaAccessor(new AndroidFileMetaAccessor());
     InternalConfiguration.setOperationTube(new AndroidOperationTube());
     InternalConfiguration.setDatabaseDelegateFactory(new AndroidDatabaseDelegateFactory(context));

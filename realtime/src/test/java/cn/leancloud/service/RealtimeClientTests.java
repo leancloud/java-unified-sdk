@@ -1,14 +1,13 @@
 package cn.leancloud.service;
 
 import cn.leancloud.Configure;
-import cn.leancloud.im.v2.conversation.AVIMConversationMemberInfo;
+import cn.leancloud.im.v2.conversation.LCIMConversationMemberInfo;
 import cn.leancloud.query.QueryConditions;
 import cn.leancloud.query.QueryOperation;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.TestCase;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -39,16 +38,16 @@ public class RealtimeClientTests extends TestCase {
     Map<String, String> queryParams = conditions.getParameters();
     queryParams.put("client_id", "a@b.c");
 
-    RealtimeClient.getInstance().queryMemberInfo(queryParams, rtmSessionToken).subscribe(new Observer<List<AVIMConversationMemberInfo>>() {
+    RealtimeClient.getInstance().queryMemberInfo(queryParams, rtmSessionToken).subscribe(new Observer<List<LCIMConversationMemberInfo>>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(List<AVIMConversationMemberInfo> avimConversationMemberInfos) {
-        if (null != avimConversationMemberInfos) {
-          for (AVIMConversationMemberInfo info: avimConversationMemberInfos) {
+      public void onNext(List<LCIMConversationMemberInfo> LCIMConversationMemberInfos) {
+        if (null != LCIMConversationMemberInfos) {
+          for (LCIMConversationMemberInfo info: LCIMConversationMemberInfos) {
             System.out.println("MemberInfo: " + info.toString());
           }
         }

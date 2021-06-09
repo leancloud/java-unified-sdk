@@ -5,22 +5,22 @@ import cn.leancloud.json.JSON;
 import java.util.Map;
 
 class StatusIterator {
-  AVStatusQuery.SourceType sourceType;
+  LCStatusQuery.SourceType sourceType;
 
   // for status query
-  AVStatus lastStatus = null;
+  LCStatus lastStatus = null;
 
   // for inbox query
   private int pageSize;
-  private long sinceId = AVStatus.INVALID_MESSAGE_ID;
-  private long maxId = AVStatus.INVALID_MESSAGE_ID;
-  private AVStatusQuery.PaginationDirection direction;
+  private long sinceId = LCStatus.INVALID_MESSAGE_ID;
+  private long maxId = LCStatus.INVALID_MESSAGE_ID;
+  private LCStatusQuery.PaginationDirection direction;
 
-  public StatusIterator(AVStatusQuery.SourceType type) {
-    this(type, AVStatusQuery.PaginationDirection.NEW_TO_OLD, 0);
+  public StatusIterator(LCStatusQuery.SourceType type) {
+    this(type, LCStatusQuery.PaginationDirection.NEW_TO_OLD, 0);
   }
 
-  public StatusIterator(AVStatusQuery.SourceType type, AVStatusQuery.PaginationDirection direction, int pageSize) {
+  public StatusIterator(LCStatusQuery.SourceType type, LCStatusQuery.PaginationDirection direction, int pageSize) {
     this.sourceType = type;
     this.direction = direction;
     this.pageSize = pageSize;
@@ -52,39 +52,39 @@ class StatusIterator {
     this.maxId = maxId;
   }
 
-  public AVStatusQuery.PaginationDirection getDirection() {
+  public LCStatusQuery.PaginationDirection getDirection() {
     return direction;
   }
 
-  public void setDirection(AVStatusQuery.PaginationDirection direction) {
+  public void setDirection(LCStatusQuery.PaginationDirection direction) {
     this.direction = direction;
   }
 
-  public void fillConditions(AVQuery query) {
+  public void fillConditions(LCQuery query) {
     if (null == query || null == this.lastStatus) {
       return;
     }
-    if (AVStatusQuery.PaginationDirection.NEW_TO_OLD == this.direction) {
-      query.whereLessThan(AVObject.KEY_CREATED_AT, this.lastStatus.getCreatedAt());
+    if (LCStatusQuery.PaginationDirection.NEW_TO_OLD == this.direction) {
+      query.whereLessThan(LCObject.KEY_CREATED_AT, this.lastStatus.getCreatedAt());
     } else {
-      query.whereGreaterThan(AVObject.KEY_CREATED_AT, this.lastStatus.getCreatedAt());
+      query.whereGreaterThan(LCObject.KEY_CREATED_AT, this.lastStatus.getCreatedAt());
     }
   }
 
   public void fillConditions(Map<String, String> condition) {
-    if (direction == AVStatusQuery.PaginationDirection.OLD_TO_NEW && sinceId > AVStatus.INVALID_MESSAGE_ID) {
+    if (direction == LCStatusQuery.PaginationDirection.OLD_TO_NEW && sinceId > LCStatus.INVALID_MESSAGE_ID) {
       condition.put("sinceId", String.valueOf(sinceId));
     }
-    if (direction == AVStatusQuery.PaginationDirection.NEW_TO_OLD && maxId > AVStatus.INVALID_MESSAGE_ID) {
+    if (direction == LCStatusQuery.PaginationDirection.NEW_TO_OLD && maxId > LCStatus.INVALID_MESSAGE_ID) {
       // need to decrease 1, bcz REST API will query target up to maxId(include).
       condition.put("maxId", String.valueOf(maxId - 1));
     }
   }
 
-  public void encounter(AVStatus status) {
+  public void encounter(LCStatus status) {
     this.lastStatus = status;
-    if (AVStatusQuery.SourceType.INBOX == sourceType && null != status) {
-      if (direction == AVStatusQuery.PaginationDirection.OLD_TO_NEW) {
+    if (LCStatusQuery.SourceType.INBOX == sourceType && null != status) {
+      if (direction == LCStatusQuery.PaginationDirection.OLD_TO_NEW) {
         if (status.getMessageId() > sinceId) {
           sinceId = status.getMessageId();
         }

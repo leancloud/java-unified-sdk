@@ -1,13 +1,13 @@
 package cn.leancloud.network;
 
-import cn.leancloud.AVException;
+import cn.leancloud.LCException;
 import cn.leancloud.Configure;
 import cn.leancloud.callback.GetCallback;
 import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.core.PaasClient;
 import cn.leancloud.core.StorageClient;
-import cn.leancloud.types.AVDate;
-import cn.leancloud.AVObject;
+import cn.leancloud.types.LCDate;
+import cn.leancloud.LCObject;
 import cn.leancloud.upload.FileUploadToken;
 import cn.leancloud.json.JSONObject;
 import io.reactivex.disposables.Disposable;
@@ -42,12 +42,12 @@ public class PaasClientTest extends TestCase {
   public void testCurrentTimeStamp() throws Exception{
 
     StorageClient storageClient = PaasClient.getStorageClient();
-    storageClient.getServerTime().subscribe(new Observer<AVDate>() {
+    storageClient.getServerTime().subscribe(new Observer<LCDate>() {
       public void onSubscribe(Disposable disposable) {
       }
 
-      public void onNext(AVDate avDate) {
-        System.out.println(avDate);
+      public void onNext(LCDate LCDate) {
+        System.out.println(LCDate);
         testSucceed = true;
         latch.countDown();
       }
@@ -71,7 +71,7 @@ public class PaasClientTest extends TestCase {
       StorageClient storageClient = PaasClient.getStorageClient();
       GetCallback callback = new GetCallback() {
         @Override
-        public void done(AVObject object, AVException e) {
+        public void done(LCObject object, LCException e) {
           if (null != e) {
 
           } else {

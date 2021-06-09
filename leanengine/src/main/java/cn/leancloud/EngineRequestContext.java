@@ -96,7 +96,7 @@ public class EngineRequestContext {
    * set current authenticated user.
    * @param currentUser current user.
    */
-  public static void setAuthenticatedUser(AVUser currentUser) {
+  public static void setAuthenticatedUser(LCUser currentUser) {
     put(AUTHENTICATED_USER, currentUser);
   }
 
@@ -106,8 +106,8 @@ public class EngineRequestContext {
    *
    * keep it just for compatible with old code.
    */
-  public static AVUser getAuthenticatedUser() {
-    return (AVUser) get(AUTHENTICATED_USER);
+  public static LCUser getAuthenticatedUser() {
+    return (LCUser) get(AUTHENTICATED_USER);
   }
 
   public static void clean() {

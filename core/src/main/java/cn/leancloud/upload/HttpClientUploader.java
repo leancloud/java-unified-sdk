@@ -1,9 +1,9 @@
 package cn.leancloud.upload;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCException;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LCFile;
 import cn.leancloud.callback.ProgressCallback;
-import cn.leancloud.AVFile;
 import cn.leancloud.network.DNSDetoxicant;
 import cn.leancloud.utils.LogUtil;
 import okhttp3.OkHttpClient;
@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public abstract class HttpClientUploader implements Uploader {
-  private static AVLogger logger = LogUtil.getLogger(HttpClientUploader.class);
+  private static LCLogger logger = LogUtil.getLogger(HttpClientUploader.class);
   private OkHttpClient client = new OkHttpClient.Builder()
           .connectTimeout(15, TimeUnit.SECONDS)
           .readTimeout(10, TimeUnit.SECONDS)
@@ -25,35 +25,21 @@ public abstract class HttpClientUploader implements Uploader {
   ProgressCallback progressCallback;
 
   private volatile boolean cancelled = false;
-//  static ThreadPoolExecutor executor;
-
-//  private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
-//  private static final int CORE_POOL_SIZE = CPU_COUNT + 1;
-//  private static final int MAX_POOL_SIZE = CPU_COUNT * 2 + 1;
-//  private static final long KEEP_ALIVE_TIME = 1L;
   protected static final int DEFAULT_RETRY_TIMES = 6;
-
-//  static {
-//    executor = new ThreadPoolExecutor(
-//            CORE_POOL_SIZE,
-//            MAX_POOL_SIZE,
-//            KEEP_ALIVE_TIME, TimeUnit.SECONDS,
-//            new LinkedBlockingQueue<Runnable>());
-//  }
 
   protected synchronized OkHttpClient getOKHttpClient() {
     return client;
   }
 
-  protected AVFile avFile = null;
+  protected LCFile avFile = null;
 
-  public HttpClientUploader(AVFile file, ProgressCallback progressCallback) {
+  public HttpClientUploader(LCFile file, ProgressCallback progressCallback) {
     this.avFile = file;
     this.progressCallback = progressCallback;
     cancelled = false;
   }
 
-  protected Response executeWithRetry(Request request, int retry) throws AVException {
+  protected Response executeWithRetry(Request request, int retry) throws LCException {
     if (retry > 0 && !isCancelled()) {
       try {
         Response response = getOKHttpClient().newCall(request).execute();
@@ -66,7 +52,7 @@ public abstract class HttpClientUploader implements Uploader {
         return executeWithRetry(request, retry - 1);
       }
     } else {
-      throw new AVException(AVException.OTHER_CAUSE, "Upload File failure");
+      throw new LCException(LCException.OTHER_CAUSE, "Upload File failure");
     }
   }
 

@@ -2,6 +2,24 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.0.0 release
+
+#### Break changes
+- Change the prefix of public class name from `AV` to `LC`, e.g:
+  1. `AVOSCloud` -> `LeanCloud`
+  2. `AVObject` -> `LCObject`, `AVFile` -> `LCFile`,` AVUser` -> `LCUser`, `AVQuery` -> `LCQuery`
+  3. `AVCallback` -> `LCCallback`, `AVException` -> `LCException`
+  4. `AVIMClient` -> `LCIMClient`
+- remove some deprecated methods as following:
+  1. `AVQuery#doCloudQueryInBackground`, please call `LCCloudQuery#executeInBackground` directly.
+  2. `ObserverBuilder#buildSingleObserver(FindCallback<T>)`, please use `ObserverBuilder#buildCollectionObserver(FindCallback<T>)` directly.
+  
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- upgrade sqlite database version for saving conversation create/update timestamp correctly.
+
 ## 7.2.7 release
 
 #### Break changes

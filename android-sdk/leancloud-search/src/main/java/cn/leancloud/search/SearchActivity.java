@@ -1,9 +1,9 @@
 package cn.leancloud.search;
 
 import androidx.appcompat.app.AppCompatActivity;
-import cn.leancloud.AVException;
-import cn.leancloud.AVLogger;
-import cn.leancloud.AVObject;
+import cn.leancloud.LCException;
+import cn.leancloud.LCLogger;
+import cn.leancloud.LCObject;
 import cn.leancloud.callback.FindCallback;
 import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.utils.LogUtil;
@@ -31,19 +31,19 @@ import java.util.List;
 import java.util.Map;
 
 public class SearchActivity extends AppCompatActivity {
-    private static AVLogger LOGGER = LogUtil.getLogger(SearchActivity.class);
+    private static LCLogger LOGGER = LogUtil.getLogger(SearchActivity.class);
 
     ListView listView;
-    LinkedList<AVObject> searchResults = new LinkedList<AVObject>();
+    LinkedList<LCObject> searchResults = new LinkedList<LCObject>();
     SearchResultAdapter adapter;
-    AVSearchQuery searchQuery;
+    LCSearchQuery searchQuery;
     static final int HIGHLIGHTS_MAX_LENGTH = 200;
-    FindCallback<AVObject> searchCallback;
+    FindCallback<LCObject> searchCallback;
     View loadingView;
     View emtpyResult;
     public static String highlightFontStyle = null;
 
-    public void setSearchQuery(AVSearchQuery query) {
+    public void setSearchQuery(LCSearchQuery query) {
         this.searchQuery = query;
     }
 
@@ -61,14 +61,14 @@ public class SearchActivity extends AppCompatActivity {
         loadingView.setVisibility(View.INVISIBLE);
         if (this.getIntent().getExtras() != null) {
             String searchString =
-                getIntent().getExtras().getString(AVSearchQuery.DATA_EXTRA_SEARCH_KEY);
-            searchQuery = JSON.parseObject(searchString, AVSearchQuery.class);
+                getIntent().getExtras().getString(LCSearchQuery.DATA_EXTRA_SEARCH_KEY);
+            searchQuery = JSON.parseObject(searchString, LCSearchQuery.class);
         }
         if (null != searchQuery) {
-            searchCallback = new FindCallback<AVObject>() {
+            searchCallback = new FindCallback<LCObject>() {
 
                 @Override
-                public void done(List<AVObject> avObjects, AVException avException) {
+                public void done(List<LCObject> avObjects, LCException avException) {
                     if (avException == null) {
                         searchResults.addAll(avObjects);
                         if (adapter == null) {
@@ -90,7 +90,7 @@ public class SearchActivity extends AppCompatActivity {
                     }
                 }
             };
-            searchQuery.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(searchCallback));
+            searchQuery.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(searchCallback));
         }
     }
 
@@ -200,7 +200,7 @@ public class SearchActivity extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
 
 
-            final AVObject item = (AVObject) getItem(position);
+            final LCObject item = (LCObject) getItem(position);
             ViewHolder holder = null;
             if (convertView == null) {
                 convertView =
@@ -226,22 +226,22 @@ public class SearchActivity extends AppCompatActivity {
                 holder.description.setVisibility(View.VISIBLE);
                 holder.description.setText(Html
                     .fromHtml(highlightStringMerge((Map<String, List<String>>) item
-                        .get(AVSearchQuery.AVSEARCH_HIGHTLIGHT))));
+                        .get(LCSearchQuery.AVSEARCH_HIGHTLIGHT))));
             } else {
                 holder.title.setText(Html.fromHtml(highlightStringMerge((Map<String, List<String>>) item
-                    .get(AVSearchQuery.AVSEARCH_HIGHTLIGHT))));
+                    .get(LCSearchQuery.AVSEARCH_HIGHTLIGHT))));
                 holder.description.setVisibility(View.GONE);
             }
-            if (!StringUtil.isEmpty(item.getString(AVSearchQuery.AVSEARCH_APP_URL))) {
+            if (!StringUtil.isEmpty(item.getString(LCSearchQuery.AVSEARCH_APP_URL))) {
                 holder.openApp.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
                         Intent i = new Intent(Intent.ACTION_VIEW);
                         String link =
-                            StringUtil.isEmpty(item.getString(AVSearchQuery.AVSEARCH_DEEP_LINK)) ? item
-                                .getString(AVSearchQuery.AVSEARCH_APP_URL) : item
-                                .getString(AVSearchQuery.AVSEARCH_DEEP_LINK);
+                            StringUtil.isEmpty(item.getString(LCSearchQuery.AVSEARCH_DEEP_LINK)) ? item
+                                .getString(LCSearchQuery.AVSEARCH_APP_URL) : item
+                                .getString(LCSearchQuery.AVSEARCH_DEEP_LINK);
                         i.setData(Uri.parse(link));
                         startActivity(i);
                     }
@@ -264,7 +264,7 @@ public class SearchActivity extends AppCompatActivity {
                 && scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
                 showLoadingView();
                 if (null != searchQuery) {
-                    searchQuery.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(searchCallback));
+                    searchQuery.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(searchCallback));
                 }
             } else {
                 hideLoadingView();

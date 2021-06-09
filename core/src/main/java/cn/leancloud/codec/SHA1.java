@@ -1,6 +1,5 @@
 package cn.leancloud.codec;
 
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -20,8 +19,7 @@ public class SHA1 {
     return buf.toString();
   }
 
-  public static String compute(byte[] data) throws NoSuchAlgorithmException,
-          UnsupportedEncodingException {
+  public static String compute(byte[] data) throws NoSuchAlgorithmException {
     MessageDigest md = MessageDigest.getInstance("SHA-1");
     md.update(data, 0, data.length);
     byte[] sha1hash = md.digest();

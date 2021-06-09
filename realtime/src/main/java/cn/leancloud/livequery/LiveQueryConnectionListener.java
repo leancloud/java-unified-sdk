@@ -1,23 +1,23 @@
 package cn.leancloud.livequery;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.Messages;
 import cn.leancloud.command.CommandPacket;
 import cn.leancloud.command.LiveQueryLoginPacket;
 import cn.leancloud.im.InternalConfiguration;
-import cn.leancloud.im.v2.AVIMException;
+import cn.leancloud.im.v2.LCIMException;
 import cn.leancloud.im.v2.Conversation;
-import cn.leancloud.session.AVConnectionListener;
+import cn.leancloud.session.LCConnectionListener;
 import cn.leancloud.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class LiveQueryConnectionListener implements AVConnectionListener {
-  private static final AVLogger LOGGER = LogUtil.getLogger(LiveQueryConnectionListener.class);
+class LiveQueryConnectionListener implements LCConnectionListener {
+  private static final LCLogger LOGGER = LogUtil.getLogger(LiveQueryConnectionListener.class);
 
   private volatile boolean connectionIsOpen = false;
-  private AVLiveQueryConnectionHandler connectionHandler = null;
+  private LCLiveQueryConnectionHandler connectionHandler = null;
 
   public void onWebSocketOpen() {
     LOGGER.d("livequery connection opened, ready to send packet");
@@ -38,7 +38,7 @@ class LiveQueryConnectionListener implements AVConnectionListener {
     return connectionIsOpen;
   }
 
-  public void setConnectionHandler(AVLiveQueryConnectionHandler handler) {
+  public void setConnectionHandler(LCLiveQueryConnectionHandler handler) {
     this.connectionHandler = handler;
   }
 
@@ -102,7 +102,7 @@ class LiveQueryConnectionListener implements AVConnectionListener {
         dataList.add(message.getData());
       }
     };
-    AVLiveQuery.processData(dataList);
+    LCLiveQuery.processData(dataList);
   }
 
   private void processErrorCommand(String peerId, Integer requestKey,
@@ -111,9 +111,9 @@ class LiveQueryConnectionListener implements AVConnectionListener {
       int code = errorCommand.getCode();
       int appCode = (errorCommand.hasAppCode() ? errorCommand.getAppCode() : 0);
       String reason = errorCommand.getReason();
-      Conversation.AVIMOperation operation = null;
+      Conversation.LCIMOperation operation = null;
       InternalConfiguration.getOperationTube().onOperationCompleted(peerId, null, requestKey,
-              operation, new AVIMException(code, appCode, reason));
+              operation, new LCIMException(code, appCode, reason));
     }
   }
 }

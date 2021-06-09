@@ -1,8 +1,8 @@
 package cn.leancloud.callback;
 
-import cn.leancloud.AVException;
+import cn.leancloud.LCException;
 
-public abstract class ProgressCallback extends AVCallback<Integer> {
+public abstract class ProgressCallback extends LCCallback<Integer> {
   public abstract void done(Integer percentDone);
 
   /**
@@ -10,7 +10,7 @@ public abstract class ProgressCallback extends AVCallback<Integer> {
    * @param returnValue actual progress value.
    * @param e exception.
    */
-  protected final void internalDone0(Integer returnValue, AVException e) {
+  protected final void internalDone0(Integer returnValue, LCException e) {
     done(returnValue);
   }
 }

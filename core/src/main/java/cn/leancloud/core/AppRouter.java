@@ -1,6 +1,6 @@
 package cn.leancloud.core;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.cache.SystemSetting;
 
 import cn.leancloud.network.DNSDetoxicant;
@@ -28,26 +28,23 @@ import java.util.concurrent.TimeUnit;
  * https://app-router.com/2/route?appId=EDR0rD8otnmzF7zNGgLasHzi-MdYXbMMI
  */
 public class AppRouter {
-  private static final AVLogger LOGGER = LogUtil.getLogger(AppRouter.class);
+  private static final LCLogger LOGGER = LogUtil.getLogger(AppRouter.class);
   private static final String APP_ROUTER_HOST = "https://app-router.com";
   private static AppRouter INSTANCE = null;
-  public static AppRouter getInstance() {
+
+  public static synchronized AppRouter getInstance() {
     if (null == INSTANCE) {
-      synchronized (AppRouter.class) {
-        if (null == INSTANCE) {
-          INSTANCE = new AppRouter();
-        }
-      }
+      INSTANCE = new AppRouter();
     }
     return INSTANCE;
   }
 
   private static final String DEFAULT_SERVER_HOST_FORMAT = "https://%s.%s.%s";
-  private static final String DEFAULT_SERVER_API = AVOSService.API.toString();
-  private static final String DEFAULT_SERVER_STAT = AVOSService.STATS.toString();
-  private static final String DEFAULT_SERVER_ENGINE = AVOSService.ENGINE.toString();
-  private static final String DEFAULT_SERVER_PUSH = AVOSService.PUSH.toString();
-  private static final String DEFAULT_SERVER_RTM_ROUTER = AVOSService.RTM.toString();
+  private static final String DEFAULT_SERVER_API = LeanService.API.toString();
+  private static final String DEFAULT_SERVER_STAT = LeanService.STATS.toString();
+  private static final String DEFAULT_SERVER_ENGINE = LeanService.ENGINE.toString();
+  private static final String DEFAULT_SERVER_PUSH = LeanService.PUSH.toString();
+  private static final String DEFAULT_SERVER_RTM_ROUTER = LeanService.RTM.toString();
 
   private static final String DEFAULT_REGION_EAST_CHINA = "lncldapi.com";
   private static final String DEFAULT_REGION_NORTH_CHINA = "lncld.net";
@@ -77,23 +74,23 @@ public class AppRouter {
     NorthAmericaSpecialApps.add("wnDg0lPt0wcYGJSiHRwHBhD4");
   }
 
-  public static AVOSCloud.REGION getAppRegion(String applicationId) {
-    if (AVOSCloud.getRegion() != AVOSCloud.REGION.NorthChina) {
-      return AVOSCloud.getRegion();
+  public static LeanCloud.REGION getAppRegion(String applicationId) {
+    if (LeanCloud.getRegion() != LeanCloud.REGION.NorthChina) {
+      return LeanCloud.getRegion();
     }
     if (StringUtil.isEmpty(applicationId)) {
-      return AVOSCloud.REGION.NorthChina;
+      return LeanCloud.REGION.NorthChina;
     }
     if (applicationId.endsWith("-MdYXbMMI") || NorthAmericaSpecialApps.contains(applicationId)) {
-      return AVOSCloud.REGION.NorthAmerica;
+      return LeanCloud.REGION.NorthAmerica;
     }
     if (applicationId.endsWith("-9Nh9j0Va")) {
-      return AVOSCloud.REGION.EastChina;
+      return LeanCloud.REGION.EastChina;
     }
-    return AVOSCloud.REGION.NorthChina;
+    return LeanCloud.REGION.NorthChina;
   }
 
-  private volatile Retrofit retrofit = null;
+  private Retrofit retrofit = null;
   private AppAccessEndpoint defaultEndpoint = null;
   private AppAccessEndpoint customizedEndpoint = new AppAccessEndpoint();
 
@@ -119,7 +116,7 @@ public class AppRouter {
     }
     AppAccessEndpoint result = new AppAccessEndpoint();
     String appIdPrefix = appId.substring(0, 8).toLowerCase();
-    AVOSCloud.REGION region = getAppRegion(appId);
+    LeanCloud.REGION region = getAppRegion(appId);
     String lastHost = "";
     switch (region) {
       case NorthChina:
@@ -144,7 +141,7 @@ public class AppRouter {
     return result;
   }
 
-  private Observable<String> fetchServerFromRemote(final String appId, final AVOSService service) {
+  private Observable<String> fetchServerFromRemote(final String appId, final LeanService service) {
     return fetchServerHostsInBackground(appId).map(new Function<AppAccessEndpoint, String>() {
       @Override
       public String apply(AppAccessEndpoint appAccessEndpoint) throws Exception {
@@ -180,15 +177,15 @@ public class AppRouter {
     return this.customizedEndpoint.hasSpecifiedEndpoint();
   }
 
-  public void freezeEndpoint(final AVOSService service, String host) {
+  public void freezeEndpoint(final LeanService service, String host) {
     this.customizedEndpoint.freezeEndpoint(service, host);
   }
 
-  public Observable<String> getEndpoint(final String appId, final AVOSService service) {
+  public Observable<String> getEndpoint(final String appId, final LeanService service) {
     return getEndpoint(appId, service, false);
   }
 
-  private Observable<String> getEndpoint(final String appId, final AVOSService service, boolean forceUpdate) {
+  private Observable<String> getEndpoint(final String appId, final LeanService service, boolean forceUpdate) {
     if (StringUtil.isEmpty(appId)) {
       LOGGER.e("application id is empty.");
       return Observable.just("");
@@ -225,7 +222,7 @@ public class AppRouter {
       }
     }
 
-    String result = null;
+    String result = "";
     switch (service) {
       case API:
         result = this.defaultEndpoint.getApiServer();

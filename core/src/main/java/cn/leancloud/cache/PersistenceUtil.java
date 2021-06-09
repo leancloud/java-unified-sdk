@@ -1,6 +1,6 @@
 package cn.leancloud.cache;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.utils.LogUtil;
 
 import java.io.*;
@@ -12,7 +12,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class PersistenceUtil {
-  private static final AVLogger gLogger = LogUtil.getLogger(PersistenceUtil.class);
+  private static final LCLogger gLogger = LogUtil.getLogger(PersistenceUtil.class);
 
   private static PersistenceUtil INSTANCE = new PersistenceUtil();
   public static final int MAX_FILE_BUF_SIZE = 1024*1024*2;
@@ -38,6 +38,7 @@ public class PersistenceUtil {
     }
     return lock;
   }
+
   public void removeLock(String path) {
     fileLocks.remove(path);
   }
@@ -46,7 +47,8 @@ public class PersistenceUtil {
     try {
       if (closeable != null) closeable.close();
     } catch (IOException e) {
-      //
+      //do nothing
+      gLogger.w("failed to close " + closeable + ", cause: " + e.getMessage());
     }
   }
   public boolean saveContentToFile(String content, File fileForSave) {

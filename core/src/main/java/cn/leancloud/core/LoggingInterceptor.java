@@ -1,21 +1,19 @@
 package cn.leancloud.core;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.service.APIService;
 import cn.leancloud.utils.LogUtil;
 import okhttp3.*;
-import okio.Buffer;
 import okio.BufferedSink;
 import okio.Okio;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class LoggingInterceptor implements Interceptor {
   private static final String CURL_COMMAND = "curl -X %s %n";
   private static final String CURL_HEADER_FORMAT = " -H %s: %s %n";
-  private static AVLogger LOGGER = LogUtil.getLogger(LoggingInterceptor.class);
+  private static LCLogger LOGGER = LogUtil.getLogger(LoggingInterceptor.class);
 
   private String generateCURLCommandString(Request request) {
     String url = request.url().toString();
@@ -24,7 +22,7 @@ public class LoggingInterceptor implements Interceptor {
     StringBuilder sb = new StringBuilder();
     sb.append(String.format(CURL_COMMAND, method));
     for (String name : headers.names()) {
-      if (!AVOSCloud.printAllHeaders) {
+      if (!LeanCloud.printAllHeaders) {
         if (RequestPaddingInterceptor.HEADER_KEY_LC_APPKEY.equals(name)) {
           sb.append(String.format(CURL_HEADER_FORMAT, name, "{your_app_key}"));
           continue;
@@ -65,7 +63,7 @@ public class LoggingInterceptor implements Interceptor {
 
     Response response = chain.proceed(request);
 
-    if (!AVOSCloud.isDebugEnable()) {
+    if (!LeanCloud.isDebugEnable()) {
       return response;
     }
 

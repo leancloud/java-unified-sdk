@@ -18,35 +18,35 @@ public class ObjectUnitTest extends TestCase {
   public ObjectUnitTest(String testName) {
     super(testName);
 
-    AVObject.registerSubclass(Armor.class);
+    LCObject.registerSubclass(Armor.class);
     Configure.initializeRuntime();
-    AVUser.changeCurrentUser(null, true);
+    LCUser.changeCurrentUser(null, true);
   }
   public static Test suite() {
     return new TestSuite(ObjectUnitTest.class);
   }
 
-  private void assertObject(AVObject avObject, Date date) {
-    assertEquals(1, avObject.getInt("number"));
-    assertEquals("testSaveGetDeleteGet", avObject.getString("name"));
-    assertEquals(date, avObject.getDate("now"));
+  private void assertObject(LCObject LCObject, Date date) {
+    assertEquals(1, LCObject.getInt("number"));
+    assertEquals("testSaveGetDeleteGet", LCObject.getString("name"));
+    assertEquals(date, LCObject.getDate("now"));
   }
 
   public void testSaveGetDeleteGet() throws Exception {
-    final AVObject avObject = new AVObject("ObjectUnitTest");
-    assertTrue(avObject.getObjectId().isEmpty());
-    avObject.put("number", 1);
-    avObject.put("name", "testSaveGetDeleteGet");
+    final LCObject LCObject = new LCObject("ObjectUnitTest");
+    assertTrue(LCObject.getObjectId().isEmpty());
+    LCObject.put("number", 1);
+    LCObject.put("name", "testSaveGetDeleteGet");
     Date date = new Date();
-    avObject.put("now", date);
-    avObject.setFetchWhenSave(true);
-    avObject.save();
-    assertFalse(avObject.getObjectId().isEmpty());
+    LCObject.put("now", date);
+    LCObject.setFetchWhenSave(true);
+    LCObject.save();
+    assertFalse(LCObject.getObjectId().isEmpty());
 
-    assertObject(avObject, date);
+    assertObject(LCObject, date);
 
     // Try to get it
-    AVObject cloudObject = AVObject.createWithoutData("ObjectUnitTest", avObject.getObjectId());
+    LCObject cloudObject = LCObject.createWithoutData("ObjectUnitTest", LCObject.getObjectId());
     cloudObject = cloudObject.fetchIfNeeded();
     assertNotNull(cloudObject);
     assertObject(cloudObject, date);
@@ -54,19 +54,19 @@ public class ObjectUnitTest extends TestCase {
     // Delete it
     cloudObject.delete();
 
-    AVObject tmp = AVObject.createWithoutData("ObjectUnitTest", avObject.getObjectId()).fetchIfNeeded();
+    LCObject tmp = LCObject.createWithoutData("ObjectUnitTest", LCObject.getObjectId()).fetchIfNeeded();
     assertNull(tmp.getDate("now"));
   }
 
   public void testSaveWithWrongColumnType() {
-    final AVObject avObject = new AVObject("ObjectUnitTest");
-    assertTrue(avObject.getObjectId().isEmpty());
-    avObject.put("number", 1);
-    avObject.put("name", "testSaveGetDeleteGet");
-    avObject.put("now", 1);
+    final LCObject LCObject = new LCObject("ObjectUnitTest");
+    assertTrue(LCObject.getObjectId().isEmpty());
+    LCObject.put("number", 1);
+    LCObject.put("name", "testSaveGetDeleteGet");
+    LCObject.put("now", 1);
 
     try {
-      avObject.save();
+      LCObject.save();
       fail();
     } catch (Exception ex) {
       ex.printStackTrace();
@@ -75,24 +75,24 @@ public class ObjectUnitTest extends TestCase {
 
 
   public void testSaveWithWrongTypePointer() throws Exception {
-    final AVObject avObject = new AVObject("ObjectUnitTest");
-    assertTrue(avObject.getObjectId().isEmpty());
-    avObject.put("number", 1);
-    avObject.put("name", "testSaveGetDeleteGet");
-    avObject.put("parent", AVObject.createWithoutData("ObjectUnitTest", "5ad6e79d9f545400457ff851"));
-    avObject.save();
+    final LCObject LCObject = new LCObject("ObjectUnitTest");
+    assertTrue(LCObject.getObjectId().isEmpty());
+    LCObject.put("number", 1);
+    LCObject.put("name", "testSaveGetDeleteGet");
+    LCObject.put("parent", LCObject.createWithoutData("ObjectUnitTest", "5ad6e79d9f545400457ff851"));
+    LCObject.save();
 
     // try to save with wrong pointer type
-    AVObject avObject1 = new AVObject("ObjectUnitTest");
-    assertTrue(avObject1.getObjectId().isEmpty());
-    avObject1.put("number", 1);
-    avObject1.put("name", "testSaveGetDeleteGet");
-    avObject1.put("now", 1);
+    LCObject LCObject1 = new LCObject("ObjectUnitTest");
+    assertTrue(LCObject1.getObjectId().isEmpty());
+    LCObject1.put("number", 1);
+    LCObject1.put("name", "testSaveGetDeleteGet");
+    LCObject1.put("now", 1);
     // unknown type
-    avObject1.put("parent", new AVObject("UnknowType"));
+    LCObject1.put("parent", new LCObject("UnknowType"));
 
     try {
-      avObject1.save();
+      LCObject1.save();
       fail();
     } catch (Exception ex) {
       ex.printStackTrace();
@@ -104,20 +104,20 @@ public class ObjectUnitTest extends TestCase {
     latch = new CountDownLatch(1);
     testSucceed = false;
 
-    AVObject avObject = new AVQuery<AVObject>("ObjectUnitTest").getFirstInBackground().blockingFirst();
-    assertNotNull(avObject);
-    final int oldNumber = avObject.getInt("number");
-    avObject.increment("number");
-    avObject.saveInBackground().blockingSubscribe();
+    LCObject LCObject = new LCQuery<LCObject>("ObjectUnitTest").getFirstInBackground().blockingFirst();
+    assertNotNull(LCObject);
+    final int oldNumber = LCObject.getInt("number");
+    LCObject.increment("number");
+    LCObject.saveInBackground().blockingSubscribe();
 
-    new AVQuery("ObjectUnitTest").getInBackground(avObject.getObjectId()).subscribe(new Observer<AVObject>() {
+    new LCQuery("ObjectUnitTest").getInBackground(LCObject.getObjectId()).subscribe(new Observer<LCObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(AVObject o) {
+      public void onNext(LCObject o) {
         int newValue = o.getInt("number");
         testSucceed = (oldNumber +1 )== newValue;
         latch.countDown();
@@ -186,64 +186,64 @@ public class ObjectUnitTest extends TestCase {
 
 
   public void testRefreshFetchWithPointer() throws Exception {
-    AVObject obj = new AVObject("ObjectUnitTest");
+    LCObject obj = new LCObject("ObjectUnitTest");
     long now = System.currentTimeMillis();
     obj.put("number", now);
-    final AVObject avObject = new AVObject("ObjectUnitTest");
-    avObject.put("pointer", obj);
-    avObject.save();
+    final LCObject LCObject = new LCObject("ObjectUnitTest");
+    LCObject.put("pointer", obj);
+    LCObject.save();
 
-    AVObject theObject = AVObject.createWithoutData("ObjectUnitTest", avObject.getObjectId());
+    LCObject theObject = LCObject.createWithoutData("ObjectUnitTest", LCObject.getObjectId());
     theObject.refresh("pointer");
-    AVObject pointer = theObject.getAVObject("pointer");
+    LCObject pointer = theObject.getLCObject("pointer");
     assertEquals(now, pointer.getLong("number"));
 
     // test fetch
-    theObject = AVObject.createWithoutData("ObjectUnitTest", avObject.getObjectId());
+    theObject = LCObject.createWithoutData("ObjectUnitTest", LCObject.getObjectId());
     theObject = theObject.fetch("pointer");
-    pointer = theObject.getAVObject("pointer");
+    pointer = theObject.getLCObject("pointer");
     assertEquals(now, pointer.getLong("number"));
   }
 
   public void testSaveWithPointerArrayAndQuryInclude() throws Exception {
-    AVObject obj = new AVQuery("ObjectUnitTest").getFirst();
-    final AVObject avObject = new AVObject("ObjectUnitTest");
-    avObject
-            .add("pointerArray", AVObject.createWithoutData("ObjectUnitTest", obj.getObjectId()));
-    avObject
-            .add("pointerArray", AVObject.createWithoutData("ObjectUnitTest", obj.getObjectId()));
-    avObject.save();
+    LCObject obj = new LCQuery("ObjectUnitTest").getFirst();
+    final LCObject LCObject = new LCObject("ObjectUnitTest");
+    LCObject
+            .add("pointerArray", LCObject.createWithoutData("ObjectUnitTest", obj.getObjectId()));
+    LCObject
+            .add("pointerArray", LCObject.createWithoutData("ObjectUnitTest", obj.getObjectId()));
+    LCObject.save();
 
-    AVQuery query = new AVQuery("ObjectUnitTest");
+    LCQuery query = new LCQuery("ObjectUnitTest");
     query.include("pointerArray");
-    AVObject cloudObject = query.get(avObject.getObjectId());
-    List<AVObject> pointerArray = cloudObject.getList("pointerArray");
+    LCObject cloudObject = query.get(LCObject.getObjectId());
+    List<LCObject> pointerArray = cloudObject.getList("pointerArray");
     assertEquals(1, pointerArray.size());
   }
 
   public void testSaveWithPointerArrayUnique() throws Exception {
-    AVObject obj = new AVQuery("ObjectUnitTest").getFirst();
-    final AVObject avObject = new AVObject("ObjectUnitTest");
-    avObject.addUnique("pointerArray",
-            AVObject.createWithoutData("ObjectUnitTest", obj.getObjectId()));
-    avObject.addUnique("pointerArray",
-            AVObject.createWithoutData("ObjectUnitTest", obj.getObjectId()));
-    avObject.save();
+    LCObject obj = new LCQuery("ObjectUnitTest").getFirst();
+    final LCObject LCObject = new LCObject("ObjectUnitTest");
+    LCObject.addUnique("pointerArray",
+            LCObject.createWithoutData("ObjectUnitTest", obj.getObjectId()));
+    LCObject.addUnique("pointerArray",
+            LCObject.createWithoutData("ObjectUnitTest", obj.getObjectId()));
+    LCObject.save();
 
-    AVQuery query = new AVQuery("ObjectUnitTest");
-    AVObject cloudObject = query.get(avObject.getObjectId());
-    List<AVObject> pointerArray = cloudObject.getList("pointerArray");
+    LCQuery query = new LCQuery("ObjectUnitTest");
+    LCObject cloudObject = query.get(LCObject.getObjectId());
+    List<LCObject> pointerArray = cloudObject.getList("pointerArray");
     assertEquals(1, pointerArray.size());
   }
 
   public void testIncrementUpdate() throws Exception {
-    AVObject obj = new AVObject("ObjectUnitTest");
+    LCObject obj = new LCObject("ObjectUnitTest");
     obj.put("number", 100);
     obj.put("name", "testIncrementUpdate");
     obj.save();
 
-    AVObject cloudObj1 = AVObject.createWithoutData("ObjectUnitTest", obj.getObjectId());
-    AVObject cloudObj2 = AVObject.createWithoutData("ObjectUnitTest", obj.getObjectId());
+    LCObject cloudObj1 = LCObject.createWithoutData("ObjectUnitTest", obj.getObjectId());
+    LCObject cloudObj2 = LCObject.createWithoutData("ObjectUnitTest", obj.getObjectId());
 
     cloudObj1.fetchIfNeeded();
     cloudObj2.fetchIfNeeded();
@@ -254,7 +254,7 @@ public class ObjectUnitTest extends TestCase {
     cloudObj1.save();
     cloudObj2.save();
     // check properties
-    AVObject cloudObj3 = AVObject.createWithoutData("ObjectUnitTest", obj.getObjectId());
+    LCObject cloudObj3 = LCObject.createWithoutData("ObjectUnitTest", obj.getObjectId());
     cloudObj3.fetchIfNeeded();
 
     assertEquals(50, cloudObj3.getInt("number"));
@@ -262,11 +262,11 @@ public class ObjectUnitTest extends TestCase {
   }
 
   public void testInvalidField() {
-    final AVObject avObject = new AVObject("ObjectUnitTest");
-    assertTrue(avObject.getObjectId().isEmpty());
-    avObject.put("$test", "hello world".getBytes());
+    final LCObject LCObject = new LCObject("ObjectUnitTest");
+    assertTrue(LCObject.getObjectId().isEmpty());
+    LCObject.put("$test", "hello world".getBytes());
     try {
-      avObject.save();
+      LCObject.save();
       fail();
     } catch (Exception ex) {
       ;
@@ -274,31 +274,31 @@ public class ObjectUnitTest extends TestCase {
   }
 
   public void testDeleteObjectField() throws Exception {
-    final AVObject avObject = new AVObject("ObjectUnitTest");
-    assertTrue(avObject.getObjectId().isEmpty());
-    avObject.put("willBeDeleted", 1);
-    avObject.save();
+    final LCObject LCObject = new LCObject("ObjectUnitTest");
+    assertTrue(LCObject.getObjectId().isEmpty());
+    LCObject.put("willBeDeleted", 1);
+    LCObject.save();
 
-    AVObject cloudObj1 = AVObject.createWithoutData("ObjectUnitTest", avObject.getObjectId());
+    LCObject cloudObj1 = LCObject.createWithoutData("ObjectUnitTest", LCObject.getObjectId());
     cloudObj1.fetchIfNeeded();
     assertEquals(1, cloudObj1.getInt("willBeDeleted"));
 
-    avObject.remove("willBeDeleted");
-    avObject.save();
-    AVObject cloudObj2 = AVObject.createWithoutData("ObjectUnitTest", avObject.getObjectId());
+    LCObject.remove("willBeDeleted");
+    LCObject.save();
+    LCObject cloudObj2 = LCObject.createWithoutData("ObjectUnitTest", LCObject.getObjectId());
     cloudObj2.fetchIfNeeded();
     assertFalse(cloudObj2.has("willBeDeleted"));
     assertNull(cloudObj2.get("willBeDeleted"));
   }
 
   public void testBytesType() throws Exception {
-    final AVObject avObject = new AVObject("ObjectUnitTest");
-    assertTrue(avObject.getObjectId().isEmpty());
-    avObject.put("bytes", "hello world".getBytes());
-    avObject.save();
+    final LCObject LCObject = new LCObject("ObjectUnitTest");
+    assertTrue(LCObject.getObjectId().isEmpty());
+    LCObject.put("bytes", "hello world".getBytes());
+    LCObject.save();
 
-    String id = avObject.getObjectId();
-    AVObject cloudObject = AVObject.createWithoutData("ObjectUnitTest", id);
+    String id = LCObject.getObjectId();
+    LCObject cloudObject = LCObject.createWithoutData("ObjectUnitTest", id);
     cloudObject.fetchIfNeeded();
     assertEquals("hello world", new String(cloudObject.getBytes("bytes")));
 
@@ -329,12 +329,12 @@ public class ObjectUnitTest extends TestCase {
 //  }
 
   public void testArrayField() throws Exception {
-    AVObject avObject = new AVObject("ObjectUnitTest");
-    avObject.add("normal_array", new Date());
+    LCObject LCObject = new LCObject("ObjectUnitTest");
+    LCObject.add("normal_array", new Date());
 
-    avObject.save();
+    LCObject.save();
 
-    AVObject cloudObj = AVObject.createWithoutData("ObjectUnitTest", avObject.getObjectId());
+    LCObject cloudObj = LCObject.createWithoutData("ObjectUnitTest", LCObject.getObjectId());
     cloudObj.fetchIfNeeded();
 
     List<Date> array = cloudObj.getList("normal_array");
@@ -344,20 +344,20 @@ public class ObjectUnitTest extends TestCase {
     cloudObj.addAll("normal_array", Arrays.asList(1, 2, 3, 4));
     cloudObj.save();
 
-    cloudObj = AVObject.createWithoutData("ObjectUnitTest", avObject.getObjectId());
+    cloudObj = LCObject.createWithoutData("ObjectUnitTest", LCObject.getObjectId());
     cloudObj.fetchIfNeeded();
     array = cloudObj.getList("normal_array");
     assertEquals(5, array.size());
   }
 
   public void testUniqueArray() throws Exception {
-    AVObject avObject = new AVObject("ObjectUnitTest");
+    LCObject LCObject = new LCObject("ObjectUnitTest");
     Date date = new Date();
-    avObject.addUnique("unique_array", date);
+    LCObject.addUnique("unique_array", date);
 
-    avObject.save();
+    LCObject.save();
 
-    AVObject cloudObj = AVObject.createWithoutData("ObjectUnitTest", avObject.getObjectId());
+    LCObject cloudObj = LCObject.createWithoutData("ObjectUnitTest", LCObject.getObjectId());
     cloudObj.fetchIfNeeded();
 
     List<Date> array = cloudObj.getList("unique_array");
@@ -367,7 +367,7 @@ public class ObjectUnitTest extends TestCase {
     cloudObj.addUnique("unique_array", date);
     cloudObj.save();
 
-    cloudObj = AVObject.createWithoutData("ObjectUnitTest", avObject.getObjectId());
+    cloudObj = LCObject.createWithoutData("ObjectUnitTest", LCObject.getObjectId());
     cloudObj.fetchIfNeeded();
     array = cloudObj.getList("unique_array");
     assertEquals(1, array.size());
@@ -402,7 +402,7 @@ public class ObjectUnitTest extends TestCase {
 
   public void testQueryAndUpdateSubClass() throws Exception {
     testSaveSubClass();
-    AVQuery<Armor> query = AVObject.getQuery(Armor.class);
+    LCQuery<Armor> query = LCObject.getQuery(Armor.class);
     Armor armor = query.getFirst();
     assertNotNull(armor);
     assertTrue(armor instanceof Armor);
@@ -411,7 +411,7 @@ public class ObjectUnitTest extends TestCase {
     armor.takeDamage(10);
     armor.save();
 
-    Armor cloudArmor = AVObject.createWithoutData(Armor.class, armor.getObjectId());
+    Armor cloudArmor = LCObject.createWithoutData(Armor.class, armor.getObjectId());
     cloudArmor.fetchIfNeeded();
     assertEquals(oldDurability - 10, cloudArmor.getDurability());
   }

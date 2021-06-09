@@ -1,13 +1,13 @@
 package cn.leancloud.callback;
 
-import cn.leancloud.AVException;
+import cn.leancloud.LCException;
 
 import java.io.InputStream;
 
-public abstract class GetDataStreamCallback extends AVCallback<InputStream> {
-  public abstract void done(InputStream data, AVException e);
+public abstract class GetDataStreamCallback extends LCCallback<InputStream> {
+  public abstract void done(InputStream data, LCException e);
 
-  protected final void internalDone0(InputStream returnValue, AVException e) {
+  protected final void internalDone0(InputStream returnValue, LCException e) {
     done(returnValue, e);
   }
 }

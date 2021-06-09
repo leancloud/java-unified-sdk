@@ -1,11 +1,11 @@
 package cn.leancloud.im.v2;
 
-import cn.leancloud.AVLogger;
+import cn.leancloud.LCLogger;
 import cn.leancloud.Configure;
-import cn.leancloud.core.AVOSCloud;
-import cn.leancloud.im.AVIMOptions;
+import cn.leancloud.core.LeanCloud;
+import cn.leancloud.im.LCIMOptions;
 import cn.leancloud.im.v2.callback.*;
-import cn.leancloud.session.AVConnectionManager;
+import cn.leancloud.session.LCConnectionManager;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSONObject;
 import junit.framework.TestCase;
@@ -22,44 +22,44 @@ public class InteractiveTest extends TestCase {
 
   public InteractiveTest(String name) {
     super(name);
-    AVOSCloud.setLogLevel(AVLogger.Level.DEBUG);
+    LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
     Configure.initialize();
-    AVIMOptions.getGlobalOptions().setTimeoutInSecs(30);
+    LCIMOptions.getGlobalOptions().setTimeoutInSecs(30);
 //    AVIMOptions.getGlobalOptions().setRtmServer("wss://rtm51.leancloud.cn");
-    AVIMMessageManager.setConversationEventHandler(new AVIMConversationEventHandler() {
+    LCIMMessageManager.setConversationEventHandler(new LCIMConversationEventHandler() {
       @Override
-      public void onMemberLeft(AVIMClient client, AVIMConversation conversation, List<String> members, String kickedBy) {
+      public void onMemberLeft(LCIMClient client, LCIMConversation conversation, List<String> members, String kickedBy) {
 
       }
 
       @Override
-      public void onMemberJoined(AVIMClient client, AVIMConversation conversation, List<String> members, String invitedBy) {
+      public void onMemberJoined(LCIMClient client, LCIMConversation conversation, List<String> members, String invitedBy) {
 
       }
 
       @Override
-      public void onKicked(AVIMClient client, AVIMConversation conversation, String kickedBy) {
+      public void onKicked(LCIMClient client, LCIMConversation conversation, String kickedBy) {
 
       }
 
       @Override
-      public void onInvited(AVIMClient client, AVIMConversation conversation, String operator) {
+      public void onInvited(LCIMClient client, LCIMConversation conversation, String operator) {
 
       }
 
       @Override
-      public void onInfoChanged(AVIMClient client, AVIMConversation conversation, JSONObject attr,
+      public void onInfoChanged(LCIMClient client, LCIMConversation conversation, JSONObject attr,
                                 String operator) {
         super.onInfoChanged(client, conversation, attr, operator);
       }
     });
 
-    AVIMMessageManager.registerDefaultMessageHandler(new AVIMMessageHandler());
+    LCIMMessageManager.registerDefaultMessageHandler(new LCIMMessageHandler());
   }
 
   @Override
   protected void setUp() throws Exception {
-    AVConnectionManager manager = AVConnectionManager.getInstance();
+    LCConnectionManager manager = LCConnectionManager.getInstance();
     manager.autoConnection();
     Thread.sleep(2000);
     firstStage = new CountDownLatch(1);
@@ -68,7 +68,7 @@ public class InteractiveTest extends TestCase {
     testSucceed = false;
   }
 
-  private boolean verifyConversationWithExpect(AVIMConversation conversation, Map<String, Object> expectedResult) {
+  private boolean verifyConversationWithExpect(LCIMConversation conversation, Map<String, Object> expectedResult) {
     if (null == conversation || null == expectedResult || expectedResult.size() < 1) {
       return true;
     }
@@ -114,11 +114,11 @@ public class InteractiveTest extends TestCase {
     final String clientId = "TestUserA";
     final String customAttr = StringUtil.getRandomString(16);
     final Date now = new Date();
-    AVIMClient currentClient = AVIMClient.getInstance(clientId);
+    LCIMClient currentClient = LCIMClient.getInstance(clientId);
     final CountDownLatch latch = new CountDownLatch(1);
-    currentClient.open(new AVIMClientCallback() {
+    currentClient.open(new LCIMClientCallback() {
       @Override
-      public void done(AVIMClient client, AVIMException e) {
+      public void done(LCIMClient client, LCIMException e) {
         if (null != e) {
           System.out.println("failed to open client:" + clientId);
           e.printStackTrace();
@@ -132,9 +132,9 @@ public class InteractiveTest extends TestCase {
         List<String> members = new ArrayList<>();
         members.add(thirdMember);
 
-        client.createConversation(members, "testAttributesWithSingleClient", attr, new AVIMConversationCreatedCallback() {
+        client.createConversation(members, "testAttributesWithSingleClient", attr, new LCIMConversationCreatedCallback() {
           @Override
-          public void done(final AVIMConversation conversation, AVIMException e) {
+          public void done(final LCIMConversation conversation, LCIMException e) {
             if (null != e) {
               System.out.println(clientId + " failed to create conversation: testAttributesWithSingleClient");
               e.printStackTrace();
@@ -159,9 +159,9 @@ public class InteractiveTest extends TestCase {
             conversation.setName("MemberListIsVerified");
             conversation.setAttribute("attr1", "Over");
             conversation.set("attr2", null);
-            conversation.updateInfoInBackground(new AVIMConversationCallback() {
+            conversation.updateInfoInBackground(new LCIMConversationCallback() {
               @Override
-              public void done(AVIMException e) {
+              public void done(LCIMException e) {
                 if (null != e) {
                   System.out.println("failed to update conversationinfo.");
                   e.printStackTrace();
@@ -179,9 +179,9 @@ public class InteractiveTest extends TestCase {
                 } else {
                   System.out.println("checkpoint all passed.");
                 }
-                conversation.kickMembers(Arrays.asList(thirdMember), new AVIMOperationPartiallySucceededCallback() {
+                conversation.kickMembers(Arrays.asList(thirdMember), new LCIMOperationPartiallySucceededCallback() {
                   @Override
-                  public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                  public void done(LCIMException e, List<String> successfulClientIds, List<LCIMOperationFailure> failures) {
                     if (null != e) {
                       System.out.println("failed to kick member.");
                       e.printStackTrace();
@@ -232,11 +232,11 @@ public class InteractiveTest extends TestCase {
         System.out.println("First Thread: " + Thread.currentThread().getId());
         final CountDownLatch exitLatch = new CountDownLatch(1);
         final String clientId = "TestUserA";
-        final AVIMClient currentClient = AVIMClient.getInstance(clientId);
+        final LCIMClient currentClient = LCIMClient.getInstance(clientId);
 
-        currentClient.open(new AVIMClientCallback() {
+        currentClient.open(new LCIMClientCallback() {
           @Override
-          public void done(AVIMClient client, AVIMException e) {
+          public void done(LCIMClient client, LCIMException e) {
             if (null != e) {
               System.out.println("failed to open client:" + clientId);
               e.printStackTrace();
@@ -248,9 +248,9 @@ public class InteractiveTest extends TestCase {
             attr.put("attr1", customAttr);
             List<String> members = new ArrayList<>();
             members.add(thirdMember);
-            client.createConversation(members, "testCorrectMemberList", attr, new AVIMConversationCreatedCallback() {
+            client.createConversation(members, "testCorrectMemberList", attr, new LCIMConversationCreatedCallback() {
               @Override
-              public void done(final AVIMConversation conversation, AVIMException e) {
+              public void done(final LCIMConversation conversation, LCIMException e) {
                 if (null != e) {
                   System.out.println(clientId + " failed to create conversation: testCorrectMemberList");
                   e.printStackTrace();
@@ -282,12 +282,12 @@ public class InteractiveTest extends TestCase {
           secondStage.await();
 
           System.out.println("☑️☑️ " + clientId + " continue to modify conversation...");
-          final AVIMConversation conversation = currentClient.getConversation(targetConversationId);
+          final LCIMConversation conversation = currentClient.getConversation(targetConversationId);
           conversation.setName("MemberListIsVerified");
           conversation.setAttribute("attr1", "Over");
-          conversation.updateInfoInBackground(new AVIMConversationCallback() {
+          conversation.updateInfoInBackground(new LCIMConversationCallback() {
             @Override
-            public void done(AVIMException e) {
+            public void done(LCIMException e) {
               if (null != e) {
                 System.out.println("failed to update conversationinfo.");
                 e.printStackTrace();
@@ -311,9 +311,9 @@ public class InteractiveTest extends TestCase {
               } catch (Exception ex) {
                 ex.printStackTrace();
               }
-              currentClient.close(new AVIMClientCallback() {
+              currentClient.close(new LCIMClientCallback() {
                 @Override
-                public void done(AVIMClient client, AVIMException e) {
+                public void done(LCIMClient client, LCIMException e) {
                   ;
                 }
               });
@@ -339,21 +339,21 @@ public class InteractiveTest extends TestCase {
           return;
         }
         final String clientId = "TestUserB";
-        AVIMClient currentClient = AVIMClient.getInstance(clientId);
+        LCIMClient currentClient = LCIMClient.getInstance(clientId);
         System.out.println("☑️️ " + clientId + " try to openClient");
-        currentClient.open(new AVIMClientCallback() {
+        currentClient.open(new LCIMClientCallback() {
           @Override
-          public void done(AVIMClient client, AVIMException e) {
+          public void done(LCIMClient client, LCIMException e) {
             if (null != e) {
               System.out.println("failed to open client:" + clientId);
               e.printStackTrace();
               return;
             }
             System.out.println("☑️️ " + clientId + " try to fetch target conversation:" + targetConversationId);
-            final AVIMConversation conversation = client.getConversation(targetConversationId);
-            conversation.fetchInfoInBackground(new AVIMConversationCallback() {
+            final LCIMConversation conversation = client.getConversation(targetConversationId);
+            conversation.fetchInfoInBackground(new LCIMConversationCallback() {
               @Override
-              public void done(AVIMException e) {
+              public void done(LCIMException e) {
                 if (null != e) {
                   System.out.println("failed to fetch conversation:" + targetConversationId + " with clientId:" + clientId);
                   e.printStackTrace();
@@ -361,9 +361,9 @@ public class InteractiveTest extends TestCase {
                   return;
                 }
                 System.out.println("☑️️☑️️ " + clientId + " try to join target conversation. data=" + conversation.toJSONString());
-                conversation.join(new AVIMConversationCallback() {
+                conversation.join(new LCIMConversationCallback() {
                   @Override
-                  public void done(AVIMException e) {
+                  public void done(LCIMException e) {
                     if (null != e) {
                       System.out.println("failed to join conversation:" + targetConversationId + " with clientId:" + clientId);
                       e.printStackTrace();
@@ -383,9 +383,9 @@ public class InteractiveTest extends TestCase {
                     }
 
                     System.out.println("☑️️☑️️☑️️ " + clientId + " try to kick member:" + thirdMember + " from clientId:" + clientId);
-                    conversation.kickMembers(Arrays.asList(thirdMember), new AVIMOperationPartiallySucceededCallback() {
+                    conversation.kickMembers(Arrays.asList(thirdMember), new LCIMOperationPartiallySucceededCallback() {
                       @Override
-                      public void done(AVIMException e, List<String> successfulClientIds, List<AVIMOperationFailure> failures) {
+                      public void done(LCIMException e, List<String> successfulClientIds, List<LCIMOperationFailure> failures) {
                         if (null == e && null != successfulClientIds && successfulClientIds.size() > 0) {
                           Map<String, Object> checkpoint = new HashMap<>();
                           checkpoint.put("name", "testCorrectMemberList");
@@ -407,7 +407,7 @@ public class InteractiveTest extends TestCase {
                           if (null != e) {
                             System.out.println("failed to kick member:" + thirdMember + ", exception:" + e.getMessage());
                           } else if (null != failures && failures.size() > 0){
-                            AVIMOperationFailure failure = failures.get(0);
+                            LCIMOperationFailure failure = failures.get(0);
                             System.out.println("failed to kick member:" + failure.getMemberIds()
                                     + ", reason:" + failure.getReason());
                           } else {
@@ -431,7 +431,7 @@ public class InteractiveTest extends TestCase {
           System.out.println("☑️️☑️️☑️️☑️️ " + clientId + " got notification to exit thread.");
           Thread.sleep(3000);
 
-          AVIMConversation conversation = currentClient.getConversation(targetConversationId);
+          LCIMConversation conversation = currentClient.getConversation(targetConversationId);
 
           Map<String, Object> checkpoint = new HashMap<>();
           checkpoint.put("name", "MemberListIsVerified");
@@ -444,9 +444,9 @@ public class InteractiveTest extends TestCase {
             System.out.println("checkpoint all passed.");
           }
           System.out.println("☑️️☑️️☑️️☑️️ " + clientId + " prepare to exit thread.");
-          currentClient.close(new AVIMClientCallback() {
+          currentClient.close(new LCIMClientCallback() {
             @Override
-            public void done(AVIMClient client, AVIMException e) {
+            public void done(LCIMClient client, LCIMException e) {
               ;
             }
           });
@@ -476,11 +476,11 @@ public class InteractiveTest extends TestCase {
         final CountDownLatch exitLatch = new CountDownLatch(1);
 
         final String clientId = "TestUserA";
-        AVIMClient currentClient = AVIMClient.getInstance(clientId);
+        LCIMClient currentClient = LCIMClient.getInstance(clientId);
 
-        currentClient.open(new AVIMClientCallback() {
+        currentClient.open(new LCIMClientCallback() {
           @Override
-          public void done(AVIMClient client, AVIMException e) {
+          public void done(LCIMClient client, LCIMException e) {
             if (null != e) {
               System.out.println("failed to open client:" + clientId);
               e.printStackTrace();
@@ -492,9 +492,9 @@ public class InteractiveTest extends TestCase {
             attr.put("attr1", customAttr);
             List<String> members = new ArrayList<>();
             members.add(thirdMember);
-            client.createConversation(members, "testCorrectMemberList", attr, new AVIMConversationCreatedCallback() {
+            client.createConversation(members, "testCorrectMemberList", attr, new LCIMConversationCreatedCallback() {
               @Override
-              public void done(final AVIMConversation conversation, AVIMException e) {
+              public void done(final LCIMConversation conversation, LCIMException e) {
                 if (null != e) {
                   System.out.println(clientId + " failed to create conversation: testCorrectMemberList");
                   e.printStackTrace();
@@ -528,7 +528,7 @@ public class InteractiveTest extends TestCase {
           secondStage.await();
 
           System.out.println("☑️☑️ " + clientId + " continue to modify conversation...");
-          final AVIMConversation conversation = currentClient.getConversation(targetConversationId);
+          final LCIMConversation conversation = currentClient.getConversation(targetConversationId);
           //conversation.setName("MemberListIsVerified");
           conversation.set("attr.attr2", now);
           final Map<String, String> deleteOperation = new HashMap<>();
@@ -538,9 +538,9 @@ public class InteractiveTest extends TestCase {
           deleteOp.put("__op", "Delete");
           conversation.set("name", deleteOp);
           conversation.setAttribute("attr3", "nothing");
-          conversation.updateInfoInBackground(new AVIMConversationCallback() {
+          conversation.updateInfoInBackground(new LCIMConversationCallback() {
             @Override
-            public void done(AVIMException e) {
+            public void done(LCIMException e) {
               if (null != e) {
                 System.out.println("failed to update conversationinfo.");
                 e.printStackTrace();
@@ -569,9 +569,9 @@ public class InteractiveTest extends TestCase {
             }
           });
           exitLatch.await();
-          currentClient.close(new AVIMClientCallback() {
+          currentClient.close(new LCIMClientCallback() {
             @Override
-            public void done(AVIMClient client, AVIMException e) {
+            public void done(LCIMClient client, LCIMException e) {
               ;
             }
           });
@@ -594,21 +594,21 @@ public class InteractiveTest extends TestCase {
           return;
         }
         final String clientId = "TestUserB";
-        AVIMClient currentClient = AVIMClient.getInstance(clientId);
+        LCIMClient currentClient = LCIMClient.getInstance(clientId);
         System.out.println("☑️️ " + clientId + " try to openClient");
-        currentClient.open(new AVIMClientCallback() {
+        currentClient.open(new LCIMClientCallback() {
           @Override
-          public void done(AVIMClient client, AVIMException e) {
+          public void done(LCIMClient client, LCIMException e) {
             if (null != e) {
               System.out.println("failed to open client:" + clientId);
               e.printStackTrace();
               return;
             }
             System.out.println("☑️️ " + clientId + " try to fetch target conversation:" + targetConversationId);
-            final AVIMConversation conversation = client.getConversation(targetConversationId);
-            conversation.fetchInfoInBackground(new AVIMConversationCallback() {
+            final LCIMConversation conversation = client.getConversation(targetConversationId);
+            conversation.fetchInfoInBackground(new LCIMConversationCallback() {
               @Override
-              public void done(AVIMException e) {
+              public void done(LCIMException e) {
                 if (null != e) {
                   System.out.println("failed to fetch conversation:" + targetConversationId + " with clientId:" + clientId);
                   e.printStackTrace();
@@ -616,9 +616,9 @@ public class InteractiveTest extends TestCase {
                   return;
                 }
                 System.out.println("☑️️☑️️ " + clientId + " try to join target conversation:" + targetConversationId);
-                conversation.join(new AVIMConversationCallback() {
+                conversation.join(new LCIMConversationCallback() {
                   @Override
-                  public void done(AVIMException e) {
+                  public void done(LCIMException e) {
                     if (null != e) {
                       System.out.println("failed to join conversation:" + targetConversationId + " with clientId:" + clientId);
                       e.printStackTrace();
@@ -649,7 +649,7 @@ public class InteractiveTest extends TestCase {
           System.out.println("☑️️☑️️☑️️☑️️ " + clientId + " got notification to exit thread.");
           Thread.sleep(30000);
 
-          AVIMConversation conversation = currentClient.getConversation(targetConversationId);
+          LCIMConversation conversation = currentClient.getConversation(targetConversationId);
 
           Map<String, Object> checkpoint = new HashMap<>();
           checkpoint.put("name", "MemberListIsVerified");
@@ -666,9 +666,9 @@ public class InteractiveTest extends TestCase {
         } catch (Exception ex) {
           ex.printStackTrace();
         }
-        currentClient.close(new AVIMClientCallback() {
+        currentClient.close(new LCIMClientCallback() {
           @Override
-          public void done(AVIMClient client, AVIMException e) {
+          public void done(LCIMClient client, LCIMException e) {
             ;
           }
         });

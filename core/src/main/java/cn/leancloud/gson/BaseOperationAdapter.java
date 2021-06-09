@@ -1,6 +1,6 @@
 package cn.leancloud.gson;
 
-import cn.leancloud.AVObject;
+import cn.leancloud.LCObject;
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
 import cn.leancloud.ops.BaseOperation;
@@ -52,9 +52,9 @@ public class BaseOperationAdapter extends TypeAdapter<BaseOperation> {
   private Object getParsedObject(Object obj) {
     if (obj instanceof JSONObject) {
       JSONObject jsonObj = (JSONObject) obj;
-      if (jsonObj.containsKey(AVObject.KEY_CLASSNAME)) {
+      if (jsonObj.containsKey(LCObject.KEY_CLASSNAME)) {
         try {
-          return JSON.parseObject(JSON.toJSONString(jsonObj), AVObject.class);
+          return JSON.parseObject(JSON.toJSONString(jsonObj), LCObject.class);
         } catch (Exception ex){
           ex.printStackTrace();
           return obj;

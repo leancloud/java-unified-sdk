@@ -9,25 +9,24 @@ import com.google.gson.internal.LinkedTreeMap;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
-public class ObjectDeserializer implements JsonDeserializer<AVObject> {
+public class ObjectDeserializer implements JsonDeserializer<LCObject> {
   public static final String KEY_VERSION = "_version";
   public static final String KEY_SERVERDATA = "serverData";
   private MapDeserializerDoubleAsIntFix mapDeserializer = new MapDeserializerDoubleAsIntFix();
 
-  private AVObject generateObject(Map<String, Object> objectMap, String className) {
+  private LCObject generateObject(Map<String, Object> objectMap, String className) {
     Map<String, Object> serverJson = null;
     if (objectMap.containsKey(KEY_VERSION)) {
       // 5.x version
-      className = (String) objectMap.get(AVObject.KEY_CLASSNAME);
+      className = (String) objectMap.get(LCObject.KEY_CLASSNAME);
       if (objectMap.containsKey(KEY_SERVERDATA)) {
         serverJson = (Map<String, Object>) objectMap.get(KEY_SERVERDATA);
       } else {
         serverJson = objectMap;
       }
-    } else if (objectMap.containsKey(AVObject.KEY_CLASSNAME)) {
+    } else if (objectMap.containsKey(LCObject.KEY_CLASSNAME)) {
       // android sdk output
       // {
       // "@type":"com.example.avoscloud_demo.Student","objectId":"5bff468944d904005f856849",
@@ -35,8 +34,8 @@ public class ObjectDeserializer implements JsonDeserializer<AVObject> {
       // "className":"Student",
       // "serverData":{"@type":"java.util.concurrent.ConcurrentHashMap",
       //               "name":"Automatic Tester's Dad","course":["Math","Art"],"age":20}}
-      className = (String) objectMap.get(AVObject.KEY_CLASSNAME);
-      objectMap.remove(AVObject.KEY_CLASSNAME);
+      className = (String) objectMap.get(LCObject.KEY_CLASSNAME);
+      objectMap.remove(LCObject.KEY_CLASSNAME);
       if (objectMap.containsKey(KEY_SERVERDATA)) {
         LinkedTreeMap<String, Object> serverData = (LinkedTreeMap<String, Object>) objectMap.get(KEY_SERVERDATA);//
         objectMap.remove(KEY_SERVERDATA);
@@ -48,21 +47,21 @@ public class ObjectDeserializer implements JsonDeserializer<AVObject> {
       // leancloud server response.
       serverJson = objectMap;
     }
-    AVObject obj;
-    if (className.endsWith(AVFile.class.getCanonicalName())) {
-      obj = new AVFile();
-    } else if (className.endsWith(AVUser.class.getCanonicalName())) {
-      obj = new AVUser();
-    } else if (className.endsWith(AVInstallation.class.getCanonicalName())) {
-      obj = new AVInstallation();
-    } else if (className.endsWith(AVStatus.class.getCanonicalName())) {
-      obj = new AVStatus();
-    } else if (className.endsWith(AVRole.class.getCanonicalName())) {
-      obj = new AVRole();
+    LCObject obj;
+    if (className.endsWith(LCFile.class.getCanonicalName())) {
+      obj = new LCFile();
+    } else if (className.endsWith(LCUser.class.getCanonicalName())) {
+      obj = new LCUser();
+    } else if (className.endsWith(LCInstallation.class.getCanonicalName())) {
+      obj = new LCInstallation();
+    } else if (className.endsWith(LCStatus.class.getCanonicalName())) {
+      obj = new LCStatus();
+    } else if (className.endsWith(LCRole.class.getCanonicalName())) {
+      obj = new LCRole();
     } else if (!StringUtil.isEmpty(className) && className.indexOf(".") < 0) {
       obj = Transformer.objectFromClassName(className);
     } else {
-      obj = new AVObject();
+      obj = new LCObject();
     }
     serverJson.remove("@type");
     for (Map.Entry<String, Object> entry: serverJson.entrySet()) {
@@ -82,7 +81,7 @@ public class ObjectDeserializer implements JsonDeserializer<AVObject> {
     return obj;
   }
 
-  public AVObject deserialize(JsonElement elem, Type type, JsonDeserializationContext ctx) throws JsonParseException {
+  public LCObject deserialize(JsonElement elem, Type type, JsonDeserializationContext ctx) throws JsonParseException {
     if (null == elem || !elem.isJsonObject()) {
       return null;
     }

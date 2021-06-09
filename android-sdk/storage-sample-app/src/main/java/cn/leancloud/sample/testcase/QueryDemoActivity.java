@@ -9,18 +9,18 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import cn.leancloud.AVException;
-import cn.leancloud.AVOSCloud;
-import cn.leancloud.AVObject;
-import cn.leancloud.AVQuery;
-import cn.leancloud.AVRelation;
-import cn.leancloud.AVUser;
+import cn.leancloud.LCException;
+import cn.leancloud.LeanCloud;
+import cn.leancloud.LCObject;
+import cn.leancloud.LCQuery;
+import cn.leancloud.LCRelation;
+import cn.leancloud.LCUser;
 import cn.leancloud.sample.DemoBaseActivity;
 import cn.leancloud.sample.DemoUtils;
 import cn.leancloud.sample.Student;
 import cn.leancloud.callback.FindCallback;
 import cn.leancloud.convertor.ObserverBuilder;
-import cn.leancloud.types.AVNull;
+import cn.leancloud.types.LCNull;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -30,38 +30,38 @@ import io.reactivex.disposables.Disposable;
 
 public class QueryDemoActivity extends DemoBaseActivity {
 
-  public void testBasicQuery() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+  public void testBasicQuery() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
     List<Student> students = query.find();
     log("找回了一组 Student:" + prettyJSON(students));
     logThreadTips();
   }
 
-  public void testGetFirstObject() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+  public void testGetFirstObject() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
     query.includeACL(true);
     Student student = query.getFirst();
     log("找回了最近更新的第一个 Student" + prettyJSON(student));
   }
 
-  public void testLimit() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
-    query.whereLessThanOrEqualTo(AVObject.KEY_UPDATED_AT, new Date());
+  public void testLimit() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
+    query.whereLessThanOrEqualTo(LCObject.KEY_UPDATED_AT, new Date());
     query.limit(2);
     List<Student> students = query.find();
     log("找回了两个学生:" + prettyJSON(students));
   }
 
-  public void testSkip() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+  public void testSkip() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
     query.orderByDescending("createdAt");
     query.skip(3);
     Student first = query.getFirst();
     log("找回了倒数第四个创建的 Student:" + first);
   }
 
-  public void testAndQuery() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+  public void testAndQuery() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
     query.whereNotEqualTo(Student.NAME, "Mike");
 
     // 默认就是 And
@@ -72,25 +72,25 @@ public class QueryDemoActivity extends DemoBaseActivity {
     logObjects(students, Student.NAME);
   }
 
-  public void testOrQuery() throws AVException {
-    AVQuery<Student> query1 = AVQuery.getQuery(Student.class);
+  public void testOrQuery() throws LCException {
+    LCQuery<Student> query1 = LCQuery.getQuery(Student.class);
     query1.whereEqualTo(Student.NAME, "Mike");
 
-    AVQuery<Student> query2 = AVQuery.getQuery(Student.class);
+    LCQuery<Student> query2 = LCQuery.getQuery(Student.class);
     query2.whereStartsWith(Student.NAME, "J");
 
-    List<AVQuery<Student>> queries = new ArrayList<>();
+    List<LCQuery<Student>> queries = new ArrayList<>();
     queries.add(query1);
     queries.add(query2);
 
-    AVQuery<Student> query = AVQuery.or(queries);
+    LCQuery<Student> query = LCQuery.or(queries);
     List<Student> students = query.find();
     log("名字是 Mike 或 J 开头的学生：");
     logObjects(students, Student.NAME);
   }
 
-  public void testAscending() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+  public void testAscending() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
     query.orderByAscending(Student.KEY_CREATED_AT)
         .limit(5);
     List<Student> students = query.find();
@@ -98,8 +98,8 @@ public class QueryDemoActivity extends DemoBaseActivity {
     logObjects(students, Student.KEY_CREATED_AT);
   }
 
-  public void testSecondOrder() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+  public void testSecondOrder() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
     query.orderByDescending(Student.NAME)
         .addDescendingOrder(Student.AGE)
         .limit(5);
@@ -109,8 +109,8 @@ public class QueryDemoActivity extends DemoBaseActivity {
     logObjects(students, Student.AGE);
   }
 
-  public void testArraySize() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+  public void testArraySize() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
     query.whereSizeEqual(Student.HOBBIES, 2)
         .limit(10);
     List<Student> students = query.find();
@@ -118,16 +118,16 @@ public class QueryDemoActivity extends DemoBaseActivity {
     logObjects(students, Student.HOBBIES);
   }
 
-  public void testContainedIn() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+  public void testContainedIn() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
     query.whereContainedIn(Student.NAME, Arrays.asList("Mike", "Jane"));
     List<Student> students = query.find();
     log("找回了名字是 Mike 或 Jane 的学生");
     logObjects(students, Student.NAME);
   }
 
-  public void testContainsAll() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+  public void testContainsAll() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
     query.whereContainsAll(Student.HOBBIES, Arrays.asList("swimming", "running"));
     query.includeACL(true);
     List<Student> students = query.find();
@@ -135,18 +135,18 @@ public class QueryDemoActivity extends DemoBaseActivity {
     logObjects(students, Student.HOBBIES);
   }
 
-  public void testDeleteAllInBackground() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+  public void testDeleteAllInBackground() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
     query.addDescendingOrder("updatedAt");
     //query.limit(20);
-    query.deleteAllInBackground().subscribe(new Observer<AVNull>() {
+    query.deleteAllInBackground().subscribe(new Observer<LCNull>() {
       @Override
       public void onSubscribe(Disposable d) {
 
       }
 
       @Override
-      public void onNext(AVNull avNull) {
+      public void onNext(LCNull LCNull) {
         log("testDeleteAllInBackground finished.");
       }
 
@@ -163,24 +163,24 @@ public class QueryDemoActivity extends DemoBaseActivity {
 
   }
 
-  public void testLimitSize() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+  public void testLimitSize() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
     // 最大 1000，默认 100
     query.limit(1000);
     List<Student> students = query.find();
     log("找回了最多 1000 个学生，实际上有 %d 个", students.size());
   }
 
-  public void testRegex() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+  public void testRegex() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
     query.whereMatches(Student.NAME, "^M.*");
     List<Student> students = query.find();
     log("名字满足正则表达式 ^M.* 的学生：");
     logObjects(students, Student.NAME);
   }
 
-  public void testOneKeyMultipleCondition() throws AVException {
-    AVQuery<Student> query = AVQuery.getQuery(Student.class);
+  public void testOneKeyMultipleCondition() throws LCException {
+    LCQuery<Student> query = LCQuery.getQuery(Student.class);
     query.whereStartsWith(Student.NAME, "M")
         .whereEndsWith(Student.NAME, "e")
         .whereContains(Student.NAME, "i");
@@ -189,14 +189,14 @@ public class QueryDemoActivity extends DemoBaseActivity {
     logObjects(students, Student.NAME);
   }
 
-  public void testLastModifyEnabled() throws AVException {
+  public void testLastModifyEnabled() throws LCException {
     // 应该放在 Application 的 onCreate 中，开启全局省流量模式
-    AVOSCloud.setLastModifyEnabled(true);
+    LeanCloud.setLastModifyEnabled(true);
 
     Student student = getFirstStudent();
 
     // 此处服务器应该返回了所有数据
-    AVQuery<Student> q = AVQuery.getQuery(Student.class);
+    LCQuery<Student> q = LCQuery.getQuery(Student.class);
     Student student1 = q.get(student.getObjectId());
     log("从服务器获取了对象：" + prettyJSON(student1));
 
@@ -205,11 +205,11 @@ public class QueryDemoActivity extends DemoBaseActivity {
     log("对象的更新时间戳和服务器的愈合，从本地获取了对象：" + prettyJSON(student2));
   }
 
-  public void testLastModifyEnabled2() throws AVException {
+  public void testLastModifyEnabled2() throws LCException {
     // 应该放在 Application 的 onCreate 中，开启全局省流量模式
-    AVOSCloud.setLastModifyEnabled(true);
+    LeanCloud.setLastModifyEnabled(true);
 
-    AVQuery<Student> q = AVQuery.getQuery(Student.class);
+    LCQuery<Student> q = LCQuery.getQuery(Student.class);
     q.limit(5);
     // 此处服务器应该返回了所有数据
     List<Student> students = q.find();
@@ -221,16 +221,16 @@ public class QueryDemoActivity extends DemoBaseActivity {
   }
 
   public void testQueryPolicyCacheThenNetwork() {
-    AVQuery<Student> q = AVQuery.getQuery(Student.class);
-    q.setCachePolicy(AVQuery.CachePolicy.CACHE_THEN_NETWORK);
+    LCQuery<Student> q = LCQuery.getQuery(Student.class);
+    q.setCachePolicy(LCQuery.CachePolicy.CACHE_THEN_NETWORK);
     // 单位毫秒
     q.setMaxCacheAge(1000 * 60 * 60); // 一小时
     q.limit(1);
-    q.findInBackground().subscribe(ObserverBuilder.buildSingleObserver(new FindCallback<Student>() {
+    q.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(new FindCallback<Student>() {
       int count = 0;
 
       @Override
-      public void done(List<Student> list, AVException e) {
+      public void done(List<Student> list, LCException e) {
         if (count == 0) {
           log("第一次从缓存中获取了结果：" + prettyJSON(list));
         } else {
@@ -241,9 +241,9 @@ public class QueryDemoActivity extends DemoBaseActivity {
     }));
   }
 
-  public void testQueryPolicyCacheElseNetwork() throws AVException {
-    AVQuery<Student> q = AVQuery.getQuery(Student.class);
-    q.setCachePolicy(AVQuery.CachePolicy.CACHE_ELSE_NETWORK);
+  public void testQueryPolicyCacheElseNetwork() throws LCException {
+    LCQuery<Student> q = LCQuery.getQuery(Student.class);
+    q.setCachePolicy(LCQuery.CachePolicy.CACHE_ELSE_NETWORK);
     // 单位毫秒
     q.setMaxCacheAge(1000 * 60 * 60); // 一小时
     q.limit(1);
@@ -277,9 +277,9 @@ public class QueryDemoActivity extends DemoBaseActivity {
     });
   }
 
-  public void testQueryPolicyNetworkElseCache() throws AVException {
-    AVQuery<Student> q = AVQuery.getQuery(Student.class);
-    q.setCachePolicy(AVQuery.CachePolicy.NETWORK_ELSE_CACHE);
+  public void testQueryPolicyNetworkElseCache() throws LCException {
+    LCQuery<Student> q = LCQuery.getQuery(Student.class);
+    q.setCachePolicy(LCQuery.CachePolicy.NETWORK_ELSE_CACHE);
     // 单位毫秒
     q.setMaxCacheAge(1000 * 60 * 60); // 一小时
     q.limit(1);
@@ -293,9 +293,9 @@ public class QueryDemoActivity extends DemoBaseActivity {
     log("此时有本地缓存了，关闭网络时运行此例子，将从本地缓存中获取结果");
   }
 
-  public void testQueryPolicyNetworkOnly() throws AVException {
-    AVQuery<Student> q = AVQuery.getQuery(Student.class);
-    q.setCachePolicy(AVQuery.CachePolicy.NETWORK_ONLY);
+  public void testQueryPolicyNetworkOnly() throws LCException {
+    LCQuery<Student> q = LCQuery.getQuery(Student.class);
+    q.setCachePolicy(LCQuery.CachePolicy.NETWORK_ONLY);
     // 单位毫秒
     q.setMaxCacheAge(1000 * 60 * 60); // 一小时
     q.limit(1);
@@ -309,9 +309,9 @@ public class QueryDemoActivity extends DemoBaseActivity {
     log("NETWORK_ONLY 策略和默认的 IGNORE_CACHE 策略不同的是，前者会把结果保存在本地");
   }
 
-  public void testQueryPolicyCacheOnly() throws AVException {
-    AVQuery<Student> q = AVQuery.getQuery(Student.class);
-    q.setCachePolicy(AVQuery.CachePolicy.CACHE_ONLY);
+  public void testQueryPolicyCacheOnly() throws LCException {
+    LCQuery<Student> q = LCQuery.getQuery(Student.class);
+    q.setCachePolicy(LCQuery.CachePolicy.CACHE_ONLY);
     // 单位毫秒
     q.setMaxCacheAge(1000 * 60 * 60); // 一小时
     q.limit(1);
@@ -324,10 +324,10 @@ public class QueryDemoActivity extends DemoBaseActivity {
     log("从本地缓存获取了结果：" + prettyJSON(students));
   }
 
-  public void testQueryPolicyIngoreCache() throws AVException {
-    AVQuery<Student> q = AVQuery.getQuery(Student.class);
+  public void testQueryPolicyIngoreCache() throws LCException {
+    LCQuery<Student> q = LCQuery.getQuery(Student.class);
     log("此策略才网络获取结果，并不保存结果到本地");
-    q.setCachePolicy(AVQuery.CachePolicy.IGNORE_CACHE);
+    q.setCachePolicy(LCQuery.CachePolicy.IGNORE_CACHE);
     // 单位毫秒
     q.setMaxCacheAge(1000 * 60 * 60); // 一小时
     q.limit(1);
@@ -336,64 +336,64 @@ public class QueryDemoActivity extends DemoBaseActivity {
   }
 
   public void clearQueryCache() {
-    AVQuery<Student> q = AVQuery.getQuery(Student.class);
+    LCQuery<Student> q = LCQuery.getQuery(Student.class);
     q.limit(1);
     q.clearCachedResult();
     log("已删除 limit=1 className= Student 的查询缓存");
   }
 
   public void clearAllCache() {
-    AVQuery.clearAllCachedResults();
+    LCQuery.clearAllCachedResults();
     log("已删除所有的缓存");
   }
 
   // create an object and query it.
-  public void testObjectQuery() throws AVException {
-    AVObject person1 = new AVObject("Person");
+  public void testObjectQuery() throws LCException {
+    LCObject person1 = new LCObject("Person");
     person1.put("gender", "Female");
     person1.put("name", "Cake");
     person1.save();
 
-    AVObject person2 = new AVObject("Person");
+    LCObject person2 = new LCObject("Person");
     person2.put("gender", "Male");
     person2.put("name", "Man");
     person2.save();
 
-    AVObject something = new AVObject("Something");
+    LCObject something = new LCObject("Something");
     something.put("belongTo", "Cake");
     something.put("city", "ChangDe");
     something.save();
 
-    AVObject another = new AVObject("Something");
+    LCObject another = new LCObject("Something");
     another.put("belongTo", "Man");
     another.put("city", "Beijing");
     another.save();
 
-    AVQuery q1 = AVQuery.getQuery("Person");
+    LCQuery q1 = LCQuery.getQuery("Person");
     q1.whereEqualTo("gender", "Female");
 
-    AVQuery q2 = AVQuery.getQuery("Something");
+    LCQuery q2 = LCQuery.getQuery("Something");
     q2.whereMatchesKeyInQuery("belongTo", "name", q1);
-    List<AVObject> objects = q2.find();
+    List<LCObject> objects = q2.find();
     Assert.assertTrue(objects.size() > 0);
-    for (AVObject obj : objects) {
+    for (LCObject obj : objects) {
       Assert.assertTrue(obj.getString("belongTo").equals("Cake"));
     }
 
-    AVQuery q3 = AVQuery.getQuery("Something");
+    LCQuery q3 = LCQuery.getQuery("Something");
     q3.whereDoesNotMatchKeyInQuery("belongTo", "name", q1);
-    List<AVObject> list = q3.find();
+    List<LCObject> list = q3.find();
     Assert.assertTrue(list.size() > 0);
-    for (AVObject obj : list) {
+    for (LCObject obj : list) {
       Assert.assertFalse(obj.getString("belongTo").equals("Cake"));
     }
   }
 
-  public void testUserQuery() throws AVException {
+  public void testUserQuery() throws LCException {
     String lastString = null;
     // signup some test user
     for (int i = 0; i < 10; ++i) {
-      AVUser user = new AVUser();
+      LCUser user = new LCUser();
       user.setUsername(DemoUtils.getRandomString(10));
       user.setPassword(DemoUtils.getRandomString(10));
       user.signUp();
@@ -401,49 +401,49 @@ public class QueryDemoActivity extends DemoBaseActivity {
       lastString = user.getUsername();
     }
 
-    AVQuery currentQuery = AVUser.getQuery();
-    AVQuery innerQuery = AVUser.getQuery();
+    LCQuery currentQuery = LCUser.getQuery();
+    LCQuery innerQuery = LCUser.getQuery();
     innerQuery.whereContains("username", lastString);
     currentQuery.whereMatchesKeyInQuery("username", "username", innerQuery);
 
-    List<AVUser> users = currentQuery.find();
+    List<LCUser> users = currentQuery.find();
     Assert.assertTrue(users.size() == 1);
-    for (AVUser resultUser : users) {
+    for (LCUser resultUser : users) {
       Assert.assertTrue(resultUser.getUsername().equals(lastString));
     }
   }
 
-  public void testSample1() throws AVException {
-    AVQuery<AVObject> query = new AVQuery<>("Todo");
+  public void testSample1() throws LCException {
+    LCQuery<LCObject> query = new LCQuery<>("Todo");
     query.whereEqualTo("priority", 0);
     query.whereEqualTo("priority", 1);
     // 如果这样写，第二个条件将覆盖第一个条件，查询只会返回 priority = 1 的结果
-    List<AVObject> todos = query.find();
+    List<LCObject> todos = query.find();
 
-    AVObject tag1 = new AVObject("Tag");// 构建对象
+    LCObject tag1 = new LCObject("Tag");// 构建对象
     tag1.put("name", "今日必做");// 设置 Tag 名称
 
-    AVObject tag2 = new AVObject("Tag");// 构建对象
+    LCObject tag2 = new LCObject("Tag");// 构建对象
     tag2.put("name", "老婆吩咐");// 设置 Tag 名称
 
-    AVObject tag3 = new AVObject("Tag");// 构建对象
+    LCObject tag3 = new LCObject("Tag");// 构建对象
     tag3.put("name", "十分重要");// 设置 Tag 名称
 
-    AVObject todoFolder = new AVObject("TodoFolder");// 构建对象
+    LCObject todoFolder = new LCObject("TodoFolder");// 构建对象
     todoFolder.put("name", "家庭");// 设置 Todo 名称
     todoFolder.put("priority", 1);// 设置优先级
 
-    AVRelation<AVObject> relation = todoFolder.getRelation("tags");
+    LCRelation<LCObject> relation = todoFolder.getRelation("tags");
     relation.add(tag1);
     relation.add(tag2);
     relation.add(tag3);
 
     todoFolder.save();// 保存到云端
 
-    todoFolder = AVObject.createWithoutData("TodoFolder", "5661047dddb299ad5f460166");
+    todoFolder = LCObject.createWithoutData("TodoFolder", "5661047dddb299ad5f460166");
     relation = todoFolder.getRelation("tags");
     query = relation.getQuery();
-    List<AVObject> list = query.find();
+    List<LCObject> list = query.find();
   }
 
   private Date getDateWithDateString(String dateString) throws ParseException {
@@ -452,14 +452,14 @@ public class QueryDemoActivity extends DemoBaseActivity {
     return date;
   }
 
-  public void testSample2() throws AVException, ParseException {
-    final AVQuery<AVObject> startDateQuery = new AVQuery<>("Todo");
+  public void testSample2() throws LCException, ParseException {
+    final LCQuery<LCObject> startDateQuery = new LCQuery<>("Todo");
     startDateQuery.whereGreaterThanOrEqualTo("createdAt", getDateWithDateString("2016-11-13"));
 
-    final AVQuery<AVObject> endDateQuery = new AVQuery<>("Todo");
+    final LCQuery<LCObject> endDateQuery = new LCQuery<>("Todo");
     endDateQuery.whereLessThan("createdAt", getDateWithDateString("2016-12-03"));
 
-    AVQuery<AVObject> query = AVQuery.and(Arrays.asList(startDateQuery, endDateQuery));
-    List<AVObject> list = query.find();
+    LCQuery<LCObject> query = LCQuery.and(Arrays.asList(startDateQuery, endDateQuery));
+    List<LCObject> list = query.find();
   }
 }

@@ -40,7 +40,7 @@ public class PaasClient {
   static void initializeGlobalClient() {
     if (null == apiService) {
       AppRouter appRouter = AppRouter.getInstance();
-      appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.API).subscribe(
+      appRouter.getEndpoint(LeanCloud.getApplicationId(), LeanService.API).subscribe(
               new Consumer<String>() {
                 @Override
                 public void accept(String apiHost) throws Exception {
@@ -62,7 +62,7 @@ public class PaasClient {
     if (null == apiService) {
       OkHttpClient okHttpClient = getGlobalOkHttpClient();
       AppRouter appRouter = AppRouter.getInstance();
-      String apiHost = appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.API).blockingFirst();// donot block current thread.
+      String apiHost = appRouter.getEndpoint(LeanCloud.getApplicationId(), LeanService.API).blockingFirst();// donot block current thread.
       Retrofit retrofit = new Retrofit.Builder()
               .baseUrl(apiHost)
               .addConverterFactory(AppConfiguration.getRetrofitConverterFactory())
@@ -79,7 +79,7 @@ public class PaasClient {
     if (null == pushService) {
       OkHttpClient okHttpClient = getGlobalOkHttpClient();
       AppRouter appRouter = AppRouter.getInstance();
-      String apiHost = appRouter.getEndpoint(AVOSCloud.getApplicationId(), AVOSService.PUSH).blockingFirst();// donot block current thread.
+      String apiHost = appRouter.getEndpoint(LeanCloud.getApplicationId(), LeanService.PUSH).blockingFirst();// donot block current thread.
       Retrofit retrofit = new Retrofit.Builder()
               .baseUrl(apiHost)
               .addConverterFactory(AppConfiguration.getRetrofitConverterFactory())
