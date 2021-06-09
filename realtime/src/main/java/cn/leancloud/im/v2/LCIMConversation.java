@@ -142,11 +142,7 @@ public class LCIMConversation {
   }
 
   String getCreatedAtString() {
-    return (String)instanceData.get(LCObject.KEY_CREATED_AT);
-  }
-
-  String getCreatedAtString() {
-    return (String) instanceData.get(AVObject.KEY_CREATED_AT);
+    return (String) instanceData.get(LCObject.KEY_CREATED_AT);
   }
   void setCreatedAt(String createdAt) {
     instanceData.put(LCObject.KEY_CREATED_AT, createdAt);
