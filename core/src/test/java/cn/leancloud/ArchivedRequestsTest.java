@@ -106,6 +106,23 @@ public class ArchivedRequestsTest extends TestCase {
     assertTrue(testSucceed);
   }
 
+  public void testSaveEventuallyWithoutNetwork() throws Exception {
+    ArchivedRequests archivedRequests = ArchivedRequests.getInstance();
+
+    AVObject object = new AVObject("Student");
+    object.put("name", "Automatic Tester");
+    object.add("course", "Art");
+    object.increment("age", 23);
+    object.decrement("age");
+    object.addUnique("course", "Math");
+    archivedRequests.saveEventually(object);
+
+    AVObject obj2 = AVObject.createWithoutData("Something", "5ee898df4d498f00068da1f6");
+    obj2.put("occ", System.currentTimeMillis());
+    archivedRequests.saveEventually(obj2);
+
+    Thread.sleep(60000);
+  }
   public void testCompoundRequestSerialize() {
     LCObject object = new LCObject("Student");
     object.put("name", "Automatic Tester");

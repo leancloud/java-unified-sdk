@@ -157,6 +157,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
       sqLiteDatabase.execSQL(MESSAGE_CREATE_SQL);
       sqLiteDatabase.execSQL(MESSAGE_UNIQUE_INDEX_SQL);
       sqLiteDatabase.execSQL(CONVERSATION_CREATE_SQL);
+      LOGGER.i("Succeed to create sqlite tables with version: " + AVIMMessageStorage.DB_VERSION);
     }
 
     @Override

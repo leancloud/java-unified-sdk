@@ -34,9 +34,9 @@ public class SubUserTest extends UserBasedTestCase {
 
   public void testSingupWithEmail() throws Exception {
     SubUser user = new SubUser();
-    user.setEmail("jfeng@test.com");
-    user.setUsername("jfeng");
-    user.setPassword("FER$@$@#Ffwe");
+    user.setEmail(EMAIL);
+    user.setUsername(USERNAME);
+    user.setPassword(PASSWORD);
     final CountDownLatch latch = new CountDownLatch(1);
     user.signUpInBackground().subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {

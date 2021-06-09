@@ -5,6 +5,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -42,7 +43,7 @@ public class LCUserSerializerTest extends UserBasedTestCase {
     final LCUser user = LCObject.createWithoutData(LCUser.class, testUserObjectId);
     user.fetchInBackground("author,kuolie,black").subscribe(new Observer<LCObject>() {
       @Override
-      public void onSubscribe(Disposable disposable) {
+      public void onSubscribe(@NotNull Disposable disposable) {
 
       }
 
@@ -55,8 +56,7 @@ public class LCUserSerializerTest extends UserBasedTestCase {
       }
 
       @Override
-      public void onError(Throwable throwable) {
-        throwable.printStackTrace();
+      public void onError(@NotNull Throwable throwable) {
         latch.countDown();
       }
 
@@ -80,6 +80,7 @@ public class LCUserSerializerTest extends UserBasedTestCase {
     assertTrue(null != user);
 
     try {
+      // gson doesnot support "new Date".
       jsonString = "{ \"_version\":\"5\",\"className\":\"_User\"," +
               "\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"signDate\":new Date(1594310400000)," +
               "\"sessionToken\":[new Date(1594310200000), new Date(1594310420000)],\"username\":\"变音小助手\",\"siOffDate\":new Date(1594310400000)}}";

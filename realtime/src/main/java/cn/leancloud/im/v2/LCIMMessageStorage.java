@@ -525,7 +525,7 @@ public class LCIMMessageStorage {
       values.put(COLUMN_ATTRIBUTE, JSON.toJSONString(conversation.getAttributes()));
       values.put(COLUMN_INSTANCEDATA, JSON.toJSONString(conversation.instanceData));
       values.put(COLUMN_CREATEDAT, conversation.getCreatedAtString());
-      values.put(COLUMN_UPDATEDAT, conversation.getCreatedAtString());
+      values.put(COLUMN_UPDATEDAT, conversation.getUpdatedAtString());
       values.put(COLUMN_CREATOR, conversation.getCreator());
       values.put(COLUMN_EXPIREAT, System.currentTimeMillis()
               + Conversation.DEFAULT_CONVERSATION_EXPIRE_TIME_IN_MILLS);
@@ -564,7 +564,8 @@ public class LCIMMessageStorage {
 
       int insertResult = this.delegate.insert(CONVERSATION_TABLE, values);
       if (insertResult < 0) {
-        LOGGER.d("failed to insert conversation. conversationId=" + conversation.getConversationId() + ", result=" + insertResult);
+        LOGGER.d("failed to insert conversation. conversationId=" + conversation.getConversationId()
+                + ", result=" + insertResult);
       }
     }
     return 1;
