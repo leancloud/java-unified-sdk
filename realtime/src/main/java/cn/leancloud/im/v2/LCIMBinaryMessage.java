@@ -43,7 +43,7 @@ public class LCIMBinaryMessage extends LCIMMessage {
   }
 
   /**
-   * create binary instance by copying AVIMMessage instance(except content field).
+   * create binary instance by copying LCIMMessage instance(except content field).
    * @param other other instance
    * @return new binary message instance.
    */

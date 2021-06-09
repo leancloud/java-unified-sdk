@@ -79,7 +79,6 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
 
   /**
    * 原子创建单聊会话，如果为 true，则先查询是否有符合条件的 conversation，有则返回已存在的，否则创建新的
-   * 详见 https://github.com/leancloud/avoscloud-push/issues/293
    */
   private boolean isUnique;
 
@@ -271,7 +270,7 @@ public class ConversationControlPacket extends PeerBasedCommandPacket {
                                                                  Signature signature, boolean isTransient, boolean isUnique, boolean isTemporary, int tempTTL,
                                                                  boolean isSystem, int requestId) {
     ConversationControlPacket ccp = new ConversationControlPacket();
-//    if (AVIMClient.getClientsCount() > 1) {
+//    if (LCIMClient.getClientsCount() > 1) {
       // selfId is necessary only when more than 1 clients logined.
       ccp.setPeerId(selfId);
 //    }

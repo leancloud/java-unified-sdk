@@ -8,7 +8,7 @@ import cn.leancloud.im.v2.LCIMException;
 import java.util.List;
 
 /**
- * 从AVIMClient查询AVIMConversation时的回调抽象类
+ * 从 IMClient 查询 IMConversation 时的回调抽象类
  */
 public abstract class LCIMConversationQueryCallback
         extends LCCallback<List<LCIMConversation>> {

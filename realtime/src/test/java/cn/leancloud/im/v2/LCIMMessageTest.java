@@ -20,8 +20,8 @@ public class LCIMMessageTest extends TestCase {
     originMsg.setMentionAll(true);
     originMsg.setMentionListString("@userA, @userB, @userC");
     originMsg.setMessageId("msgId-xfhei-wrw");
-    originMsg.setMessageIOType(LCIMMessage.AVIMMessageIOType.AVIMMessageIOTypeIn);
-    originMsg.setMessageStatus(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusReceipt);
+    originMsg.setMessageIOType(LCIMMessage.MessageIOType.TypeIn);
+    originMsg.setMessageStatus(LCIMMessage.MessageStatus.StatusReceipt);
     originMsg.setUpdateAt(40000);
     originMsg.setReadAt(3232099);
     originMsg.setUniqueToken("uniquetoken-faei-read-8.8");
@@ -40,8 +40,8 @@ public class LCIMMessageTest extends TestCase {
     originMsg.setMentionAll(true);
     originMsg.setMentionListString("@userA, @userB, @userC");
     originMsg.setMessageId("msgId-xfhei-wrw");
-    originMsg.setMessageIOType(LCIMMessage.AVIMMessageIOType.AVIMMessageIOTypeIn);
-    originMsg.setMessageStatus(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusReceipt);
+    originMsg.setMessageIOType(LCIMMessage.MessageIOType.TypeIn);
+    originMsg.setMessageStatus(LCIMMessage.MessageStatus.StatusReceipt);
     originMsg.setUpdateAt(40000);
     originMsg.setReadAt(3232099);
     originMsg.setUniqueToken("uniquetoken-faei-read-8.8");

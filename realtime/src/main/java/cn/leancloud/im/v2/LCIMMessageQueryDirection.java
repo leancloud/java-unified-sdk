@@ -1,9 +1,9 @@
 package cn.leancloud.im.v2;
 
 public enum LCIMMessageQueryDirection {
-  LCIMMessageQueryDirectionUnknown(-1),
-  LCIMMessageQueryDirectionFromNewToOld(0),
-  LCIMMessageQueryDirectionFromOldToNew(1);
+  DirectionUnknown(-1),
+  DirectionFromNewToOld(0),
+  DirectionFromOldToNew(1);
 
   private static String descriptions[] = new String[]{"Unknown", "Old", "New"};
   private int code = -1;
@@ -23,11 +23,11 @@ public enum LCIMMessageQueryDirection {
   public static LCIMMessageQueryDirection parseFromCode(int code) {
     switch (code) {
       case 0:
-        return LCIMMessageQueryDirectionFromNewToOld;
+        return DirectionFromNewToOld;
       case 1:
-        return LCIMMessageQueryDirectionFromOldToNew;
+        return DirectionFromOldToNew;
       default:
-        return LCIMMessageQueryDirectionUnknown;
+        return DirectionUnknown;
     }
   }
 

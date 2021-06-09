@@ -8,7 +8,7 @@ public interface SignatureFactory {
   int SIGNATURE_FAILED_LOGIN = 4102;
 
   /**
-   * 实现一个基础签名方法 其中的签名算法会在SessionManager和AVIMClient(V2)中被使用
+   * 实现一个基础签名方法 其中的签名算法会在SessionManager和 LCIMClient(V2) 中被使用
    *
    * @param peerId peer id
    * @param watchIds watch peer ids.
@@ -18,7 +18,7 @@ public interface SignatureFactory {
   Signature createSignature(String peerId, List<String> watchIds) throws SignatureException;
 
   /**
-   * 实现AVIMConversation相关的签名计算
+   * 实现 LCIMConversation 相关的签名计算
    *
    * @param conversationId conversation id
    * @param clientId  owner client id

@@ -6,14 +6,14 @@ package cn.leancloud.im.v2;
  */
 
 public class LCIMMessageInterval {
-  public AVIMMessageIntervalBound startIntervalBound;
-  public AVIMMessageIntervalBound endIntervalBound;
+  public MessageIntervalBound startIntervalBound;
+  public MessageIntervalBound endIntervalBound;
 
-  public static class AVIMMessageIntervalBound {
+  public static class MessageIntervalBound {
     public String messageId;
     public long timestamp;
     public boolean closed;
-    private AVIMMessageIntervalBound(String messageId, long timestamp, boolean closed) {
+    private MessageIntervalBound(String messageId, long timestamp, boolean closed) {
       this.messageId = messageId;
       this.timestamp = timestamp;
       this.closed = closed;
@@ -29,8 +29,8 @@ public class LCIMMessageInterval {
    *                    false: not include.
    * @return  query interval bound instance
    */
-  public static AVIMMessageIntervalBound createBound(String messageId, long timestamp, boolean closed) {
-    return new AVIMMessageIntervalBound(messageId, timestamp, closed);
+  public static MessageIntervalBound createBound(String messageId, long timestamp, boolean closed) {
+    return new MessageIntervalBound(messageId, timestamp, closed);
   }
 
   /**
@@ -38,7 +38,7 @@ public class LCIMMessageInterval {
    * @param start - interval start bound
    * @param end   - interval end bound
    */
-  public LCIMMessageInterval(AVIMMessageIntervalBound start, AVIMMessageIntervalBound end) {
+  public LCIMMessageInterval(MessageIntervalBound start, MessageIntervalBound end) {
     this.startIntervalBound = start;
     this.endIntervalBound = end;
   }

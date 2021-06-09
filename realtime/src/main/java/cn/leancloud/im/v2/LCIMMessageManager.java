@@ -28,13 +28,13 @@ public class LCIMMessageManager {
   static LCIMConversationEventHandler conversationEventHandler;
 
   static {
-    registerAVIMMessageType(LCIMTextMessage.class);
-    registerAVIMMessageType(LCIMFileMessage.class);
-    registerAVIMMessageType(LCIMImageMessage.class);
-    registerAVIMMessageType(LCIMAudioMessage.class);
-    registerAVIMMessageType(LCIMVideoMessage.class);
-    registerAVIMMessageType(LCIMLocationMessage.class);
-    registerAVIMMessageType(LCIMRecalledMessage.class);
+    registerLCIMMessageType(LCIMTextMessage.class);
+    registerLCIMMessageType(LCIMFileMessage.class);
+    registerLCIMMessageType(LCIMImageMessage.class);
+    registerLCIMMessageType(LCIMAudioMessage.class);
+    registerLCIMMessageType(LCIMVideoMessage.class);
+    registerLCIMMessageType(LCIMLocationMessage.class);
+    registerLCIMMessageType(LCIMRecalledMessage.class);
   }
 
   /**
@@ -42,7 +42,7 @@ public class LCIMMessageManager {
    *
    * @param messageType message type.
    */
-  public static void registerAVIMMessageType(Class<? extends LCIMTypedMessage> messageType) {
+  public static void registerLCIMMessageType(Class<? extends LCIMTypedMessage> messageType) {
     LCIMMessageType type = messageType.getAnnotation(LCIMMessageType.class);
     if (type == null) {
       throw new IncompleteAnnotationException(LCIMMessageType.class, "type");
@@ -60,9 +60,9 @@ public class LCIMMessageManager {
   }
 
   /**
-   * 注册一般情况下的消息handler，只有在没有类型的AVIMMessage或者没有其他handler时才会被调用
+   * 注册一般情况下的消息handler，只有在没有类型的 LCIMMessage 或者没有其他 handler 时才会被调用
    *
-   * 请在Application初始化时设置
+   * 请在 Application 初始化时设置
    *
    * @param handler message handler.
    */
@@ -189,10 +189,10 @@ public class LCIMMessageManager {
   }
 
   /**
-   * 解析AVIMMessage对象的子类
+   * 解析 LCIMMessage 对象的子类
    *
    * @param message message
-   * @return Return the instance of AVIMTypedMessage
+   * @return Return the instance of LCIMTypedMessage
    */
   protected static LCIMMessage parseTypedMessage(LCIMMessage message) {
     int messageType = getMessageType(message.getContent());

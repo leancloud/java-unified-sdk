@@ -31,10 +31,10 @@ public class LCIMConversation {
   private static final LCLogger LOGGER = LogUtil.getLogger(LCIMConversation.class);
   private static final String ATTR_PERFIX = Conversation.ATTRIBUTE + ".";
 
-  LCIMClient client;  // AVIMClient 引用
+  LCIMClient client;  // IMClient 引用
   LCIMMessageStorage storage;
 
-  // 注意，sqlite conversation 表中的 lastMessageAt、lastMessage 的来源是 AVIMConversationQuery
+  // 注意，sqlite conversation 表中的 lastMessageAt、lastMessage 的来源是 IMConversationQuery
   // 所以并不一定是最新的，返回时要与 message 表中的数据比较，然后返回最新的，
   Date lastMessageAt;
   LCIMMessage lastMessage;
@@ -175,7 +175,7 @@ public class LCIMConversation {
   long latestConversationFetch = 0;
 
   /**
-   * 判断当前 Conversation 是否有效，因为 AVIMConversation 为客户端创建，有可能因为没有同步造成数据丢失
+   * 判断当前 Conversation 是否有效，因为 IMConversation 为客户端创建，有可能因为没有同步造成数据丢失
    * 可以根据此函数来判断，如果无效，则需要调用 fetchInfoInBackground 同步数据
    * 如果 fetchInfoInBackground 出错（比如因为 acl 问题造成 Forbidden to find by class permissions ），
    * 客户端就会在收到消息后一直做 fetch 操作，所以这里加了一个判断，如果在 FETCH_TIME_INTERVEL 内有业务类型的
@@ -369,7 +369,7 @@ public class LCIMConversation {
    * Add a key-value pair to this conversation
    * @param key   Keys must be alphanumerical plus underscore, and start with a letter.
    * @param value Values may be numerical, String, JSONObject, JSONArray, JSONObject.NULL, or other
-   *              AVObjects. value may not be null.
+   *              LCObjects. value may not be null.
    */
   public void set(String key, Object value) {
     if (!StringUtil.isEmpty(key) && null != value) {
@@ -671,7 +671,7 @@ public class LCIMConversation {
     message.setTimestamp(System.currentTimeMillis());
     if (!AppConfiguration.getGlobalNetworkingDetector().isConnected()) {
       // judge network status.
-      message.setMessageStatus(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed);
+      message.setMessageStatus(LCIMMessage.MessageStatus.StatusFailed);
       if (callback != null) {
         callback.internalDone(new LCException(LCException.CONNECTION_FAILED, "Connection lost"));
       }
@@ -687,7 +687,7 @@ public class LCIMConversation {
           if (null != msgTimestamp) {
             message.setTimestamp(msgTimestamp);
           }
-          message.setMessageStatus(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusSent);
+          message.setMessageStatus(LCIMMessage.MessageStatus.StatusSent);
           if ((null == messageOption || !messageOption.isTransient()) && LCIMOptions.getGlobalOptions().isMessageQueryCacheEnabled()) {
             setLastMessage(message);
             storage.insertMessage(message, false);
@@ -697,7 +697,7 @@ public class LCIMConversation {
           LCIMConversation.this.lastMessageAt = (null != msgTimestamp)? new Date(msgTimestamp) : new Date();
           storage.updateConversationLastMessageAt(LCIMConversation.this);
         } else {
-          message.setMessageStatus(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed);
+          message.setMessageStatus(LCIMMessage.MessageStatus.StatusFailed);
         }
         if (null != callback) {
           callback.internalDone(LCIMException.wrapperException(e));
@@ -705,12 +705,12 @@ public class LCIMConversation {
       }
     };
 
-    message.setMessageStatus(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusSending);
+    message.setMessageStatus(LCIMMessage.MessageStatus.StatusSending);
     if (LCIMFileMessage.class.isAssignableFrom(message.getClass())) {
       LCIMFileMessageAccessor.upload((LCIMFileMessage) message, new SaveCallback() {
         public void done(LCException e) {
           if (e != null) {
-            message.setMessageStatus(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed);
+            message.setMessageStatus(LCIMMessage.MessageStatus.StatusFailed);
             if (callback != null) {
               callback.internalDone(e);
             }
@@ -775,7 +775,7 @@ public class LCIMConversation {
       LCIMFileMessageAccessor.upload((LCIMFileMessage) newMessage, new SaveCallback() {
         public void done(LCException e) {
           if (e != null) {
-            newMessage.setMessageStatus(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed);
+            newMessage.setMessageStatus(LCIMMessage.MessageStatus.StatusFailed);
             if (callback != null) {
               callback.internalDone(e);
             }
@@ -818,7 +818,7 @@ public class LCIMConversation {
           LCIMRecalledMessage recalledMessage = new LCIMRecalledMessage();
           copyMessageWithoutContent(message, recalledMessage);
           recalledMessage.setUpdateAt(patchTime);
-          recalledMessage.setMessageStatus(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusRecalled);
+          recalledMessage.setMessageStatus(LCIMMessage.MessageStatus.StatusRecalled);
           updateLocalMessage(recalledMessage);
 
           if (null != callback) {
@@ -949,7 +949,7 @@ public class LCIMConversation {
   private void queryMessagesFromServer(String msgId, long timestamp, int limit,
                                        String toMsgId, long toTimestamp, final LCIMMessagesQueryCallback callback) {
     queryMessagesFromServer(msgId, timestamp, false, toMsgId, toTimestamp, false,
-            LCIMMessageQueryDirection.LCIMMessageQueryDirectionFromNewToOld, limit, callback);
+            LCIMMessageQueryDirection.DirectionFromNewToOld, limit, callback);
   }
 
   /**
@@ -957,7 +957,7 @@ public class LCIMConversation {
    * 注意：这个操作总是会从云端获取记录。
    * 另，该函数和 queryMessagesByType(type, msgId, timestamp, limit, callback) 配合使用可以实现翻页效果。
    *
-   * @param msgType     消息类型，可以参看  `AVIMMessageType` 里的定义。
+   * @param msgType     消息类型，可以参看  `LCIMMessageType` 里的定义。
    * @param limit       本批次希望获取的消息数量。
    * @param callback    结果回调函数
    */
@@ -970,7 +970,7 @@ public class LCIMConversation {
    * 注意：这个操作总是会从云端获取记录。
    * 另，如果不指定 msgId 和 timestamp，则该函数效果等同于 queryMessageByType(type, limit, callback)
    *
-   * @param msgType     消息类型，可以参看  `AVIMMessageType` 里的定义。
+   * @param msgType     消息类型，可以参看  `LCIMMessageType` 里的定义。
    * @param msgId       消息id，从特定消息 id 开始向前查询（结果不会包含该记录）
    * @param timestamp   查询起始的时间戳，返回小于这个时间的记录，必须配合 msgId 一起使用。
    *                    要从最新消息开始获取时，请用 0 代替客户端的本地当前时间（System.currentTimeMillis()）
@@ -989,7 +989,7 @@ public class LCIMConversation {
     params.put(Conversation.PARAM_MESSAGE_QUERY_TO_MSGID, "");
     params.put(Conversation.PARAM_MESSAGE_QUERY_TO_TIMESTAMP, 0);
     params.put(Conversation.PARAM_MESSAGE_QUERY_TOCLOSED, false);
-    params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, LCIMMessageQueryDirection.LCIMMessageQueryDirectionFromNewToOld.getCode());
+    params.put(Conversation.PARAM_MESSAGE_QUERY_DIRECT, LCIMMessageQueryDirection.DirectionFromNewToOld.getCode());
     params.put(Conversation.PARAM_MESSAGE_QUERY_LIMIT, limit);
     params.put(Conversation.PARAM_MESSAGE_QUERY_TYPE, msgType);
     boolean ret = InternalConfiguration.getOperationTube().queryMessages(client.getConnectionManager(), this.client.getClientId(), getConversationId(),
@@ -1265,9 +1265,9 @@ public class LCIMConversation {
 
   /**
    * 根据指定的区间来查询历史消息，可以指定区间开闭、查询方向以及最大条目限制
-   * @param interval  - 区间，由起止 AVIMMessageIntervalBound 组成
-   * @param direction - 查询方向，支持向前（AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromNewToOld）
-   *                    或向后（AVIMMessageQueryDirection.AVIMMessageQueryDirectionFromOldToNew）查询
+   * @param interval  - 区间，由起止 MessageIntervalBound 组成
+   * @param direction - 查询方向，支持向前（LCIMMessageQueryDirection.DirectionFromNewToOld）
+   *                    或向后（LCIMMessageQueryDirection.DirectionFromOldToNew）查询
    * @param limit     - 结果最大条目限制
    * @param callback  - 结果回调函数
    */
@@ -1815,7 +1815,7 @@ public class LCIMConversation {
   }
 
   /**
-   * 处理 AVIMConversation attr 列
+   * 处理 LCIMConversation attr 列
    * 因为 sdk 支持增量更新与覆盖更新，而增量更新与覆盖更新需要的结构不一样，所以这里处理一下
    * 具体格式可参照下边的注释，注意，两种格式不能同时存在，否则 server 会报错
    * @param attributes attribute map
@@ -1882,47 +1882,11 @@ public class LCIMConversation {
   }
 
   /**
-   * parse AVIMConversation from jsonObject
+   * parse LCIMConversation from jsonObject
    * @param client client instance
    * @param jsonObj json object
    * @return conversation instance.
    */
-//  private static AVIMConversation parseFromJson(AVIMClient client, JSONObject jsonObj) {
-//    if (null == jsonObj || null == client) {
-//      return null;
-//    }
-//
-//    String conversationId = jsonObj.getString(AVObject.KEY_OBJECT_ID);
-//    if (StringUtil.isEmpty(conversationId)) {
-//      return null;
-//    }
-//    boolean systemConv = false;
-//    boolean transientConv = false;
-//    boolean tempConv = false;
-//    if (jsonObj.containsKey(Conversation.SYSTEM)) {
-//      systemConv = jsonObj.getBoolean(Conversation.SYSTEM);
-//    }
-//    if (jsonObj.containsKey(Conversation.TRANSIENT)) {
-//      transientConv = jsonObj.getBoolean(Conversation.TRANSIENT);
-//    }
-//    if (jsonObj.containsKey(Conversation.TEMPORARY)) {
-//      tempConv = jsonObj.getBoolean(Conversation.TEMPORARY);
-//    }
-//    AVIMConversation originConv = null;
-//    if (systemConv) {
-//      originConv = new AVIMServiceConversation(client, conversationId);
-//    } else if (tempConv) {
-//      originConv = new AVIMTemporaryConversation(client, conversationId);
-//    } else if (transientConv) {
-//      originConv = new AVIMChatRoom(client, conversationId);
-//    } else {
-//      originConv = new AVIMConversation(client, conversationId);
-//    }
-//    originConv.updateFetchTimestamp(System.currentTimeMillis());
-//
-//    return updateConversation(originConv, jsonObj);
-//  }
-
   public static LCIMConversation parseFromJson(LCIMClient client, Map<String, Object> jsonObj) {
     if (null == jsonObj || null == client) {
       return null;
@@ -1993,42 +1957,6 @@ public class LCIMConversation {
 
     return conversation;
   }
-
-//  private static AVIMConversation updateConversation(AVIMConversation conversation, JSONObject jsonObj) {
-//    if (null == jsonObj || null == conversation) {
-//      return conversation;
-//    }
-//
-//    String conversationId = jsonObj.getString(AVObject.KEY_OBJECT_ID);
-//    List<String> m = jsonObj.getObject(Conversation.MEMBERS, List.class);
-//    conversation.setMembers(m);
-//    conversation.setCreator(jsonObj.getString(Conversation.CREATOR));
-//    HashMap<String, Object> attributes = new HashMap<String, Object>();
-//
-//    if (jsonObj.containsKey(Conversation.ATTRIBUTE)) {
-//      JSONObject moreAttributes = jsonObj.getJSONObject(Conversation.ATTRIBUTE);
-//      if (moreAttributes != null) {
-//        Map<String, Object> moreAttributesMap = JSON.toJavaObject(moreAttributes, Map.class);
-//        attributes.putAll(moreAttributesMap);
-//      }
-//    }
-//    conversation.setAttributesForInit(attributes);
-//
-//    conversation.instanceData.clear();
-//    for (Map.Entry<String, Object> entry : jsonObj.entrySet()) {
-//      String key = entry.getKey();
-//      conversation.instanceData.put(key, entry.getValue());
-//    }
-//
-//    AVIMMessage message = AVIMTypedMessage.parseMessage(conversationId, jsonObj);
-//    conversation.setLastMessage(message);
-//
-//    if (jsonObj.containsKey(Conversation.LAST_MESSAGE_AT)) {
-//      conversation.setLastMessageAt(Utils.dateFromMap(jsonObj.getObject(Conversation.LAST_MESSAGE_AT, Map.class)));
-//    }
-//
-//    return conversation;
-//  }
 
   public LCIMException processQueryResult(String result) {
     if (null != result) {

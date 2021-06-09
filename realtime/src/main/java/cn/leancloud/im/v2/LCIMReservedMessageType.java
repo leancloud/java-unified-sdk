@@ -22,7 +22,7 @@ public enum LCIMReservedMessageType {
     return type;
   }
 
-  public static LCIMReservedMessageType getAVIMReservedMessageType(int type) {
+  public static LCIMReservedMessageType getLCIMReservedMessageType(int type) {
     switch (type) {
       case 0:
         return UnsupportedMessageType;

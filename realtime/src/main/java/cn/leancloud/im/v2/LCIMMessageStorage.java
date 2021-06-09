@@ -210,7 +210,7 @@ public class LCIMMessageStorage {
     values.put(COLUMN_MESSAGE_DELIVEREDAT, message.getDeliveredAt());
     values.put(COLUMN_MESSAGE_READAT, message.getReadAt());
     values.put(COLUMN_MESSAGE_UPDATEAT, message.getUpdateAt());
-    values.put(COLUMN_STATUS, LCIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed.getStatusCode());
+    values.put(COLUMN_STATUS, LCIMMessage.MessageStatus.StatusFailed.getStatusCode());
     values.put(COLUMN_BREAKPOINT, 0);
     values.put(COLUMN_DEDUPLICATED_TOKEN, message.getUniqueToken());
 
@@ -231,7 +231,7 @@ public class LCIMMessageStorage {
       return true;
     }
     String internalMessageId = generateInternalMessageId(message.getUniqueToken());
-    String status = String.valueOf(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusFailed.getStatusCode());
+    String status = String.valueOf(LCIMMessage.MessageStatus.StatusFailed.getStatusCode());
     int ret = this.delegate.delete(MESSAGE_TABLE, SQL.DELETE_LOCAL_MESSAGE,
             new String[]{message.getConversationId(), internalMessageId, status, message.getUniqueToken()});
     return ret > 0;
