@@ -487,7 +487,7 @@ public class AndroidDatabaseDelegate implements DatabaseDelegate {
     }
     message.setMessageId(mid);
     message.setUniqueToken(uniqueToken);
-    message.setMessageStatus(LCIMMessage.AVIMMessageStatus.getMessageStatus(status));
+    message.setMessageStatus(LCIMMessage.MessageStatus.getMessageStatus(status));
     message.setUpdateAt(updateAt);
     message.setMentionAll( mentionAll == 1);
     message.setCurrentClient(this.clientId);
