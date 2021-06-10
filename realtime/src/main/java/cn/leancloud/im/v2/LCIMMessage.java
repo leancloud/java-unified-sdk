@@ -28,8 +28,8 @@ public class LCIMMessage {
   protected String messageId;
   protected String uniqueToken;
 
-  protected AVIMMessageStatus status;
-  protected AVIMMessageIOType ioType;
+  protected MessageStatus status;
+  protected MessageIOType ioType;
 
   public LCIMMessage() {
     this(null, null);
@@ -44,8 +44,8 @@ public class LCIMMessage {
   }
 
   public LCIMMessage(String conversationId, String from, long timestamp, long deliveredAt, long readAt) {
-    this.ioType = AVIMMessageIOType.AVIMMessageIOTypeOut;
-    this.status = AVIMMessageStatus.AVIMMessageStatusNone;
+    this.ioType = MessageIOType.TypeOut;
+    this.status = MessageStatus.StatusNone;
     this.conversationId = conversationId;
     this.from = from;
     this.timestamp = timestamp;
@@ -189,7 +189,7 @@ public class LCIMMessage {
    *
    * @param status message status
    */
-  public void setMessageStatus(AVIMMessageStatus status) {
+  public void setMessageStatus(MessageStatus status) {
     this.status = status;
   }
 
@@ -199,7 +199,7 @@ public class LCIMMessage {
    * @return message status
    */
 
-  public AVIMMessageStatus getMessageStatus() {
+  public MessageStatus getMessageStatus() {
     return this.status;
   }
 
@@ -208,7 +208,7 @@ public class LCIMMessage {
    *
    * @return message io type
    */
-  public AVIMMessageIOType getMessageIOType() {
+  public MessageIOType getMessageIOType() {
     return ioType;
   }
 
@@ -217,7 +217,7 @@ public class LCIMMessage {
    *
    * @param ioType message io type
    */
-  public void setMessageIOType(AVIMMessageIOType ioType) {
+  public void setMessageIOType(MessageIOType ioType) {
     this.ioType = ioType;
   }
 
@@ -491,10 +491,10 @@ public class LCIMMessage {
       message.setUniqueToken((String) jsonObject.get("uniqueToken"));
     }
     if (jsonObject.containsKey("io")) {
-      message.setMessageIOType(AVIMMessageIOType.getMessageIOType((int)jsonObject.get("io")));
+      message.setMessageIOType(MessageIOType.getMessageIOType((int)jsonObject.get("io")));
     }
     if (jsonObject.containsKey("status")) {
-      message.setMessageStatus(AVIMMessageStatus.getMessageStatus((int)jsonObject.get("status")));
+      message.setMessageStatus(MessageStatus.getMessageStatus((int)jsonObject.get("status")));
     }
     if (jsonObject.containsKey("timestamp")) {
       message.setTimestamp(((Number) jsonObject.get("timestamp")).longValue());
@@ -541,12 +541,12 @@ public class LCIMMessage {
     return parseJSON(json);
   }
 
-  public enum AVIMMessageStatus {
-    AVIMMessageStatusNone(0), AVIMMessageStatusSending(1), AVIMMessageStatusSent(2),
-    AVIMMessageStatusReceipt(3), AVIMMessageStatusFailed(4), AVIMMessageStatusRecalled(5);
+  public enum MessageStatus {
+    StatusNone(0), StatusSending(1), StatusSent(2),
+    StatusReceipt(3), StatusFailed(4), StatusRecalled(5);
     int statusCode;
 
-    AVIMMessageStatus(int status) {
+    MessageStatus(int status) {
       this.statusCode = status;
     }
 
@@ -554,20 +554,20 @@ public class LCIMMessage {
       return statusCode;
     }
 
-    public static AVIMMessageStatus getMessageStatus(int statusCode) {
+    public static MessageStatus getMessageStatus(int statusCode) {
       switch (statusCode) {
         case 0:
-          return AVIMMessageStatusNone;
+          return StatusNone;
         case 1:
-          return AVIMMessageStatusSending;
+          return StatusSending;
         case 2:
-          return AVIMMessageStatusSent;
+          return StatusSent;
         case 3:
-          return AVIMMessageStatusReceipt;
+          return StatusReceipt;
         case 4:
-          return AVIMMessageStatusFailed;
+          return StatusFailed;
         case 5:
-          return AVIMMessageStatusRecalled;
+          return StatusRecalled;
         default:
           return null;
       }
@@ -575,18 +575,18 @@ public class LCIMMessage {
   }
 
 
-  public enum AVIMMessageIOType {
+  public enum MessageIOType {
     /**
      * 标记收到的消息
      */
-    AVIMMessageIOTypeIn(1),
+    TypeIn(1),
     /**
      * 标记发送的消息
      */
-    AVIMMessageIOTypeOut(2);
+    TypeOut(2);
     int ioType;
 
-    AVIMMessageIOType(int type) {
+    MessageIOType(int type) {
       this.ioType = type;
     }
 
@@ -594,14 +594,14 @@ public class LCIMMessage {
       return ioType;
     }
 
-    public static AVIMMessageIOType getMessageIOType(int type) {
+    public static MessageIOType getMessageIOType(int type) {
       switch (type) {
         case 1:
-          return AVIMMessageIOTypeIn;
+          return TypeIn;
         case 2:
-          return AVIMMessageIOTypeOut;
+          return TypeOut;
       }
-      return AVIMMessageIOTypeOut;
+      return TypeOut;
     }
   }
 }

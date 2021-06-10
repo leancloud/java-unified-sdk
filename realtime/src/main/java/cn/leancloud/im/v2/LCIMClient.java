@@ -74,7 +74,7 @@ public class LCIMClient {
   private String clientId = null;
   // client tag
   private String tag = null;
-  // AVUser authentication session token
+  // User authentication session token
   private String userSessionToken = null;
   // realtime session token
   private String realtimeSessionToken = null;
@@ -96,9 +96,7 @@ public class LCIMClient {
   }
 
   /**
-   * 设置AVIMClient的事件处理单元，
-   *
-   * 包括Client断开链接和重连成功事件
+   * 设置 IMClient 的事件处理单元，包括 Client 断开链接和重连成功事件
    *
    * @param handler event handler.
    */
@@ -122,7 +120,7 @@ public class LCIMClient {
   }
 
   /**
-   * get AVIMClient instance by clientId.
+   * get IMClient instance by clientId.
    * @param clientId client id.
    * @return imclient instance.
    */
@@ -131,7 +129,7 @@ public class LCIMClient {
   }
 
   /**
-   * peek AVIMClient instance by clientId.
+   * peek IMClient instance by clientId.
    * @param clientId client id.
    * @return imclient instance, NULL if not existed.
    */
@@ -143,7 +141,7 @@ public class LCIMClient {
   }
 
   /**
-   * get AVIMClient instance by clientId.
+   * get IMClient instance by clientId.
    * @param connectionManager  connection manager.
    * @param clientId client id.
    * @param installation installation id.
@@ -184,7 +182,7 @@ public class LCIMClient {
   }
 
   /**
-   * get AVIMClient instance by clientId and tag.
+   * get IMClient instance by clientId and tag.
    * @param clientId client id.
    * @param tag optional tag.
    * @return  imclient instance.
@@ -196,7 +194,7 @@ public class LCIMClient {
   }
 
   /**
-   * get AVIMClient instance by AVUser
+   * get IMClient instance by LCUser
    * @param user user instance.
    * @return imclient instance.
    */
@@ -215,7 +213,7 @@ public class LCIMClient {
   }
 
   /**
-   * get AVIMClient instance by AVUser
+   * get IMClient instance by LCUser
    * @param user user instance.
    * @param tag client tag.
    * @return imclient instance.
@@ -540,7 +538,7 @@ public class LCIMClient {
   }
 
   /**
-   * 获取 AVIMConversationsQuery 对象，以此来查询 conversation
+   * 获取 IMConversationsQuery 对象，以此来查询 conversation
    * @return ConversationsQuery instance
    */
   public LCIMConversationsQuery getConversationsQuery() {
@@ -549,7 +547,7 @@ public class LCIMClient {
 
   /**
    * 获取服务号的查询对象
-   * 开发者拿到这个对象之后，就可以像 AVIMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
+   * 开发者拿到这个对象之后，就可以像 IMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
    * @return ConversationsQuery instance
    */
   public LCIMConversationsQuery getServiceConversationQuery() {
@@ -560,7 +558,7 @@ public class LCIMClient {
 
   /**
    * 获取临时对话的查询对象
-   * 开发者拿到这个对象之后，就可以像 AVIMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
+   * 开发者拿到这个对象之后，就可以像 IMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
    * @return ConversationsQuery instance
    */
   private LCIMConversationsQuery getTemporaryConversationQuery() {
@@ -569,7 +567,7 @@ public class LCIMClient {
 
   /**
    * 获取开放聊天室的查询对象
-   * 开发者拿到这个对象之后，就可以像 AVIMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
+   * 开发者拿到这个对象之后，就可以像 IMConversationsQuery 以前的接口一样对目标属性（如名字）等进行查询。
    * @return ConversationsQuery instance
    */
   public LCIMConversationsQuery getChatRoomQuery() {
@@ -636,27 +634,6 @@ public class LCIMClient {
       return origin;
     }
   }
-
-//  AVIMConversation mergeConversationCache(AVIMConversation allNewConversation, boolean forceReplace, JSONObject deltaObject) {
-//    if (null == allNewConversation || StringUtil.isEmpty(allNewConversation.getConversationId())) {
-//      return null;
-//    }
-//    String convId = allNewConversation.getConversationId();
-//    if (forceReplace) {
-//      this.conversationCache.put(convId, allNewConversation);
-//      return allNewConversation;
-//    } else {
-//      AVIMConversation origin = this.conversationCache.get(convId);
-//      if (null == origin) {
-//        this.conversationCache.put(convId, allNewConversation);
-//        origin = allNewConversation;
-//      } else {
-//        // update cache object again.
-//        origin = AVIMConversation.updateConversation(origin, deltaObject);
-//      }
-//      return origin;
-//    }
-//  }
 
   void queryConversationMemberInfo(final QueryConditions queryConditions, final LCIMConversationMemberQueryCallback cb) {
     if (null == queryConditions || null == cb) {

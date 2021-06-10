@@ -356,7 +356,7 @@ public class LCConversationHolder {
   public void queryHistoryMessages(String msgId, long timestamp, int limit, String toMsgId,
                                    long toTimestamp, int requestId) {
     queryHistoryMessages(msgId, timestamp, false, toMsgId, toTimestamp, false,
-            LCIMMessageQueryDirection.LCIMMessageQueryDirectionFromNewToOld.getCode(), limit, 0, requestId);
+            LCIMMessageQueryDirection.DirectionFromNewToOld.getCode(), limit, 0, requestId);
   }
 
   public void queryHistoryMessages(String msgId, long timestamp, boolean sclosed,
@@ -1057,8 +1057,8 @@ public class LCConversationHolder {
       if (conversation.getUnreadMessagesCount() != unreadCount) {
         final AbstractMap.SimpleEntry<Integer, Boolean> unreadInfo = new AbstractMap.SimpleEntry<>(unreadCount, mentioned);
         if (null != message) {
-          message.setMessageIOType(LCIMMessage.AVIMMessageIOType.AVIMMessageIOTypeIn);
-          message.setMessageStatus(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusSent);
+          message.setMessageIOType(LCIMMessage.MessageIOType.TypeIn);
+          message.setMessageStatus(LCIMMessage.MessageStatus.StatusSent);
           message = LCIMMessageManagerHelper.parseTypedMessage(message);
         }
         final LCIMMessage msgCopy = message;
@@ -1081,8 +1081,8 @@ public class LCConversationHolder {
     });
   }
   void onMessage(final LCIMMessage message, final boolean hasMore, final boolean isTransient) {
-    message.setMessageIOType(LCIMMessage.AVIMMessageIOType.AVIMMessageIOTypeIn);
-    message.setMessageStatus(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusSent);
+    message.setMessageIOType(LCIMMessage.MessageIOType.TypeIn);
+    message.setMessageStatus(LCIMMessage.MessageStatus.StatusSent);
 
     final LCIMClient client = LCIMClient.getInstance(session.getSelfPeerId());
     refreshConversationThenNotify(message, new SimpleCallback() {

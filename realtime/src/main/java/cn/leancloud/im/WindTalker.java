@@ -58,7 +58,7 @@ public class WindTalker {
             SessionControlPacket.SessionControlOp.OPEN, signature,
             lastNotifyTime, lastPatchTime, requestId);
     scp.setTag(tag);
-//    if (AVIMOptions.getGlobalOptions().isDisableAutoLogin4Push() || AVIMClient.getClientsCount() > 1) {
+//    if (LCIMOptions.getGlobalOptions().isDisableAutoLogin4Push() || LCIMClient.getClientsCount() > 1) {
       scp.setAppId(LeanCloud.getApplicationId());
 //    }
     scp.setReconnectionRequest(reConnect);

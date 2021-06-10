@@ -24,7 +24,7 @@ public class DefaultSessionListener extends LCSessionListener {
   public void onSessionOpen(LCSession session, int requestId) {
     // 既然已经成功了，就往缓存里面添加一条记录
     SessionCacheHelper.getTagCacheInstance().addSession(session.getSelfPeerId(), session.getTag());
-    // 这里需要给AVIMClient那边发一个LocalBoardcastMessage
+    // 这里需要给 IMClient 那边发一个 LocalBoardcastMessage
     if (requestId > CommandPacket.UNSUPPORTED_OPERATION) {
       InternalConfiguration.getOperationTube().onOperationCompleted(session.getSelfPeerId(), null, requestId,
               LCIMOperation.CLIENT_OPEN, null);

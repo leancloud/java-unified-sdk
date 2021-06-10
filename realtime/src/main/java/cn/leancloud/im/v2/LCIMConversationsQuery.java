@@ -471,7 +471,7 @@ public class LCIMConversationsQuery {
   }
 
   /**
-   * 设置 AVIMConversationsQuery 的查询策略
+   * 设置 IMConversationsQuery 的查询策略
    *
    * @param policy query policy
    */
@@ -480,7 +480,7 @@ public class LCIMConversationsQuery {
   }
 
   /**
-   * Constructs a AVIMConversationsQuery that is the or of the given queries.
+   * Constructs a IMConversationsQuery that is the or of the given queries.
    *
    * @param queries query list.
    * @return new conversation query instance.
@@ -718,19 +718,4 @@ public class LCIMConversationsQuery {
     }
     return conversations;
   }
-//
-//  private List<AVIMConversation> parseQueryResult(JSONArray content) {
-//    List<AVIMConversation> conversations = new LinkedList<AVIMConversation>();
-//    for (int i = 0; i < content.size(); i++) {
-//      JSONObject jsonObject = content.getJSONObject(i);
-//      AVIMConversation allNewConversation = AVIMConversation.parseFromJson(client, jsonObject);
-//      if (null != allNewConversation) {
-//        AVIMConversation convResult = client.mergeConversationCache(allNewConversation, false, jsonObject);
-//        if (null != convResult) {
-//          conversations.add(convResult);
-//        }
-//      }
-//    }
-//    return conversations;
-//  }
 }

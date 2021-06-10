@@ -187,7 +187,7 @@ public abstract class LCIMConversationEventHandler extends LCIMEventHandler {
   /**
    * 对话成员信息变更通知。
    * 常见的有：某成员权限发生变化（如，被设为管理员等）。
-   * @param client             通知关联的 AVIMClient
+   * @param client             通知关联的 IMClient
    * @param conversation       通知关联的对话
    * @param memberInfo         变更后的成员信息
    * @param updatedProperties  发生变更的属性列表（当前固定为 "role"）

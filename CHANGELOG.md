@@ -2,14 +2,29 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
-## 8.0.0 release
+## 8.0.1 release
 
 #### Break changes
 - Change the prefix of public class name from `AV` to `LC`, e.g:
   1. `AVOSCloud` -> `LeanCloud`
   2. `AVObject` -> `LCObject`, `AVFile` -> `LCFile`,` AVUser` -> `LCUser`, `AVQuery` -> `LCQuery`
   3. `AVCallback` -> `LCCallback`, `AVException` -> `LCException`
-  4. `AVIMClient` -> `LCIMClient`
+  4. `AVIMClient` -> `LCIMClient`, `AVIMMessage` -> `LCIMMessage`
+- change enum `AVIMMessage#AVIMMessageIOType` to `LCIMMessage#MessageIOType`, and redefined values:
+  1. `TypeIn`(formal `AVIMMessageIOTypeIn`)
+  2. `TypeOut`(formal `AVIMMessageIOTypeOut`)
+- change enum `AVIMMessage#AVIMMessageStatus` to `LCIMMessage#MessageStatus`, and redefined values:
+  1. `StatusNone`(formal `AVIMMessageStatusNone`)
+  2. `StatusSending`(formal `AVIMMessageStatusSending`)
+  3. `StatusSent`(formal `AVIMMessageStatusSent`)
+  4. `StatusReceipt`(formal `AVIMMessageStatusReceipt`)
+  5. `StatusFailed`(formal `AVIMMessageStatusFailed`)
+  6. `StatusRecalled`(formal `AVIMMessageStatusRecalled`)
+- change enum `AVIMMessageQueryDirection` to `LCIMMessageQueryDirection` and redefined values:
+  1. `DirectionUnknown`(formal `AVIMMessageQueryDirectionUnknown`),
+  2. `DirectionFromNewToOld`(formal `AVIMMessageQueryDirectionFromNewToOld`),
+  3. `DirectionFromOldToNew`(formal `AVIMMessageQueryDirectionFromOldToNew`);
+- change inner class `AVIMMessageInterval#AVIMMessageIntervalBound` to `LCIMMessageInterval#MessageIntervalBound`.
 - remove some deprecated methods as following:
   1. `AVQuery#doCloudQueryInBackground`, please call `LCCloudQuery#executeInBackground` directly.
   2. `ObserverBuilder#buildSingleObserver(FindCallback<T>)`, please use `ObserverBuilder#buildCollectionObserver(FindCallback<T>)` directly.

@@ -25,7 +25,6 @@ public class InteractiveTest extends TestCase {
     LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
     Configure.initialize();
     LCIMOptions.getGlobalOptions().setTimeoutInSecs(30);
-//    AVIMOptions.getGlobalOptions().setRtmServer("wss://rtm51.leancloud.cn");
     LCIMMessageManager.setConversationEventHandler(new LCIMConversationEventHandler() {
       @Override
       public void onMemberLeft(LCIMClient client, LCIMConversation conversation, List<String> members, String kickedBy) {

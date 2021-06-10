@@ -576,7 +576,7 @@ public class LCDefaultConnectionListener implements LCConnectionListener {
             new LCIMMessage(conversationId, session.getSelfPeerId(), m.timestamp, timestamp);
     msg.setMessageId(m.id);
     msg.setContent(m.msg);
-    msg.setMessageStatus(LCIMMessage.AVIMMessageStatus.AVIMMessageStatusReceipt);
+    msg.setMessageStatus(LCIMMessage.MessageStatus.StatusReceipt);
     LCConversationHolder conversation = session.getConversationHolder(conversationId, convType);
     conversation.onMessageReceipt(msg, from);
   }

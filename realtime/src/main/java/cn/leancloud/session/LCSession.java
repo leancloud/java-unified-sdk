@@ -42,9 +42,9 @@ public class LCSession {
   private final String LAST_PATCH_TIME = "lastPatchTime";
 
   /**
-   * 用于存储相关联的 AVUser 的 sessionToken
+   * 用于存储相关联的 LCUser 的 sessionToken
    */
-  private final String AVUSER_SESSION_TOKEN = "avuserSessionToken";
+  private final String LCUSER_SESSION_TOKEN = "avuserSessionToken";
 
   /**
    * client id
@@ -57,11 +57,11 @@ public class LCSession {
    */
   private String tag;
   /**
-   * AVUser session token(only for AVIMClient.open with AVUser)
+   * LCUser session token(only for LCIMClient.open with LCUser)
    */
   private String userSessionToken = null;
   /**
-   * RTM sessionToken(only available after AVIMClient.open)
+   * RTM sessionToken(only available after LCIMClient.open)
    */
   private String realtimeSessionToken = null;
   /**
@@ -355,7 +355,7 @@ public class LCSession {
   public LCException checkSessionStatus() {
     if (Status.Closed == currentStatus) {
       return new LCException(LCException.OPERATION_FORBIDDEN,
-              "Please call AVIMClient.open() first");
+              "Please call LCIMClient.open() first");
     } else if (Status.Resuming == currentStatus) {
       return new LCException(new RuntimeException("Connecting to server"));
     } else if (!connectionManager.isConnectionEstablished()) {
@@ -480,7 +480,7 @@ public class LCSession {
   String getUserSessionToken() {
     if (StringUtil.isEmpty(userSessionToken)) {
       userSessionToken = AppConfiguration.getDefaultSetting().getString(selfId,
-              AVUSER_SESSION_TOKEN, "");
+              LCUSER_SESSION_TOKEN, "");
     }
     return userSessionToken;
   }
@@ -488,7 +488,7 @@ public class LCSession {
   void updateUserSessionToken(String token) {
     userSessionToken = token;
     if (!StringUtil.isEmpty(userSessionToken)) {
-      AppConfiguration.getDefaultSetting().saveString(selfId, AVUSER_SESSION_TOKEN,
+      AppConfiguration.getDefaultSetting().saveString(selfId, LCUSER_SESSION_TOKEN,
               userSessionToken);
     }
   }

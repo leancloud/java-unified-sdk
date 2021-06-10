@@ -15,8 +15,6 @@ public class LCLiveQueryTest extends TestCase{
 
   public LCLiveQueryTest(String name) {
     super(name);
-//    AVIMOptions.getGlobalOptions().setRtmServer("ws://localhost:3000");
-//    AVOSCloud.setServer(AVOSService.API, "http://localhost:3000");
     Configure.initialize();
   }
 

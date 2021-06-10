@@ -48,11 +48,31 @@ SDK 中所有存储 API 接口与 LeanCloud 云端交互严格遵循 LeanCloud R
   - `AVQuery` -> `LCQuery`，`AVCloud` -> `LCCloud`，
   - `AVException` -> `LCException`
   - `AVOSCloud` -> `LeanCloud`
+  - `AVIMClient` -> `LCIMClient`, `AVIMMessage` -> `LCIMMessage`
   - 其他
 
-2. 如果开发者通过 SDK 提供的辅助类 `ObserverBuilder` 将 FindCallback 实例转为了订阅者实例，就需要将原来的 `ObserverBuilder#buildSingleObserver` 变为 `ObserverBuilder#buildCollectionObserver`（因为 `ObserverBuilder#buildSingleObserver(FindCallback)` 已经被移除了）。
+2. change enum `AVIMMessage#AVIMMessageIOType` to `LCIMMessage#MessageIOType`, and redefined values:
+  - `TypeIn`(formal `AVIMMessageIOTypeIn`)
+  - `TypeOut`(formal `AVIMMessageIOTypeOut`)
 
-3. 如果开发者使用了 CQL 查询，那么需要将原来的 `AVQuery#doCloudQueryInBackground` 调用改为 `LCCloudQuery#executeInBackground`。
+3. change enum `AVIMMessage#AVIMMessageStatus` to `LCIMMessage#MessageStatus`, and redefined values:
+  - `StatusNone`(formal `AVIMMessageStatusNone`)
+  - `StatusSending`(formal `AVIMMessageStatusSending`)
+  - `StatusSent`(formal `AVIMMessageStatusSent`)
+  - `StatusReceipt`(formal `AVIMMessageStatusReceipt`)
+  - `StatusFailed`(formal `AVIMMessageStatusFailed`)
+  - `StatusRecalled`(formal `AVIMMessageStatusRecalled`)
+
+4. change enum `AVIMMessageQueryDirection` to `LCIMMessageQueryDirection` and redefined values:
+  - `DirectionUnknown`(formal `AVIMMessageQueryDirectionUnknown`),
+  - `DirectionFromNewToOld`(formal `AVIMMessageQueryDirectionFromNewToOld`),
+  - `DirectionFromOldToNew`(formal `AVIMMessageQueryDirectionFromOldToNew`);
+
+5. change inner class `AVIMMessageInterval#AVIMMessageIntervalBound` to `LCIMMessageInterval#MessageIntervalBound`.
+
+6. 如果开发者通过 SDK 提供的辅助类 `ObserverBuilder` 将 FindCallback 实例转为了订阅者实例，就需要将原来的 `ObserverBuilder#buildSingleObserver` 变为 `ObserverBuilder#buildCollectionObserver`（因为 `ObserverBuilder#buildSingleObserver(FindCallback)` 已经被移除了）。
+
+7. 如果开发者使用了 CQL 查询，那么需要将原来的 `AVQuery#doCloudQueryInBackground` 调用改为 `LCCloudQuery#executeInBackground`。
 
 ## Migration to 7.x
 从 7.0.0 版本开始，我们将 Java Unified SDK 底层的 JSON 解析模块完全切换到了 Gson，开发者在业务层使用 Java Unified SDK 与 JSON 解析库，主要有如下三种情形：
