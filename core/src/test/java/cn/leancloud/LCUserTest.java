@@ -19,7 +19,7 @@ public class LCUserTest extends TestCase {
   private boolean operationSucceed = false;
   public static final String USERNAME = "jfeng";
   public static final String PASSWORD = "FER$@$@#Ffwe";
-  private static final String EMAIL = "jfeng20200618@test.com";
+  public static final String EMAIL = "jfeng20200618@test.com";
   public LCUserTest(String name) {
     super(name);
     Configure.initializeRuntime();

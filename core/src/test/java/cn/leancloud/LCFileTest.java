@@ -37,6 +37,10 @@ public class LCFileTest extends TestCase {
     ;
   }
 
+  public void testUploadFile2AWS() throws Exception {
+    LCFile file = new LCFile("moon.jpg", new File("Moon.jpg"));
+    file.save();
+  }
   public void testCreateWithObjectId() throws Exception {
     String url = "http://i1.wp.com/blog.avoscloud.com/wp-content/uploads/2014/05/screen568x568-1.jpg?resize=202%2C360";
     LCFile file = new LCFile("screen.jpg", url);
