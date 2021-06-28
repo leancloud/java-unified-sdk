@@ -82,11 +82,11 @@ public class LCIMFileMessage extends LCIMTypedMessage {
   }
 
   /**
-   * 获取文件消息中得AVFile对象
+   * 获取文件消息中得 LCFile 对象
    *
-   * @return AVFile instance.
+   * @return LCFile instance.
    */
-  public LCFile getAVFile() {
+  public LCFile getLCFile() {
     if (actualFile != null) {
       return actualFile;
     } else if (null != file && file.containsKey(FILE_URL)) {
@@ -103,7 +103,7 @@ public class LCIMFileMessage extends LCIMTypedMessage {
     return null;
   }
 
-  public void attachAVFile(LCFile file, boolean keepName) {
+  public void attachLCFile(LCFile file, boolean keepName) {
     this.actualFile = file;
     this.keepFileName = keepName;
   }
@@ -212,7 +212,7 @@ public class LCIMFileMessage extends LCIMTypedMessage {
   }
 
   protected void fulFillFileInfo(final SaveCallback callback) {
-    // fulfill the file info map with AVFile
+    // fulfill the file info map with LCFile
     if (actualFile != null) {
       file = getFile() == null ? new HashMap<String, Object>() : getFile();
       file.put(OBJECT_ID, actualFile.getObjectId());
@@ -239,12 +239,12 @@ public class LCIMFileMessage extends LCIMTypedMessage {
   }
 
   /**
-   * 判断是不是通过外部设置 url 来的 AVFile
+   * 判断是不是通过外部设置 url 来的 LCFile
    *
-   * @param avFile AVFile instance.
+   * @param avFile LCFile instance.
    * @return flag indicating the parameter file is external or not.
    */
-  static boolean isExternalAVFile(LCFile avFile) {
+  static boolean isExternalLCFile(LCFile avFile) {
     return null != avFile
             && null != avFile.getMetaData()
             && avFile.getMetaData().containsKey("__source")
@@ -263,7 +263,7 @@ public class LCIMFileMessage extends LCIMTypedMessage {
     if (!this.hasAdditionalMetaAttr) {
       callback.internalDone(null);
     } else if (!StringUtil.isEmpty(actualFile.getUrl()) && localFile == null
-              && !isExternalAVFile(actualFile)) {
+              && !isExternalLCFile(actualFile)) {
       OkHttpClient client = PaasClient.getGlobalOkHttpClient();
       Request.Builder builder = new Request.Builder();
       final String url = actualFile.getUrl() + getQueryName();
