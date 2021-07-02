@@ -46,6 +46,10 @@ public class LCMixPushManager {
     com.vivo.push.PushClient client = com.vivo.push.PushClient.getInstance(application.getApplicationContext());
     try {
       client.checkManifest();
+      if (!isSupportVIVOPush()) {
+        LOGGER.e("current device doesn't support VIVO Push.");
+        return false;
+      }
       client.initialize();
       return true;
     } catch (com.vivo.push.util.VivoPushException ex) {
