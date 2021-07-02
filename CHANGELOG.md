@@ -2,6 +2,21 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.0.2 release
+
+#### Break changes
+- Change the prefix of public class/method name from `AV` to `LC`, e.g:
+  1. `LCIMFileMessage#getAVFile` -> `LCIMFileMessage#getLCFile`
+  2. `LCIMFileMessage#attachAVFile` -> `LCIMFileMessage#attachLCFile`
+  3. `LCIMFileMessage#isExternalAVFile` -> `LCIMFileMessage#isExternalLCFile`
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- check support VIVO Push or not within VIVOPushManager#register.
+
+
 ## 8.0.1 release
 
 #### Break changes
