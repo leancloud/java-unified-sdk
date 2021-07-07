@@ -39,6 +39,18 @@ public class LCUserTest extends TestCase {
     ;
   }
 
+  public void testBunchAnonymousLogin() throws Exception {
+    LCUser user1 = LCUser.logInAnonymously().blockingFirst();
+    String anonymousUserId = user1.objectId;
+    user1.logOut();
+    for (int i = 0; i < 10; i++) {
+      user1 = LCUser.logInAnonymously().blockingFirst();
+      assertEquals(anonymousUserId, user1.objectId);
+      user1.logOut();
+      Thread.sleep(200);
+    }
+  }
+
   public void testSingupWithEmail() throws Exception {
     LCUser user = new LCUser();
     user.setEmail(EMAIL);

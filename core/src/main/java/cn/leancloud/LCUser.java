@@ -328,7 +328,7 @@ public class LCUser extends LCObject {
    * @return observable instance.
    */
   public static Observable<? extends LCUser> logInAnonymously() {
-    String anonymousId = UUID.randomUUID().toString().toLowerCase();
+    String anonymousId = LCInstallation.getCurrentInstallation().getInstallationId();
     Map<String, Object> param = new HashMap<>();
     param.put("id", anonymousId);
     return loginWithAuthData(param, AUTHDATA_PLATFORM_ANONYMOUS);
