@@ -74,8 +74,6 @@ dependencies {
 
     implementation("cn.leancloud:storage-core:${rootProject.ext.sdkVersion}")
 
-    implementation 'androidx.core:core:1.0.0'
-
     testImplementation 'junit:junit:4.12'
     testImplementation "org.mockito:mockito-core:2.+"
 

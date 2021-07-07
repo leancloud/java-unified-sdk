@@ -3,7 +3,6 @@ package cn.leancloud.im;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +11,7 @@ import cn.leancloud.LCException;
 import cn.leancloud.LeanCloud;
 import cn.leancloud.callback.LCCallback;
 import cn.leancloud.im.v2.Conversation;
+import cn.leancloud.utils.LocalBroadcastManager;
 
 /**
  * Created by fengjunwen on 2018/8/7.

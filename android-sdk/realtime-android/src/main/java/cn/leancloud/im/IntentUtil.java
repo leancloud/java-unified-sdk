@@ -3,7 +3,8 @@ package cn.leancloud.im;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import cn.leancloud.utils.LocalBroadcastManager;
 
 import java.util.HashMap;
 

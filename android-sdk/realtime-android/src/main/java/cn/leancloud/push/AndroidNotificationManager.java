@@ -12,7 +12,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
-import androidx.core.app.NotificationCompat;
+
+import cn.leancloud.utils.NotificationCompat;
 
 import java.util.Random;
 
@@ -94,8 +95,9 @@ public class AndroidNotificationManager extends LCNotificationManager {
       String content = getText(msg);
       Notification notification = null;
       if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
-        NotificationCompat.Builder mBuilder =
-            new NotificationCompat.Builder(context)
+        // <= 25
+        Notification.Builder mBuilder =
+            new Notification.Builder(context)
                 .setSmallIcon(getNotificationIcon())
                 .setContentTitle(title).setAutoCancel(true).setContentIntent(contentIntent)
                 .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)

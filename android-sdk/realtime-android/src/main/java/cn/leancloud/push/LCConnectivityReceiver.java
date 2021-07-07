@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import androidx.core.app.ActivityCompat;
 
+import cn.leancloud.util.AndroidUtil;
 import cn.leancloud.utils.LogUtil;
 
 /**
@@ -32,7 +32,7 @@ public class LCConnectivityReceiver extends BroadcastReceiver {
     if (null == this.listener || null == context) {
       return;
     }
-    int hasPermission = ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE);
+    int hasPermission = AndroidUtil.checkPermission(context, Manifest.permission.ACCESS_NETWORK_STATE);
     if (PackageManager.PERMISSION_GRANTED != hasPermission) {
       LogUtil.getLogger(LCConnectivityReceiver.class).w("android.Manifest.permission.ACCESS_NETWORK_STATE is not granted.");
       return;
