@@ -1,15 +1,13 @@
 package cn.leancloud.network;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
-import androidx.core.app.ActivityCompat;
 
 import cn.leancloud.LCLogger;
+import cn.leancloud.util.AndroidUtil;
 import cn.leancloud.utils.LogUtil;
 
 /**
@@ -25,10 +23,10 @@ public class AndroidNetworkingDetector implements NetworkingDetector {
   }
 
   //@RequiresPermission(android.Manifest.permission.ACCESS_NETWORK_STATE)
-  @TargetApi(Build.VERSION_CODES.N)
+//  @TargetApi(Build.VERSION_CODES.N)
   public boolean isConnected() {
     try {
-      int hasPermission = ActivityCompat.checkSelfPermission(this.context, Manifest.permission.ACCESS_NETWORK_STATE);
+      int hasPermission = AndroidUtil.checkPermission(this.context, Manifest.permission.ACCESS_NETWORK_STATE);
       if (PackageManager.PERMISSION_GRANTED != hasPermission) {
         LOGGER.w("android.Manifest.permission.ACCESS_NETWORK_STATE is not granted.");
       } else {
@@ -44,10 +42,10 @@ public class AndroidNetworkingDetector implements NetworkingDetector {
     return false;
   }
 
-  @TargetApi(Build.VERSION_CODES.N)
+//  @TargetApi(Build.VERSION_CODES.N)
   public NetworkingDetector.NetworkType getNetworkType() {
     NetworkType result = NetworkType.None;
-    int hasPermission = ActivityCompat.checkSelfPermission(this.context, Manifest.permission.ACCESS_NETWORK_STATE);
+    int hasPermission = AndroidUtil.checkPermission(this.context, Manifest.permission.ACCESS_NETWORK_STATE);
     if (PackageManager.PERMISSION_GRANTED != hasPermission) {
       LOGGER.w("android.Manifest.permission.ACCESS_NETWORK_STATE is not granted.");
     } else {
