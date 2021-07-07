@@ -1,7 +1,6 @@
 package cn.leancloud.utils;
 
 import android.os.Build.VERSION;
-import android.text.TextUtils;
 
 /**
  * BuildCompat contains additional platform version checking methods for

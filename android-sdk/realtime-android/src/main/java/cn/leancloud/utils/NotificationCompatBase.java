@@ -3,12 +3,21 @@ package cn.leancloud.utils;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
+
+import java.lang.reflect.Method;
+
+import cn.leancloud.annotation.RestrictTo;
+
+import static cn.leancloud.annotation.RestrictTo.Scope.GROUP_ID;
+
 /**
  * @hide
  *
  * copy from  android-25 / android / support / v4 / app /
  */
+@RestrictTo(GROUP_ID)
 public class NotificationCompatBase {
     public static abstract class Action {
         public abstract int getIcon();
@@ -43,6 +52,16 @@ public class NotificationCompatBase {
                                    CharSequence contentTitle, CharSequence contentText, PendingIntent contentIntent,
                                    PendingIntent fullScreenIntent) {
 //        notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+        try {
+            Method setLatestEventInfoMethod
+                    = Notification.class.getMethod("setLatestEventInfo", CharSequence.class, CharSequence.class, PendingIntent.class);
+            if (null != setLatestEventInfoMethod) {
+                setLatestEventInfoMethod.invoke(notification, contentTitle, contentText, contentIntent);
+            }
+        } catch (Exception ex) {
+            ;
+        }
+
         notification.fullScreenIntent = fullScreenIntent;
         return notification;
     }
