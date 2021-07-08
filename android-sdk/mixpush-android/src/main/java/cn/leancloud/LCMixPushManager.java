@@ -277,7 +277,7 @@ public class LCMixPushManager {
   /**
    * current device support VIVO push or not.
    *
-   * @param context
+   * @param context context
    * @return
    */
   public static boolean isSupportVIVOPush(Context context) {
@@ -287,9 +287,9 @@ public class LCMixPushManager {
   /**
    * bind vivo alias
    *
-   * @param context
-   * @param alias
-   * @param callback
+   * @param context context
+   * @param alias alias
+   * @param callback callback function
    */
   public static void bindVIVOAlias(Context context, String alias, final LCCallback<Boolean> callback) {
     cn.leancloud.vivo.LCMixPushManager.bindVIVOAlias(context, alias, callback);
@@ -298,9 +298,9 @@ public class LCMixPushManager {
   /**
    * unbind vivo alias
    *
-   * @param context
-   * @param alias
-   * @param callback
+   * @param context context
+   * @param alias alias
+   * @param callback callback function
    */
   public static void unbindVIVOAlias(Context context, String alias, final LCCallback<Boolean> callback) {
     cn.leancloud.vivo.LCMixPushManager.unbindVIVOAlias(context, alias, callback);
@@ -309,8 +309,8 @@ public class LCMixPushManager {
   /**
    * get vivo alias
    *
-   * @param context
-   * @return
+   * @param context context
+   * @return alias
    */
   public static String getVIVOAlias(Context context) {
     return cn.leancloud.vivo.LCMixPushManager.getVIVOAlias(context);
@@ -319,9 +319,9 @@ public class LCMixPushManager {
   /**
    * set vivo topic
    *
-   * @param context
-   * @param topic
-   * @param callback
+   * @param context context
+   * @param topic topic
+   * @param callback callback function
    */
   public static void setVIVOTopic(Context context, String topic, final LCCallback<Boolean> callback) {
     cn.leancloud.vivo.LCMixPushManager.setVIVOTopic(context, topic, callback);
@@ -329,9 +329,9 @@ public class LCMixPushManager {
 
   /**
    * delete vivo topic
-   * @param context
-   * @param alias
-   * @param callback
+   * @param context context
+   * @param alias alias
+   * @param callback callback function
    */
   public static void delVIVOTopic(Context context, String alias, final LCCallback<Boolean> callback) {
     cn.leancloud.vivo.LCMixPushManager.delVIVOTopic(context, alias, callback);
@@ -339,8 +339,8 @@ public class LCMixPushManager {
 
   /**
    * get vivo topics
-   * @param context
-   * @return
+   * @param context context
+   * @return topic list.
    */
   public static List<String> getVIVOTopics(Context context) {
     return cn.leancloud.vivo.LCMixPushManager.getVIVOTopics(context);
@@ -357,7 +357,7 @@ public class LCMixPushManager {
    * @param appKey oppo application key
    * @param appSecret oppo application secret
    * @param callback callback
-   * @return
+   * @return boolean: true - succeed, false - failed.
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
                                          LCOPPOPushAdapter callback) {
@@ -371,7 +371,7 @@ public class LCMixPushManager {
    * @param appSecret oppo application secret
    * @param profile profile string.
    * @param callback callback.
-   * @return
+   * @return boolean: true - succeed, false - failed.
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
                                          String profile,
@@ -383,8 +383,8 @@ public class LCMixPushManager {
   /**
    * judgement if support oppo push or not.
    *
-   * @param context
-   * @return
+   * @param context context
+   * @return boolean: true - succeed, false - failed.
    */
   public static boolean isSupportOppoPush(Context context) {
     return cn.leancloud.oppo.LCMixPushManager.isSupportOppoPush(context);
@@ -406,11 +406,11 @@ public class LCMixPushManager {
 
   /**
    * set oppo push time.
-   * @param weekDays
-   * @param startHour
-   * @param startMinute
-   * @param endHour
-   * @param endMinute
+   * @param weekDays week days
+   * @param startHour start hour
+   * @param startMinute start minute
+   * @param endHour end hour
+   * @param endMinute end minute
    */
   public static void setOppoPushTime(List<Integer> weekDays, int startHour, int startMinute,
                                      int endHour, int endMinute) {
@@ -419,7 +419,7 @@ public class LCMixPushManager {
 
   /**
    * set oppo push aliases.
-   * @param aliases
+   * @param aliases alias list.
    */
   public static void setOppoAliases(List<String> aliases) {
     cn.leancloud.oppo.LCMixPushManager.setOppoAliases(aliases);
@@ -427,7 +427,7 @@ public class LCMixPushManager {
 
   /**
    * unset oppo push aliases.
-   * @param alias
+   * @param alias alias
    */
   public static void unsetOppoAlias(String alias) {
     cn.leancloud.oppo.LCMixPushManager.unsetOppoAlias(alias);
@@ -442,7 +442,7 @@ public class LCMixPushManager {
 
   /**
    * set oppo push account.
-   * @param account
+   * @param account oppo account
    */
   public static void setOppoUserAccount(String account) {
     cn.leancloud.oppo.LCMixPushManager.setOppoUserAccount(account);
@@ -450,7 +450,7 @@ public class LCMixPushManager {
 
   /**
    * unset oppo push accounts.
-   * @param accounts
+   * @param accounts oppo account list.
    */
   public static void unsetOppoUserAccouts(List<String> accounts) {
     cn.leancloud.oppo.LCMixPushManager.unsetOppoUserAccouts(accounts);
@@ -465,7 +465,7 @@ public class LCMixPushManager {
 
   /**
    * set oppo push tags.
-   * @param tags
+   * @param tags tag list.
    */
   public static void setOppoTags(List<String> tags) {
     cn.leancloud.oppo.LCMixPushManager.setOppoTags(tags);
@@ -473,7 +473,7 @@ public class LCMixPushManager {
 
   /**
    * unset oppo push tags.
-   * @param tags
+   * @param tags tag list.
    */
   public static void unsetOppoTags(List<String> tags) {
     cn.leancloud.oppo.LCMixPushManager.unsetOppoTags(tags);

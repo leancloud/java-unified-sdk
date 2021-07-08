@@ -32,6 +32,7 @@ public class LCMixPushManager {
   /**
    * 初始化方法，建议在 Application onCreate 里面调用
    * @param application application
+   * @return true - succeed, false - failed.
    */
   public static boolean registerVIVOPush(Application application) {
     return LCMixPushManager.registerVIVOPush(application, "");
@@ -40,6 +41,8 @@ public class LCMixPushManager {
   /**
    * 初始化方法，建议在 Application onCreate 里面调用
    * @param application application
+   * @param profile profile
+   * @return true - succeed, false - failed.
    */
   public static boolean registerVIVOPush(Application application, String profile) {
     vivoDeviceProfile = profile;
@@ -60,6 +63,7 @@ public class LCMixPushManager {
 
   /**
    * turn off VIVO push.
+   * @param callback callback function.
    */
   public static void turnOffVIVOPush(final LCCallback<Boolean> callback) {
     com.vivo.push.PushClient.getInstance(LeanCloud.getContext()).turnOffPush(new com.vivo.push.IPushActionListener() {
@@ -77,6 +81,7 @@ public class LCMixPushManager {
 
   /**
    * turn on VIVO push.
+   * @param callback callback function.
    */
   public static void turnOnVIVOPush(final LCCallback<Boolean> callback) {
     com.vivo.push.PushClient.getInstance(LeanCloud.getContext()).turnOnPush(new com.vivo.push.IPushActionListener() {
@@ -95,8 +100,8 @@ public class LCMixPushManager {
   /**
    * current device support VIVO push or not.
    *
-   * @param context
-   * @return
+   * @param context context
+   * @return true or false.
    */
   public static boolean isSupportVIVOPush(Context context) {
     com.vivo.push.PushClient client = com.vivo.push.PushClient.getInstance(context);
@@ -109,9 +114,9 @@ public class LCMixPushManager {
   /**
    * bind vivo alias
    *
-   * @param context
-   * @param alias
-   * @param callback
+   * @param context context
+   * @param alias alias
+   * @param callback callback function
    */
   public static void bindVIVOAlias(Context context, String alias, final LCCallback<Boolean> callback) {
     if (null == context) {
@@ -136,9 +141,9 @@ public class LCMixPushManager {
   /**
    * unbind vivo alias
    *
-   * @param context
-   * @param alias
-   * @param callback
+   * @param context context
+   * @param alias alias
+   * @param callback callback function
    */
   public static void unbindVIVOAlias(Context context, String alias, final LCCallback<Boolean> callback) {
     if (null == context) {
@@ -163,8 +168,8 @@ public class LCMixPushManager {
   /**
    * get vivo alias
    *
-   * @param context
-   * @return
+   * @param context context
+   * @return alias
    */
   public static String getVIVOAlias(Context context) {
     if (null == context) {
@@ -176,9 +181,9 @@ public class LCMixPushManager {
   /**
    * set vivo topic
    *
-   * @param context
-   * @param topic
-   * @param callback
+   * @param context context
+   * @param topic topic
+   * @param callback callback function
    */
   public static void setVIVOTopic(Context context, String topic, final LCCallback<Boolean> callback) {
     if (null == context) {
@@ -202,9 +207,9 @@ public class LCMixPushManager {
 
   /**
    * delete vivo topic
-   * @param context
-   * @param alias
-   * @param callback
+   * @param context context
+   * @param alias alias
+   * @param callback callback function
    */
   public static void delVIVOTopic(Context context, String alias, final LCCallback<Boolean> callback) {
     if (null == context) {
@@ -228,8 +233,8 @@ public class LCMixPushManager {
 
   /**
    * get vivo topics
-   * @param context
-   * @return
+   * @param context context
+   * @return topic list.
    */
   public static List<String> getVIVOTopics(Context context) {
     if (null == context) {

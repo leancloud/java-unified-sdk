@@ -22,9 +22,9 @@ public class LCManifestUtils {
    * 判断 Mainifest 中是否包含对应到 permission
    * 如有，则返回 true，反之，则返回 false 并输出日志
    *
-   * @param context
-   * @param permission
-   * @return
+   * @param context context
+   * @param permission permission
+   * @return true - succeed, false - failed.
    */
   public static boolean checkPermission(Context context, String permission) {
     boolean hasPermission =
@@ -39,9 +39,9 @@ public class LCManifestUtils {
    * 判断 Mainifest 中是否包含对应到 Service
    * 如有，则返回 true，反之，则返回 false 并输出日志
    *
-   * @param context
-   * @param service
-   * @return
+   * @param context context
+   * @param service service
+   * @return  true - succeed, false - failed.
    */
   public static boolean checkService(Context context, Class<?> service) {
     try {
@@ -58,9 +58,9 @@ public class LCManifestUtils {
    * 判断 Mainifest 中是否包含对应到 Receiver
    * 如有，则返回 true，反之，则返回 false 并输出日志
    *
-   * @param context
-   * @param receiver
-   * @return
+   * @param context context
+   * @param receiver receiver
+   * @return  true - succeed, false - failed.
    */
   public static boolean checkReceiver(Context context, Class<?> receiver) {
     try {

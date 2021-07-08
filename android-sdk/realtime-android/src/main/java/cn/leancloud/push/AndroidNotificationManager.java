@@ -158,7 +158,7 @@ public class AndroidNotificationManager extends LCNotificationManager {
 
   /**
    * 处理透传消息（华为只有透传）
-   * @param message
+   * @param message push message.
    */
   public void processMixPushMessage(String message) {
     if (!StringUtil.isEmpty(message)) {
@@ -181,8 +181,8 @@ public class AndroidNotificationManager extends LCNotificationManager {
 
   /**
    * 处理混合推送到达事件（暂只支持小米）
-   * @param message
-   * @param action
+   * @param message push message
+   * @param action action
    */
   public void porcessMixNotificationArrived(String message, String action) {
     if (!StringUtil.isEmpty(message) && !StringUtil.isEmpty(action)) {
@@ -198,7 +198,8 @@ public class AndroidNotificationManager extends LCNotificationManager {
   /**
    * 处理混合推送通知栏消息点击后的事件（现在支持小米、魅族，华为不支持）
    * 处理逻辑：如果是自定义 action 的消息点击事件，则发送 broadcast，否则按照 sdk 自有逻辑打开相应的 activity
-   * @param message
+   * @param message push message
+   * @param defaultAction default action.
    */
   public void processMixNotification(String message, String defaultAction) {
     if (StringUtil.isEmpty(message)) {
@@ -236,9 +237,9 @@ public class AndroidNotificationManager extends LCNotificationManager {
 
   /**
    * 处理 FCM 的透传消息
-   * @param channel
-   * @param action
-   * @param message
+   * @param channel channel
+   * @param action action
+   * @param message message
    */
   public void processFcmMessage(String channel, String action, String message) {
     if (!StringUtil.isEmpty(message)) {
@@ -256,8 +257,9 @@ public class AndroidNotificationManager extends LCNotificationManager {
 
   /**
    * 给订阅了小米 action 的 broadcastreciver 发 broadcast
-   * @param channel
-   * @param msg
+   * @param channel channel
+   * @param msg message
+   * @param action action.
    */
   private void sendNotificationBroadcast(String channel, String msg, String action) {
     Intent updateIntent = buildUpdateIntent(channel, msg, action);

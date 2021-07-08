@@ -69,9 +69,11 @@ public class NotificationCompatBase {
 //        notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
         try {
             Method setLatestEventInfoMethod
-                    = Notification.class.getMethod("setLatestEventInfo", CharSequence.class, CharSequence.class, PendingIntent.class);
+                    = Notification.class.getMethod("setLatestEventInfo", Context.class,
+                                    CharSequence.class, CharSequence.class, PendingIntent.class);
             if (null != setLatestEventInfoMethod) {
-                setLatestEventInfoMethod.invoke(notification, contentTitle, contentText, contentIntent);
+                setLatestEventInfoMethod.invoke(notification,
+                    context, contentTitle, contentText, contentIntent);
             }
         } catch (Exception ex) {
             ;
