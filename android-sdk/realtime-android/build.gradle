@@ -49,6 +49,7 @@ android.libraryVariants.all { variant ->
         options.links("http://d.android.com/reference/");
         exclude '**/BuildConfig.java'
         exclude '**/R.java'
+        exclude 'cn/leancloud/utils/**'
     }
     def name = variant.buildType.name
     def task = project.tasks.create "jar${name.capitalize()}", Jar
