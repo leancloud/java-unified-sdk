@@ -96,8 +96,8 @@ public class AndroidNotificationManager extends LCNotificationManager {
       Notification notification = null;
       if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
         // <= 25
-        Notification.Builder mBuilder =
-            new Notification.Builder(context)
+        NotificationCompat.Builder mBuilder =
+            new NotificationCompat.Builder(context)
                 .setSmallIcon(getNotificationIcon())
                 .setContentTitle(title).setAutoCancel(true).setContentIntent(contentIntent)
                 .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
