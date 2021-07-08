@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import cn.leancloud.utils.LocalBroadcastManager;
 
 import cn.leancloud.LCException;
 import cn.leancloud.LCInstallation;

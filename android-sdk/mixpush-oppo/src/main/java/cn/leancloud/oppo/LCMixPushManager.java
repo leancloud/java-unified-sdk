@@ -35,7 +35,7 @@ public class LCMixPushManager {
    * @param appKey oppo application key
    * @param appSecret oppo application secret
    * @param callback callback
-   * @return
+   * @return true or false
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
                                          LCOPPOPushAdapter callback) {
@@ -60,7 +60,7 @@ public class LCMixPushManager {
    * @param appSecret oppo application secret
    * @param profile profile string.
    * @param callback callback.
-   * @return
+   * @return true or false
    */
   public static boolean registerOppoPush(Context context, String appKey, String appSecret,
                                          String profile, LCOPPOPushAdapter callback) {
@@ -72,8 +72,8 @@ public class LCMixPushManager {
   /**
    * judgement if support oppo push or not.
    *
-   * @param context
-   * @return
+   * @param context context
+   * @return boolean
    */
   public static boolean isSupportOppoPush(Context context) {
     return HeytapPushManager.isSupportPush();
@@ -95,11 +95,11 @@ public class LCMixPushManager {
 
   /**
    * set oppo push time.
-   * @param weekDays
-   * @param startHour
-   * @param startMinute
-   * @param endHour
-   * @param endMinute
+   * @param weekDays weekDays
+   * @param startHour start hour
+   * @param startMinute start minute
+   * @param endHour end hour
+   * @param endMinute end minute
    */
   public static void setOppoPushTime(List<Integer> weekDays, int startHour, int startMinute,
                                      int endHour, int endMinute) {
@@ -109,7 +109,7 @@ public class LCMixPushManager {
 
   /**
    * set oppo push aliases.
-   * @param aliases
+   * @param aliases aliases
    */
   @Deprecated
   public static void setOppoAliases(List<String> aliases) {
@@ -117,7 +117,7 @@ public class LCMixPushManager {
 
   /**
    * unset oppo push aliases.
-   * @param alias
+   * @param alias alias
    */
   @Deprecated
   public static void unsetOppoAlias(String alias) {
@@ -132,7 +132,7 @@ public class LCMixPushManager {
 
   /**
    * set oppo push account.
-   * @param account
+   * @param account oppo account
    */
   @Deprecated
   public static void setOppoUserAccount(String account) {
@@ -140,7 +140,7 @@ public class LCMixPushManager {
 
   /**
    * unset oppo push accounts.
-   * @param accounts
+   * @param accounts oppo account list.
    */
   @Deprecated
   public static void unsetOppoUserAccouts(List<String> accounts) {
@@ -155,7 +155,7 @@ public class LCMixPushManager {
 
   /**
    * set oppo push tags.
-   * @param tags
+   * @param tags tag list.
    */
   @Deprecated
   public static void setOppoTags(List<String> tags) {
@@ -163,7 +163,7 @@ public class LCMixPushManager {
 
   /**
    * unset oppo push tags.
-   * @param tags
+   * @param tags tag list.
    */
   @Deprecated
   public static void unsetOppoTags(List<String> tags) {

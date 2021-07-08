@@ -67,7 +67,7 @@ public class LCMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
 
   /**
    * 处理小米推送的透传消息
-   * @param miPushMessage
+   * @param miPushMessage xiaomi push message
    */
   private void processMiPushMessage(com.xiaomi.mipush.sdk.MiPushMessage miPushMessage) {
     if (null != miPushMessage) {
@@ -100,7 +100,7 @@ public class LCMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
 
   /**
    * 处理小米推送点击事件
-   * @param miPushMessage
+   * @param miPushMessage xiaomi push message
    */
   private void processMiNotification(com.xiaomi.mipush.sdk.MiPushMessage miPushMessage) {
     if (null != miPushMessage) {
@@ -166,8 +166,8 @@ public class LCMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
    * PushMessageReceiver 的子类的 onNotificationMessageArrived 方法（在 MIUI 上，如果没有收到
    * onNotificationMessageArrived 回调，是因为使用的 MIUI 版本还不支持该特性，需要升级到 MIUI7 之后。
    * 非 MIUI 手机都可以收到这个回调）。
-   * @param context
-   * @param miPushMessage
+   * @param context context
+   * @param miPushMessage xiaomi push message
    */
   @Override
   public void onNotificationMessageArrived(Context context, com.xiaomi.mipush.sdk.MiPushMessage miPushMessage) {
@@ -184,8 +184,8 @@ public class LCMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
    * 透传消息
    * 透传消息到达手机端后，小米推送 SDK 会将消息通过广播方式传给 AndroidManifest 中注册的 PushMessageReceiver
    * 的子类的 onReceivePassThroughMessage
-   * @param context
-   * @param miPushMessage
+   * @param context context
+   * @param miPushMessage xiaomi push message
    */
   @Override
   public void onReceivePassThroughMessage(Context context, com.xiaomi.mipush.sdk.MiPushMessage miPushMessage) {
@@ -194,8 +194,8 @@ public class LCMiPushMessageReceiver extends com.xiaomi.mipush.sdk.PushMessageRe
 
   /**
    * 通知栏消息，用户手动点击后触发
-   * @param context
-   * @param miPushMessage
+   * @param context context
+   * @param miPushMessage xiaomi push message
    */
   @Override
   public void onNotificationMessageClicked(Context context, com.xiaomi.mipush.sdk.MiPushMessage miPushMessage) {

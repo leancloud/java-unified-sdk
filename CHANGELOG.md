@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.0.3 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- LCUser#loginAnonymously always returns the same LCUser, except for re-installation.
+- remove dependency of androidx in android sdk modules. 
+
 ## 8.0.2 release
 
 #### Break changes

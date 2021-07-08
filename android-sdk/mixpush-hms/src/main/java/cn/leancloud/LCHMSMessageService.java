@@ -24,7 +24,7 @@ public class LCHMSMessageService extends HmsMessageService {
   /**
    * 收到透传消息
    *
-   * @param remoteMessage
+   * @param remoteMessage remote message
    */
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -55,7 +55,7 @@ public class LCHMSMessageService extends HmsMessageService {
    * 2、如果服务端识别token过期，服务端刷新token也会以onNewToken方式返回。
    * 3、华为设备上EMUI版本低于10.0申请token时，以onNewToken方式返回。
    *
-   * @param token
+   * @param token push token
    */
   @Override
   public void onNewToken(String token) {
@@ -64,7 +64,7 @@ public class LCHMSMessageService extends HmsMessageService {
 
   /**
    * 申请token失败回调方法
-   * @param exception
+   * @param exception exception
    */
   @Override
   public void onTokenError(Exception exception) {

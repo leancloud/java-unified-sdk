@@ -19,7 +19,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
-import androidx.core.app.ActivityCompat;
 
 import cn.leancloud.LeanCloud;
 import cn.leancloud.json.JSON;
@@ -49,6 +48,7 @@ import cn.leancloud.livequery.LCLiveQuery;
 import cn.leancloud.session.LCConnectionManager;
 import cn.leancloud.session.LCSession;
 import cn.leancloud.session.LCSessionManager;
+import cn.leancloud.util.AndroidUtil;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observer;
@@ -525,7 +525,7 @@ public class PushService extends Service {
       return;
     }
 
-    if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(context, "android.permission.INTERNET")) {
+    if (PackageManager.PERMISSION_GRANTED != AndroidUtil.checkPermission(context, "android.permission.INTERNET")) {
       LOGGER.e("Please add <uses-permission android:name=\"android.permission.INTERNET\"/> in your AndroidManifest file");
       return;
     }
