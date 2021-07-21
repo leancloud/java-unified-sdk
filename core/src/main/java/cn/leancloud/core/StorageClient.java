@@ -414,7 +414,7 @@ public class StorageClient {
   }
 
   public Observable<LCFriendshipRequest> acceptFriendshipRequest(final LCUser authenticatedUser,
-                                                                 LCFriendshipRequest request, JSONObject param) {
+                                                                 final LCFriendshipRequest request, JSONObject param) {
     String authenticatedSession = getSessionToken(authenticatedUser);
     Observable<LCObject> result = wrapObservable(apiService.acceptFriendshipRequest(authenticatedSession,
             request.getObjectId(), param));
@@ -424,18 +424,24 @@ public class StorageClient {
     return result.map(new Function<LCObject, LCFriendshipRequest>() {
       @Override
       public LCFriendshipRequest apply(LCObject LCObject) throws Exception {
-        return Transformer.transform(LCObject, LCFriendshipRequest.class);
+        LCFriendshipRequest response = Transformer.transform(LCObject, LCFriendshipRequest.class);
+        request.getServerData().put(LCFriendshipRequest.ATTR_STATUS, LCFriendshipRequest.INTERNAL_STATUS_ACCEPTED);
+        request.getServerData().put(LCObject.KEY_UPDATED_AT, response.getUpdatedAtString());
+        return request;
       }
     });
   }
   public Observable<LCFriendshipRequest> declineFriendshipRequest(final LCUser authenticatedUser,
-                                                                  LCFriendshipRequest request) {
+                                                                  final LCFriendshipRequest request) {
     String authenticatedSession = getSessionToken(authenticatedUser);
     Observable<LCObject> result = wrapObservable(apiService.declineFriendshipRequest(authenticatedSession, request.getObjectId()));
     return result.map(new Function<LCObject, LCFriendshipRequest>() {
       @Override
       public LCFriendshipRequest apply(LCObject LCObject) throws Exception {
-        return Transformer.transform(LCObject, LCFriendshipRequest.class);
+        LCFriendshipRequest response = Transformer.transform(LCObject, LCFriendshipRequest.class);
+        request.getServerData().put(LCFriendshipRequest.ATTR_STATUS, LCFriendshipRequest.INTERNAL_STATUS_DECLINED);
+        request.getServerData().put(LCObject.KEY_UPDATED_AT, response.getUpdatedAtString());
+        return request;
       }
     });
   }

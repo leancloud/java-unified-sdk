@@ -1309,6 +1309,7 @@ public class LCUser extends LCObject {
       query.whereEqualTo(LCFriendship.ATTR_USER, LCUser.createWithoutData(CLASS_NAME, userObjectId));
       query.include(LCFriendship.ATTR_FOLLOWEE);
     }
+    query.whereEqualTo(LCFriendship.ATTR_FRIEND_STATUS, true);
     return query;
   }
 
