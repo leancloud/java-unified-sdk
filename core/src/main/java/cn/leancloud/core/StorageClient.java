@@ -23,6 +23,7 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Scheduler;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.*;
@@ -431,6 +432,7 @@ public class StorageClient {
       }
     });
   }
+
   public Observable<LCFriendshipRequest> declineFriendshipRequest(final LCUser authenticatedUser,
                                                                   final LCFriendshipRequest request) {
     String authenticatedSession = getSessionToken(authenticatedUser);
@@ -582,6 +584,26 @@ public class StorageClient {
   public Observable<JSONObject> getFollowersAndFollowees(final LCUser authenticatedUser, String userId) {
     String authenticatedSession = getSessionToken(authenticatedUser);
     return wrapObservable(apiService.getFollowersAndFollowees(authenticatedSession, userId));
+  }
+
+  public Observable<List<LCFriendship>> queryFriendship(final LCUser authenticatedUser, Map<String, String> conditions) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(
+            apiService.getFollowees(authenticatedSession, authenticatedUser.getObjectId(), conditions)
+                    .map(new Function<LCQueryResult, List<LCFriendship>>() {
+      @Override
+      public List<LCFriendship> apply(@NotNull LCQueryResult result) throws Exception {
+        if (null == result || null == result.getResults()) {
+          return null;
+        }
+        List<LCObject> originResult = result.getResults();
+        List<LCFriendship> convertedResult = new ArrayList<>(originResult.size());
+        for (LCObject obj : originResult) {
+          convertedResult.add(new LCFriendship(obj));
+        }
+        return convertedResult;
+      }
+    }));
   }
 
   public Observable<LCStatus> postStatus(final LCUser authenticatedUser, Map<String, Object> param) {
