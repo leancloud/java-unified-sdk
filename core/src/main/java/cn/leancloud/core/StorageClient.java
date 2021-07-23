@@ -23,7 +23,6 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Scheduler;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.*;
@@ -592,7 +591,7 @@ public class StorageClient {
             apiService.getFollowees(authenticatedSession, authenticatedUser.getObjectId(), conditions)
                     .map(new Function<LCQueryResult, List<LCFriendship>>() {
       @Override
-      public List<LCFriendship> apply(@NotNull LCQueryResult result) throws Exception {
+      public List<LCFriendship> apply(LCQueryResult result) throws Exception {
         if (null == result || null == result.getResults()) {
           return null;
         }
