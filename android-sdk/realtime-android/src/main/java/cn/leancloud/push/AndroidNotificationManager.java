@@ -38,6 +38,7 @@ public class AndroidNotificationManager extends LCNotificationManager {
   }
 
   private AndroidNotificationManager() {
+    super();
   }
 
   public void setServiceContext(Context context) {
@@ -60,6 +61,11 @@ public class AndroidNotificationManager extends LCNotificationManager {
       updateIntent.setPackage(this.serviceContext.getPackageName());
     }
     return updateIntent;
+  }
+
+  @Override
+  void setNotificationIcon(int icon) {
+    super.setNotificationIcon(icon);
   }
 
   @Override
@@ -94,18 +100,19 @@ public class AndroidNotificationManager extends LCNotificationManager {
       String notificationChannel = getNotificationChannel(msg);
       String content = getText(msg);
       Notification notification = null;
+      int notificationIcon = getNotificationIcon();
       if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
         // <= 25
         NotificationCompat.Builder mBuilder =
             new NotificationCompat.Builder(context)
-                .setSmallIcon(getNotificationIcon())
+                .setSmallIcon(notificationIcon)
                 .setContentTitle(title).setAutoCancel(true).setContentIntent(contentIntent)
                 .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
                 .setContentText(content);
         notification = mBuilder.build();
       } else if (!StringUtil.isEmpty(notificationChannel)) {
         Notification.Builder builder = new Notification.Builder(context)
-            .setSmallIcon(getNotificationIcon())
+            .setSmallIcon(notificationIcon)
             .setContentTitle(title).setContentText(content)
             .setAutoCancel(true).setContentIntent(contentIntent)
             .setChannelId(notificationChannel);
@@ -113,7 +120,7 @@ public class AndroidNotificationManager extends LCNotificationManager {
         notification = builder.build();
       } else {
         Notification.Builder builder = new Notification.Builder(context)
-            .setSmallIcon(getNotificationIcon())
+            .setSmallIcon(notificationIcon)
             .setContentTitle(title).setContentText(content)
             .setAutoCancel(true).setContentIntent(contentIntent)
             .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)

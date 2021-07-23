@@ -1,6 +1,7 @@
 package cn.leancloud.realtime_sample_app;
 
 import android.app.Application;
+import android.app.NotificationManager;
 import android.os.StrictMode;
 
 import cn.leancloud.LCInstallation;
@@ -88,6 +89,7 @@ public class MyApplication extends Application {
     });
     String channelId = "cn.leancloud.simpleapp";
     PushService.setDefaultChannelId(this, channelId);
+    PushService.setNotificationIcon(R.drawable.ic_notifications_black_24dp);
 
 //    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
 //    Notification notification = notificationBuilder.setOngoing(true)

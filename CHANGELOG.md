@@ -2,6 +2,17 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.0.4 release
+
+#### Break changes
+- None
+
+#### New features
+- add LCUser#queryFriendship() to query all friendship data directly.
+
+#### Optimization and fixed bugs
+- fixed: always use application icon as notification icon.
+
 ## 8.0.3 release
 
 #### Break changes
