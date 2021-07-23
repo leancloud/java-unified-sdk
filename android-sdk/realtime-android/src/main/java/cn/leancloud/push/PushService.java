@@ -91,7 +91,9 @@ public class PushService extends Service {
     super.onCreate();
 
     AndroidNotificationManager.getInstance().setServiceContext(this);
-    AndroidNotificationManager.getInstance().setNotificationIcon(this.getApplicationInfo().icon);
+    if (0 == AndroidNotificationManager.getInstance().getNotificationIcon()) {
+      AndroidNotificationManager.getInstance().setNotificationIcon(this.getApplicationInfo().icon);
+    }
 
     directlyOperationTube = new DirectlyOperationTube(true);
 
