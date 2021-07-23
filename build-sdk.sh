@@ -16,7 +16,7 @@ git add core/src/main/java/cn/leancloud/core/AppConfiguration.java
 
 git ci -m "version bump"
 
-git push origin master
+git push origin v7
 
 mvn clean
 
