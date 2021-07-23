@@ -95,6 +95,7 @@ public class MyApplication extends Application {
     });
     String channelId = "cn.leancloud.simpleapp";
     PushService.setDefaultChannelId(this, channelId);
+    PushService.setNotificationIcon(R.drawable.ic_notifications_black_24dp);
 
 //    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
 //    Notification notification = notificationBuilder.setOngoing(true)
