@@ -64,6 +64,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
 
   @Override
   void setNotificationIcon(int icon) {
+    LOGGER.d("setNotificationIcon: " + icon);
     super.setNotificationIcon(icon);
   }
 
@@ -100,6 +101,7 @@ public class AndroidNotificationManager extends AVNotificationManager {
       String content = getText(msg);
       Notification notification = null;
       int notificationIcon = getNotificationIcon();
+      LOGGER.d("sendNotification with icon=" + notificationIcon + ", channel=" + notificationChannel);
       if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
         NotificationCompat.Builder mBuilder =
             new NotificationCompat.Builder(context)
