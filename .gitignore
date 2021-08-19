@@ -7,5 +7,11 @@
 **/PaasKeyValueCache/**
 **/data/**
 **/file/**
+**/proguard-rules.pro
+**/gradle/**
+**/release/**
+**/gradlew.bat
+**/local.properties
 release-test/**
+android-sdk/build-sdk-noup.sh
 android-sdk/storage-sample-app/src/main/assets/**
