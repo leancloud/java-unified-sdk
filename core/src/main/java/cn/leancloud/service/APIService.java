@@ -298,4 +298,18 @@ public interface APIService {
   @GET("/1.1/search/select")
   Observable<LCSearchResponse> search(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
                                       @QueryMap Map<String, String> query);
+
+  /**
+   * Leaderboard API
+   */
+  @POST("/1.1/leaderboard/leaderboards")
+  Observable<LCObject> createLeaderboard(@Body Map<String, Object> param);
+  @GET("/1.1/leaderboard/leaderboards/{statisticName}")
+  Observable<LCObject> fetchLeaderboard(@Path("statisticName") String name);
+  @PUT("/1.1/leaderboard/leaderboards/{statisticName}")
+  Observable<LCObject> updateLeaderboard(@Path("statisticName") String name, @Body Map<String, Object> param);
+  @PUT("/1.1/leaderboard/leaderboards/{statisticName}/incrementVersion")
+  Observable<LCObject> resetLeaderboard(@Path("statisticName") String name);
+  @DELETE("/1.1/leaderboard/leaderboards/{statisticName}")
+  Observable<LCObject> destroyLeaderboard(@Path("statisticName") String name);
 }

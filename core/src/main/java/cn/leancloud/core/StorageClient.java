@@ -23,6 +23,7 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Scheduler;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.*;
@@ -916,5 +917,30 @@ public class StorageClient {
   public Observable<LCSearchResponse> search(final LCUser authenticatedUser, Map<String, String> params) {
     String authenticatedSession = getSessionToken(authenticatedUser);
     return wrapObservable(apiService.search(authenticatedSession, params));
+  }
+
+  /**
+   * Leaderboard API
+   */
+
+  public Observable<LCObject> createLeaderboard(Map<String, Object> params) {
+    return wrapObservable(apiService.createLeaderboard(params));
+  }
+  public Observable<LCObject> fetchLeaderboard(String name) {
+    return Observable.wrap(apiService.fetchLeaderboard(name));
+  }
+  public Observable<LCObject> updateLeaderboard(String name, Map<String, Object> params) {
+    return Observable.wrap(apiService.updateLeaderboard(name, params));
+  }
+  public Observable<LCObject> resetLeaderboard(String name) {
+    return Observable.wrap(apiService.resetLeaderboard(name));
+  }
+  public Observable<Boolean> destroyLeaderboard(String name) {
+    return Observable.wrap(apiService.destroyLeaderboard(name)).map(new Function<LCObject, Boolean>() {
+      @Override
+      public Boolean apply(@NotNull LCObject object) throws Exception {
+        return null != object;
+      }
+    });
   }
 }
