@@ -10,7 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class LCLeaderboard {
-    static int INVALID_VERSION = -1;
+    public static int INVALID_VERSION = -1;
+    public static final String MEMBER_TYPE_USER = "_User";
+    public static final String MEMBER_TYPE_ENTITY = "_Entity";
+
     static final String ATTR_STATISTIC_NAME = "statisticName";
     static final String ATTR_MEMBER_TYPE = "memberType";
     static final String ATTR_UPDATE_STRATEGY = "updateStrategy";
@@ -34,6 +37,7 @@ public class LCLeaderboard {
         Week,
         Month
     }
+    private String memberType = MEMBER_TYPE_USER;
     private String statisticName = null;
     private LCLeaderboardOrder order = LCLeaderboardOrder.Ascending;
     private LCLeaderboardUpdateStrategy updateStrategy = LCLeaderboardUpdateStrategy.Better;
@@ -104,7 +108,7 @@ public class LCLeaderboard {
         this.statisticName = name;
     }
 
-    public static <T extends Enum<T>> T lookup(Class<T> enumType, String name) {
+    protected static <T extends Enum<T>> T lookup(Class<T> enumType, String name) {
         for (T item : enumType.getEnumConstants()) {
             if (item.name().equalsIgnoreCase(name)) {
                 return item;
@@ -117,6 +121,7 @@ public class LCLeaderboard {
         if (null == object) {
             return;
         }
+        this.memberType = object.getString(ATTR_MEMBER_TYPE);
         this.statisticName = object.getString(ATTR_STATISTIC_NAME);
         String order = object.getString(ATTR_ORDER);
         if (!StringUtil.isEmpty(order)) {
@@ -139,12 +144,27 @@ public class LCLeaderboard {
     public static LCLeaderboard createWithoutData(String name) {
         return new LCLeaderboard(name);
     }
+
     public static Observable<JSONObject> updateStatistic(LCUser user, Map<String, Double> values) {
         return updateStatistic(user, values, false);
     }
-    public static Observable<JSONObject> updateStatistic(LCUser user, Map<String, Double> values, boolean overwrite) {
-        return null;
+    public static Observable<JSONObject> updateStatistic(LCUser user, Map<String, Double> params, boolean overwrite) {
+        if (null == user) {
+            return Observable.error(new IllegalArgumentException("user is null"));
+        }
+        if (null == params || params.size() < 1) {
+            return Observable.error(new IllegalArgumentException("params is empty"));
+        }
+        List<Map<String, Object>> statistics = new ArrayList<>(params.size());
+        for (Map.Entry entry: params.entrySet()) {
+            Map<String, Object> statistic = new HashMap<>();
+            statistic.put("statisticName", entry.getKey());
+            statistic.put("statisticValue", entry.getValue());
+            statistics.add(statistic);
+        }
+        return PaasClient.getStorageClient().updateUserStatistics(user, statistics, overwrite);
     }
+
     public static Observable<JSONObject> getStatistics(LCUser user) {
         return getStatistics(user, null);
     }
@@ -152,17 +172,63 @@ public class LCLeaderboard {
         return null;
     }
 
-    public Observable<List<LCRanking>> getResults(int skip, int limit, List<String> selectUserKeys,
-                                                  List<String> includeStatistics, int version) {
-        return null;
+    static String convertLeaderboardType(String memberType) {
+        String leaderboardType = null;
+        if (MEMBER_TYPE_USER.equalsIgnoreCase(memberType)) {
+            leaderboardType = "user";
+        } else if (MEMBER_TYPE_ENTITY.equalsIgnoreCase(memberType)) {
+            leaderboardType = "entity";
+        } else {
+            leaderboardType = "object";
+        }
+        return leaderboardType;
     }
-    public Observable<List<LCRanking>> getResultsAroundUser(LCUser user, int skip, int limit, List<String> selectUserKeys,
-                                                  List<String> includeStatistics, int version) {
-        return null;
+
+    public Observable<List<LCRanking>> getResults(int skip, int limit, List<String> selectUserKeys,
+                                                  List<String> includeStatistics) {
+        return getResults(skip, limit, selectUserKeys, null, includeStatistics);
+    }
+
+    public Observable<List<LCRanking>> getResults(int skip, int limit, List<String> selectUserKeys,
+                                                  List<String> includeUserKeys,
+                                                  List<String> includeStatistics) {
+        if (StringUtil.isEmpty(this.statisticName)) {
+            return Observable.error(new IllegalArgumentException("name is empty"));
+        }
+        String leaderboardType = convertLeaderboardType(this.memberType);
+        return PaasClient.getStorageClient().getLeaderboardResults(leaderboardType, this.statisticName,
+                skip, limit, selectUserKeys, includeUserKeys, includeStatistics, this.version)
+                .map(new Function<JSONObject, List<LCRanking>>() {
+                    @Override
+                    public List<LCRanking> apply(@NotNull JSONObject jsonObject) throws Exception {
+                        return null;
+                    }
+                });
+    }
+
+    public Observable<List<LCRanking>> getAroundResults(String targetId, int skip, int limit, List<String> selectUserKeys,
+                                                        List<String> includeStatistics) {
+        return getAroundResults(targetId, skip, limit, selectUserKeys, null, includeStatistics);
+    }
+
+    public Observable<List<LCRanking>> getAroundResults(String targetId, int skip, int limit, List<String> selectUserKeys,
+                                                  List<String> includeUserKeys, List<String> includeStatistics) {
+        if (StringUtil.isEmpty(this.statisticName)) {
+            return Observable.error(new IllegalArgumentException("name is empty"));
+        }
+        String leaderboardType = convertLeaderboardType(this.memberType);
+        return PaasClient.getStorageClient().getLeaderboardAroundResults(leaderboardType, this.statisticName, targetId,
+                skip, limit, selectUserKeys, includeUserKeys, includeStatistics, this.version)
+                .map(new Function<JSONObject, List<LCRanking>>() {
+            @Override
+            public List<LCRanking> apply(@NotNull JSONObject jsonObject) throws Exception {
+                return null;
+            }
+        });
     }
 
     /**
-     * create leaderboard.
+     * create leaderboard with default member type(User).
      * @param name name
      * @param order order
      * @param updateStrategy update strategy.
@@ -170,14 +236,29 @@ public class LCLeaderboard {
      * @return leaderboard observer.
      */
     public static Observable<LCLeaderboard> create(String name, LCLeaderboardOrder order,
-                                            LCLeaderboardUpdateStrategy updateStrategy,
-                                            LCLeaderboardVersionChangeInterval versionChangeInterval) {
+                                                   LCLeaderboardUpdateStrategy updateStrategy,
+                                                   LCLeaderboardVersionChangeInterval versionChangeInterval) {
+        return createWithMemberType(MEMBER_TYPE_USER, name, order, updateStrategy, versionChangeInterval);
+    }
+
+    /**
+     * create leaderboard with customized member type
+     * @param memberType member type
+     * @param name name
+     * @param order order
+     * @param updateStrategy update strategy.
+     * @param versionChangeInterval version change interval.
+     * @return leaderboard observer.
+     */
+    public static Observable<LCLeaderboard> createWithMemberType(String memberType, String name, LCLeaderboardOrder order,
+                                                   LCLeaderboardUpdateStrategy updateStrategy,
+                                                   LCLeaderboardVersionChangeInterval versionChangeInterval) {
         if (StringUtil.isEmpty(name)) {
             return Observable.error(new IllegalArgumentException("name is empty"));
         }
         Map<String, Object> params = new HashMap<>();
         params.put(ATTR_STATISTIC_NAME, name);
-        params.put(ATTR_MEMBER_TYPE, "_User");
+        params.put(ATTR_MEMBER_TYPE, memberType);
         if (null != order) {
             params.put(ATTR_ORDER, order.toString().toLowerCase(Locale.ROOT));
         } else {

@@ -927,20 +927,107 @@ public class StorageClient {
     return wrapObservable(apiService.createLeaderboard(params));
   }
   public Observable<LCObject> fetchLeaderboard(String name) {
-    return Observable.wrap(apiService.fetchLeaderboard(name));
+    return wrapObservable(apiService.fetchLeaderboard(name));
   }
   public Observable<LCObject> updateLeaderboard(String name, Map<String, Object> params) {
-    return Observable.wrap(apiService.updateLeaderboard(name, params));
+    return wrapObservable(apiService.updateLeaderboard(name, params));
   }
   public Observable<LCObject> resetLeaderboard(String name) {
-    return Observable.wrap(apiService.resetLeaderboard(name));
+    return wrapObservable(apiService.resetLeaderboard(name));
   }
   public Observable<Boolean> destroyLeaderboard(String name) {
-    return Observable.wrap(apiService.destroyLeaderboard(name)).map(new Function<LCObject, Boolean>() {
+    return wrapObservable(apiService.destroyLeaderboard(name)).map(new Function<LCObject, Boolean>() {
       @Override
       public Boolean apply(@NotNull LCObject object) throws Exception {
         return null != object;
       }
     });
+  }
+  public Observable<JSONObject> updateUserStatistics(final LCUser user,
+                                                     List<Map<String, Object>> params,
+                                                     boolean overwrite) {
+    if (null == user) {
+      return Observable.error(new IllegalArgumentException("user is null"));
+    }
+    if (null == params || params.size() < 1) {
+      return Observable.error(new IllegalArgumentException("params is empty"));
+    }
+    String sessionToken = user.getSessionToken();
+    int overwriteFlag = overwrite? 1: 0;
+    if (user.isAuthenticated()) {
+      return wrapObservable(apiService.updateAuthenticatedUserStatistics(sessionToken, params, overwriteFlag));
+    } else {
+      return wrapObservable(apiService.updateUserStatistics(user.getObjectId(), params, overwriteFlag));
+    }
+  }
+
+  public Observable<JSONObject> getLeaderboardResults(String leaderboardType, String statisticName, int skip, int limit,
+                                                      List<String> selectUserKeys,
+                                                      List<String> includeUserKeys,
+                                                      List<String> includeStatisticNames,
+                                                      int version) {
+    if (StringUtil.isEmpty(leaderboardType) || StringUtil.isEmpty(statisticName)) {
+      return Observable.error(new IllegalArgumentException("memberType or statisticName is null"));
+    }
+    String selectKeys = StringUtil.join(",", selectUserKeys);
+    String includeKeys = StringUtil.join(",", includeUserKeys);
+    String includeStatistics = StringUtil.join(",", includeStatisticNames);
+    Map<String, Object> params = new HashMap<>();
+    if (skip > 0) {
+      params.put("startPosition", skip);
+    }
+    if (limit > 0) {
+      params.put("maxResultsCount", limit);
+    }
+    if (!StringUtil.isEmpty(selectKeys)) {
+      params.put("selectKeys", selectKeys);
+    }
+    if (!StringUtil.isEmpty(includeKeys)) {
+      params.put("includeKeys", includeKeys);
+    }
+    if (!StringUtil.isEmpty(includeStatistics)) {
+      params.put("includeStatistics", includeStatistics);
+    }
+    if (version > LCLeaderboard.INVALID_VERSION) {
+      params.put("version", version);
+    }
+    return wrapObservable(apiService.getLeaderboardResults(leaderboardType, statisticName, params));
+  }
+
+  public Observable<JSONObject> getLeaderboardAroundResults(String leaderboardType, String statisticName, String targetId,
+                                                            int skip, int limit, List<String> selectUserKeys,
+                                                            List<String> includeUserKeys,
+                                                            List<String> includeStatisticNames, int version) {
+    if (StringUtil.isEmpty(leaderboardType) || StringUtil.isEmpty(statisticName)) {
+      return Observable.error(new IllegalArgumentException("memberType or statisticName is null"));
+    }
+    String selectKeys = StringUtil.join(",", selectUserKeys);
+    String includeKeys = StringUtil.join(",", includeUserKeys);
+    String includeStatistics = StringUtil.join(",", includeStatisticNames);
+    Map<String, Object> params = new HashMap<>();
+    if (skip > 0) {
+      params.put("startPosition", skip);
+    }
+    if (limit > 0) {
+      params.put("maxResultsCount", limit);
+    }
+    if (!StringUtil.isEmpty(selectKeys)) {
+      params.put("selectKeys", selectKeys);
+    }
+    if (!StringUtil.isEmpty(includeKeys)) {
+      params.put("includeKeys", includeKeys);
+    }
+    if (!StringUtil.isEmpty(includeStatistics)) {
+      params.put("includeStatistics", includeStatistics);
+    }
+    if (version > LCLeaderboard.INVALID_VERSION) {
+      params.put("version", version);
+    }
+    return wrapObservable(apiService.getLeaderboardAroundResults(leaderboardType, statisticName, targetId, params));
+  }
+
+  public Observable<JSONObject> getUserStatistics(final LCUser user, int skip, int limit, List<String> selectUserKeys,
+                                                  List<String> includeStatistics, int version) {
+    return null;
   }
 }

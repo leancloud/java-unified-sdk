@@ -312,4 +312,26 @@ public interface APIService {
   Observable<LCObject> resetLeaderboard(@Path("statisticName") String name);
   @DELETE("/1.1/leaderboard/leaderboards/{statisticName}")
   Observable<LCObject> destroyLeaderboard(@Path("statisticName") String name);
+  @POST("/1.1/leaderboard/users/self/statistics")
+  Observable<JSONObject> updateAuthenticatedUserStatistics(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                                           @Body List<Map<String, Object>> param,
+                                                           @Query("overwrite") int overwriteFlag);
+  @POST("/1.1/leaderboard/users/{userId}/statistics")
+  Observable<JSONObject> updateUserStatistics(@Path("userId") String userId,
+                                              @Body List<Map<String, Object>> param,
+                                              @Query("overwrite") int overwriteFlag);
+
+  @GET("/1.1/leaderboard/leaderboards/{memberType}/{statisticName}/ranks")
+  Observable<JSONObject> getLeaderboardResults(@Path("memberType") String memberType,
+                                               @Path("statisticName") String statisticName,
+                                               @QueryMap Map<String, Object> query);
+  @GET("/1.1/leaderboard/leaderboards/{memberType}/{statisticName}/ranks/{entityId}")
+  Observable<JSONObject> getLeaderboardAroundResults(@Path("memberType") String memberType,
+                                                     @Path("statisticName") String statisticName,
+                                                     @Path("entityId") String entityId,
+                                                     @QueryMap Map<String, Object> query);
+
+  @GET("/1.1/leaderboard/users/self/statistics")
+  Observable<JSONObject> getAuthenticatedUserStatistics(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken);
+
 }
