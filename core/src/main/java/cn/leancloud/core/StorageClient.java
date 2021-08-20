@@ -943,7 +943,7 @@ public class StorageClient {
       }
     });
   }
-  public Observable<JSONObject> updateUserStatistics(final LCUser user,
+  public Observable<LCStatisticResult> updateUserStatistics(final LCUser user,
                                                      List<Map<String, Object>> params,
                                                      boolean overwrite) {
     if (null == user) {
@@ -961,11 +961,70 @@ public class StorageClient {
     }
   }
 
-  public Observable<JSONObject> getLeaderboardResults(String leaderboardType, String statisticName, int skip, int limit,
+  public Observable<LCStatisticResult> updateObjectStatistics(final String objectId,
+                                                            List<Map<String, Object>> params,
+                                                            boolean overwrite) {
+    if (StringUtil.isEmpty(objectId)) {
+      return Observable.error(new IllegalArgumentException("objectId is invalid."));
+    }
+    if (null == params || params.size() < 1) {
+      return Observable.error(new IllegalArgumentException("params is invalid."));
+    }
+    int overwriteFlag = overwrite? 1: 0;
+    return wrapObservable(apiService.updateObjectStatistics(objectId, params, overwriteFlag));
+  }
+
+  public Observable<LCStatisticResult> updateEntityStatistics(final String entityId,
+                                                            List<Map<String, Object>> params,
+                                                            boolean overwrite) {
+    if (StringUtil.isEmpty(entityId)) {
+      return Observable.error(new IllegalArgumentException("entityId is invalid."));
+    }
+    if (null == params || params.size() < 1) {
+      return Observable.error(new IllegalArgumentException("params is invalid."));
+    }
+    int overwriteFlag = overwrite? 1: 0;
+    return wrapObservable(apiService.updateEntityStatistics(entityId, params, overwriteFlag));
+  }
+
+  public Observable<LCStatisticResult> getUserStatistics(final String userObjectId, List<String> statisticNames) {
+    if (StringUtil.isEmpty(userObjectId)) {
+      return Observable.error(new IllegalArgumentException("userObjectId is invalid."));
+    }
+    String statistics = StringUtil.join(",", statisticNames);
+    if (null == statistics) {
+      statistics = "";
+    }
+    return wrapObservable(apiService.getUserStatistics(userObjectId, statistics));
+  }
+
+  public Observable<LCStatisticResult> getEntityStatistics(final String entityId, List<String> statisticNames) {
+    if (StringUtil.isEmpty(entityId)) {
+      return Observable.error(new IllegalArgumentException("userObjectId is null"));
+    }
+    String statistics = StringUtil.join(",", statisticNames);
+    if (null == statistics) {
+      statistics = "";
+    }
+    return wrapObservable(apiService.getEntityStatistics(entityId, statistics));
+  }
+
+  public Observable<LCStatisticResult> getObjectStatistics(final String objectId, List<String> statisticNames) {
+    if (StringUtil.isEmpty(objectId)) {
+      return Observable.error(new IllegalArgumentException("userObjectId is null"));
+    }
+    String statistics = StringUtil.join(",", statisticNames);
+    if (null == statistics) {
+      statistics = "";
+    }
+    return wrapObservable(apiService.getObjectStatistics(objectId, statistics));
+  }
+
+  public Observable<LCLeaderboardResult> getLeaderboardResults(String leaderboardType, String statisticName, int skip, int limit,
                                                       List<String> selectUserKeys,
                                                       List<String> includeUserKeys,
                                                       List<String> includeStatisticNames,
-                                                      int version) {
+                                                      int version, boolean withCount) {
     if (StringUtil.isEmpty(leaderboardType) || StringUtil.isEmpty(statisticName)) {
       return Observable.error(new IllegalArgumentException("memberType or statisticName is null"));
     }
@@ -991,10 +1050,13 @@ public class StorageClient {
     if (version > LCLeaderboard.INVALID_VERSION) {
       params.put("version", version);
     }
+    if (withCount) {
+      params.put("count", 1);
+    }
     return wrapObservable(apiService.getLeaderboardResults(leaderboardType, statisticName, params));
   }
 
-  public Observable<JSONObject> getLeaderboardAroundResults(String leaderboardType, String statisticName, String targetId,
+  public Observable<LCLeaderboardResult> getLeaderboardAroundResults(String leaderboardType, String statisticName, String targetId,
                                                             int skip, int limit, List<String> selectUserKeys,
                                                             List<String> includeUserKeys,
                                                             List<String> includeStatisticNames, int version) {
@@ -1024,10 +1086,5 @@ public class StorageClient {
       params.put("version", version);
     }
     return wrapObservable(apiService.getLeaderboardAroundResults(leaderboardType, statisticName, targetId, params));
-  }
-
-  public Observable<JSONObject> getUserStatistics(final LCUser user, int skip, int limit, List<String> selectUserKeys,
-                                                  List<String> includeStatistics, int version) {
-    return null;
   }
 }

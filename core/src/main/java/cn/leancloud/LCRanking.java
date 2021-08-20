@@ -5,7 +5,9 @@ import java.util.List;
 public class LCRanking {
     private int rank;
     private LCUser user;
-    private double value;
+    private LCObject object;
+    private String entityId;
+    private double statisticValue;
     private List<LCStatistic> includedStatistics;
 
     public int getRank() {
@@ -24,12 +26,28 @@ public class LCRanking {
         this.user = user;
     }
 
-    public double getValue() {
-        return value;
+    public double getStatisticValue() {
+        return statisticValue;
     }
 
-    public void setValue(double value) {
-        this.value = value;
+    public void setStatisticValue(double statisticValue) {
+        this.statisticValue = statisticValue;
+    }
+
+    public LCObject getObject() {
+        return object;
+    }
+
+    public void setObject(LCObject object) {
+        this.object = object;
+    }
+
+    public String getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(String entityId) {
+        this.entityId = entityId;
     }
 
     public List<LCStatistic> getIncludedStatistics() {

@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
@@ -7,6 +8,8 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class LCLeaderboardManagerTests extends TestCase {
@@ -44,6 +47,7 @@ public class LCLeaderboardManagerTests extends TestCase {
         order = LCLeaderboard.lookup(LCLeaderboard.LCLeaderboardOrder.class, "cending");
         assertTrue(order == null);
     }
+
     public void testLeaderboardCRUD() throws Exception {
         final String statisticName = "justSoso";
         LCLeaderboard.create(statisticName, LCLeaderboard.LCLeaderboardOrder.Ascending,
@@ -150,7 +154,66 @@ public class LCLeaderboardManagerTests extends TestCase {
         latch.await();
         assertTrue(testSucceed);
     }
+
     public void testLeaderboardCreateWithName() throws Exception {
+        LCLeaderboard leaderboard = LCLeaderboard.createWithoutData("leancloudgogo");
+        leaderboard.getResults(0, 0, null, null, null, true)
+                .subscribe(new Observer<LCLeaderboardResult>() {
+            @Override
+            public void onSubscribe(@NotNull Disposable disposable) {
+
+            }
+
+            @Override
+            public void onNext(@NotNull LCLeaderboardResult lcLeaderboardResult) {
+                System.out.println("succeed to get results.");
+                testSucceed = lcLeaderboardResult.getCount() > 0;
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(@NotNull Throwable throwable) {
+                System.out.println("failed to get results. cause: " + throwable);
+                latch.countDown();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+        latch.await();
+        assertTrue(testSucceed);
+    }
+
+    public void testUpdateUnauthUserStatistic() throws Exception {
+        LCUser unauthUser = LCUser.createWithoutData(LCUser.class, "60e57e6eb8524555a2c85fd1");
+        final Map<String, Double> scores = new HashMap<>();
+        scores.put("leancloudgogo", (double)System.currentTimeMillis());
+        LCLeaderboard.updateStatistic(unauthUser, scores).subscribe(new Observer<LCStatisticResult>() {
+            @Override
+            public void onSubscribe(@NotNull Disposable disposable) {
+
+            }
+
+            @Override
+            public void onNext(@NotNull LCStatisticResult jsonObject) {
+                System.out.println("succeed to update user's statistic.");
+                testSucceed = true;
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(@NotNull Throwable throwable) {
+                System.out.println("failed to update user's statistic. cause: " + throwable);
+                latch.countDown();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
         latch.await();
         assertTrue(testSucceed);
     }

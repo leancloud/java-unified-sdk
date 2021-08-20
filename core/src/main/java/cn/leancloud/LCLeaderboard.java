@@ -145,10 +145,11 @@ public class LCLeaderboard {
         return new LCLeaderboard(name);
     }
 
-    public static Observable<JSONObject> updateStatistic(LCUser user, Map<String, Double> values) {
+    public static Observable<LCStatisticResult> updateStatistic(LCUser user, Map<String, Double> values) {
         return updateStatistic(user, values, false);
     }
-    public static Observable<JSONObject> updateStatistic(LCUser user, Map<String, Double> params, boolean overwrite) {
+
+    public static Observable<LCStatisticResult> updateStatistic(LCUser user, Map<String, Double> params, boolean overwrite) {
         if (null == user) {
             return Observable.error(new IllegalArgumentException("user is null"));
         }
@@ -165,11 +166,14 @@ public class LCLeaderboard {
         return PaasClient.getStorageClient().updateUserStatistics(user, statistics, overwrite);
     }
 
-    public static Observable<JSONObject> getStatistics(LCUser user) {
-        return getStatistics(user, null);
+    public static Observable<LCStatisticResult> getUserStatistics(LCUser user) {
+        return getUserStatistics(user, null);
     }
-    public static Observable<JSONObject> getStatistics(LCUser user, List<String> statisticNames) {
-        return null;
+    public static Observable<LCStatisticResult> getUserStatistics(LCUser user, List<String> statisticNames) {
+        if (null == user || StringUtil.isEmpty(user.getObjectId())) {
+            return Observable.error(new IllegalArgumentException("user is invalid."));
+        }
+        return PaasClient.getStorageClient().getUserStatistics(user.getObjectId(), statisticNames);
     }
 
     static String convertLeaderboardType(String memberType) {
@@ -184,47 +188,36 @@ public class LCLeaderboard {
         return leaderboardType;
     }
 
-    public Observable<List<LCRanking>> getResults(int skip, int limit, List<String> selectUserKeys,
-                                                  List<String> includeStatistics) {
-        return getResults(skip, limit, selectUserKeys, null, includeStatistics);
+    public Observable<LCLeaderboardResult> getResults(int skip, int limit, List<String> selectUserKeys,
+                                                      List<String> includeStatistics) {
+        return getResults(skip, limit, selectUserKeys, null, includeStatistics, false);
     }
 
-    public Observable<List<LCRanking>> getResults(int skip, int limit, List<String> selectUserKeys,
-                                                  List<String> includeUserKeys,
-                                                  List<String> includeStatistics) {
+    public Observable<LCLeaderboardResult> getResults(int skip, int limit, List<String> selectUserKeys,
+                                                      List<String> includeUserKeys,
+                                                      List<String> includeStatistics,
+                                                      boolean withCount) {
         if (StringUtil.isEmpty(this.statisticName)) {
             return Observable.error(new IllegalArgumentException("name is empty"));
         }
         String leaderboardType = convertLeaderboardType(this.memberType);
         return PaasClient.getStorageClient().getLeaderboardResults(leaderboardType, this.statisticName,
-                skip, limit, selectUserKeys, includeUserKeys, includeStatistics, this.version)
-                .map(new Function<JSONObject, List<LCRanking>>() {
-                    @Override
-                    public List<LCRanking> apply(@NotNull JSONObject jsonObject) throws Exception {
-                        return null;
-                    }
-                });
+                skip, limit, selectUserKeys, includeUserKeys, includeStatistics, this.version, withCount);
     }
 
-    public Observable<List<LCRanking>> getAroundResults(String targetId, int skip, int limit, List<String> selectUserKeys,
+    public Observable<LCLeaderboardResult> getAroundResults(String targetId, int skip, int limit, List<String> selectUserKeys,
                                                         List<String> includeStatistics) {
         return getAroundResults(targetId, skip, limit, selectUserKeys, null, includeStatistics);
     }
 
-    public Observable<List<LCRanking>> getAroundResults(String targetId, int skip, int limit, List<String> selectUserKeys,
+    public Observable<LCLeaderboardResult> getAroundResults(String targetId, int skip, int limit, List<String> selectUserKeys,
                                                   List<String> includeUserKeys, List<String> includeStatistics) {
         if (StringUtil.isEmpty(this.statisticName)) {
             return Observable.error(new IllegalArgumentException("name is empty"));
         }
         String leaderboardType = convertLeaderboardType(this.memberType);
         return PaasClient.getStorageClient().getLeaderboardAroundResults(leaderboardType, this.statisticName, targetId,
-                skip, limit, selectUserKeys, includeUserKeys, includeStatistics, this.version)
-                .map(new Function<JSONObject, List<LCRanking>>() {
-            @Override
-            public List<LCRanking> apply(@NotNull JSONObject jsonObject) throws Exception {
-                return null;
-            }
-        });
+                skip, limit, selectUserKeys, includeUserKeys, includeStatistics, this.version);
     }
 
     /**

@@ -313,20 +313,34 @@ public interface APIService {
   @DELETE("/1.1/leaderboard/leaderboards/{statisticName}")
   Observable<LCObject> destroyLeaderboard(@Path("statisticName") String name);
   @POST("/1.1/leaderboard/users/self/statistics")
-  Observable<JSONObject> updateAuthenticatedUserStatistics(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+  Observable<LCStatisticResult> updateAuthenticatedUserStatistics(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
                                                            @Body List<Map<String, Object>> param,
                                                            @Query("overwrite") int overwriteFlag);
   @POST("/1.1/leaderboard/users/{userId}/statistics")
-  Observable<JSONObject> updateUserStatistics(@Path("userId") String userId,
+  Observable<LCStatisticResult> updateUserStatistics(@Path("userId") String userId,
                                               @Body List<Map<String, Object>> param,
                                               @Query("overwrite") int overwriteFlag);
+  @POST("/1.1/leaderboard/entities/{entityId}/statistics")
+  Observable<LCStatisticResult> updateEntityStatistics(@Path("entityId") String entityId,
+                                                     @Body List<Map<String, Object>> param,
+                                                     @Query("overwrite") int overwriteFlag);
+  @POST("/1.1/leaderboard/objects/{objectId}/statistics")
+  Observable<LCStatisticResult> updateObjectStatistics(@Path("objectId") String objectId,
+                                                     @Body List<Map<String, Object>> param,
+                                                     @Query("overwrite") int overwriteFlag);
+  @GET("/1.1/leaderboard/users/{userId}/statistics")
+  Observable<LCStatisticResult> getUserStatistics(@Path("userId") String userId, @Query("statistics") String statistics);
+  @GET("/1.1/leaderboard/entities/{entityId}/statistics")
+  Observable<LCStatisticResult> getEntityStatistics(@Path("entityId") String entityId, @Query("statistics") String statistics);
+  @GET("/1.1/leaderboard/objects/{objectId}/statistics")
+  Observable<LCStatisticResult> getObjectStatistics(@Path("objectId") String objectId, @Query("statistics") String statistics);
 
   @GET("/1.1/leaderboard/leaderboards/{memberType}/{statisticName}/ranks")
-  Observable<JSONObject> getLeaderboardResults(@Path("memberType") String memberType,
+  Observable<LCLeaderboardResult> getLeaderboardResults(@Path("memberType") String memberType,
                                                @Path("statisticName") String statisticName,
                                                @QueryMap Map<String, Object> query);
   @GET("/1.1/leaderboard/leaderboards/{memberType}/{statisticName}/ranks/{entityId}")
-  Observable<JSONObject> getLeaderboardAroundResults(@Path("memberType") String memberType,
+  Observable<LCLeaderboardResult> getLeaderboardAroundResults(@Path("memberType") String memberType,
                                                      @Path("statisticName") String statisticName,
                                                      @Path("entityId") String entityId,
                                                      @QueryMap Map<String, Object> query);
