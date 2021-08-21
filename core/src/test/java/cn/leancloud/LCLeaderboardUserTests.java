@@ -277,6 +277,9 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
     }
 
     public void testGetAuthenticatedUserStatistics() throws Exception {
+        final Map<String, Double> scores = new HashMap<>();
+        scores.put(LEADERBOARD_NAME, (double)System.currentTimeMillis());
+        LCLeaderboard.updateStatistic(LCUser.currentUser(), scores).blockingFirst();
         LCLeaderboard.getUserStatistics(LCUser.currentUser()).subscribe(new Observer<LCStatisticResult>() {
             @Override
             public void onSubscribe(@NotNull Disposable disposable) {

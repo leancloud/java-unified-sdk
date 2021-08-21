@@ -346,6 +346,5 @@ public interface APIService {
                                                      @QueryMap Map<String, Object> query);
 
   @GET("/1.1/leaderboard/users/self/statistics")
-  Observable<JSONObject> getAuthenticatedUserStatistics(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken);
-
+  Observable<LCStatisticResult> getAuthenticatedUserStatistics(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken);
 }

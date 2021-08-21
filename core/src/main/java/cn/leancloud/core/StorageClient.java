@@ -1000,7 +1000,7 @@ public class StorageClient {
 
   public Observable<LCStatisticResult> getEntityStatistics(final String entityId, List<String> statisticNames) {
     if (StringUtil.isEmpty(entityId)) {
-      return Observable.error(new IllegalArgumentException("userObjectId is null"));
+      return Observable.error(new IllegalArgumentException("entityId is null"));
     }
     String statistics = StringUtil.join(",", statisticNames);
     if (null == statistics) {
@@ -1011,7 +1011,7 @@ public class StorageClient {
 
   public Observable<LCStatisticResult> getObjectStatistics(final String objectId, List<String> statisticNames) {
     if (StringUtil.isEmpty(objectId)) {
-      return Observable.error(new IllegalArgumentException("userObjectId is null"));
+      return Observable.error(new IllegalArgumentException("objectId is null"));
     }
     String statistics = StringUtil.join(",", statisticNames);
     if (null == statistics) {

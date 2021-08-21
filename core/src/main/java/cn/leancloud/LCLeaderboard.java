@@ -1,11 +1,9 @@
 package cn.leancloud;
 
 import cn.leancloud.core.PaasClient;
-import cn.leancloud.json.JSONObject;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -22,6 +20,7 @@ public class LCLeaderboard {
     static final String ATTR_VERSION = "version";
     static final String ATTR_EXPIRED_AT = "expiredAt";
 
+    // leaderboard order
     public enum LCLeaderboardOrder {
         Ascending,
         Descending
@@ -46,30 +45,58 @@ public class LCLeaderboard {
     private Date nextResetAt = null;
     private Date createdAt = null;
 
+    /**
+     * get statistic name
+     * @return statistic name
+     */
     public String getStatisticName() {
         return statisticName;
     }
 
+    /**
+     * get leaderboard order
+     * @return leaderboard order
+     */
     public LCLeaderboardOrder getOrder() {
         return order;
     }
 
+    /**
+     * get leaderboard update strategy
+     * @return update strategy
+     */
     public LCLeaderboardUpdateStrategy getUpdateStrategy() {
         return updateStrategy;
     }
 
+    /**
+     * get version change interval
+     * @return version change interval
+     */
     public LCLeaderboardVersionChangeInterval getVersionChangeInterval() {
         return versionChangeInterval;
     }
 
+    /**
+     * get version
+     * @return version number
+     */
     public int getVersion() {
         return version;
     }
 
+    /**
+     * get next reset timestamp
+     * @return next reset timestamp
+     */
     public Date getNextResetAt() {
         return nextResetAt;
     }
 
+    /**
+     * get create timestamp
+     * @return create timestamp
+     */
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -108,6 +135,11 @@ public class LCLeaderboard {
         this.statisticName = name;
     }
 
+    private LCLeaderboard(String name, String memberType) {
+        this.statisticName = name;
+        this.memberType = memberType;
+    }
+
     protected static <T extends Enum<T>> T lookup(Class<T> enumType, String name) {
         for (T item : enumType.getEnumConstants()) {
             if (item.name().equalsIgnoreCase(name)) {
@@ -141,14 +173,45 @@ public class LCLeaderboard {
         setCreatedAt(object.getCreatedAt());
     }
 
+    /**
+     * create instance with leaderboard name
+     * @param name leaderboard name
+     * @return instance
+     */
     public static LCLeaderboard createWithoutData(String name) {
         return new LCLeaderboard(name);
     }
 
+    /**
+     * create instance with leaderboard name and type.
+     * @param name leaderboard name
+     * @param memberType leaderboard member type:
+     *                   MEMBER_TYPE_USER("_User"): leaderboard target is LCUser
+     *                   MEMBER_TYPE_ENTITY("_Entity"): leaderboard target is any entity
+     *                   LCObject Name: leaderboard target is LCObject
+     * @return
+     */
+    public static LCLeaderboard createWithoutData(String name, String memberType) {
+        return new LCLeaderboard(name, memberType);
+    }
+
+    /**
+     * update user's statistic
+     * @param user user instance
+     * @param values statistics
+     * @return observable instance.
+     */
     public static Observable<LCStatisticResult> updateStatistic(LCUser user, Map<String, Double> values) {
         return updateStatistic(user, values, false);
     }
 
+    /**
+     * update user's statistic
+     * @param user user instance
+     * @param params statistics
+     * @param overwrite overwrite flag
+     * @return observable instance.
+     */
     public static Observable<LCStatisticResult> updateStatistic(LCUser user, Map<String, Double> params, boolean overwrite) {
         if (null == user) {
             return Observable.error(new IllegalArgumentException("user is null"));
@@ -166,14 +229,63 @@ public class LCLeaderboard {
         return PaasClient.getStorageClient().updateUserStatistics(user, statistics, overwrite);
     }
 
+    /**
+     * get user's statistics
+     * @param user user instance
+     * @return observable instance.
+     */
     public static Observable<LCStatisticResult> getUserStatistics(LCUser user) {
         return getUserStatistics(user, null);
     }
+
+    /**
+     * get user's statistics
+     * @param user user instance
+     * @param statisticNames statistic names
+     * @return observable instance.
+     */
     public static Observable<LCStatisticResult> getUserStatistics(LCUser user, List<String> statisticNames) {
         if (null == user || StringUtil.isEmpty(user.getObjectId())) {
             return Observable.error(new IllegalArgumentException("user is invalid."));
         }
         return PaasClient.getStorageClient().getUserStatistics(user.getObjectId(), statisticNames);
+    }
+
+    /**
+     * get member statistics.
+     * @param memberType member type
+     *                   MEMBER_TYPE_USER("_User"): leaderboard target is LCUser
+     *                   MEMBER_TYPE_ENTITY("_Entity"): leaderboard target is any entity
+     *                   LCObject Name: leaderboard target is LCObject
+     * @param memberId member objectId
+     * @return observable instance.
+     */
+    public static Observable<LCStatisticResult> getMemberStatistics(String memberType, String memberId) {
+        return getMemberStatistics(memberType, memberId, null);
+    }
+
+    /**
+     * get member statistics
+     * @param memberType member type
+     *                   MEMBER_TYPE_USER("_User"): leaderboard target is LCUser
+     *                   MEMBER_TYPE_ENTITY("_Entity"): leaderboard target is any entity
+     *                   LCObject Name: leaderboard target is LCObject
+     * @param memberId member objectId
+     * @param statisticNames statistic names
+     * @return observable instance.
+     */
+    public static Observable<LCStatisticResult> getMemberStatistics(String memberType, String memberId,
+                                                                    List<String> statisticNames) {
+        if (StringUtil.isEmpty(memberType) || StringUtil.isEmpty(memberId)) {
+            return Observable.error(new IllegalArgumentException("memberType or memberId is invalid."));
+        }
+        if (MEMBER_TYPE_USER.equalsIgnoreCase(memberType)) {
+            return PaasClient.getStorageClient().getUserStatistics(memberId, statisticNames);
+        } else if (MEMBER_TYPE_ENTITY.equalsIgnoreCase(memberType)) {
+            return PaasClient.getStorageClient().getEntityStatistics(memberId, statisticNames);
+        } else {
+            return PaasClient.getStorageClient().getObjectStatistics(memberId, statisticNames);
+        }
     }
 
     static String convertLeaderboardType(String memberType) {
@@ -188,11 +300,29 @@ public class LCLeaderboard {
         return leaderboardType;
     }
 
+    /**
+     * get leaderboard results.
+     * @param skip query offset
+     * @param limit query limit
+     * @param selectUserKeys select user keys(optional)
+     * @param includeStatistics include other statistics(optional)
+     * @return observable instance.
+     */
     public Observable<LCLeaderboardResult> getResults(int skip, int limit, List<String> selectUserKeys,
                                                       List<String> includeStatistics) {
         return getResults(skip, limit, selectUserKeys, null, includeStatistics, false);
     }
 
+    /**
+     * get leaderboard results.
+     * @param skip query offset
+     * @param limit query limit
+     * @param selectUserKeys select user keys(optional)
+     * @param includeUserKeys include user keys(optional)
+     * @param includeStatistics include other statistics(optional)
+     * @param withCount need count flag(optional)
+     * @return observable instance.
+     */
     public Observable<LCLeaderboardResult> getResults(int skip, int limit, List<String> selectUserKeys,
                                                       List<String> includeUserKeys,
                                                       List<String> includeStatistics,
@@ -205,11 +335,30 @@ public class LCLeaderboard {
                 skip, limit, selectUserKeys, includeUserKeys, includeStatistics, this.version, withCount);
     }
 
+    /**
+     * get leaderboard results around target id(user, object or entity).
+     * @param targetId target objectId
+     * @param skip query offset
+     * @param limit query limit
+     * @param selectUserKeys select object keys(optional)
+     * @param includeStatistics include other statistics(optional)
+     * @return observable instance.
+     */
     public Observable<LCLeaderboardResult> getAroundResults(String targetId, int skip, int limit, List<String> selectUserKeys,
                                                         List<String> includeStatistics) {
         return getAroundResults(targetId, skip, limit, selectUserKeys, null, includeStatistics);
     }
 
+    /**
+     * get leaderboard results around target id(user, object or entity).
+     * @param targetId target objectId
+     * @param skip query offset
+     * @param limit query limit
+     * @param selectUserKeys select object keys(optional)
+     * @param includeUserKeys include object keys(optional)
+     * @param includeStatistics include other statistics(optional)
+     * @return observable instance.
+     */
     public Observable<LCLeaderboardResult> getAroundResults(String targetId, int skip, int limit, List<String> selectUserKeys,
                                                   List<String> includeUserKeys, List<String> includeStatistics) {
         if (StringUtil.isEmpty(this.statisticName)) {
@@ -269,7 +418,7 @@ public class LCLeaderboard {
         }
         return PaasClient.getStorageClient().createLeaderboard(params).map(new Function<LCObject, LCLeaderboard>() {
             @Override
-            public LCLeaderboard apply(@NotNull LCObject object) throws Exception {
+            public LCLeaderboard apply(LCObject object) throws Exception {
                 return new LCLeaderboard(object);
             }
         });
@@ -286,7 +435,7 @@ public class LCLeaderboard {
         }
         return PaasClient.getStorageClient().fetchLeaderboard(name).map(new Function<LCObject, LCLeaderboard>() {
             @Override
-            public LCLeaderboard apply(@NotNull LCObject object) throws Exception {
+            public LCLeaderboard apply(LCObject object) throws Exception {
                 return new LCLeaderboard(object);
             }
         });
@@ -302,7 +451,7 @@ public class LCLeaderboard {
         }
         return PaasClient.getStorageClient().resetLeaderboard(this.statisticName).map(new Function<LCObject, Boolean>() {
             @Override
-            public Boolean apply(@NotNull LCObject object) throws Exception {
+            public Boolean apply(LCObject object) throws Exception {
                 LCLeaderboard.this.setVersion(object.getInt(ATTR_VERSION));
                 Date nextReset = object.getDate(ATTR_EXPIRED_AT);
                 if (null != nextReset) {
@@ -329,7 +478,7 @@ public class LCLeaderboard {
         params.put(ATTR_VERSION_CHANGE_INTERVAL, interval.toString().toLowerCase(Locale.ROOT));
         return PaasClient.getStorageClient().updateLeaderboard(this.statisticName, params).map(new Function<LCObject, Boolean>() {
             @Override
-            public Boolean apply(@NotNull LCObject object) throws Exception {
+            public Boolean apply(LCObject object) throws Exception {
                 LCLeaderboard.this.setVersionChangeInterval(interval);
                 Date nextReset = object.getDate(ATTR_EXPIRED_AT);
                 if (null != nextReset) {
@@ -356,7 +505,7 @@ public class LCLeaderboard {
         params.put(ATTR_UPDATE_STRATEGY, strategy.toString().toLowerCase(Locale.ROOT));
         return PaasClient.getStorageClient().updateLeaderboard(this.statisticName, params).map(new Function<LCObject, Boolean>() {
             @Override
-            public Boolean apply(@NotNull LCObject object) throws Exception {
+            public Boolean apply(LCObject object) throws Exception {
                 LCLeaderboard.this.setUpdateStrategy(strategy);
                 return null != object;
             }
