@@ -185,7 +185,7 @@ public class LCLeaderboardManagerTests extends TestCase {
 
     public void testLeaderboardCreateWithName() throws Exception {
         LCLeaderboard leaderboard = LCLeaderboard.createWithoutData("leancloudgogo");
-        leaderboard.getResults(0, 0, null, null, null, true)
+        leaderboard.getResults(0, 0, null, null, true)
                 .subscribe(new Observer<LCLeaderboardResult>() {
             @Override
             public void onSubscribe(@NotNull Disposable disposable) {

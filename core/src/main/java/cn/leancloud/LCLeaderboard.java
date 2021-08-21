@@ -304,27 +304,25 @@ public class LCLeaderboard {
      * get leaderboard results.
      * @param skip query offset
      * @param limit query limit
-     * @param selectUserKeys select user keys(optional)
+     * @param selectMemberKeys select member(user or object) keys(optional)
      * @param includeStatistics include other statistics(optional)
      * @return observable instance.
      */
-    public Observable<LCLeaderboardResult> getResults(int skip, int limit, List<String> selectUserKeys,
+    public Observable<LCLeaderboardResult> getResults(int skip, int limit, List<String> selectMemberKeys,
                                                       List<String> includeStatistics) {
-        return getResults(skip, limit, selectUserKeys, null, includeStatistics, false);
+        return getResults(skip, limit, selectMemberKeys, includeStatistics, false);
     }
 
     /**
      * get leaderboard results.
      * @param skip query offset
      * @param limit query limit
-     * @param selectUserKeys select user keys(optional)
-     * @param includeUserKeys include user keys(optional)
+     * @param selectMemberKeys select member(user or object) keys(optional)
      * @param includeStatistics include other statistics(optional)
      * @param withCount need count flag(optional)
      * @return observable instance.
      */
-    public Observable<LCLeaderboardResult> getResults(int skip, int limit, List<String> selectUserKeys,
-                                                      List<String> includeUserKeys,
+    public Observable<LCLeaderboardResult> getResults(int skip, int limit, List<String> selectMemberKeys,
                                                       List<String> includeStatistics,
                                                       boolean withCount) {
         if (StringUtil.isEmpty(this.statisticName)) {
@@ -332,7 +330,7 @@ public class LCLeaderboard {
         }
         String leaderboardType = convertLeaderboardType(this.memberType);
         return PaasClient.getStorageClient().getLeaderboardResults(leaderboardType, this.statisticName,
-                skip, limit, selectUserKeys, includeUserKeys, includeStatistics, this.version, withCount);
+                skip, limit, selectMemberKeys, null, includeStatistics, this.version, withCount);
     }
 
     /**
@@ -340,33 +338,19 @@ public class LCLeaderboard {
      * @param targetId target objectId
      * @param skip query offset
      * @param limit query limit
-     * @param selectUserKeys select object keys(optional)
+     * @param selectMemberKeys select object keys(optional)
      * @param includeStatistics include other statistics(optional)
      * @return observable instance.
      */
-    public Observable<LCLeaderboardResult> getAroundResults(String targetId, int skip, int limit, List<String> selectUserKeys,
-                                                        List<String> includeStatistics) {
-        return getAroundResults(targetId, skip, limit, selectUserKeys, null, includeStatistics);
-    }
-
-    /**
-     * get leaderboard results around target id(user, object or entity).
-     * @param targetId target objectId
-     * @param skip query offset
-     * @param limit query limit
-     * @param selectUserKeys select object keys(optional)
-     * @param includeUserKeys include object keys(optional)
-     * @param includeStatistics include other statistics(optional)
-     * @return observable instance.
-     */
-    public Observable<LCLeaderboardResult> getAroundResults(String targetId, int skip, int limit, List<String> selectUserKeys,
-                                                  List<String> includeUserKeys, List<String> includeStatistics) {
+    public Observable<LCLeaderboardResult> getAroundResults(String targetId, int skip, int limit,
+                                                            List<String> selectMemberKeys,
+                                                            List<String> includeStatistics) {
         if (StringUtil.isEmpty(this.statisticName)) {
             return Observable.error(new IllegalArgumentException("name is empty"));
         }
         String leaderboardType = convertLeaderboardType(this.memberType);
         return PaasClient.getStorageClient().getLeaderboardAroundResults(leaderboardType, this.statisticName, targetId,
-                skip, limit, selectUserKeys, includeUserKeys, includeStatistics, this.version);
+                skip, limit, selectMemberKeys, null, includeStatistics, this.version);
     }
 
     /**
