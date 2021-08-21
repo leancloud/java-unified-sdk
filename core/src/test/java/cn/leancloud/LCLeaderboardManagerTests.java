@@ -155,6 +155,34 @@ public class LCLeaderboardManagerTests extends TestCase {
         assertTrue(testSucceed);
     }
 
+    public void testDestroyNotExistLeaderboard() throws Exception {
+        LCLeaderboard leaderboard = LCLeaderboard.createWithoutData("unittest-" + System.currentTimeMillis());
+        leaderboard.destroy().subscribe(new Observer<Boolean>() {
+            @Override
+            public void onSubscribe(@NotNull Disposable disposable) {
+
+            }
+
+            @Override
+            public void onNext(@NotNull Boolean aBoolean) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(@NotNull Throwable throwable) {
+                testSucceed = true;
+                latch.countDown();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+        latch.await();
+        assertTrue(testSucceed);
+    }
+
     public void testLeaderboardCreateWithName() throws Exception {
         LCLeaderboard leaderboard = LCLeaderboard.createWithoutData("leancloudgogo");
         leaderboard.getResults(0, 0, null, null, null, true)

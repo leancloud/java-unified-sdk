@@ -23,7 +23,6 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Scheduler;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.*;
@@ -938,7 +937,7 @@ public class StorageClient {
   public Observable<Boolean> destroyLeaderboard(String name) {
     return wrapObservable(apiService.destroyLeaderboard(name)).map(new Function<LCObject, Boolean>() {
       @Override
-      public Boolean apply(@NotNull LCObject object) throws Exception {
+      public Boolean apply(LCObject object) throws Exception {
         return null != object;
       }
     });
