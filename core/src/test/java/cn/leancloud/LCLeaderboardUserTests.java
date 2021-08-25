@@ -412,4 +412,108 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
         latch.await();
         assertTrue(testSucceed);
     }
+
+    public void testGetOlderVersionLeaderboard() throws Exception {
+        final LCLeaderboard leaderboard = LCLeaderboard.fetchByName(LEADERBOARD_NAME).blockingFirst();
+        leaderboard.setVersion(leaderboard.getVersion() - 1);
+        leaderboard.getResults(0, 100, null, new ArrayList<String>()).subscribe(new Observer<LCLeaderboardResult>() {
+            @Override
+            public void onSubscribe(@NotNull Disposable disposable) {
+
+            }
+
+            @Override
+            public void onNext(@NotNull LCLeaderboardResult lcLeaderboardResult) {
+                leaderboard.setVersion(leaderboard.getVersion() - 1);
+                leaderboard.getResults(0, 0, new ArrayList<String>(), new ArrayList<String>())
+                        .subscribe(new Observer<LCLeaderboardResult>() {
+                    @Override
+                    public void onSubscribe(@NotNull Disposable disposable) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NotNull LCLeaderboardResult lcLeaderboardResult) {
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable throwable) {
+                        testSucceed = true;
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onError(@NotNull Throwable throwable) {
+                System.out.println("failed to get older version leaderboard, cause: " + throwable);
+                latch.countDown();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+        latch.await();
+        assertTrue(testSucceed);
+    }
+
+    public void testGetIllegalVersionLeaderboard() throws Exception {
+        final LCLeaderboard leaderboard = LCLeaderboard.createWithoutData(LEADERBOARD_NAME, "_User");
+        leaderboard.setVersion(-2);
+        leaderboard.getResults(0, 100, null, new ArrayList<String>()).subscribe(new Observer<LCLeaderboardResult>() {
+            @Override
+            public void onSubscribe(@NotNull Disposable disposable) {
+
+            }
+
+            @Override
+            public void onNext(@NotNull LCLeaderboardResult lcLeaderboardResult) {
+                leaderboard.setVersion(200000);
+                leaderboard.getAroundResults(LCUser.currentUser().getObjectId(), 0, 100, null,
+                        null)
+                        .subscribe(new Observer<LCLeaderboardResult>() {
+                            @Override
+                            public void onSubscribe(@NotNull Disposable disposable) {
+
+                            }
+
+                            @Override
+                            public void onNext(@NotNull LCLeaderboardResult lcLeaderboardResult) {
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onError(@NotNull Throwable throwable) {
+                                testSucceed = true;
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+                            }
+                        });
+            }
+
+            @Override
+            public void onError(@NotNull Throwable throwable) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+        latch.await();
+        assertTrue(testSucceed);
+    }
 }

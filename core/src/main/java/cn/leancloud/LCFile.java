@@ -39,6 +39,7 @@ public final class LCFile extends LCObject {
   private static final String FILE_LENGTH_KEY = "size";
   private static final String FILE_SOURCE_KEY = "__source";
   private static final String FILE_SOURCE_EXTERNAL = "external";
+  private static final String FILE_PATH_PREFIX_KEY = "prefix";
 
   private static final String THUMBNAIL_FMT = "?imageView/%d/w/%d/h/%d/q/%d/format/%s";
 
@@ -184,6 +185,26 @@ public final class LCFile extends LCObject {
     internalPut(KEY_FILE_NAME, name);
   }
 
+  /**
+   * set folder path
+   * @param path folder path. null or empty string equals to clearPathPrefix.
+   */
+  public void setPathPrefix(String path) {
+    if (StringUtil.isEmpty(path)) {
+      clearPathPrefix();
+    } else {
+      internalPut(FILE_PATH_PREFIX_KEY, path);
+      addMetaData(FILE_PATH_PREFIX_KEY, path);
+    }
+  }
+
+  /**
+   * clear folder path.
+   */
+  public void clearPathPrefix() {
+    super.remove(FILE_PATH_PREFIX_KEY);
+    getMetaData().remove(FILE_PATH_PREFIX_KEY);
+  }
   /**
    * Get file meta data.
    * @return meta data.
@@ -510,7 +531,7 @@ public final class LCFile extends LCObject {
     JSONObject paramData = generateChangedParam();
 //    final String fileKey = FileUtil.generateFileKey(this.getName(), keepFileName);
 //    paramData.put("key", fileKey);
-    paramData.put("__type", "File");
+//    paramData.put("__type", "File");
     if (StringUtil.isEmpty(getObjectId())) {
       if (!StringUtil.isEmpty(getUrl())) {
         return directlyCreate(asAuthenticatedUser, paramData);
