@@ -9,6 +9,7 @@ import io.reactivex.schedulers.Schedulers;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.InputStream;
@@ -19,7 +20,7 @@ public class LCFileTest extends TestCase {
   private CountDownLatch latch = null;
   public LCFileTest(String name) {
     super(name);
-    Configure.initializeRuntime();
+    Configure.initializeWithApp(Configure.TEST_APP_ID, Configure.TEST_APP_KEY, "https://beta.leancloud.cn");
   }
 
   public static Test suite() {
@@ -39,6 +40,7 @@ public class LCFileTest extends TestCase {
 
   public void testUploadFile2AWS() throws Exception {
     LCFile file = new LCFile("moon.jpg", new File("Moon.jpg"));
+    file.setPathPrefix("gamesaves");
     file.save();
   }
   public void testCreateWithObjectId() throws Exception {
@@ -265,9 +267,41 @@ public class LCFileTest extends TestCase {
     assertTrue(testSucceed);
   }
 
+  public void testCreateLocalFileWithIllegalPrefix() throws Exception {
+    File currentFile = new File("./20160704174809.jpeg");
+    final LCFile file = new LCFile("20160704174809.jpeg", currentFile);
+    file.setPathPrefix("abc");
+    file.saveInBackground().subscribe(new Observer<LCFile>() {
+      @Override
+      public void onSubscribe(@NotNull Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(@NotNull LCFile lcFile) {
+        latch.countDown();
+      }
+
+      @Override
+      public void onError(@NotNull Throwable throwable) {
+        testSucceed = true;
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+
   public void testLocalFileWithoutKeepFileName() throws Exception {
     File currentFile = new File("./20160704174809.jpeg");
     LCFile file = new LCFile("20160704174809.jpeg", currentFile);
+    file.setPathPrefix("gamesaves");
     file.saveInBackground().subscribe(new Observer<LCFile>() {
       @Override
       public void onSubscribe(Disposable disposable) {

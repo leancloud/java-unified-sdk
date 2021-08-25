@@ -153,9 +153,22 @@ public class LCIMConversationsQuery {
    * @param key     attribute key.
    * @param value   value collection.
    * @return current instance.
+   * Notice: equals to whereContainedIn
    */
 
   public LCIMConversationsQuery whereContainsIn(String key, Collection<?> value) {
+    conditions.whereContainedIn(key, value);
+    return this;
+  }
+
+  /**
+   * 增加查询条件，当conversation的属性中对应的字段对应的值包含在指定值中时即可返回
+   *
+   * @param key     attribute key.
+   * @param value   value collection.
+   * @return current instance.
+   */
+  public LCIMConversationsQuery whereContainedIn(String key, Collection<?> value) {
     conditions.whereContainedIn(key, value);
     return this;
   }

@@ -6,7 +6,7 @@ import cn.leancloud.utils.StringUtil;
 
 public class Configure {
   public static final String TEST_APP_ID;
-  private static final String TEST_APP_KEY;
+  public static final String TEST_APP_KEY;
   private static final LeanCloud.REGION reGion;
   private static final String API_HOST;
   static {
