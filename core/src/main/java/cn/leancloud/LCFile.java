@@ -190,6 +190,10 @@ public final class LCFile extends LCObject {
    * @param path folder path. null or empty string equals to clearPathPrefix.
    */
   public void setPathPrefix(String path) {
+    Object externalFlag = getMetaData(FILE_SOURCE_KEY);
+    if (FILE_SOURCE_EXTERNAL.equals(externalFlag)) {
+      return;
+    }
     if (StringUtil.isEmpty(path)) {
       clearPathPrefix();
     } else {
@@ -202,6 +206,10 @@ public final class LCFile extends LCObject {
    * clear folder path.
    */
   public void clearPathPrefix() {
+    Object externalFlag = getMetaData(FILE_SOURCE_KEY);
+    if (FILE_SOURCE_EXTERNAL.equals(externalFlag)) {
+      return;
+    }
     super.remove(FILE_PATH_PREFIX_KEY);
     getMetaData().remove(FILE_PATH_PREFIX_KEY);
   }

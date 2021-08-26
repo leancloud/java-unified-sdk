@@ -333,6 +333,7 @@ public class LCFileTest extends TestCase {
   public void testExternalFile2() throws Exception {
     String url = "http://i1.wp.com/blog.avoscloud.com/wp-content/uploads/2014/05/screen568x568-1.jpg?resize=202%2C360";
     LCFile file = new LCFile("screen.jpg", url, null);
+    file.clearPathPrefix();
     file.saveInBackground().subscribe(new Observer<LCFile>() {
       @Override
       public void onSubscribe(Disposable disposable) {
@@ -396,6 +397,7 @@ public class LCFileTest extends TestCase {
 
   public void testExternalFile() throws Exception {
     LCFile portrait = new LCFile("thumbnail", "https://tvax1.sinaimg.cn/crop.0.0.200.200.180/a8d43f7ely1fnxs86j4maj205k05k74f.jpg");
+    portrait.setPathPrefix("fabc");
     portrait.saveInBackground().subscribe(new Observer<LCFile>() {
       @Override
       public void onSubscribe(Disposable disposable) {
