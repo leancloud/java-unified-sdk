@@ -45,7 +45,7 @@ public class AppConfiguration {
   private static retrofit2.Converter.Factory retrofitConverterFactory = converterFactory.generateRetrofitConverterFactory();
   private static JSONParser jsonParser = converterFactory.createJSONParser();
 
-  private static final String SDK_VERSION = "8.0.4";
+  private static final String SDK_VERSION = "8.1.0";
   private static final String DEFAULT_USER_AGENT = "LeanCloud-Java-SDK/" + SDK_VERSION;
 
   public static void setNetworkTimeout(int seconds) {
