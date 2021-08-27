@@ -67,7 +67,7 @@ public class InteractiveTest extends TestCase {
     testSucceed = false;
   }
 
-  private boolean verifyConversationWithExpect(LCIMConversation conversation, Map<String, Object> expectedResult) {
+  static boolean verifyConversationWithExpect(LCIMConversation conversation, Map<String, Object> expectedResult) {
     if (null == conversation || null == expectedResult || expectedResult.size() < 1) {
       return true;
     }
