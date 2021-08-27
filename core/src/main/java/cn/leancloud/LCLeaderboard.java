@@ -427,7 +427,7 @@ public class LCLeaderboard {
 
     /**
      * reset current leaderboard.
-     * @return true or false observer.
+     * @return boolean observer that always emits true.
      */
     public Observable<Boolean> reset() {
         if (StringUtil.isEmpty(this.statisticName)) {
@@ -449,7 +449,7 @@ public class LCLeaderboard {
     /**
      * update current leaderboard's change interval
      * @param interval new change interval
-     * @return true or false observer.
+     * @return boolean observer that always emits true.
      */
     public Observable<Boolean> updateVersionChangeInterval(final LCLeaderboardVersionChangeInterval interval) {
         if (StringUtil.isEmpty(this.statisticName)) {
@@ -476,7 +476,7 @@ public class LCLeaderboard {
     /**
      * update current leaderboard's update strategy.
      * @param strategy new update strategy.
-     * @return true or false observer.
+     * @return boolean observer that always emits true.
      */
     public Observable<Boolean> updateUpdateStrategy(final LCLeaderboardUpdateStrategy strategy) {
         if (StringUtil.isEmpty(this.statisticName)) {
@@ -498,7 +498,7 @@ public class LCLeaderboard {
 
     /**
      * destroy current leaderboard.
-     * @return true or false observer.
+     * @return boolean observer that always emits true.
      */
     public Observable<Boolean> destroy() {
         if (StringUtil.isEmpty(this.statisticName)) {

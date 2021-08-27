@@ -81,7 +81,7 @@ public class LCLeaderboardManagerTests extends TestCase {
                     public void onNext(@NotNull Boolean aBoolean) {
                         System.out.println("step 2: update leaderboard update strategy.");
                         if (!aBoolean || lcLeaderboard.getUpdateStrategy() != LCLeaderboard.LCLeaderboardUpdateStrategy.Better) {
-                            System.out.println("failed, leaderboard update strategy isnot right");
+                            System.out.println("failed, leaderboard update strategy is not right");
                             latch.countDown();
                             return;
                         }
@@ -96,7 +96,7 @@ public class LCLeaderboardManagerTests extends TestCase {
                                     public void onNext(@NotNull Boolean aBoolean) {
                                         System.out.println("step 3: update leaderboard version change interval.");
                                         if (!aBoolean || lcLeaderboard.getVersionChangeInterval() != LCLeaderboard.LCLeaderboardVersionChangeInterval.Week) {
-                                            System.out.println("failed, leaderboard version change interval isnot right");
+                                            System.out.println("failed, leaderboard version change interval is not right");
                                             latch.countDown();
                                             return;
                                         }
@@ -104,7 +104,7 @@ public class LCLeaderboardManagerTests extends TestCase {
                                         lcLeaderboard.reset().blockingFirst();
                                         System.out.println("step 4: reset current leaderboard.");
                                         if (lcLeaderboard.getVersion() <= oldVersion) {
-                                            System.out.println("failed, leaderboard version isnot right");
+                                            System.out.println("failed, leaderboard version is not right");
                                             latch.countDown();
                                         } else {
                                             lcLeaderboard.destroy().blockingFirst();
