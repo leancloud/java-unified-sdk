@@ -88,6 +88,8 @@ public class MyApplication extends Application {
       }
     });
     String channelId = "cn.leancloud.simpleapp";
+    PushService.createNotificationChannel(this, channelId, "realtime-demo", "realtime-demo",
+        NotificationManager.IMPORTANCE_DEFAULT, false, 0, false, null);
     PushService.setDefaultChannelId(this, channelId);
     PushService.setNotificationIcon(R.drawable.ic_notifications_black_24dp);
 
