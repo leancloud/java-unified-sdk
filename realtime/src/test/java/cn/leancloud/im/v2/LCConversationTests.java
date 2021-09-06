@@ -157,7 +157,7 @@ public class LCConversationTests extends TestCase {
                                                         }
                                                         System.out.println("️☑️☑️☑️☑️☑️☑️ " + clientId + " already fetch conversation info.");
                                                         Object muteMembers = conversation.get("mu");
-                                                        System.out.println("mu: " + muteMembers.toString());
+                                                        System.out.println("mu: " + muteMembers.toString() + "，" + conversation.get("muted"));
                                                         if (null == muteMembers) {
                                                             System.out.println("❌　mu result is wrong.");
                                                             latch.countDown();

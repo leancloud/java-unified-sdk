@@ -81,6 +81,14 @@ public class LCIMMessageTest extends TestCase {
     assertTrue(copyTextMessage instanceof LCIMTextMessage);
   }
 
+  public void testTypedMessageDeserialization() throws Exception {
+    String content = "{\"_lctype\":103,\"_lcfile\":{\"metaData\":{\"duration\":3.328,\"size\":8365,\"format\":null},\"objId\":\"61322ac452baf9066ffbe728\",\"url\":\"https:\\/\\/f.letsniyan.com\\/24iY6aEtsJaDpbftXnMwAlhrmlW1nsV3\\/record_1630677675230\"},\"_lctext\":null,\"_lcattrs\":{\"toUserDestroyed\":false,\"fromUserDestroyed\":true}}";
+    LCIMMessage msg = new LCIMMessage();
+    msg.setContent(content);
+    LCIMMessage typedMessage = LCIMMessageManager.parseTypedMessage(msg);
+    assertTrue(typedMessage != null);
+  }
+
   public void testImageMessageSerializer() throws Exception {
     long nowTs = System.currentTimeMillis();
     Map<String, Object> attr = new HashMap<>();
