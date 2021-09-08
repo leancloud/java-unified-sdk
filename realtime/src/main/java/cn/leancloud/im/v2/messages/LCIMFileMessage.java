@@ -278,10 +278,14 @@ public class LCIMFileMessage extends LCIMTypedMessage {
         @Override
         public void onResponse(@NotNull Call call, @NotNull Response rawResponse) throws IOException {
           String content = rawResponse.body().string();
-          JSONObject response = JSON.parseObject(content);
-          parseAdditionalMetaData(meta, response);
+          try {
+            JSONObject response = JSON.parseObject(content);
+            parseAdditionalMetaData(meta, response);
 
-          callback.internalDone(null);
+            callback.internalDone(null);
+          } catch (Exception ex) {
+            callback.internalDone(new LCException(ex));
+          }
         }
       });
     } else {
