@@ -56,6 +56,13 @@ public class CommonTest extends TestCase {
     synchronizedMap.put("testKey", null);
   }
 
+  public void testStatusSerialize() throws Exception {
+    LCStatus status = new LCStatus();
+    status.setImageUrl("http://file2.i7play.com/vCiVRj7");
+    status.setMessage("hallo wa");
+    System.out.println(status.toJSONString());
+  }
+
   public void testJsonDeserialization() throws Exception {
     double a = 2.65D;
     System.out.println(a);
