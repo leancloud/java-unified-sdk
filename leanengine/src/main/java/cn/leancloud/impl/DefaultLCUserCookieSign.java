@@ -4,6 +4,7 @@ import cn.leancloud.*;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.json.JSON;
 
+import java.security.MessageDigest;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.Cookie;
@@ -104,7 +105,9 @@ public class DefaultLCUserCookieSign implements LCUserCookieSign {
             && userCookie.getValue() != null) {
       try {
         String encryptedCookieValue = encrypt(secret, sessionKey + "=" + userCookie.getValue());
-        return cookieSign.getValue().equals(encryptedCookieValue);
+        return MessageDigest.isEqual(
+            cookieSign.getValue().getBytes(),
+            encryptedCookieValue.getBytes());
       } catch (Exception e) {
 
       }
