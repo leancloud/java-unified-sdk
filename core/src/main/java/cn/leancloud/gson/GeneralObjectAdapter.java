@@ -22,7 +22,7 @@ public class GeneralObjectAdapter<T> extends TypeAdapter<T> {
     Excluder excluder = Excluder.DEFAULT;
     ReflectiveTypeAdapterFactory reflectiveTypeAdapterFactory =
             new ReflectiveTypeAdapterFactory(constructorConstructor, policy, excluder, jsonAdapterFactory);
-    typeAdapter = reflectiveTypeAdapterFactory.create(new GsonBuilder().create(), typeToken);
+    typeAdapter = reflectiveTypeAdapterFactory.create(new GsonBuilder().setLenient().create(), typeToken);
   }
 
   public void write(JsonWriter writer, T object) throws IOException {

@@ -1,13 +1,18 @@
 package cn.leancloud.json;
 
 import cn.leancloud.LCObject;
+import cn.leancloud.gson.GsonObject;
 import cn.leancloud.gson.GsonWrapper;
+import cn.leancloud.gson.MapDeserializerDoubleAsIntFix;
 import cn.leancloud.gson.NumberDeserializerDoubleAsIntFix;
 import cn.leancloud.service.AppAccessEndpoint;
 import cn.leancloud.sms.LCCaptchaDigest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import junit.framework.TestCase;
 
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +23,18 @@ public class GsonCommonTest extends TestCase {
     super(name);
   }
 
+  public void testIllegalData() {
+    String content = "{\"_lctype\":103,\"_lcfile\":{\"metaData\":{\"duration\":2.56,\"size\":7244,\"format\":null},\"objId\":\"613707e0f1f73f70cfa19048\",\"url\":\"https:\\/\\/f.letsniyan.com\\/20flALVeg8GiJntS1n1RHYCDT7BptaFt\\/record_1630996438180\"},\"_lctext\":null,\"_lcattrs\":{\"toUserDestroyed\":false,\"fromUserDestroyed\":true}}";
+    Gson gson = new GsonBuilder().serializeNulls()
+            .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE)
+            .registerTypeAdapter(new TypeToken<Map<String, Object>>(){}.getType(),  new MapDeserializerDoubleAsIntFix())
+            .registerTypeAdapter(Map.class,  new MapDeserializerDoubleAsIntFix())
+            .setLenient().create();
+    Map<String, Object> object = gson.fromJson(content, Map.class);
+    System.out.println(object);
+    Object lcType = object.get("_lctype");
+    System.out.println(lcType);
+  }
   private void parseData(String s) {
     Object parsedObject = null;
     try {

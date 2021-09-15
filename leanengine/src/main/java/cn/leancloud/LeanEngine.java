@@ -47,6 +47,7 @@ public class LeanEngine {
                                    String androidxKey) {
     LeanCloud.setLogLevel(LCLogger.Level.ALL); // let log4j make decision.
     AppConfiguration.setLogAdapter(new Log4jAdapter());
+    AppConfiguration.setEnableLocalCache(false);
     AppConfiguration.setIncognitoMode(true);   // always ignore current user's sessionToken in requests.
     LeanCloud.initialize(applicationId, clientKey);
     if (!StringUtil.isEmpty(hookKey)) {

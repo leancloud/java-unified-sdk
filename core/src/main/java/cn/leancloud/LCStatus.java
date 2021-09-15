@@ -92,6 +92,7 @@ public class LCStatus extends LCObject {
    */
   public LCStatus(LCObject o) {
     super(o);
+    setClassName(CLASS_NAME);
   }
 
   /**

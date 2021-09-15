@@ -63,6 +63,7 @@ public class GsonWrapper {
                           TypeToken.get(LCCaptchaValidateResult.class)))
           .registerTypeAdapter(new TypeToken<Map<String, Object>>(){}.getType(),  new MapDeserializerDoubleAsIntFix())
           .registerTypeAdapter(Map.class,  new MapDeserializerDoubleAsIntFix())
+          .setLenient()
           .create();
 
   public static Gson getGsonInstance() {
