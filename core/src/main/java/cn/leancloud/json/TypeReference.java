@@ -46,10 +46,10 @@ public class TypeReference<T> {
     }
 
     Type key = new ParameterizedTypeImpl(argTypes, thisClass, rawType);
-    Type cachedType = (Type)classTypeCache.get(key);
+    Type cachedType = classTypeCache.get(key);
     if (cachedType == null) {
-      classTypeCache.putIfAbsent(key, key);
-      cachedType = (Type)classTypeCache.get(key);
+      classTypeCache.put(key, key);
+      cachedType = classTypeCache.get(key);
     }
 
     this.type = cachedType;

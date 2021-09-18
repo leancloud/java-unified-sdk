@@ -44,49 +44,59 @@ public class FileDownloader {
     requestBuilder.url(url);
 
     OkHttpClient client = createHttpClient();
+    Response response = null;
     try {
-      Response response = client.newCall(requestBuilder.build()).execute();
+      response = client.newCall(requestBuilder.build()).execute();
       int statusCode = response.code();
-      InputStream data = response.body().byteStream();
-      if (statusCode / 100 == 2 && null != data) {
-        // read data from InputStream and save to cache File
-        byte[] content = new byte[READ_BUF_SIZE];
+      if (null == response.body()) {
+        errors = new LCException(statusCode, "response body is invalid");
+        gLogger.w(errors);
+      } else {
+        InputStream data = response.body().byteStream();
+        if (statusCode / 100 == 2 && null != data) {
+          // read data from InputStream and save to cache File
+          byte[] content = new byte[READ_BUF_SIZE];
 
-        FileOutputStream out = null;
-        Lock writeLock = PersistenceUtil.sharedInstance().getLock(cacheFile.getAbsolutePath()).writeLock();
-        if (writeLock.tryLock()) {
-          try {
-            out = new FileOutputStream(cacheFile, false);
-            int currentReadSize = data.read(content);
-            while (currentReadSize > 0) {
-              out.write(content, 0, currentReadSize);
-              currentReadSize = data.read(content);
-            }
-          } catch (Exception e) {
-            gLogger.w(e);
-            errors = new LCException(e);
-          } finally {
+          Lock writeLock = PersistenceUtil.sharedInstance().getLock(cacheFile.getAbsolutePath()).writeLock();
+          if (writeLock.tryLock()) {
+            FileOutputStream out = null;
             try {
-              data.close();
-            } catch (IOException e) {
-            }
-            if (out != null) {
+              out = new FileOutputStream(cacheFile, false);
+              int currentReadSize = data.read(content);
+              while (currentReadSize > 0) {
+                out.write(content, 0, currentReadSize);
+                currentReadSize = data.read(content);
+              }
+            } catch (Exception e) {
+              gLogger.w(e);
+              errors = new LCException(e);
+            } finally {
               try {
-                out.close();
+                data.close();
               } catch (IOException e) {
               }
+              if (out != null) {
+                try {
+                  out.close();
+                } catch (IOException e) {
+                }
+              }
+              writeLock.unlock();
             }
-            writeLock.unlock();
+          } else {
+            gLogger.w("failed to lock writeLocker, skip to save network streaming to local cache.");
           }
         } else {
-          gLogger.w("failed to lock writeLocker, skip to save network streaming to local cache.");
+          errors = new LCException(statusCode, "status code is invalid");
+          gLogger.w(errors);
         }
-      } else {
-        errors = new LCException(statusCode, "status code is invalid");
-        gLogger.w(errors);
       }
     } catch (IOException ex) {
       errors = new LCException(ex);
+    } finally {
+      if (null != response) {
+        response.close();
+      }
     }
     return errors;
   }

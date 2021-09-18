@@ -159,6 +159,8 @@ class QiniuAccessor {
 
     if (code == 401) {
       throw new Exception("unauthorized to create Qiniu Block");
+    } else if (null == resp.body()) {
+      throw new Exception("invalid response");
     }
     String responseData = StringUtil.stringFromBytes(resp.body().bytes());
     try {

@@ -57,7 +57,7 @@ public class DNSDetoxicant implements Dns {
 
     try {
       Response response = okHttpClient.newCall(request).execute();
-      if (null != response && response.isSuccessful()) {
+      if (null != response && response.isSuccessful() && null != response.body()) {
         return response.body().string();
       } else {
         return "";

@@ -74,9 +74,6 @@ public class GsonObject extends JSONObject{
 
   public boolean containsValue(Object v) {
     Collection<Object> values = values();
-    if (null == values) {
-      return false;
-    }
     for (Object obj: values) {
       if (obj.equals(v)) {
         return true;

@@ -92,7 +92,7 @@ public class StringUtil {
     String value = kvPhrase.substring(index).substring(dateFormBegin.length());
     String separator = value.substring(value.length() - 1);
     value = value.substring(0, value.length() - 2);
-    Date realDate = new Date(Long.valueOf(value));
+    Date realDate = new Date(Long.parseLong(value));
     return key + "\"" + StringUtil.stringFromDate(realDate) + "\"" + separator;
   }
 

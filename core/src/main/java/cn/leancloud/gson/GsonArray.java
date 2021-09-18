@@ -267,7 +267,7 @@ public class GsonArray extends JSONArray {
   }
 
   public <T> T getObject(int index, Type type) {
-    return getObject(index, type);
+    return getObject(index, (Class<? extends T>) com.google.gson.reflect.TypeToken.get(type).getRawType());
   }
 
   private com.google.gson.JsonElement getElement(int index) {

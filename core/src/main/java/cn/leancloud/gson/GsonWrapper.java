@@ -149,10 +149,10 @@ public class GsonWrapper {
     return toJavaObject(element, Object.class);
   }
 
-  public static TimeZone defaultTimeZone  = TimeZone.getDefault();
-  public static Locale defaultLocale    = Locale.getDefault();
+  public static final TimeZone defaultTimeZone  = TimeZone.getDefault();
+  public static final Locale defaultLocale    = Locale.getDefault();
 
-  public static String DEFFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+  public static final String DEFFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
   public static final Date castToDate(Object value) {
     if (value == null) {
