@@ -54,13 +54,13 @@ public class EngineSessionCookie {
       HttpServletRequest req = requestHolder.get();
       if (resp != null) {
         LCUser u = EngineRequestContext.getAuthenticatedUser();
-        String host = null;
-        try {
-          URL requestURL = new URL(req.getRequestURL().toString());
-          host = requestURL.getHost();
-        } catch (Exception e) {
-          LOGGER.w(e);
-        }
+//        String host = null;
+//        try {
+//          URL requestURL = new URL(req.getRequestURL().toString());
+//          host = requestURL.getHost();
+//        } catch (Exception e) {
+//          LOGGER.w(e);
+//        }
         addCookie(req, resp, sign.encodeUser(u));
         addCookie(req, resp, sign.getCookieSign(u));
       }
