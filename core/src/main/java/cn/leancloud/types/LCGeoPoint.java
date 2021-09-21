@@ -33,15 +33,20 @@ public class LCGeoPoint {
     this.longitude = longitude;
   }
 
+  /**
+   * Get distance bw this point and another point in kilometers.
+   * @param point GeoPoint describing the other point being measured against.
+   * @return distance result.
+   */
   public double distanceInKilometersTo(LCGeoPoint point) {
     if (null == point) {
       return 0.0f;
     }
-    return LCUtils.distance(latitude, point.latitude, longitude, point.longitude, 0, 0);
+    return LCUtils.distance(latitude, point.latitude, longitude, point.longitude, 0, 0)/1000;
   }
 
   /**
-   * Get distance between this point and another geopoint in kilometers.
+   * Get distance between this point and another geopoint in miles.
    *
    * @param point GeoPoint describing the other point being measured against.
    * @return distance
