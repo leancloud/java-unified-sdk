@@ -11,6 +11,19 @@ Following is change logs for recently release versions, you can refer to [releas
 - None
 
 #### Optimization and fixed bugs
+- fixed: update realtime message within local cache.
+- fixed: convert LCGeoPoint#distanceInKilometers result to `kilometer`.
+- some other optimizations and project reporting changes(POM).
+
+## 8.1.1 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
 - better cookie validation in leanengine, provider by @artem-smotrakov.
 - use Gson.setLenient() to ignore unrecognized char in json string.
 - add exception catch for 403 response of xxx.cn-n1.lcfile.com.

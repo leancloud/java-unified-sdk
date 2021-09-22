@@ -234,12 +234,14 @@ public class QCloudUploader extends HttpClientUploader {
         requestBuilder.post(builder.build());
         Request request = requestBuilder.build();
         Response response = parent.executeWithRetry(request, RETRY_TIMES);
-        if (response != null) {
+        if (response != null && null != response.body()) {
           byte[] responseBody = response.body().bytes();
           if (progress != null) {
             progress.publishProgress(sliceOffset, 100);
           }
-          return StringUtil.stringFromBytes(responseBody);
+          if (null != responseBody) {
+            return StringUtil.stringFromBytes(responseBody);
+          }
         }
       } catch (Exception e) {
         if (latch != null) {

@@ -93,7 +93,7 @@ public class PersistenceUtil {
     if (null == data || data.length < 1) {
       return "";
     } else {
-      return new String(data);
+      return String.valueOf(data);
     }
   }
 

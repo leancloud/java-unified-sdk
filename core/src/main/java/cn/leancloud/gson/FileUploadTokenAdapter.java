@@ -33,7 +33,7 @@ public class FileUploadTokenAdapter extends TypeAdapter<FileUploadToken> {
 
   public FileUploadToken read(JsonReader reader) throws IOException {
     JsonElement elem = TypeAdapters.JSON_ELEMENT.read(reader);
-    if (null != elem || elem.isJsonObject()) {
+    if (null != elem && elem.isJsonObject()) {
       JsonObject jsonObject = elem.getAsJsonObject();
       FileUploadToken token = new FileUploadToken();
       if (jsonObject.has(FIELD_BUCKET)) {

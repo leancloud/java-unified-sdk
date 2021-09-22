@@ -991,9 +991,6 @@ public class StorageClient {
       return Observable.error(new IllegalArgumentException("userObjectId is invalid."));
     }
     String statistics = StringUtil.join(",", statisticNames);
-    if (null == statistics) {
-      statistics = "";
-    }
     return wrapObservable(apiService.getUserStatistics(userObjectId, statistics));
   }
 
@@ -1002,9 +999,6 @@ public class StorageClient {
       return Observable.error(new IllegalArgumentException("entityId is null"));
     }
     String statistics = StringUtil.join(",", statisticNames);
-    if (null == statistics) {
-      statistics = "";
-    }
     return wrapObservable(apiService.getEntityStatistics(entityId, statistics));
   }
 
@@ -1013,9 +1007,6 @@ public class StorageClient {
       return Observable.error(new IllegalArgumentException("objectId is null"));
     }
     String statistics = StringUtil.join(",", statisticNames);
-    if (null == statistics) {
-      statistics = "";
-    }
     return wrapObservable(apiService.getObjectStatistics(objectId, statistics));
   }
 

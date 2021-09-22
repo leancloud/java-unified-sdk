@@ -71,10 +71,13 @@ public class LoggingInterceptor implements Interceptor {
 
     int responseCode = response.code();
     Headers responseHeaders = response.headers();
+    if (null == response.body()) {
+      LOGGER.d(String.format("Response: %d", responseCode));
+      return response;
+    }
+
     String responseBody = response.body().string();
-
-    LOGGER.d(String.format("Response: %d %n%s %n%s ", response.code(), responseHeaders, responseBody));
-
+    LOGGER.d(String.format("Response: %d %n%s %n%s ", responseCode, responseHeaders, responseBody));
     return response.newBuilder()
             .code(responseCode)
             .headers(responseHeaders)

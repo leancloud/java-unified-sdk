@@ -8,7 +8,7 @@ import io.reactivex.functions.Function;
 import java.util.*;
 
 public class LCLeaderboard {
-    public static int INVALID_VERSION = -1;
+    public static final int INVALID_VERSION = -1;
     public static final String MEMBER_TYPE_USER = "_User";
     public static final String MEMBER_TYPE_ENTITY = "_Entity";
 
@@ -90,7 +90,7 @@ public class LCLeaderboard {
      * @return next reset timestamp
      */
     public Date getNextResetAt() {
-        return nextResetAt;
+        return (Date) nextResetAt.clone();
     }
 
     /**
@@ -98,7 +98,7 @@ public class LCLeaderboard {
      * @return create timestamp
      */
     public Date getCreatedAt() {
-        return createdAt;
+        return (Date) createdAt.clone();
     }
 
     void setOrder(LCLeaderboardOrder order) {
@@ -441,7 +441,7 @@ public class LCLeaderboard {
                 if (null != nextReset) {
                     LCLeaderboard.this.setNextResetAt(nextReset);
                 }
-                return null != object;
+                return true;
             }
         });
     }
@@ -468,7 +468,7 @@ public class LCLeaderboard {
                 if (null != nextReset) {
                     LCLeaderboard.this.setNextResetAt(nextReset);
                 }
-                return null != object;
+                return true;
             }
         });
     }

@@ -35,7 +35,7 @@ public class LCStatus extends LCObject {
   public static final String ATTR_IMAGE = "image";
   public static final String ATTR_MESSAGE = "message";
 
-  public static int INVALID_MESSAGE_ID = 0;
+  public static final int INVALID_MESSAGE_ID = 0;
 
   public enum INBOX_TYPE {
     TIMELINE("default"), PRIVATE("private");
