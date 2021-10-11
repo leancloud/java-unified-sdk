@@ -132,6 +132,34 @@ public class StorageClient {
     }
   }
 
+  public Observable<List<LCUser>> strictlyQueryUsers(final LCUser authenticatedUser,
+                                                     final Map<String, String> query){
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.strictlyQueryUsers(authenticatedSession, query))
+      .map(new Function<LCQueryResult, List<LCObject>>() {
+        public List<LCObject> apply(LCQueryResult o) throws Exception {
+          o.setClassName(LCUser.CLASS_NAME);
+          for (LCObject obj: o.getResults()) {
+            obj.setClassName(LCUser.CLASS_NAME);
+          }
+          LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:"
+                  + ((null != o.getResults())? o.getResults().size(): 0));
+          return o.getResults();
+        }
+      })
+      .map(new Function<List<LCObject>, List<LCUser>>() {
+        public List<LCUser> apply(List<LCObject> var1) throws Exception {
+          List<LCUser> result = new ArrayList<LCUser>(var1.size());
+          for (LCObject obj: var1) {
+            LCUser tmp = Transformer.transform(obj, LCUser.CLASS_NAME);
+            result.add(tmp);
+          }
+          return result;
+        }
+      });                                        
+  }
+
+
   public Observable<List<LCObject>> queryObjects(final LCUser authenticatedUser,
                                                  final String className, final Map<String, String> query,
                                                  LCQuery.CachePolicy cachePolicy, final long maxAgeInMilliseconds) {

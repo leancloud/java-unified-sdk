@@ -9,6 +9,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.jetbrains.annotations.NotNull;
+import cn.leancloud.query.QueryConditions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -1028,6 +1029,86 @@ public class LCUserTest extends TestCase {
     });
     latch.await();
     LCUser.logOut();
+    assertTrue(operationSucceed);
+  }
+
+  public void testStrictlyQueryUsers() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    LCUser.logInAnonymously().subscribe(new Observer<LCUser>() {
+        @Override
+        public void onSubscribe(Disposable disposable) {
+
+        }
+
+        @Override
+        public void onNext(LCUser avUser) {
+            System.out.println("onNext. result=" + avUser.toString());
+            avUser.put("nickname", "seraph");
+            avUser.saveInBackground().subscribe(new Observer<LCObject>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onNext(LCObject lcObject) {
+                    System.out.println(" nickname = " + lcObject.get("nickname"));
+                    QueryConditions queryConditions = new QueryConditions();
+                    queryConditions.whereEqualTo("nickname", "seraph");
+                    LCUser.strictlyFind(queryConditions).subscribe(new Observer<List<LCUser>>() {
+                        @Override
+                        public void onSubscribe(Disposable disposable) {
+
+                        }
+
+                        @Override
+                        public void onNext(List<LCUser> users) {
+                            System.out.println("Succeed to strictlyQuery users size = " + users.size());
+                            operationSucceed = true;
+                            latch.countDown();
+                        }
+
+                        @Override
+                        public void onError(Throwable throwable) {
+                            System.out.println("Failed to strictlyQuery users");
+                            throwable.printStackTrace();
+                            latch.countDown();
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    e.printStackTrace();
+                    latch.countDown();
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            });
+
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+            latch.countDown();
+        }
+
+        @Override
+        public void onComplete() {
+
+        }
+    });
+
+
+    latch.await();
     assertTrue(operationSucceed);
   }
 }
