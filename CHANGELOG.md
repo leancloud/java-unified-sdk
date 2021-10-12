@@ -2,6 +2,17 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.1.3 release
+
+#### Break changes
+- None
+
+#### New features
+- Add LCUser#strictlyFind(QueryConditions queryConditions);
+
+#### Optimization and fixed bugs
+- add `consumerProguardFiles 'proguard-rules.pro'` to android modules.
+
 ## 8.1.2 release
 
 #### Break changes

@@ -142,7 +142,7 @@ public class StorageClient {
           for (LCObject obj: o.getResults()) {
             obj.setClassName(LCUser.CLASS_NAME);
           }
-          LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:"
+          LOGGER.d("invoke within StorageClient.strictlyQueryUsers(). resultSize:"
                   + ((null != o.getResults())? o.getResults().size(): 0));
           return o.getResults();
         }
