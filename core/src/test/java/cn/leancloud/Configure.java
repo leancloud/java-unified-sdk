@@ -11,13 +11,13 @@ public class Configure {
   private static final String API_HOST;
   static {
     String app = System.getenv("APP_ID");
-    TEST_APP_ID = StringUtil.isEmpty(app) ? "0RiAlMny7jiz086FaU" : app;
+    TEST_APP_ID = StringUtil.isEmpty(app) ? "ohqhxu3mgoj2eyj6ed02yliytmbes3mwhha8ylnc215h0bgk" : app;
     String appKEY = System.getenv("APP_KEY");
-    TEST_APP_KEY = StringUtil.isEmpty(appKEY) ? "8V8wemqkpkxmAN7qKhvlh6v0pXc8JJzEZe3JFUnU" : appKEY;
+    TEST_APP_KEY = StringUtil.isEmpty(appKEY) ? "6j8fuggqkbc5m86b8mp4pf2no170i5m7vmax5iypmi72wldc" : appKEY;
     String regionStr = System.getenv("APP_REGION");
     reGion = StringUtil.isEmpty(regionStr) ? LeanCloud.REGION.NorthChina : LeanCloud.REGION.valueOf(regionStr);
     //API_HOST = System.getenv("API_HOST");
-    API_HOST = "https://0rialmny.cloud.tds1.tapapis.cn";
+    API_HOST = "https://ohqhxu3m.lc-cn-n1-shared.com";
 
     System.out.println("Test APP_id: " + TEST_APP_ID);
     System.out.println("Test APP_key: " + TEST_APP_KEY);
