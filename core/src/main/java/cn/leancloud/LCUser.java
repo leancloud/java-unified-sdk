@@ -860,6 +860,19 @@ public class LCUser extends LCObject {
   }
 
   /**
+   * Get User list by query with conditions
+   * @param queryConditions
+   * @return query result
+   */
+  public static Observable<List<LCUser>> strictlyFind(QueryConditions queryConditions){
+      Map<String, String> query = new HashMap<>();
+      if(queryConditions != null){
+        query.putAll(queryConditions.assembleParameters());
+      }
+      return PaasClient.getStorageClient().strictlyQueryUsers(LCUser.getCurrentUser(),query);
+  }
+
+  /**
    * Get roles in background.
    * @return observable instance.
    */

@@ -347,4 +347,8 @@ public interface APIService {
 
   @GET("/1.1/leaderboard/users/self/statistics")
   Observable<LCStatisticResult> getAuthenticatedUserStatistics(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken);
+
+  @GET("/1.1/users/strictlyQuery")
+  Observable<LCQueryResult> strictlyQueryUsers(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                       @QueryMap Map<String, String> query);
 }

@@ -1030,4 +1030,5 @@ public class LCUserTest extends TestCase {
     LCUser.logOut();
     assertTrue(operationSucceed);
   }
+
 }
