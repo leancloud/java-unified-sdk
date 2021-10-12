@@ -38,8 +38,6 @@ public class LCUserStrictTest extends TestCase {
     ;
   }
 
-
-
   public void testStrictlyQueryUsers() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     LCUser.logInAnonymously().subscribe(new Observer<LCUser>() {
@@ -119,4 +117,166 @@ public class LCUserStrictTest extends TestCase {
     latch.await();
     assertTrue(operationSucceed);
   }
+
+    public void testStrictlyQueryWithSkipUsers() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
+        LCUser.logInAnonymously().subscribe(new Observer<LCUser>() {
+            @Override
+            public void onSubscribe(Disposable disposable) {
+
+            }
+
+            @Override
+            public void onNext(LCUser avUser) {
+                System.out.println("onNext. result=" + avUser.toString());
+                avUser.put("nickname", "seraph");
+                avUser.saveInBackground().subscribe(new Observer<LCObject>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(LCObject lcObject) {
+                        System.out.println(" nickname = " + lcObject.get("nickname"));
+                        QueryConditions queryConditions = new QueryConditions();
+                        queryConditions.whereStartsWith("nickname", "seraph");
+                        queryConditions.setSkip(100);
+                        LCUser.strictlyFind(queryConditions).subscribe(new Observer<List<LCUser>>() {
+                            @Override
+                            public void onSubscribe(Disposable disposable) {
+
+                            }
+
+                            @Override
+                            public void onNext(List<LCUser> users) {
+                                System.out.println("Succeed to strictlyQuery users size = " + users.size());
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                System.out.println("Failed to strictlyQuery users");
+                                throwable.printStackTrace();
+                                operationSucceed = true;
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+
+
+        latch.await();
+        assertTrue(operationSucceed);
+    }
+
+    public void testStrictlyQueryWithSessionTokenUsers() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
+        LCUser.logInAnonymously().subscribe(new Observer<LCUser>() {
+            @Override
+            public void onSubscribe(Disposable disposable) {
+
+            }
+
+            @Override
+            public void onNext(LCUser avUser) {
+                System.out.println("onNext. result=" + avUser.toString());
+                avUser.put("nickname", "seraph");
+                avUser.saveInBackground().subscribe(new Observer<LCObject>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(LCObject lcObject) {
+                        System.out.println(" nickname = " + lcObject.get("nickname"));
+                        QueryConditions queryConditions = new QueryConditions();
+                        queryConditions.whereExists("nickname");
+                        queryConditions.whereExists("sessionToken");
+                        LCUser.strictlyFind(queryConditions).subscribe(new Observer<List<LCUser>>() {
+                            @Override
+                            public void onSubscribe(Disposable disposable) {
+
+                            }
+
+                            @Override
+                            public void onNext(List<LCUser> users) {
+                                System.out.println("Succeed to strictlyQuery users size = " + users.size());
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                System.out.println("Failed to strictlyQuery users");
+                                throwable.printStackTrace();
+                                operationSucceed = true;
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
+
+
+        latch.await();
+        assertTrue(operationSucceed);
+    }
 }
