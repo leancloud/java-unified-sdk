@@ -5,6 +5,7 @@ before_install:
   - pip install --user codecov
 after_success:
   - codecov
+install: mvn install -DskipTests -Dgpg.skip
 branches:
   except:
     - appveyor
