@@ -43,13 +43,22 @@ public class LeanEngine {
     initialize(applicationId, clientKey, masterKey, hookKey, androidKey);
   }
 
-  protected static void initialize(String applicationId, String clientKey, String masterKey, String hookKey,
-                                   String androidxKey) {
+  public static void initializeWithServerUrl(String applicationId, String clientKey, String masterKey, String hookKey,
+                                String serverUrl) {
+    initializeWithServerUrl(applicationId, clientKey, masterKey, hookKey, null, serverUrl);
+  }
+
+  protected static void initializeWithServerUrl(String applicationId, String clientKey, String masterKey, String hookKey,
+                                   String androidxKey, String serverUrl) {
     LeanCloud.setLogLevel(LCLogger.Level.ALL); // let log4j make decision.
     AppConfiguration.setLogAdapter(new Log4jAdapter());
     AppConfiguration.setEnableLocalCache(false);
     AppConfiguration.setIncognitoMode(true);   // always ignore current user's sessionToken in requests.
-    LeanCloud.initialize(applicationId, clientKey);
+    if (StringUtil.isEmpty(serverUrl)) {
+      LeanCloud.initialize(applicationId, clientKey);
+    } else {
+      LeanCloud.initialize(applicationId, clientKey, serverUrl);
+    }
     if (!StringUtil.isEmpty(hookKey)) {
       LeanCloud.setHookKey(hookKey);
     }
@@ -64,6 +73,11 @@ public class LeanEngine {
     appConf = EngineAppConfiguration.instance(applicationId, clientKey, masterKey, affiliatedKeys);
     appRouter = new EnvFirstAppRouter();
     appRouter.fetchServerHostsInBackground(applicationId).blockingSingle();
+  }
+
+  protected static void initialize(String applicationId, String clientKey, String masterKey, String hookKey,
+                                   String androidxKey) {
+    initializeWithServerUrl(applicationId, clientKey, masterKey, hookKey, androidxKey, null);
   }
 
   private static Map<String, EngineHandlerInfo> funcs = new HashMap<String, EngineHandlerInfo>();
