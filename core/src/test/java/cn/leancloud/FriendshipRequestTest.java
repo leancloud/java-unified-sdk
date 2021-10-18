@@ -22,6 +22,11 @@ public class FriendshipRequestTest extends UserBasedTestCase {
   private String testUser1ObjectId = "";
   private String testUser1UserName = LCUserTest.USERNAME;
   private String testUser1Password = LCUserTest.PASSWORD;
+  private final String fengObjectId;
+  private final String fengSessionToken;
+
+  private final String dennisObjectId;
+  private final String dennisSessionToken;
 
   public FriendshipRequestTest(String name) {
     super(name);
@@ -53,6 +58,12 @@ public class FriendshipRequestTest extends UserBasedTestCase {
     } catch (Exception ex) {
       ex.printStackTrace();
     }
+    LCUser feng = LCUserTest.loginOrSignin("jfeng", "FER$@$@#Ffwe", "jfeng@test.com");
+    fengObjectId = feng.getObjectId();
+    fengSessionToken = feng.getSessionToken();
+    LCUser dennis = LCUserTest.loginOrSignin("dennis", "FER$@$@#Ffwe", "dennis@test.com");
+    dennisObjectId = dennis.getObjectId();
+    dennisSessionToken = dennis.getSessionToken();
   }
 
   public static Test suite() {
@@ -89,7 +100,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
         LCUser friend = null;
         try {
-          friend = LCUser.createWithoutData(LCUser.class, "5f5048abd67d4e29e52d21c0");
+          friend = LCUser.createWithoutData(LCUser.class, fengObjectId);
         } catch (LCException e) {
           e.printStackTrace();
         }
@@ -104,7 +115,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
                   public void onNext(final LCFriendshipRequest friendshipRequest) {
                     System.out.println("succeed to create new friend request. result=" + JSON.toJSONString(friendshipRequest));
                     System.out.println("objectId=" + friendshipRequest.getObjectId());
-                    LCUser.becomeWithSessionToken("52g2hsrptizbuyygafbhav4p3");
+                    LCUser.becomeWithSessionToken(fengSessionToken);
                     friendshipRequest.accept(null).subscribe(new Observer<LCObject>() {
                       @Override
                       public void onSubscribe(Disposable disposable) {
@@ -195,7 +206,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                 LCUser friend = null;
                 try {
-                  friend = LCUser.createWithoutData(LCUser.class, "5f5048abd67d4e29e52d21c0");
+                  friend = LCUser.createWithoutData(LCUser.class, fengObjectId);
                 } catch (LCException e) {
                   e.printStackTrace();
                 }
@@ -210,7 +221,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
                           public void onNext(final LCFriendshipRequest friendshipRequest) {
                             System.out.println("succeed to create new friend request. result=" + JSON.toJSONString(friendshipRequest));
                             System.out.println("objectId=" + friendshipRequest.getObjectId());
-                            LCUser.becomeWithSessionToken("52g2hsrptizbuyygafbhav4p3", true);
+                            LCUser.becomeWithSessionToken(fengSessionToken, true);
                             friendshipRequest.decline().subscribe(new Observer<LCObject>() {
                               @Override
                               public void onSubscribe(Disposable disposable) {
@@ -328,7 +339,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                 LCUser friend = null;
                 try {
-                  friend = LCUser.createWithoutData(LCUser.class, "5dd7892143c2570074c96ca9");
+                  friend = LCUser.createWithoutData(LCUser.class, dennisObjectId);
                 } catch (LCException e) {
                   e.printStackTrace();
                 }
@@ -340,7 +351,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                   @Override
                   public void onNext(LCFriendshipRequest avFriendshipRequest) {
-                    LCUser.becomeWithSessionToken("fftsmscei51yyzfgjyuzhlwkl", true);
+                    LCUser.becomeWithSessionToken(dennisSessionToken, true);
                     LCUser.currentUser().friendshipRequestQuery(
                             LCFriendshipRequest.STATUS_ANY,
                             true, true)

@@ -1,6 +1,7 @@
 package cn.leancloud;
 
 import cn.leancloud.auth.UserBasedTestCase;
+import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
@@ -16,6 +17,7 @@ public class LCUserSerializerTest extends UserBasedTestCase {
 
   public LCUserSerializerTest(String name) {
     super(name);
+    Configure.initializeRuntime();
   }
 
   public static Test suite() {
@@ -40,6 +42,10 @@ public class LCUserSerializerTest extends UserBasedTestCase {
   }
 
   public void testUserFetch() throws Exception {
+    if (StringUtil.isEmpty(testUserObjectId)) {
+      LCUser targetUser = LCUserTest.loginOrSignin(LCUserTest.USERNAME,LCUserTest.PASSWORD, LCUserTest.EMAIL);
+      testUserObjectId = targetUser.getSessionToken();
+    }
     final LCUser user = LCObject.createWithoutData(LCUser.class, testUserObjectId);
     user.fetchInBackground("author,kuolie,black").subscribe(new Observer<LCObject>() {
       @Override
@@ -57,6 +63,7 @@ public class LCUserSerializerTest extends UserBasedTestCase {
 
       @Override
       public void onError(@NotNull Throwable throwable) {
+        throwable.printStackTrace();
         latch.countDown();
       }
 

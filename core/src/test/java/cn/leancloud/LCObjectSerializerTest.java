@@ -13,11 +13,14 @@ import java.util.List;
 public class LCObjectSerializerTest extends TestCase {
   private static final LCLogger LOGGER = LogUtil.getLogger(LCObjectSerializerTest.class);
   private static final String CLASSNAME_STUDENT = "Student";
-  private static final String FILE_OBJECT_ID = "5e12b15dd4b56c007747193d";
+  private final String FILE_OBJECT_ID;
   private String studentId = null;
   public LCObjectSerializerTest(String name) {
     super(name);
     Configure.initializeRuntime();
+    LCFile portrait = new LCFile("thumbnail", "https://tvax1.sinaimg.cn/crop.0.0.200.200.180/a8d43f7ely1fnxs86j4maj205k05k74f.jpg");
+    portrait.save();
+    FILE_OBJECT_ID = portrait.getObjectId();
   }
   public static Test suite() {
     return new TestSuite(LCObjectSerializerTest.class);

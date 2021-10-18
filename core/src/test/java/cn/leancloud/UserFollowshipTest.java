@@ -282,7 +282,7 @@ public class UserFollowshipTest extends TestCase {
           @Override
           public void onNext(List<LCObject> o) {
             System.out.println("onNext");
-            operationSucceed = (null == o) || o.size() < 1;
+            operationSucceed = (null == o) || o.size() <= 1;
             latch.countDown();
           }
 

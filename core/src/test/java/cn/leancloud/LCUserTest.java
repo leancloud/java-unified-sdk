@@ -39,6 +39,19 @@ public class LCUserTest extends TestCase {
     ;
   }
 
+  public static LCUser loginOrSignin(String username, String password, String email) {
+    try {
+      LCUser result = LCUser.logIn(username, password).blockingFirst();
+      return result;
+    } catch (Exception ex) {
+      LCUser result = new LCUser();
+      result.setEmail(email);
+      result.setUsername(username);
+      result.setPassword(password);
+      result.saveInBackground().blockingFirst();
+      return result;
+    }
+  }
   public void testBunchAnonymousLogin() throws Exception {
     LCUser user1 = LCUser.logInAnonymously().blockingFirst();
     String anonymousUserId = user1.objectId;

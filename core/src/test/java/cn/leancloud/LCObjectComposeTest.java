@@ -46,7 +46,11 @@ public class LCObjectComposeTest extends TestCase {
 
       @Override
       public void onNext(LCObject LCObject) {
-        LCObject.delete();
+        try {
+          LCObject.delete();
+        } catch (Exception ex) {
+          // ignore.
+        }
         testSucceed = true;
         latch.countDown();
       }

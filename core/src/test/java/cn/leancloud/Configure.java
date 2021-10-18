@@ -28,6 +28,7 @@ public class Configure {
 
   public static void initializeWithApp(String appId, String appKey, LeanCloud.REGION region) {
     LeanCloud.setRegion(region);
+    LeanCloud.clearServerURLs();
     if (!StringUtil.isEmpty(API_HOST)) {
       LeanCloud.setServer(LeanService.API, API_HOST);
     }
@@ -53,6 +54,7 @@ public class Configure {
   public static void initializeRuntime() {
 //    AppConfiguration.setLogAdapter(new DummyLoggerFactory());
     LeanCloud.setRegion(reGion);
+    LeanCloud.clearServerURLs();
     if (!StringUtil.isEmpty(API_HOST)) {
       LeanCloud.setServer(LeanService.API, API_HOST);
     }
