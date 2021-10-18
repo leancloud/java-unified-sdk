@@ -41,7 +41,9 @@ public class LCCachedUserTest extends TestCase {
       public void onNext(@NotNull LCObject lcObject) {
         System.out.println("refresh result: "+ lcObject.toJSONString());
         LCFile iconFile = lcObject.getLCFile("icon");
-        System.out.println("icon result: "+ iconFile.toJSONString());
+        if (null != iconFile) {
+          System.out.println("icon result: " + iconFile.toJSONString());
+        }
         LCUser.changeCurrentUser((LCUser) lcObject, true);
         operationSucceed = true;
         latch.countDown();

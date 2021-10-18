@@ -95,9 +95,9 @@ public class LCObjectEventuallyTest extends TestCase {
       LCObject testObj = new LCObject("PayInfo");
       testObj.put("word", "this is your test");
       requests.saveEventually(testObj);
-      LCObject modifyObj = LCObject.createWithoutData("PayInfo", "60137d369637be6cf9d359a0");
-      modifyObj.remove("body");
-      requests.saveEventually(modifyObj);
+//      LCObject modifyObj = LCObject.createWithoutData("PayInfo", "60137d369637be6cf9d359a0");
+//      modifyObj.remove("body");
+//      requests.saveEventually(modifyObj);
       Thread.sleep(60000);
     } catch (Exception ex) {
       // ingore exception for PayInfo.
