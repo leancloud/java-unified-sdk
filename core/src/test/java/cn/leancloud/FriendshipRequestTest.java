@@ -3,6 +3,7 @@ package cn.leancloud;
 import cn.leancloud.auth.UserBasedTestCase;
 import cn.leancloud.json.JSON;
 import cn.leancloud.types.LCNull;
+import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
@@ -20,50 +21,16 @@ public class FriendshipRequestTest extends UserBasedTestCase {
   private CountDownLatch latch = null;
 
   private String testUser1ObjectId = "";
-  private String testUser1UserName = LCUserTest.USERNAME;
+  private String testUser1UserName = "jfeng2020";
   private String testUser1Password = LCUserTest.PASSWORD;
-  private final String fengObjectId;
-  private final String fengSessionToken;
+  private String fengObjectId;
+  private String fengSessionToken;
 
-  private final String dennisObjectId;
-  private final String dennisSessionToken;
+  private String dennisObjectId;
+  private String dennisSessionToken;
 
   public FriendshipRequestTest(String name) {
     super(name);
-    final CountDownLatch tmpLatch = new CountDownLatch(1);
-    LCUser.logIn(testUser1UserName, testUser1Password).subscribe(new Observer<LCUser>() {
-      @Override
-      public void onSubscribe(@NotNull Disposable disposable) {
-
-      }
-
-      @Override
-      public void onNext(@NotNull LCUser lcUser) {
-        testUser1ObjectId = lcUser.objectId;
-        tmpLatch.countDown();
-      }
-
-      @Override
-      public void onError(@NotNull Throwable throwable) {
-        tmpLatch.countDown();
-      }
-
-      @Override
-      public void onComplete() {
-
-      }
-    });
-    try {
-      tmpLatch.await(10, TimeUnit.SECONDS);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-    LCUser feng = LCUserTest.loginOrSignin("jfeng", "FER$@$@#Ffwe", "jfeng@test.com");
-    fengObjectId = feng.getObjectId();
-    fengSessionToken = feng.getSessionToken();
-    LCUser dennis = LCUserTest.loginOrSignin("dennis", "FER$@$@#Ffwe", "dennis@test.com");
-    dennisObjectId = dennis.getObjectId();
-    dennisSessionToken = dennis.getSessionToken();
   }
 
   public static Test suite() {
@@ -75,6 +42,41 @@ public class FriendshipRequestTest extends UserBasedTestCase {
     super.setUp();
     testSucceed = false;
     latch = new CountDownLatch(1);
+
+    if (StringUtil.isEmpty(testUser1ObjectId)) {
+      testUser1ObjectId = LCUser.logIn(testUser1UserName, testUser1Password).blockingFirst().getObjectId();
+    }
+    if (StringUtil.isEmpty(fengObjectId)) {
+      LCUser feng = LCUserTest.loginOrSignin("jfeng", "FER$@$@#Ffwe", "jfeng@test.com");
+      fengObjectId = feng.getObjectId();
+      fengSessionToken = feng.getSessionToken();
+    }
+    if (StringUtil.isEmpty(dennisObjectId)) {
+      LCUser dennis = LCUserTest.loginOrSignin("dennis", "FER$@$@#Ffwe", "dennis@test.com");
+      dennisObjectId = dennis.getObjectId();
+      dennisSessionToken = dennis.getSessionToken();
+    }
+    System.out.println("FriendshipRequestTest setUp. testUserObjectId=" + testUser1ObjectId
+            + ", fengObjectId=" + fengObjectId + ", dennisObjectId=" + dennisObjectId);
+
+    try {
+      LCQuery query = new LCQuery("_FriendshipRequest");
+      query.whereEqualTo("user", LCUser.createWithoutData(LCUser.class, fengObjectId));
+      LCUser feng = LCUserTest.loginOrSignin("jfeng", "FER$@$@#Ffwe", "jfeng@test.com");
+      LCObject.deleteAll(feng, query.find());
+
+      query = new LCQuery("_FriendshipRequest");
+      query.whereEqualTo("user", LCUser.createWithoutData(LCUser.class, dennisObjectId));
+      LCUser dennis = LCUserTest.loginOrSignin("dennis", "FER$@$@#Ffwe", "dennis@test.com");
+      LCObject.deleteAll(dennis, query.find());
+
+      query = new LCQuery("_FriendshipRequest");
+      query.whereEqualTo("user", LCUser.createWithoutData(LCUser.class, testUser1ObjectId));
+      LCUser testUser = LCUser.logIn(testUser1UserName, testUser1Password).blockingFirst();
+      LCObject.deleteAll(testUser, query.find());
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
   }
 
   @Override
@@ -95,8 +97,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
       public void onNext(LCUser avUser) {
         LCUser currentUser = LCUser.getCurrentUser();
-        System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
-        System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
+        System.out.println("step 1: login with testUser. sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
         LCUser friend = null;
         try {
@@ -113,9 +114,9 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                   @Override
                   public void onNext(final LCFriendshipRequest friendshipRequest) {
-                    System.out.println("succeed to create new friend request. result=" + JSON.toJSONString(friendshipRequest));
+                    System.out.println("step 2: succeed to create new friend request: testUser -> feng");
                     System.out.println("objectId=" + friendshipRequest.getObjectId());
-                    LCUser.becomeWithSessionToken(fengSessionToken);
+                    LCUser.becomeWithSessionToken(fengSessionToken, true);
                     friendshipRequest.accept(null).subscribe(new Observer<LCObject>() {
                       @Override
                       public void onSubscribe(Disposable disposable) {
@@ -124,7 +125,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                       @Override
                       public void onNext(LCObject LCObject) {
-                        System.out.println("succeed to accept new friend request. result=" + LCObject);
+                        System.out.println("step 3: succeed to accept new friend request from feng.");
                         friendshipRequest.deleteInBackground().subscribe(new Observer<LCNull>() {
                           @Override
                           public void onSubscribe(Disposable disposable) {
@@ -133,14 +134,14 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                           @Override
                           public void onNext(LCNull LCNull) {
-                            System.out.println("succeed to delete new friend request.");
+                            System.out.println("step 4: succeed to delete new friend request from feng.");
                             testSucceed = true;
                             latch.countDown();
                           }
 
                           @Override
                           public void onError(Throwable throwable) {
-                            System.out.println("failed to delete new friend request.");
+                            System.out.println("failed to delete new friend request from feng.");
                             throwable.printStackTrace();
                             latch.countDown();
                           }
@@ -154,8 +155,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                       @Override
                       public void onError(Throwable throwable) {
-                        System.out.println("failed to accept new friend request. result=");
-                        throwable.printStackTrace();
+                        System.out.println("failed to accept new friend request from feng. cause: " + throwable.getMessage());
                         latch.countDown();
                       }
 
@@ -168,8 +168,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                   @Override
                   public void onError(Throwable throwable) {
-                    System.out.println("failed to create new friend request. result=" + throwable.getMessage());
-
+                    System.out.println("failed to create new friend request from testUser to feng. result=" + throwable.getMessage());
                     if (throwable.getMessage().contains("Friendship already exists.")) {
                       testSucceed = true;
                     }
@@ -183,6 +182,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
       }
 
       public void onError(Throwable throwable) {
+        System.out.println("failed to login with testUser");
         latch.countDown();
       }
 
@@ -201,8 +201,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
               public void onNext(LCUser avUser) {
                 LCUser currentUser = LCUser.getCurrentUser();
-                System.out.println("currentUser. result=" + JSON.toJSONString(currentUser));
-                System.out.println("sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
+                System.out.println("login as anonymous user. sessionToken=" + currentUser.getSessionToken() + ", isAuthenticated=" + currentUser.isAuthenticated());
 
                 LCUser friend = null;
                 try {
@@ -219,7 +218,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                           @Override
                           public void onNext(final LCFriendshipRequest friendshipRequest) {
-                            System.out.println("succeed to create new friend request. result=" + JSON.toJSONString(friendshipRequest));
+                            System.out.println("succeed to create new friend request from anonymouse User to feng.");
                             System.out.println("objectId=" + friendshipRequest.getObjectId());
                             LCUser.becomeWithSessionToken(fengSessionToken, true);
                             friendshipRequest.decline().subscribe(new Observer<LCObject>() {
@@ -230,7 +229,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                               @Override
                               public void onNext(LCObject LCObject) {
-                                System.out.println("succeed to decline new friend request. result=" + LCObject);
+                                System.out.println("succeed to decline new friend request from feng.");
                                 try {
                                   System.out.println("sleep 2000 ms...");
                                   Thread.sleep(2000);
@@ -246,7 +245,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                                   @Override
                                   public void onNext(LCObject LCObject) {
-                                    System.out.println("succeed to accept the declined friend request.");
+                                    System.out.println("succeed to accept the declined friend request from feng.");
                                     friendshipRequest.deleteInBackground().subscribe(new Observer<LCNull>() {
                                       @Override
                                       public void onSubscribe(Disposable disposable) {
@@ -255,14 +254,14 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                                       @Override
                                       public void onNext(LCNull LCNull) {
-                                        System.out.println("succeed to delete new friend request.");
+                                        System.out.println("succeed to delete new friend request from feng.");
                                         testSucceed = true;
                                         latch.countDown();
                                       }
 
                                       @Override
                                       public void onError(Throwable throwable) {
-                                        System.out.println("failed to delete new friend request.");
+                                        System.out.println("failed to delete new friend request from feng.");
                                         throwable.printStackTrace();
                                         latch.countDown();
                                       }
@@ -276,8 +275,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                                   @Override
                                   public void onError(Throwable throwable) {
-                                    System.out.println("failed to accept the declined friend request.");
-                                    throwable.printStackTrace();
+                                    System.out.println("failed to accept the declined friend request from feng. cause: " + throwable.getMessage());
                                     latch.countDown();
                                   }
 
@@ -290,7 +288,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                               @Override
                               public void onError(Throwable throwable) {
-                                System.out.println("failed to accept new friend request. result=");
+                                System.out.println("failed to decline new friend request from feng.");
                                 throwable.printStackTrace();
                                 latch.countDown();
                               }
@@ -304,7 +302,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                           @Override
                           public void onError(Throwable throwable) {
-                            System.out.println("failed to create new friend request. result=");
+                            System.out.println("failed to create new friend request from anonymous User to feng.");
                             throwable.printStackTrace();
                             latch.countDown();
                           }
@@ -316,6 +314,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
               }
 
               public void onError(Throwable throwable) {
+                System.out.println("failed to login as anonymous user. cause: " + throwable.getMessage());
                 latch.countDown();
               }
 
@@ -450,6 +449,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
       @Override
       public void onNext(final LCUser anonymousUser) {
+        System.out.println("step 1: succeed to login as anonymous user.");
         final LCUser target;
         try {
           target = LCUser.createWithoutData(LCUser.class, testUser1ObjectId);
@@ -467,7 +467,8 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
           @Override
           public void onNext(LCFriendshipRequest avFriendshipRequest) {
-            System.out.println("try to query all request from current User");
+            System.out.println("Step 2: succeed to apply friendship request from anonymous user to testUser." +
+                    " then try to query all request from current User");
             LCQuery<LCFriendshipRequest> query = anonymousUser.friendshipRequestQuery(LCFriendshipRequest.STATUS_PENDING,
                     true, false);
             query.findInBackground().subscribe(new Observer<List<LCFriendshipRequest>>() {
@@ -478,7 +479,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
               @Override
               public void onNext(List<LCFriendshipRequest> avFriendshipRequests) {
-                System.out.println("succeed to query pending request from anonymous user. resultSize=" + avFriendshipRequests.size());
+                System.out.println("Step 3: succeed to query pending request from anonymous user. resultSize=" + avFriendshipRequests.size());
                 if (avFriendshipRequests.size() < 1) {
                   latch.countDown();
                   return;
@@ -492,6 +493,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                   @Override
                   public void onNext(final LCUser secondUser) {
+                    System.out.println("Step 4: succeed to login as testUser.");
                     Map<String, Object> param = new HashMap<>();
                     param.put("group", "fans");
                     secondUser.acceptFriendshipRequest(targetFriendshipRequest, param).subscribe(new Observer<LCFriendshipRequest>() {
@@ -502,6 +504,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                       @Override
                       public void onNext(LCFriendshipRequest avFriendshipRequest) {
+                        System.out.println("Step 5: test user succeed to accept friendship request sent from anonymous user.");
                         LCQuery<LCFriendshipRequest> query = secondUser.friendshipRequestQuery(LCFriendshipRequest.STATUS_ACCEPTED, true, true);
                         query.findInBackground().subscribe(new Observer<List<LCFriendshipRequest>>() {
                           @Override
@@ -511,11 +514,13 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                           @Override
                           public void onNext(List<LCFriendshipRequest> tmpRequests) {
+                            System.out.println("Step 6: test user succeed to query accepted request.");
                             LCQuery<LCFriendship> query = secondUser.friendshipQuery(false);
                             query.whereEqualTo(LCFriendship.ATTR_FRIEND_STATUS, true);
                             query.addDescendingOrder(LCObject.KEY_UPDATED_AT);
                             List<LCFriendship> followees = query.find();
                             if (followees == null || followees.size() < 1) {
+                              System.out.println("Step 7: test user failed to query friendship.");
                               latch.countDown();
                               return;
                             }
@@ -530,14 +535,14 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                                 @Override
                                 public void onNext(LCObject LCObject) {
-                                  System.out.println("succeed to update friendship: " + LCObject);
+                                  System.out.println("Step 8: succeed to update friendship: " + LCObject);
                                   testSucceed = true;
                                   latch.countDown();
                                 }
 
                                 @Override
                                 public void onError(Throwable throwable) {
-                                  System.out.println("failed to update friendship.");
+                                  System.out.println("Step 8: failed to update friendship.");
                                   throwable.printStackTrace();
                                   latch.countDown();
                                 }
@@ -557,7 +562,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                           @Override
                           public void onError(Throwable throwable) {
-                            System.out.println("failed to query friendship request by user: " + testUser1UserName);
+                            System.out.println("Step 6: test user failed to query friendship request by user: " + testUser1UserName);
                             throwable.printStackTrace();
                             latch.countDown();
                           }
@@ -571,7 +576,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                       @Override
                       public void onError(Throwable throwable) {
-                        System.out.println("failed to accept friendship request by user: " + testUser1UserName);
+                        System.out.println("Step 5: test user failed to accept friendship request by user: " + testUser1UserName);
                         throwable.printStackTrace();
                         latch.countDown();
                       }
@@ -585,7 +590,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
                   @Override
                   public void onError(Throwable throwable) {
-                    System.out.println("failed to login with user: " + testUser1UserName);
+                    System.out.println("Step 4: failed to login with user: " + testUser1UserName);
                     throwable.printStackTrace();
                     latch.countDown();
                   }
@@ -599,7 +604,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
               @Override
               public void onError(Throwable throwable) {
-                System.out.println("failed to query pending Friendship as anonymous user");
+                System.out.println("Step 3: failed to query pending Friendship as anonymous user");
                 throwable.printStackTrace();
                 latch.countDown();
               }
@@ -613,7 +618,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
           @Override
           public void onError(Throwable throwable) {
-            System.out.println("failed to apply new Friendship as anonymous user");
+            System.out.println("Step 2: failed to apply new Friendship as anonymous user");
             throwable.printStackTrace();
             latch.countDown();
           }
@@ -627,7 +632,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
       @Override
       public void onError(Throwable throwable) {
-        System.out.println("failed to login as anonymous user");
+        System.out.println("step 1: failed to login as anonymous user");
         throwable.printStackTrace();
         latch.countDown();
       }
@@ -659,6 +664,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
         }
         Map<String, Object> param = new HashMap<>();
         param.put("group", "collage");
+        System.out.println("try to apply friendship to user:" + testUser1ObjectId + " from anonymousUser");
         anonymousUser.applyFriendshipInBackground(target, param).subscribe(new Observer<LCFriendshipRequest>() {
           @Override
           public void onSubscribe(Disposable disposable) {
@@ -772,7 +778,7 @@ public class FriendshipRequestTest extends UserBasedTestCase {
 
           @Override
           public void onError(Throwable throwable) {
-            System.out.println("failed to apply new Friendship as anonymous user");
+            System.out.println("failed to apply new Friendship as anonymous user, cause: " + throwable.getMessage());
             throwable.printStackTrace();
             latch.countDown();
           }

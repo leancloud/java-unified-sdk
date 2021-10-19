@@ -73,8 +73,7 @@ public class LCCachedUserTest extends TestCase {
     }
     System.out.println("refresh result: "+ currentUser.toJSONString());
     LCFile iconFile = currentUser.getLCFile("icon");
-    operationSucceed = null != iconFile;
-    System.out.println("icon result: "+ iconFile.toJSONString());
+    operationSucceed = null != currentUser;
     assertEquals(true, operationSucceed);
   }
 

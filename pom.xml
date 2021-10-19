@@ -207,12 +207,11 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.22.0</version>
         <configuration>
-          <trimStackTrace>false</trimStackTrace>
           <!-- Sets the VM argument line used when unit tests are run. -->
           <argLine>${surefireArgLine}</argLine>
           <!-- Skips unit tests if the value of skip.unit.tests property is true -->
           <skipTests>${skip.unit.tests}</skipTests>
-          <skipAfterFailureCount>5</skipAfterFailureCount>
+          <skipAfterFailureCount>20</skipAfterFailureCount>
           <!-- Excludes integration tests when unit tests are run. -->
           <excludes>
             <exclude>**/NotTest*.java</exclude>
