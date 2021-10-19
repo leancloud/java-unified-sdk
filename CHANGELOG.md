@@ -2,6 +2,19 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.1.4 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- make travis ci workable;
+- fixed String.valueof(bytes) in PersistenceUtil;
+
+
 ## 8.1.3 release
 
 #### Break changes
