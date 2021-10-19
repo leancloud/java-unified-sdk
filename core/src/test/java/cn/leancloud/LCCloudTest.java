@@ -117,7 +117,6 @@ public class LCCloudTest extends TestCase {
 
       @Override
       public void onError(Throwable throwable) {
-        throwable.printStackTrace();
         testSucceed = true;
         latch.countDown();
       }
@@ -139,7 +138,7 @@ public class LCCloudTest extends TestCase {
       Object res = LCCloud.callRPCInBackground(name, param).blockingFirst();
       assertNull(res);
     } catch (Exception ex) {
-      ex.printStackTrace();
+      // ignore
     }
   }
 }
