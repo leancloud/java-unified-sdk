@@ -31,6 +31,9 @@ public class LCObjectSerializer2Test extends TestCase {
     q.orderByDescending("createdAt");
     q.whereExists("portrait");
     LCObject o = q.getFirst();
+    if (null == o) {
+      return;
+    }
 //    if (o.getAVFile("portrait") == null) {
 //      AVFile portrait = new AVFile("thumbnail", "https://tvax1.sinaimg.cn/crop.0.0.200.200.180/a8d43f7ely1fnxs86j4maj205k05k74f.jpg");
 //      o.put("portrait", portrait);

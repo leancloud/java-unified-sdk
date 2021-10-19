@@ -2,6 +2,7 @@ package cn.leancloud.cache;
 
 import cn.leancloud.LCLogger;
 import cn.leancloud.utils.LogUtil;
+import cn.leancloud.utils.StringUtil;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ public class PersistenceUtil {
     if (null == data || data.length < 1) {
       return "";
     } else {
-      return String.valueOf(data);
+      return StringUtil.stringFromBytes(data);
     }
   }
 

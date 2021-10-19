@@ -28,24 +28,25 @@ public class Configure {
 
   public static void initializeWithApp(String appId, String appKey, LeanCloud.REGION region) {
     LeanCloud.setRegion(region);
+    LeanCloud.clearServerURLs();
     if (!StringUtil.isEmpty(API_HOST)) {
       LeanCloud.setServer(LeanService.API, API_HOST);
     }
-    LeanCloud.setLogLevel(LCLogger.Level.VERBOSE);
+    LeanCloud.setLogLevel(LCLogger.Level.INFO);
 //    AppConfiguration.setEnableLocalCache(false);
     LeanCloud.initialize(appId, appKey);
     LeanCloud.setMasterKey("");
   }
 
   public static void initializeWithApp(String appId, String appKey, String serverUrl) {
-    LeanCloud.setLogLevel(LCLogger.Level.VERBOSE);
+    LeanCloud.setLogLevel(LCLogger.Level.INFO);
 //    AppConfiguration.setEnableLocalCache(false);
     LeanCloud.initialize(appId, appKey, serverUrl);
     LeanCloud.setMasterKey("");
   }
 
   public static void initializeWithMasterKey(String appId, String masterKey, String serverUrl) {
-    LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
+    LeanCloud.setLogLevel(LCLogger.Level.INFO);
     LeanCloud.initialize(appId, "", serverUrl);
     LeanCloud.setMasterKey(masterKey);
   }
@@ -53,10 +54,11 @@ public class Configure {
   public static void initializeRuntime() {
 //    AppConfiguration.setLogAdapter(new DummyLoggerFactory());
     LeanCloud.setRegion(reGion);
+    LeanCloud.clearServerURLs();
     if (!StringUtil.isEmpty(API_HOST)) {
       LeanCloud.setServer(LeanService.API, API_HOST);
     }
-    LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
+    LeanCloud.setLogLevel(LCLogger.Level.INFO);
     LeanCloud.initialize(TEST_APP_ID, TEST_APP_KEY);
     LeanCloud.setMasterKey("");
   }

@@ -20,7 +20,7 @@ public class LCFileTest extends TestCase {
   private CountDownLatch latch = null;
   public LCFileTest(String name) {
     super(name);
-    Configure.initializeWithApp(Configure.TEST_APP_ID, Configure.TEST_APP_KEY, "https://beta.leancloud.cn");
+    Configure.initializeRuntime();
   }
 
   public static Test suite() {
@@ -43,6 +43,7 @@ public class LCFileTest extends TestCase {
     file.setPathPrefix("gamesaves");
     file.save();
   }
+
   public void testCreateWithObjectId() throws Exception {
     String url = "http://i1.wp.com/blog.avoscloud.com/wp-content/uploads/2014/05/screen568x568-1.jpg?resize=202%2C360";
     LCFile file = new LCFile("screen.jpg", url);
@@ -569,7 +570,7 @@ public class LCFileTest extends TestCase {
       file.saveEventually();
       fail("it should be not allowed to save local file eventually.");
     } catch (Exception ex) {
-      ex.printStackTrace();
+      // ignore
     }
     file = new LCFile("thumbnail", "http://file.everydaydiary.luyunxinchen.cn/437K25F9DpoWnJcJgbQECCV994ntJKpCGGudo6af.png");
     file.saveEventually();

@@ -105,6 +105,11 @@ public class LeanCloud {
     appRouter.freezeEndpoint(service, host);
   }
 
+  public static void clearServerURLs() {
+    AppRouter appRouter = AppRouter.getInstance();
+    appRouter.clearEndpoints();
+  }
+
   protected static void setServerURLs(String host) {
     setServer(LeanService.API, host);
     setServer(LeanService.RTM, host);

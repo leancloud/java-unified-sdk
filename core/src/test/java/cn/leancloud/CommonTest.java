@@ -49,7 +49,6 @@ public class CommonTest extends TestCase {
       concurrentHashMap.put("testKey", null);
     } catch (Exception ex) {
       System.out.println("We could not put null value to concurrent Map.");
-      ex.printStackTrace();
     }
 
     Map<String, Object> synchronizedMap = Collections.synchronizedMap(new HashMap<String, Object>());

@@ -106,7 +106,6 @@ public class FollowAndStatusTest extends UserBasedTestCase {
       public void onNext(LCStatus avStatus) {
         testSucceed = true;
         System.out.println(avStatus.getObjectId());
-        System.out.println(avStatus.getCreatedAtString());
         latch.countDown();
       }
 
@@ -139,7 +138,6 @@ public class FollowAndStatusTest extends UserBasedTestCase {
       public void onNext(LCStatus avStatus) {
         testSucceed = true;
         System.out.println(avStatus.getObjectId());
-        System.out.println(avStatus.getCreatedAtString());
         latch.countDown();
       }
 
@@ -170,7 +168,6 @@ public class FollowAndStatusTest extends UserBasedTestCase {
       public void onNext(LCStatus avStatus) {
         testSucceed = true;
         System.out.println(avStatus.getObjectId());
-        System.out.println(avStatus.getCreatedAtString());
         latch.countDown();
       }
 
@@ -206,7 +203,7 @@ public class FollowAndStatusTest extends UserBasedTestCase {
       public void onNext(List<LCStatus> avStatuses) {
         testSucceed = true;
         for (LCStatus status: avStatuses) {
-          System.out.println(status);
+//          System.out.println(status);
           if (LCStatus.INBOX_TYPE.PRIVATE.toString().equals(status.getInboxType())) {
             testSucceed = false;
           }
@@ -243,7 +240,7 @@ public class FollowAndStatusTest extends UserBasedTestCase {
               public void onNext(List<LCStatus> avStatuses) {
                 testSucceed = true;
                 for (LCStatus status: avStatuses) {
-                  System.out.println(status);
+//                  System.out.println(status);
                   if (LCStatus.INBOX_TYPE.PRIVATE.toString().equals(status.getInboxType())) {
                     testSucceed = false;
                   }
@@ -402,8 +399,7 @@ public class FollowAndStatusTest extends UserBasedTestCase {
               public void onNext(List<LCStatus> avStatuses) {
                 testSucceed = true;
                 for (LCStatus status: avStatuses) {
-                  System.out.println(status);
-                  System.out.println(status.getInboxType());
+//                  System.out.println(status);
                   if (LCStatus.INBOX_TYPE.PRIVATE.toString().equals(status.getInboxType())) {
                     testSucceed = false;
                   }
@@ -472,7 +468,7 @@ public class FollowAndStatusTest extends UserBasedTestCase {
 
       @Override
       public void onNext(JSONObject jsonObject) {
-        System.out.println(jsonObject);
+//        System.out.println(jsonObject);
         testSucceed = true;
         latch.countDown();
       }
@@ -507,7 +503,6 @@ public class FollowAndStatusTest extends UserBasedTestCase {
       @Override
       public void onNext(LCStatus avStatus) {
         System.out.println(avStatus.getObjectId());
-        System.out.println(avStatus.getCreatedAtString());
         status.setObjectId(avStatus.getObjectId());
         status.deleteInBackground().subscribe(new Observer<LCNull>() {
           @Override
@@ -560,7 +555,6 @@ public class FollowAndStatusTest extends UserBasedTestCase {
 
       @Override
       public void onNext(final LCStatus avStatus) {
-        System.out.println(avStatus);
         System.out.println("change login user and try to query inbox status...");
         try {
           userLogin("jfeng001", UserFollowshipTest.DEFAULT_PASSWD);
@@ -660,7 +654,6 @@ public class FollowAndStatusTest extends UserBasedTestCase {
 
         @Override
         public void onNext(LCStatus avStatus) {
-          System.out.println("publish status: " + avStatus);
           tmpLatch.countDown();
         }
 
@@ -714,9 +707,9 @@ public class FollowAndStatusTest extends UserBasedTestCase {
     inboxStatuses.addAll(tmpResult);
     System.out.println("inboxQuery first round result: " + tmpResult.size());
     assertTrue(null != tmpResult && tmpResult.size() > 0);
-    for (LCStatus s: tmpResult) {
-      System.out.println("INBOX STATUS: " + s.toJSONString());
-    }
+//    for (LCStatus s: tmpResult) {
+//      System.out.println("INBOX STATUS: " + s.toJSONString());
+//    }
 
     queryEnd = (null == tmpResult || tmpResult.size() < 1);
     while (!queryEnd) {
@@ -725,9 +718,9 @@ public class FollowAndStatusTest extends UserBasedTestCase {
       if (null != tmpResult) {
         System.out.println("inboxQuery next round result: " + tmpResult.size());
         inboxStatuses.addAll(tmpResult);
-        for (LCStatus s: tmpResult) {
-          System.out.println("INBOX STATUS: " + s.toJSONString());
-        }
+//        for (LCStatus s: tmpResult) {
+//          System.out.println("INBOX STATUS: " + s.toJSONString());
+//        }
       }
       if (null == tmpResult || tmpResult.size() < pageSize) {
         queryEnd = true;

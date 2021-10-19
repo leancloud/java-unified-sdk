@@ -91,6 +91,15 @@ public class AppAccessEndpoint {
             || !StringUtil.isEmpty(rtmRouterServer);
   }
 
+  public void reset() {
+    this.ttl = 0;
+    this.apiServer = null;
+    this.engineServer = null;
+    this.pushServer = null;
+    this.rtmRouterServer = null;
+    this.statsServer = null;
+  }
+
   public void freezeEndpoint(LeanService service, String host) {
     switch (service) {
       case API:

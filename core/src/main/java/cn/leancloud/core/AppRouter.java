@@ -181,6 +181,10 @@ public class AppRouter {
     this.customizedEndpoint.freezeEndpoint(service, host);
   }
 
+  protected void clearEndpoints() {
+    this.customizedEndpoint.reset();
+  }
+
   public Observable<String> getEndpoint(final String appId, final LeanService service) {
     return getEndpoint(appId, service, false);
   }

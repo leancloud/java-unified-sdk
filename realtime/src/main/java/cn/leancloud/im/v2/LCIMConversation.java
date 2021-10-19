@@ -1961,7 +1961,7 @@ public class LCIMConversation {
   public LCIMException processQueryResult(String result) {
     if (null != result) {
       try {
-        List<Map<String, Object>> jsonArray = JSON.parseObject(String.valueOf(result), List.class);
+        List<Map<String, Object>> jsonArray = JSON.parseObject(result, List.class);
         if (null != jsonArray && !jsonArray.isEmpty()) {
           Map<String, Object> jsonObject = jsonArray.get(0);
           updateConversation(this, jsonObject);

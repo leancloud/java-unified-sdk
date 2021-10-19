@@ -189,15 +189,16 @@ public class QueryUnitTest extends TestCase {
     List<LCObject> LCObjects = query.find();
     assertFalse(LCObjects.isEmpty());
     for (LCObject obj : LCObjects) {
-      assertContains(2l, obj.getList("scores"));
+      List scores = obj.getList("scores");
+      assertContains(2, scores);
     }
 
     // whereContainsAll
-    ArrayList<Long> numbers = new ArrayList<Long>();
-    numbers.add(2l);
-    numbers.add(3l);
-    numbers.add(4l);
-    numbers.add(5l);
+    ArrayList<Integer> numbers = new ArrayList<Integer>();
+    numbers.add(2);
+    numbers.add(3);
+    numbers.add(4);
+    numbers.add(5);
     query = new LCQuery(className);
     query.whereContainsAll("scores", numbers);
     LCObjects = query.find();
