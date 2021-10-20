@@ -22,7 +22,7 @@ public class LCIMClientSmokeTest extends TestCase {
 
   public LCIMClientSmokeTest(String name) {
     super(name);
-    Configure.initializeWithApp("", "");
+    Configure.initialize();
   }
 
   @Override

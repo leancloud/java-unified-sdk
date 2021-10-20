@@ -12,6 +12,7 @@ import junit.framework.TestCase;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class InteractiveTest extends TestCase {
   private String targetConversationId = null;
@@ -94,14 +95,12 @@ public class InteractiveTest extends TestCase {
       } else if (key.startsWith("attr.")) {
         String attr = key.substring("attr.".length());
         Object actual = conversation.getAttribute(attr);
-        if (actual == expect) {
-          // for all NULL
-          System.out.println("Conversation attributes matches!");
-        } else if (null == actual || !actual.equals(expect)) {
+        if (null == actual || !actual.equals(expect)) {
           System.out.println("❌Conversation attribute not match, key=" + attr + ", expected=" + expect + ", actual=" + actual);
           result = false;
+          break;
         } else {
-          System.out.println("Conversation attributes matches!");
+          System.out.println("Conversation attributes(" + attr + ") matches!");
         }
       }
     }
@@ -586,7 +585,7 @@ public class InteractiveTest extends TestCase {
       public void run() {
         System.out.println("Second Thread: " + Thread.currentThread().getId());
         try {
-          System.out.println("wait first thread running...");
+          System.out.println("Second thread: wait first thread running...");
           firstStage.await();
         } catch (Exception ex) {
           ex.printStackTrace();
