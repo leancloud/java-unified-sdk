@@ -49,7 +49,11 @@ public class RoleTest extends TestCase {
 
       @Override
       public void onError(@NotNull Throwable throwable) {
-        throwable.printStackTrace();
+        if (throwable.getMessage().indexOf("Forbidden writing by object's ACL") >= 0) {
+          testSucceed = true;
+        } else {
+          throwable.printStackTrace();
+        }
         latch.countDown();
       }
 

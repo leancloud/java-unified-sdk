@@ -44,10 +44,10 @@ public class LCUserSerializerTest extends UserBasedTestCase {
   public void testUserFetch() throws Exception {
     if (StringUtil.isEmpty(testUserObjectId)) {
       LCUser targetUser = LCUserTest.loginOrSignin(LCUserTest.USERNAME,LCUserTest.PASSWORD, LCUserTest.EMAIL);
-      testUserObjectId = targetUser.getSessionToken();
+      testUserObjectId = targetUser.getObjectId();
     }
     final LCUser user = LCObject.createWithoutData(LCUser.class, testUserObjectId);
-    user.fetchInBackground("author,kuolie,black").subscribe(new Observer<LCObject>() {
+    user.fetchInBackground("author, kuolie, black").subscribe(new Observer<LCObject>() {
       @Override
       public void onSubscribe(@NotNull Disposable disposable) {
 
@@ -74,9 +74,6 @@ public class LCUserSerializerTest extends UserBasedTestCase {
     });
     latch.await();
     assertTrue(testSucceed);
-  }
-
-  public void testCurrentUserFromLocalCache() throws Exception {
   }
 
   public void testDeserializedUser() throws Exception {
