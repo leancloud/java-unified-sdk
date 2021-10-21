@@ -1,9 +1,11 @@
 package cn.leancloud.im;
 
 import cn.leancloud.LCException;
+import cn.leancloud.LCLogger;
 import cn.leancloud.LCQuery;
 import cn.leancloud.Configure;
 import cn.leancloud.callback.LCCallback;
+import cn.leancloud.core.LeanCloud;
 import cn.leancloud.im.v2.LCIMClient;
 import cn.leancloud.im.v2.LCIMConversation;
 import cn.leancloud.im.v2.LCIMConversationsQuery;
@@ -23,6 +25,7 @@ public class LCIMClientSmokeTest extends TestCase {
   public LCIMClientSmokeTest(String name) {
     super(name);
     Configure.initialize();
+    LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
   }
 
   @Override

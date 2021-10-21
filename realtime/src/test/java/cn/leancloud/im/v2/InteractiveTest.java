@@ -23,8 +23,9 @@ public class InteractiveTest extends TestCase {
 
   public InteractiveTest(String name) {
     super(name);
-    LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
     Configure.initialize();
+    LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
+
     LCIMOptions.getGlobalOptions().setTimeoutInSecs(30);
     LCIMMessageManager.setConversationEventHandler(new LCIMConversationEventHandler() {
       @Override

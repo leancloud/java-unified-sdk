@@ -58,7 +58,7 @@ public class Configure {
     if (!StringUtil.isEmpty(API_HOST)) {
       LeanCloud.setServer(LeanService.API, API_HOST);
     }
-    LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
+    LeanCloud.setLogLevel(LCLogger.Level.INFO);
     LeanCloud.initialize(TEST_APP_ID, TEST_APP_KEY);
     LeanCloud.setMasterKey("");
   }

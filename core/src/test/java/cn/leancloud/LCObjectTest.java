@@ -1,6 +1,5 @@
 package cn.leancloud;
 
-import cn.leancloud.core.LeanCloud;
 import cn.leancloud.types.LCGeoPoint;
 import cn.leancloud.types.LCNull;
 import cn.leancloud.utils.StringUtil;
@@ -19,7 +18,6 @@ public class LCObjectTest extends TestCase {
 
   public LCObjectTest(String testName) {
     super(testName);
-    LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
     Configure.initializeRuntime();
   }
   public static Test suite() {
