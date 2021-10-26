@@ -76,7 +76,7 @@ public class LCMixPushManager {
    * @return boolean
    */
   public static boolean isSupportOppoPush(Context context) {
-    return HeytapPushManager.isSupportPush();
+    return HeytapPushManager.isSupportPush(context);
   }
 
   /**
@@ -209,8 +209,8 @@ public class LCMixPushManager {
           }
         }
       }));
-      HeytapPushManager.unRegister();
     }
+    HeytapPushManager.unRegister();
   }
 
   private static void printErrorLog(String error) {
