@@ -23,7 +23,7 @@ public class LCSearchQuery<T extends LCObject> {
   private String sid;
   private int limit = 100;
   private int skip = 0;
-  private String hightlights;
+  private String hightlights = null;
   private static final String URL = "search/select";
   private List<String> fields;
   private String queryString;

@@ -52,7 +52,7 @@ public class StandardWebSocketClientTest extends TestCase {
   }
 
   public void testConnect() throws Exception {
-    String wsUrl = "wss://cn-n1-core-k8s-cell-12.leancloud.cn";
+    String wsUrl = "wss://cn-n1-cell5.leancloud.cn";
     SSLContext sslContext = SSLContext.getDefault();
     SSLSocketFactory sf = sslContext.getSocketFactory();
     StandardWebSocketClient client = new StandardWebSocketClient(URI.create(wsUrl),

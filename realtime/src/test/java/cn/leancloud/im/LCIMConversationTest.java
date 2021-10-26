@@ -1784,7 +1784,7 @@ public class LCIMConversationTest extends TestCase {
 
     t1.join();
     t2.join();
-    int notifyCount = this.conversationEventHandler.getCount(0x00FFFF);
+    int notifyCount = this.conversationEventHandler.getCount(0x0000FFFF);
     System.out.println("notifyCount=" + notifyCount);
     assertTrue(notifyCount > 2);
   }

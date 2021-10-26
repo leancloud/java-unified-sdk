@@ -26,7 +26,7 @@ public class OKWebSocketClientTest extends TestCase {
   }
 
   public void testConnect() throws Exception {
-    String wsUrl = "wss://rtm51.leancloud.cn";
+    String wsUrl = "wss://cn-n1-cell5.leancloud.cn";
     client = new OKWebSocketClient(new WsStatusListener(){
       public void onOpen(Response response) {
         try {
@@ -71,7 +71,7 @@ public class OKWebSocketClientTest extends TestCase {
 
 
   public void testSessionOpen() throws Exception {
-    String wsUrl = "wss://rtm51.leancloud.cn";
+    String wsUrl = "wss://cn-n1-cell5.leancloud.cn";
     client = new OKWebSocketClient(new WsStatusListener(){
       public void onOpen(Response response) {
         try {

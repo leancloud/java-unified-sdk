@@ -13,6 +13,7 @@ import cn.leancloud.im.v2.conversation.ConversationMemberRole;
 import cn.leancloud.im.v2.messages.LCIMFileMessage;
 import cn.leancloud.im.v2.messages.LCIMFileMessageAccessor;
 import cn.leancloud.im.v2.messages.LCIMRecalledMessage;
+import cn.leancloud.ops.DeleteOperation;
 import cn.leancloud.ops.ObjectFieldOperation;
 import cn.leancloud.ops.OperationBuilder;
 import cn.leancloud.ops.Utils;
@@ -538,7 +539,7 @@ public class LCIMConversation {
    * @return conversation name.
    */
   public String getName() {
-    return (String) get(Conversation.NAME);
+    return get(Conversation.NAME).toString();
   }
 
   public void setName(String name) {
@@ -1746,8 +1747,9 @@ public class LCIMConversation {
           if (null == e) {
             for (Map.Entry<String, ObjectFieldOperation> entry: operations.entrySet()) {
               String attribute = entry.getKey();
+              ObjectFieldOperation fieldOperation = entry.getValue();
               Object value = get(attribute);
-              if (null == value) {
+              if (null == value || fieldOperation instanceof DeleteOperation) {
                 recurDeleteData(instanceData, attribute);
               } else {
                 recurSetData(instanceData, attribute, value);
