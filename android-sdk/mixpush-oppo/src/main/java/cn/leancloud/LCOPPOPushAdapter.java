@@ -100,7 +100,7 @@ public class LCOPPOPushAdapter implements com.heytap.msp.push.callback.ICallBack
    */
   @Override
   public void onGetAppNotificationSwitch(int responseCode, int appSwitch) {
-
+    LOGGER.d("onGetAppNotificationSwitch: responseCode: " + responseCode + ", switch: " + appSwitch);
   }
 
   /**
@@ -109,6 +109,6 @@ public class LCOPPOPushAdapter implements com.heytap.msp.push.callback.ICallBack
    */
   @Override
   public void onSetAppNotificationSwitch(int responseCode) {
-
+    LOGGER.d("onSetAppNotificationSwitch: responseCode: " + responseCode);
   }
 }
