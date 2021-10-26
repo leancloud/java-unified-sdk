@@ -46,6 +46,9 @@ public class LCMixPushManager {
    */
   public static boolean registerVIVOPush(Application application, String profile) {
     vivoDeviceProfile = profile;
+    if (null == application) {
+      return false;
+    }
     com.vivo.push.PushClient client = com.vivo.push.PushClient.getInstance(application.getApplicationContext());
     try {
       client.checkManifest();
@@ -61,6 +64,17 @@ public class LCMixPushManager {
     }
   }
 
+  /**
+   * get registration id.
+   * @param context context.
+   * @return registration id.
+   */
+  public static String getRegistrationId(Context context) {
+    if (null == context) {
+      return null;
+    }
+    return com.vivo.push.PushClient.getInstance(context).getRegId();
+  }
   /**
    * turn off VIVO push.
    * @param callback callback function.
