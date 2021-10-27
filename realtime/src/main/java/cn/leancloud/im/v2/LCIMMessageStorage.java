@@ -332,10 +332,14 @@ public class LCIMMessageStorage {
       values.put(COLUMN_PAYLOAD, ((LCIMBinaryMessage)message).getBytes());
       values.put(COLUMN_MSG_INNERTYPE, MESSAGE_INNERTYPE_BIN);
     } else {
-      try {
-        values.put(COLUMN_PAYLOAD, message.getContent().getBytes("UTF-8"));
-      } catch (UnsupportedEncodingException ex) {
+      if (null != message.getContent()) {
+        try {
+          values.put(COLUMN_PAYLOAD, message.getContent().getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException ex) {
 
+        }
+      } else {
+        values.put(COLUMN_PAYLOAD, null);
       }
       values.put(COLUMN_MSG_INNERTYPE, MESSAGE_INNERTYPE_PLAIN);
     }

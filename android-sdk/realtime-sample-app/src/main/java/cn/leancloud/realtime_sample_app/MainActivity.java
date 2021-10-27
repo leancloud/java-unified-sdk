@@ -35,11 +35,13 @@ import cn.leancloud.im.v2.callback.LCIMConversationMemberCountCallback;
 import cn.leancloud.im.v2.callback.LCIMConversationMemberQueryCallback;
 import cn.leancloud.im.v2.callback.LCIMConversationQueryCallback;
 import cn.leancloud.im.v2.callback.LCIMConversationSimpleResultCallback;
+import cn.leancloud.im.v2.callback.LCIMMessageRecalledCallback;
 import cn.leancloud.im.v2.callback.LCIMOperationFailure;
 import cn.leancloud.im.v2.callback.LCIMOperationPartiallySucceededCallback;
 import cn.leancloud.im.v2.conversation.LCIMConversationMemberInfo;
 import cn.leancloud.im.v2.conversation.ConversationMemberRole;
 import cn.leancloud.im.v2.messages.LCIMAudioMessage;
+import cn.leancloud.im.v2.messages.LCIMRecalledMessage;
 import cn.leancloud.livequery.LCLiveQuery;
 import cn.leancloud.livequery.LCLiveQueryConnectionHandler;
 import cn.leancloud.livequery.LCLiveQueryEventHandler;
@@ -238,37 +240,38 @@ public class MainActivity extends AppCompatActivity {
         case R.id.navigation_notifications:
           mTextMessage.setText(R.string.title_notifications);
           try {
-            List<String> members = Arrays.asList("testUser2", "testUser3", "testUser4");
-            LCIMConversationsQuery convQuery1 = currentClient.getConversationsQuery();
-            convQuery1.setQueryPolicy(LCQuery.CachePolicy.NETWORK_ONLY);
-            convQuery1.containsMembers(members).findInBackground(new LCIMConversationQueryCallback() {
-              @Override
-              public void done(List<LCIMConversation> conversations, LCIMException e1) {
-                if (null != e1) {
-                  e1.printStackTrace();
-                  return;
-                }
-                for (LCIMConversation conv: conversations) {
-                  System.out.println(conv.getCreatedAt());
-                  System.out.println(conv.toJSONString());
-                }
-                LCIMConversationsQuery convQuery2 = currentClient.getConversationsQuery();
-                convQuery2.setQueryPolicy(LCQuery.CachePolicy.CACHE_ONLY);
-                convQuery2.containsMembers(members).findInBackground(new LCIMConversationQueryCallback() {
-                  @Override
-                  public void done(List<LCIMConversation> conversations, LCIMException e2) {
-                    if (null != e2) {
-                      e2.printStackTrace();
-                      return;
-                    }
-                    for (LCIMConversation conv: conversations) {
-                      System.out.println(conv.getCreatedAt());
-                      System.out.println(conv.toJSONString());
-                    }
-                  }
-                });
-              }
-            });
+//            List<String> members = Arrays.asList("testUser2", "testUser3", "testUser4");
+//            LCIMConversationsQuery convQuery1 = currentClient.getConversationsQuery();
+//            convQuery1.setQueryPolicy(LCQuery.CachePolicy.NETWORK_ONLY);
+//            convQuery1.containsMembers(members).findInBackground(new LCIMConversationQueryCallback() {
+//              @Override
+//              public void done(List<LCIMConversation> conversations, LCIMException e1) {
+//                if (null != e1) {
+//                  e1.printStackTrace();
+//                  return;
+//                }
+//                for (LCIMConversation conv: conversations) {
+//                  System.out.println(conv.getCreatedAt());
+//                  System.out.println(conv.toJSONString());
+//                }
+//                LCIMConversationsQuery convQuery2 = currentClient.getConversationsQuery();
+//                convQuery2.setQueryPolicy(LCQuery.CachePolicy.CACHE_ONLY);
+//                convQuery2.containsMembers(members).findInBackground(new LCIMConversationQueryCallback() {
+//                  @Override
+//                  public void done(List<LCIMConversation> conversations, LCIMException e2) {
+//                    if (null != e2) {
+//                      e2.printStackTrace();
+//                      return;
+//                    }
+//                    for (LCIMConversation conv: conversations) {
+//                      System.out.println(conv.getCreatedAt());
+//                      System.out.println(conv.toJSONString());
+//                    }
+//                  }
+//                });
+//              }
+//            });
+
 //            currentClient.createConversation(members, "UnitTestConversation", null, false, true, new AVIMConversationCreatedCallback() {
 //              @Override
 //              public void done(final AVIMConversation conversation, AVIMException e) {
@@ -358,29 +361,40 @@ public class MainActivity extends AppCompatActivity {
 //            });
 
 
-//            AVFile file = new AVFile("apple.acc", "https://some.website.com/apple.acc", new HashMap<>());
-//            LCIMAudioMessage m = new LCIMAudioMessage(file);
-//            m.setText("来自苹果发布会现场的录音");
-//            currentClient.createTemporaryConversation(Arrays.asList("abc", "def"), new LCIMConversationCreatedCallback() {
-//              @Override
-//              public void done(LCIMConversation conversation, LCIMException e) {
-//                if (e != null) {
-//                  Log.e("tag", "failed to create conversations. error ", e);
-//                } else {
-//                  conversation.sendMessage(m, new LCIMConversationCallback() {
-//                    @Override
-//                    public void done(LCIMException ex) {
-//                      if (null != ex) {
-//                        ex.printStackTrace();
-//                        Log.e("tag", "failed to send Audio Message, cause: " + ex.getMessage());
-//                      } else {
-//                        Log.d("tag", "succeed to send audio message.");
-//                      }
-//                    }
-//                  });
-//                }
-//              }
-//            });
+            LCFile file = new LCFile("apple.acc", "https://some.website.com/apple.acc", new HashMap<>());
+            LCIMAudioMessage m = new LCIMAudioMessage(file);
+            m.setText("来自苹果发布会现场的录音");
+            currentClient.createTemporaryConversation(Arrays.asList("abc", "def"), new LCIMConversationCreatedCallback() {
+              @Override
+              public void done(LCIMConversation conversation, LCIMException e) {
+                if (e != null) {
+                  Log.e("tag", "failed to create conversations. error ", e);
+                } else {
+                  conversation.sendMessage(m, new LCIMConversationCallback() {
+                    @Override
+                    public void done(LCIMException ex) {
+                      if (null != ex) {
+                        ex.printStackTrace();
+                        Log.e("tag", "failed to send Audio Message, cause: " + ex.getMessage());
+                      } else {
+                        Log.d("tag", "succeed to send audio message.");
+                        conversation.recallMessage(m, new LCIMMessageRecalledCallback() {
+                          @Override
+                          public void done(LCIMRecalledMessage recalledMessage, LCException e) {
+                            if (null != e) {
+                              e.printStackTrace();
+                              Log.e("tag", "failed to send Audio Message, cause: " + ex.getMessage());
+                            } else {
+                              Log.d("tag", "succeed to recall audio message.");
+                            }
+                          }
+                        });
+                      }
+                    }
+                  });
+                }
+              }
+            });
           } catch (Exception ex) {
             ex.printStackTrace();
           }
