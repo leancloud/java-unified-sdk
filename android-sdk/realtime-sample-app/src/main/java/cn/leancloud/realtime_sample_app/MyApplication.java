@@ -2,7 +2,11 @@ package cn.leancloud.realtime_sample_app;
 
 import android.app.Application;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.os.StrictMode;
+
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 import cn.leancloud.LCInstallation;
 import cn.leancloud.LCLogger;
@@ -26,20 +30,24 @@ public class MyApplication extends Application {
   private static final String APPKEY = "ye24iIK6ys8IvaISMC4Bs5WK";
   private static final String APP_SERVER_HOST = "https://dyrq8yfh.lc-cn-n1-shared.com";
 
+  static Context app;
   @Override
   public void onCreate() {
-    StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-        .detectNetwork()   // or .detectAll() for all detectable problems
-        .penaltyLog()
-        .build());
-    StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-        .detectLeakedSqlLiteObjects()
-        .detectLeakedClosableObjects()
-        .penaltyLog()
-        .penaltyDeath()
-        .build());
+//    StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+//        .detectNetwork()   // or .detectAll() for all detectable problems
+//        .penaltyLog()
+//        .build());
+//    StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+//        .detectLeakedSqlLiteObjects()
+//        .detectLeakedClosableObjects()
+//        .penaltyLog()
+//        .penaltyDeath()
+//        .build());
+
+    System.setErr (new HProfDumpingStderrPrintStream (System.err));
 
     super.onCreate();
+    app = this;
 
     LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
     LeanCloud.initialize(this, APPID, APPKEY, APP_SERVER_HOST);
@@ -104,4 +112,27 @@ public class MyApplication extends Application {
     PushService.setDefaultPushCallback(this, MainActivity.class);
   }
 
+  private static class HProfDumpingStderrPrintStream extends PrintStream
+  {
+    public HProfDumpingStderrPrintStream (OutputStream destination)
+    {
+      super (destination);
+    }
+
+    @Override
+    public synchronized void println (String str)
+    {
+      super.println (str);
+      if (str.equals ("StrictMode VmPolicy violation with POLICY_DEATH; shutting down."))
+      {
+        // StrictMode is about to terminate us... don't let it!
+        super.println ("Trapped StrictMode shutdown notice: logging heap data");
+        try {
+          android.os.Debug.dumpHprofData(app.getDir ("hprof", MODE_WORLD_READABLE) +"/strictmode-death-penalty.hprof");
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
 }
