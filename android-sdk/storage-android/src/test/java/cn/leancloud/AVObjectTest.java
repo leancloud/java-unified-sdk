@@ -1,6 +1,6 @@
 package cn.leancloud;
 
-import cn.leancloud.types.AVNull;
+import cn.leancloud.types.LCNull;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -12,7 +12,7 @@ import org.junit.Test;
 public class AVObjectTest {
   public AVObjectTest() {
     LeanCloud.setRegion(LeanCloud.REGION.NorthChina);
-    LeanCloud.setLogLevel(AVLogger.Level.VERBOSE);
+    LeanCloud.setLogLevel(LCLogger.Level.VERBOSE);
     LeanCloud.initialize(Configure.TEST_APP_ID, Configure.TEST_APP_KEY);
   }
 
@@ -23,21 +23,21 @@ public class AVObjectTest {
   @Test
   public void testCreateObject() throws Exception {
     System.out.println("enter testCreateObject()");
-    AVObject object = new AVObject("Student");
+    LCObject object = new LCObject("Student");
     object.put("name", "Automatic Tester");
     object.put("age", 17);
-    object.saveInBackground().subscribe(new Observer<AVObject>() {
+    object.saveInBackground().subscribe(new Observer<LCObject>() {
       public void onSubscribe(Disposable disposable) {
       }
 
-      public void onNext(AVObject avObject) {
+      public void onNext(LCObject avObject) {
         System.out.println("create object finished. " + avObject.toString());
-        avObject.deleteInBackground().subscribe(new Observer<AVNull>() {
+        avObject.deleteInBackground().subscribe(new Observer<LCNull>() {
           public void onSubscribe(Disposable disposable) {
             ;
           }
 
-          public void onNext(AVNull aVoid) {
+          public void onNext(LCNull aVoid) {
             System.out.println("delete object finished.");
           }
 
