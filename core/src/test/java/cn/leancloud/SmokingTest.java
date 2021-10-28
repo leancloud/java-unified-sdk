@@ -1,8 +1,6 @@
 package cn.leancloud;
 
 import cn.leancloud.core.LeanCloud;
-import cn.leancloud.core.PaasClient;
-import cn.leancloud.core.StorageClient;
 import cn.leancloud.types.LCDate;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -33,8 +31,8 @@ public class SmokingTest extends TestCase {
     }
 
     public void testQueryServerDate() throws Exception {
-        StorageClient storageClient = PaasClient.getStorageClient();
-        storageClient.getServerTime().subscribe(new Observer<LCDate>() {
+        LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
+        LeanCloud.getServerDateInBackground().subscribe(new Observer<LCDate>() {
             @Override
             public void onSubscribe(@NotNull Disposable disposable) {
 
