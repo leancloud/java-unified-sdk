@@ -13,6 +13,7 @@ import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
 import com.heytap.msp.push.HeytapPushManager;
+import com.heytap.msp.push.mode.DataMessage;
 
 /**
  * Created by wli on 16/6/27.
@@ -49,6 +50,7 @@ public class LCMixPushManager {
       return false;
     }
     HeytapPushManager.register(context, appKey, appSecret, callback);
+    // 弹出通知栏权限弹窗（仅一次）
     HeytapPushManager.requestNotificationPermission();
     return true;
   }
@@ -76,7 +78,23 @@ public class LCMixPushManager {
    * @return boolean
    */
   public static boolean isSupportOppoPush(Context context) {
-    return HeytapPushManager.isSupportPush();
+    return HeytapPushManager.isSupportPush(context);
+  }
+
+  /**
+   * get register id.
+   * @return register id.
+   */
+  public static String getRegisterID() {
+    return HeytapPushManager.getRegisterID();
+  }
+
+  /**
+   * set register Id.
+   * @param registerID id.
+   */
+  public static void setRegisterID(String registerID) {
+    HeytapPushManager.setRegisterID(registerID);
   }
 
   /**
@@ -191,6 +209,50 @@ public class LCMixPushManager {
   }
 
   /**
+   * set notification type.
+   * @param notificationType type
+   */
+  public static void setNotificationType(int notificationType) {
+    HeytapPushManager.setNotificationType(notificationType);
+  }
+
+  /**
+   * clear all notifications.
+   */
+  public static void clearNotifications() {
+    HeytapPushManager.clearNotifications();
+  }
+
+  /**
+   * get mcs package name.
+   * @param context application context.
+   * @return package name.
+   */
+  public static String getMcsPackageName(Context context) {
+    return HeytapPushManager.getMcsPackageName(context);
+  }
+
+  /**
+   * get receive SDK action.
+   * @param context application context.
+   * @return action name.
+   */
+  public static String getReceiveSdkAction(Context context) {
+    return HeytapPushManager.getReceiveSdkAction(context);
+  }
+
+  /**
+   * 消息事件统计接口，用于进行额外的 Push 消息事件统计，如有需要使用，请开发者提前与 OppoPush 团队进行充分沟通和确认,
+   * 为了防止业务方频繁调用上报.
+   * @param context 应用的context
+   * @param eventId 需要上报的eventId事件，上报的eventId在EventConstant类中
+   * @param message 透传消息下发的消息体
+   */
+  public static void statisticEvent(Context context, String eventId, DataMessage message) {
+    HeytapPushManager.statisticEvent(context, eventId, message);
+  }
+
+  /**
    * 取消混合推送的注册
    * 取消成功后，消息会通过 LeanCloud websocket 发送
    */
@@ -209,8 +271,8 @@ public class LCMixPushManager {
           }
         }
       }));
-      HeytapPushManager.unRegister();
     }
+    HeytapPushManager.unRegister();
   }
 
   private static void printErrorLog(String error) {

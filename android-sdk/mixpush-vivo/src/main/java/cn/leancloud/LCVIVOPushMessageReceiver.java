@@ -2,6 +2,8 @@ package cn.leancloud;
 
 import android.content.Context;
 
+import com.vivo.push.model.UPSNotificationMessage;
+
 import cn.leancloud.convertor.ObserverBuilder;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
@@ -12,8 +14,28 @@ public abstract class LCVIVOPushMessageReceiver extends com.vivo.push.sdk.OpenCl
   private static final LCLogger LOGGER = LogUtil.getLogger(LCVIVOPushMessageReceiver.class);
   private final String VIVO_VERDOR = "vivo";
 
-  public abstract void onNotificationMessageClicked(Context var1, com.vivo.push.model.UPSNotificationMessage var2);
+  /**
+   * 通知被点击后的结果返回。
+   * @param context context
+   * @param msg  **UPSNotificationMessage 包含以下字段**
+   *              msgId：通知id。
+   *              title：通知标题。
+   *              content：通知内容。
+   *              skipContent：通知自定义内容。
+   *              params：自定义键值对。
+   * @deprecated 当push发出的通知被点击后便会触发onNotificationClicked通知应用
+   *             该接口仅用来兼容老版本，在 3.x 中已经不再使用。
+   */
+  public void onNotificationMessageClicked(Context context, UPSNotificationMessage msg) {
+  }
 
+  /**
+   * RegId 结果返回。当开发者首次调用 turnOnPush 成功或 regId 发生改变时会回调该方法。
+   * @param var1 应用上下文
+   * @param regId 当前设备的当前应用的唯一标识
+   *
+   */
+  @Override
   public void onReceiveRegId(Context var1, final String regId) {
     if (StringUtil.isEmpty(regId)) {
       LOGGER.e("received empty regId from VIVO server.");
