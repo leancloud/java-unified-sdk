@@ -13,6 +13,8 @@ import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
 
 import com.heytap.msp.push.HeytapPushManager;
+import com.heytap.msp.push.callback.IGetAppNotificationCallBackService;
+import com.heytap.msp.push.callback.ISetAppNotificationCallBackService;
 import com.heytap.msp.push.mode.DataMessage;
 
 /**
@@ -109,6 +111,30 @@ public class LCMixPushManager {
    */
   public static void resumeOppoPush() {
     HeytapPushManager.resumePush();
+  }
+
+  /**
+   * 设置应用内通知开关结果（打开）
+   * @param service callback service instance.
+   */
+  public static void enableAppNotificationSwitch(ISetAppNotificationCallBackService service) {
+    HeytapPushManager.enableAppNotificationSwitch(service);
+  }
+
+  /**
+   * 设置应用内通知开关结果（关闭）
+   * @param service callback service instance.
+   */
+  public static void disableAppNotificationSwitch(ISetAppNotificationCallBackService service) {
+    HeytapPushManager.disableAppNotificationSwitch(service);
+  }
+
+  /**
+   * 获取应用内通知开关结果
+   * @param service callback service instance.
+   */
+  public static void getAppNotificationSwitch(IGetAppNotificationCallBackService service) {
+    HeytapPushManager.getAppNotificationSwitch(service);
   }
 
   /**
@@ -214,6 +240,13 @@ public class LCMixPushManager {
    */
   public static void setNotificationType(int notificationType) {
     HeytapPushManager.setNotificationType(notificationType);
+  }
+
+  /**
+   * 清除客户端设置的通知消息提醒类型。
+   */
+  public static void clearNotificationType() {
+    HeytapPushManager.clearNotificationType();
   }
 
   /**

@@ -27,7 +27,6 @@ android {
     }
 }
 
-
 android.libraryVariants.all { variant ->
     def javadoc = task("generate${variant.name}Javadoc", type: Javadoc) {
         description "Generates Javadoc for $variant.name."

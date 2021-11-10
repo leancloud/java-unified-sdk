@@ -10,9 +10,7 @@ import cn.leancloud.callback.SaveCallback;
  * OPPO推送暂时只支持通知栏消息的推送。消息下发到OS系统模块并由系统通知模块展示，在用户点击通知前，不启动应用。
  * 参考：https://open.oppomobile.com/wiki/doc#id=10196
  */
-public class LCOPPOPushAdapter implements com.heytap.msp.push.callback.ICallBackResultService,
-        com.heytap.msp.push.callback.ISetAppNotificationCallBackService,
-        com.heytap.msp.push.callback.IGetAppNotificationCallBackService {
+public class LCOPPOPushAdapter implements com.heytap.msp.push.callback.ICallBackResultService {
   private static final LCLogger LOGGER = LogUtil.getLogger(LCOPPOPushAdapter.class);
   private static final String VENDOR_OPPO = "oppo";
 
@@ -91,24 +89,5 @@ public class LCOPPOPushAdapter implements com.heytap.msp.push.callback.ICallBack
   @Override
   public void onError(int i, String s) {
     LOGGER.w("error occurred. code: " + i + ", cause: " + s);
-  }
-
-  /**
-   * 获取应用内通知开关结果
-   * @param responseCode 如果成功返回0，失败返回非0，具体指参考 oppo 错误码
-   * @param appSwitch 0：未定义状态（不校验开关），1：打开状态，2：关闭状态
-   */
-  @Override
-  public void onGetAppNotificationSwitch(int responseCode, int appSwitch) {
-    LOGGER.d("onGetAppNotificationSwitch: responseCode: " + responseCode + ", switch: " + appSwitch);
-  }
-
-  /**
-   * 设置应用内通知开关结果
-   * @param responseCode 如果成功返回0，失败返回非0，具体指参考 oppo 错误码
-   */
-  @Override
-  public void onSetAppNotificationSwitch(int responseCode) {
-    LOGGER.d("onSetAppNotificationSwitch: responseCode: " + responseCode);
   }
 }
