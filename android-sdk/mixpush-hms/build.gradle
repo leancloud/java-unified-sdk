@@ -61,7 +61,7 @@ dependencies {
 
     implementation("cn.leancloud:realtime-core:${rootProject.ext.sdkVersion}")
 
-    implementation 'com.huawei.hms:push:5.1.1.301'
+    implementation 'com.huawei.hms:push:5.3.0.304'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0'

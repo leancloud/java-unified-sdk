@@ -144,7 +144,7 @@ public class LCFlymePushMessageReceiver extends com.meizu.cloud.pushsdk.MzPushMe
   public void onUpdateNotificationBuilder(com.meizu.cloud.pushsdk.notification.PushNotificationBuilder pushNotificationBuilder) {
     //重要,详情参考应用小图标自定设置
     if (LCMixPushManager.flymeMStatusBarIcon != 0) {
-      pushNotificationBuilder.setmStatusbarIcon(LCMixPushManager.flymeMStatusBarIcon);
+      pushNotificationBuilder.setStatusBarIcon(LCMixPushManager.flymeMStatusBarIcon);
     }
   }
 

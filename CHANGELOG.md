@@ -2,6 +2,21 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.2.0 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- upgrade hms sdk version to 5.3.0.304;
+- upgrade oppo sdk version to 3.0.0;
+- upgrade vivo sdk version to 3.0.3;
+- upgrade meizu sdk version to 4.1.4;
+
+
 ## 8.1.5 release
 
 #### Break changes
