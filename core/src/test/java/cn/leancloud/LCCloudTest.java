@@ -7,7 +7,6 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -33,12 +32,12 @@ public class LCCloudTest extends TestCase {
     Observable<List> observable = LCCloud.callRPCInBackground("ArticleItem.getArticleType", params);
     observable.subscribe(new Observer<List>() {
       @Override
-      public void onSubscribe(@NotNull Disposable disposable) {
+      public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(@NotNull List objects) {
+      public void onNext(List objects) {
         for(Object o: objects) {
           System.out.println("class: " + o.getClass() + ", value: " + o);
         }
@@ -46,12 +45,12 @@ public class LCCloudTest extends TestCase {
                 LCQuery.CachePolicy.CACHE_ELSE_NETWORK, 86400000, List.class);
         observable2.subscribe(new Observer<List>() {
           @Override
-          public void onSubscribe(@NotNull Disposable disposable) {
+          public void onSubscribe( Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(@NotNull List list) {
+          public void onNext(List list) {
             for(Object o: list) {
               System.out.println("second loop - class: " + o.getClass() + ", value: " + o);
             }
@@ -60,7 +59,7 @@ public class LCCloudTest extends TestCase {
           }
 
           @Override
-          public void onError(@NotNull Throwable throwable) {
+          public void onError(Throwable throwable) {
             throwable.printStackTrace();
             latch.countDown();
           }
@@ -74,7 +73,7 @@ public class LCCloudTest extends TestCase {
       }
 
       @Override
-      public void onError(@NotNull Throwable throwable) {
+      public void onError(Throwable throwable) {
         throwable.printStackTrace();
         if (throwable.getMessage().indexOf("No such cloud function") >= 0) {
           testSucceed = true;
