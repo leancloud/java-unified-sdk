@@ -175,6 +175,30 @@ public class LCMixPushManager {
   }
 
   /**
+   * set auto init flag.
+   * @param context context
+   * @param isEnabled flag
+   */
+  public static void setAutoInitEnabled(Context context, boolean isEnabled) {
+    if (null == context) {
+      return;
+    }
+    HmsMessaging.getInstance(context).setAutoInitEnabled(isEnabled);
+  }
+
+  /**
+   * get auto init flag.
+   * @param context context
+   * @return auto init enable flag.
+   */
+  public static boolean isAutoInitEnabled(Context context) {
+    if (null == context) {
+      return false;
+    }
+    return HmsMessaging.getInstance(context).isAutoInitEnabled();
+  }
+
+  /**
    * 取消混合推送的注册
    * 取消成功后，消息会通过 LeanCloud websocket 发送
    */

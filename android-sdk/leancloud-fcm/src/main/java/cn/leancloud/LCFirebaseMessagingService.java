@@ -34,7 +34,7 @@ public class LCFirebaseMessagingService extends FirebaseMessagingService {
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
     Map<String, String> data = remoteMessage.getData();
-    if (null == data) {
+    if (null == data || data.size() < 1) {
       return;
     }
     LOGGER.d("received message from: " + remoteMessage.getFrom() + ", payload: " + data.toString());
