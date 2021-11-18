@@ -713,6 +713,9 @@ public class StorageClient {
           Object resultValue = resultMap.get("result");
           if (enableCache && !StringUtil.isEmpty(cacheKey)) {
             LOGGER.d("cache rpc result:" + JSON.toJSONString(resultValue));
+            // Notice!!
+            // 这里缓存内容的不同（与 callFunc 相比），导致 RPC 结果解析时需要采用完全不一样的方法——需要调用方指定结果类型。
+            // 应该是统一成 callFunc 的结果才对，不过那样会导致原有缓存失效，并且要解析之前缓存的结果也还是需要明确告知结果类型。
             QueryResultCache.getInstance().cacheResult(cacheKey, JSON.toJSONString(resultValue));
           }
           if (resultValue instanceof Collection) {
@@ -747,6 +750,8 @@ public class StorageClient {
           Object resultValue = resultMap.get("result");
           if (enableCache && !StringUtil.isEmpty(cacheKey)) {
             LOGGER.d("cache cloud function result:" + JSON.toJSONString(resultValue));
+            // Notice!!
+            // 这里缓存内容的不同（与 callRPC 相比），造成了缓存 json 解析的差异。
             QueryResultCache.getInstance().cacheResult(cacheKey, JSON.toJSONString(resultMap));
           }
           if (resultValue instanceof Collection) {
@@ -807,7 +812,8 @@ public class StorageClient {
 
   public <T> Observable<T> callRPCWithCachePolicy(final LCUser asAuthenticatedUser,
                                                   final String name, final Map<String, Object> param,
-                                                  final LCQuery.CachePolicy cachePolicy, final long maxCacheAge) {
+                                                  final LCQuery.CachePolicy cachePolicy, final long maxCacheAge,
+                                                  final Class<T> clazz) {
     final String cacheKey = QueryResultCache.generateCachedKey(name, param);
     return executeCachedQuery(name, param, cachePolicy, maxCacheAge,
             new QueryExecutor() {
@@ -821,7 +827,7 @@ public class StorageClient {
                               return null;
                             }
                             LOGGER.d("found cached rpc result: " + s);
-                            Object parsedObject = JSON.parse(s);
+                            Object parsedObject = JSON.parseObject(s, clazz);
                             if (parsedObject instanceof Collection) {
                               return (T) Utils.getObjectFrom((Collection) parsedObject);
                             } else if (parsedObject instanceof Map) {
@@ -845,7 +851,8 @@ public class StorageClient {
 
   public <T> Observable<T> callFunctionWithCachePolicy(final LCUser asAuthenticatedUser,
                                                        final String name, final Map<String, Object> params,
-                                                       final LCQuery.CachePolicy cachePolicy, final long maxCacheAge) {
+                                                       final LCQuery.CachePolicy cachePolicy, final long maxCacheAge,
+                                                       final Class<T> clazz) {
     final String cacheKey = QueryResultCache.generateCachedKey(name, params);
     return executeCachedQuery(name, params, cachePolicy, maxCacheAge,
             new QueryExecutor() {
@@ -870,7 +877,8 @@ public class StorageClient {
                               }
                             } catch (Exception exception) {
                               // compatible for existing cache data(array or primitives).
-                              parsedObject = JSON.parse(s);
+                              // 应该不会发生。
+                              parsedObject = JSON.parseObject(s, clazz);
                             }
                             if (parsedObject instanceof Collection) {
                               return (T) Utils.getObjectFrom((Collection) parsedObject);

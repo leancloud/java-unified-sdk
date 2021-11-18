@@ -7,6 +7,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -22,6 +23,72 @@ public class LCCloudTest extends TestCase {
 
   public static Test suite() {
     return new TestSuite(LCCloudTest.class);
+  }
+
+  public void testRPCWithCache() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    final Map<String, Object> params = new HashMap<>(2);
+    params.put("pageSize", 20);
+    params.put("currentPageIndex", 0);
+    Observable<List> observable = LCCloud.callRPCInBackground("ArticleItem.getArticleType", params);
+    observable.subscribe(new Observer<List>() {
+      @Override
+      public void onSubscribe(@NotNull Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(@NotNull List objects) {
+        for(Object o: objects) {
+          System.out.println("class: " + o.getClass() + ", value: " + o);
+        }
+        Observable<List> observable2 = LCCloud.callRPCWithCacheInBackground("ArticleItem.getArticleType", params,
+                LCQuery.CachePolicy.CACHE_ELSE_NETWORK, 86400000, List.class);
+        observable2.subscribe(new Observer<List>() {
+          @Override
+          public void onSubscribe(@NotNull Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(@NotNull List list) {
+            for(Object o: list) {
+              System.out.println("second loop - class: " + o.getClass() + ", value: " + o);
+            }
+            testSucceed = true;
+            latch.countDown();
+          }
+
+          @Override
+          public void onError(@NotNull Throwable throwable) {
+            throwable.printStackTrace();
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
+
+      }
+
+      @Override
+      public void onError(@NotNull Throwable throwable) {
+        throwable.printStackTrace();
+        if (throwable.getMessage().indexOf("No such cloud function") >= 0) {
+          testSucceed = true;
+        }
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
   }
 
   public void testCloudFunction() {
