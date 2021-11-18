@@ -52,7 +52,8 @@ public class LCCloudFunctionTest extends TestCase {
     String name = "currentTime";
     Map<String, Object> param = new HashMap<String, Object>();
     param.put("platform", "android");
-    Observable<Long> res = LCCloud.callFunctionWithCacheInBackground(name, param, LCQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
+    Observable<Long> res = LCCloud.callFunctionWithCacheInBackground(name, param,
+            LCQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000, Long.class);
     res.subscribe(new Observer<Long>() {
       @Override
       public void onSubscribe(Disposable disposable) {
@@ -80,7 +81,8 @@ public class LCCloudFunctionTest extends TestCase {
     final String name = "currentTime";
     final Map<String, Object> param = new HashMap<String, Object>();
     param.put("platform", "android");
-    Observable<Long> res = LCCloud.callFunctionWithCacheInBackground(name, param, LCQuery.CachePolicy.NETWORK_ONLY, 30000);
+    Observable<Long> res = LCCloud.callFunctionWithCacheInBackground(name, param,
+            LCQuery.CachePolicy.NETWORK_ONLY, 30000, Long.class);
     res.subscribe(new Observer<Long>() {
       @Override
       public void onSubscribe(Disposable disposable) {
@@ -90,7 +92,8 @@ public class LCCloudFunctionTest extends TestCase {
       public void onNext(Long firstResult) {
         System.out.println("第一次结果(NETWORK_ONLY) = " + firstResult);
         final long firstTs = firstResult;
-        Observable<Long> second = LCCloud.callFunctionWithCacheInBackground(name, param, LCQuery.CachePolicy.NETWORK_ELSE_CACHE, 30000);
+        Observable<Long> second = LCCloud.callFunctionWithCacheInBackground(name, param,
+                LCQuery.CachePolicy.NETWORK_ELSE_CACHE, 30000, Long.class);
         second.subscribe(new Observer<Long>() {
           @Override
           public void onSubscribe(Disposable disposable) {
@@ -105,7 +108,8 @@ public class LCCloudFunctionTest extends TestCase {
               System.out.println("the second timestamp is wrong. first-" + firstTs + ", second-" + secondTs);
               latch.countDown();
             } else {
-              Observable<Long> third = LCCloud.callFunctionWithCacheInBackground(name, param, LCQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
+              Observable<Long> third = LCCloud.callFunctionWithCacheInBackground(name, param,
+                      LCQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000, Long.class);
               third.subscribe(new Observer<Long>() {
                 @Override
                 public void onSubscribe(Disposable disposable) {
@@ -125,7 +129,8 @@ public class LCCloudFunctionTest extends TestCase {
                     } catch (Exception ex) {
                       ;
                     }
-                    Observable<Long> fourth = LCCloud.callFunctionWithCacheInBackground(name, param, LCQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000);
+                    Observable<Long> fourth = LCCloud.callFunctionWithCacheInBackground(name, param,
+                            LCQuery.CachePolicy.CACHE_ELSE_NETWORK, 30000, Long.class);
                     fourth.subscribe(new Observer<Long>() {
                       @Override
                       public void onSubscribe(Disposable disposable) {

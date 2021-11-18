@@ -54,12 +54,14 @@ public class LCCloud {
    * @param params parameters.
    * @param cachePolicy cache policy same as AVQuery.
    * @param maxCacheAge max age in milliseconds.
+   * @param clazz clazz
    * @param <T> template type of result.
    * @return observable instance.
    */
   public static <T> Observable<T> callFunctionWithCacheInBackground(String name, Map<String, Object> params,
-                                                                    LCQuery.CachePolicy cachePolicy, long maxCacheAge) {
-    return callFunctionWithCacheInBackground(null, name, params, cachePolicy, maxCacheAge);
+                                                                    LCQuery.CachePolicy cachePolicy, long maxCacheAge,
+                                                                    Class<T> clazz) {
+    return callFunctionWithCacheInBackground(null, name, params, cachePolicy, maxCacheAge, clazz);
   }
 
   /**
@@ -69,6 +71,7 @@ public class LCCloud {
    * @param params parameters.
    * @param cachePolicy cache policy same as AVQuery.
    * @param maxCacheAge max age in milliseconds.
+   * @param clazz clazz
    * @param <T> template type of result.
    * @return observable instance.
    *
@@ -76,9 +79,10 @@ public class LCCloud {
    */
   public static <T> Observable<T> callFunctionWithCacheInBackground(LCUser asAuthenticatedUser,
                                                                     String name, Map<String, Object> params,
-                                                                    LCQuery.CachePolicy cachePolicy, long maxCacheAge) {
+                                                                    LCQuery.CachePolicy cachePolicy, long maxCacheAge,
+                                                                    Class<T> clazz) {
     return PaasClient.getStorageClient().callFunctionWithCachePolicy(asAuthenticatedUser, name,
-            Utils.getParsedMap(params), cachePolicy, maxCacheAge);
+            Utils.getParsedMap(params), cachePolicy, maxCacheAge, clazz);
   }
 
   /**
@@ -112,12 +116,14 @@ public class LCCloud {
    * @param params invoke parameters.
    * @param cachePolicy cache policy same as AVQuery
    * @param maxCacheAge max cache age in milliseconds.
+   * @param clazz clazz
    * @param <T>template type.
    * @return observable instance.
    */
   public static <T> Observable<T> callRPCWithCacheInBackground(String name, Map<String, Object> params,
-                                                               LCQuery.CachePolicy cachePolicy, long maxCacheAge) {
-    return callRPCWithCacheInBackground(null, name, params, cachePolicy, maxCacheAge);
+                                                               LCQuery.CachePolicy cachePolicy, long maxCacheAge,
+                                                               Class<T> clazz) {
+    return callRPCWithCacheInBackground(null, name, params, cachePolicy, maxCacheAge, clazz);
   }
 
   /**
@@ -127,6 +133,7 @@ public class LCCloud {
    * @param params invoke parameters.
    * @param cachePolicy cache policy same as AVQuery
    * @param maxCacheAge max cache age in milliseconds.
+   * @param clazz clazz
    * @param <T>template type.
    * @return observable instance.
    *
@@ -134,9 +141,10 @@ public class LCCloud {
    */
   public static <T> Observable<T> callRPCWithCacheInBackground(LCUser asAuthenticatedUser,
                                                                String name, Map<String, Object> params,
-                                                               LCQuery.CachePolicy cachePolicy, long maxCacheAge){
+                                                               LCQuery.CachePolicy cachePolicy, long maxCacheAge,
+                                                               Class<T> clazz){
     return PaasClient.getStorageClient().callRPCWithCachePolicy(asAuthenticatedUser,name,
-            Utils.getParsedMap(params), cachePolicy, maxCacheAge);
+            Utils.getParsedMap(params), cachePolicy, maxCacheAge, clazz);
   }
 
   private LCCloud() {

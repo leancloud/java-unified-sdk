@@ -5,17 +5,28 @@ Following is change logs for recently release versions, you can refer to [releas
 ## 8.2.0 release
 
 #### Break changes
-- None
+- add new parameter(clazz) for LCCloud#callFunctionWithCacheInBackground
+```java
+static <T> Observable<T> callFunctionWithCacheInBackground(String name, Map<String, Object> params,
+  LCQuery.CachePolicy cachePolicy, long maxCacheAge,
+  Class<T> clazz);
+```
+- add new parameter(clazz) for LCCloud#callRPCWithCacheInBackground
+```java
+static <T> Observable<T> callRPCWithCacheInBackground(String name, Map<String, Object> params,
+  LCQuery.CachePolicy cachePolicy, long maxCacheAge,
+  Class<T> clazz);
+```
 
 #### New features
 - None
 
 #### Optimization and fixed bugs
-- upgrade hms sdk version to 5.3.0.304;
-- upgrade oppo sdk version to 3.0.0;
-- upgrade vivo sdk version to 3.0.3;
-- upgrade meizu sdk version to 4.1.4;
-
+- upgrade hms sdk version to `5.3.0.304`;
+- upgrade oppo sdk version to `3.0.0`;
+- upgrade vivo sdk version to `3.0.3`;
+- upgrade meizu sdk version to `4.1.4`;
+- upgrade fcm sdk version to `28.4.2`;
 
 ## 8.1.5 release
 

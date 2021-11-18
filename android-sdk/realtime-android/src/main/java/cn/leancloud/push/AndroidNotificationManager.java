@@ -31,7 +31,7 @@ public class AndroidNotificationManager extends LCNotificationManager {
   private static final String PUSH_INTENT_KEY = "com.avoscloud.push";
   private static final Random random = new Random();
   private static final AndroidNotificationManager INSTANCE = new AndroidNotificationManager();
-  private Context serviceContext;
+  private Context serviceContext = null;
 
   public static AndroidNotificationManager getInstance() {
     return INSTANCE;
