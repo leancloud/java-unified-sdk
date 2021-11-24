@@ -8,7 +8,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.jetbrains.annotations.NotNull;
+
 import org.omg.PortableInterceptor.USER_EXCEPTION;
 
 import java.util.HashMap;
@@ -670,31 +670,31 @@ public class LCUserTest extends TestCase {
     operationSucceed = false;
     LCUser.logIn(username, "FER$@$@#Ffwe").subscribe(new Observer<LCUser>() {
       @Override
-      public void onSubscribe(@NotNull Disposable disposable) {
+      public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(@NotNull LCUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("succeed to login with username/password. currentUser: " + avUser.toJSONString());
 
         avUser.associateWithAuthData(weixinAuthData, "weixin").subscribe(new Observer<LCUser>() {
           @Override
-          public void onSubscribe(@NotNull Disposable disposable) {
+          public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(@NotNull LCUser abUser) {
+          public void onNext(LCUser abUser) {
             System.out.println("succeed to associate with weixin data. currentUser: " + abUser.toJSONString());
             abUser.associateWithAuthData(qqAuthData, "qq").subscribe(new Observer<LCUser>() {
               @Override
-              public void onSubscribe(@NotNull Disposable disposable) {
+              public void onSubscribe(Disposable disposable) {
 
               }
 
               @Override
-              public void onNext(@NotNull LCUser acUser) {
+              public void onNext(LCUser acUser) {
                 System.out.println("succeed to associate with qq data. currentUser: " + acUser.toJSONString());
                 LCUser.currentUser().logOut();
                 operationSucceed = true;
@@ -702,7 +702,7 @@ public class LCUserTest extends TestCase {
               }
 
               @Override
-              public void onError(@NotNull Throwable throwable) {
+              public void onError(Throwable throwable) {
                 System.out.println("failed to associate qq data, cause: " + throwable.getMessage());
                 latch.countDown();
               }
@@ -715,7 +715,7 @@ public class LCUserTest extends TestCase {
           }
 
           @Override
-          public void onError(@NotNull Throwable throwable) {
+          public void onError(Throwable throwable) {
             System.out.println("failed to associate weixin data, cause: " + throwable.getMessage());
             latch.countDown();
           }
@@ -728,7 +728,7 @@ public class LCUserTest extends TestCase {
       }
 
       @Override
-      public void onError(@NotNull Throwable throwable) {
+      public void onError(Throwable throwable) {
         System.out.println("failed to login with username/passwd, cause: " + throwable.getMessage());
         latch.countDown();
       }
@@ -754,23 +754,23 @@ public class LCUserTest extends TestCase {
 
     LCUser.loginWithAuthData(qqAuthData, "qq").subscribe(new Observer<LCUser>() {
       @Override
-      public void onSubscribe(@NotNull Disposable disposable) {
+      public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(@NotNull LCUser avUser) {
+      public void onNext(LCUser avUser) {
         System.out.println("succeed to login with QQ data. currentUser: " + avUser.toJSONString());
         JSONObject auth = avUser.getJSONObject("authData");
         System.out.println("authData: " + auth.toJSONString());
         avUser.dissociateWithAuthData("qq").subscribe(new Observer<LCUser>() {
           @Override
-          public void onSubscribe(@NotNull Disposable disposable) {
+          public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(@NotNull LCUser axUser) {
+          public void onNext(LCUser axUser) {
             System.out.println("succeed to dissociate with QQ data. currentUser: " + axUser.toJSONString());
 
             JSONObject auth = axUser.getJSONObject("authData");
@@ -779,17 +779,17 @@ public class LCUserTest extends TestCase {
             operationSucceed = true;
             axUser.associateWithAuthData(qqAuthData, "qq").subscribe(new Observer<LCUser>() {
               @Override
-              public void onSubscribe(@NotNull Disposable disposable) {
+              public void onSubscribe(Disposable disposable) {
 
               }
 
               @Override
-              public void onNext(@NotNull LCUser avUser) {
+              public void onNext(LCUser avUser) {
                 latch.countDown();
               }
 
               @Override
-              public void onError(@NotNull Throwable throwable) {
+              public void onError(Throwable throwable) {
                 latch.countDown();
               }
 
@@ -801,7 +801,7 @@ public class LCUserTest extends TestCase {
           }
 
           @Override
-          public void onError(@NotNull Throwable throwable) {
+          public void onError(Throwable throwable) {
             System.out.println("failed to dissociate with qq data, cause: " + throwable.getMessage());
             latch.countDown();
           }
@@ -814,7 +814,7 @@ public class LCUserTest extends TestCase {
       }
 
       @Override
-      public void onError(@NotNull Throwable throwable) {
+      public void onError(Throwable throwable) {
         System.out.println("failed to login with qq data, cause: " + throwable.getMessage());
         latch.countDown();
       }

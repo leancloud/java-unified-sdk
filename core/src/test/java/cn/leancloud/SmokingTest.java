@@ -7,7 +7,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.concurrent.CountDownLatch;
 
@@ -34,19 +34,19 @@ public class SmokingTest extends TestCase {
         LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
         LeanCloud.getServerDateInBackground().subscribe(new Observer<LCDate>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull LCDate lcDate) {
+            public void onNext(LCDate lcDate) {
                 System.out.println("current server time: " + lcDate.toJSONString());
                 testSucceed = true;
                 latch.countDown();
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 throwable.printStackTrace();
                 latch.countDown();
             }

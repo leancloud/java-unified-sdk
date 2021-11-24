@@ -6,7 +6,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -47,17 +47,17 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
         scores.put("kills", 32.0);
         LCLeaderboard.updateStatistic(LCUser.currentUser(), scores).subscribe(new Observer<LCStatisticResult>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull LCStatisticResult jsonObject) {
+            public void onNext(LCStatisticResult jsonObject) {
                 latch.countDown();
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 testSucceed = true;
                 latch.countDown();
             }
@@ -77,18 +77,18 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
         scores.put("leancloudgogo", (double)System.currentTimeMillis());
         LCLeaderboard.updateStatistic(LCUser.currentUser(), scores).subscribe(new Observer<LCStatisticResult>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull LCStatisticResult jsonObject) {
+            public void onNext(LCStatisticResult jsonObject) {
                 testSucceed = true;
                 latch.countDown();
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 latch.countDown();
             }
 
@@ -108,17 +108,17 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
         scores.put(LEADERBOARD_NAME, (double)System.currentTimeMillis());
         LCLeaderboard.updateStatistic(unauthUser, scores).subscribe(new Observer<LCStatisticResult>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull LCStatisticResult jsonObject) {
+            public void onNext(LCStatisticResult jsonObject) {
                 latch.countDown();
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 testSucceed = true;
                 latch.countDown();
             }
@@ -136,17 +136,17 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
         final LCUser targetUser = LCUser.createWithoutData(LCUser.class, "thisisnotexistedUser");
         LCLeaderboard.getUserStatistics(targetUser).subscribe(new Observer<LCStatisticResult>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull LCStatisticResult lcStatisticResult) {
+            public void onNext(LCStatisticResult lcStatisticResult) {
                 latch.countDown();
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 System.out.println("failed to get user all statistics. cause: " + throwable);
                 testSucceed = true;
                 latch.countDown();
@@ -166,12 +166,12 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
         final LCUser targetUser = LCUser.createWithoutData(LCUser.class, "5f51c1287628f2468aa696e6");
         LCLeaderboard.getUserStatistics(targetUser).subscribe(new Observer<LCStatisticResult>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull LCStatisticResult lcStatisticResult) {
+            public void onNext(LCStatisticResult lcStatisticResult) {
                 if (lcStatisticResult.getResults().size() > 0) {
                     System.out.println("failed to get user all statistics. cause: result list is incorrect.");
                     latch.countDown();
@@ -179,18 +179,18 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
                     LCLeaderboard.getUserStatistics(targetUser, Arrays.asList("leancloudgogo"))
                             .subscribe(new Observer<LCStatisticResult>() {
                                 @Override
-                                public void onSubscribe(@NotNull Disposable disposable) {
+                                public void onSubscribe(Disposable disposable) {
 
                                 }
 
                                 @Override
-                                public void onNext(@NotNull LCStatisticResult lcStatisticResult) {
+                                public void onNext(LCStatisticResult lcStatisticResult) {
                                     testSucceed = lcStatisticResult.getResults().size() < 1;
                                     latch.countDown();
                                 }
 
                                 @Override
-                                public void onError(@NotNull Throwable throwable) {
+                                public void onError(Throwable throwable) {
                                     System.out.println("failed to get user specified statistics. cause: " + throwable);
                                     latch.countDown();
                                 }
@@ -204,7 +204,7 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 System.out.println("failed to get user all statistics. cause: " + throwable);
                 testSucceed = true;
                 latch.countDown();
@@ -223,12 +223,12 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
         final LCUser targetUser = LCUser.createWithoutData(LCUser.class, "5f51c1287628f2468aa696e6");
         LCLeaderboard.getUserStatistics(targetUser).subscribe(new Observer<LCStatisticResult>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull LCStatisticResult lcStatisticResult) {
+            public void onNext(LCStatisticResult lcStatisticResult) {
                 if (lcStatisticResult.getResults().size() > 0) {
                     System.out.println("failed to get user all statistics. cause: result list is incorrect.");
                     latch.countDown();
@@ -236,18 +236,18 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
                     LCLeaderboard.getUserStatistics(targetUser, Arrays.asList("leancloudgogo"))
                             .subscribe(new Observer<LCStatisticResult>() {
                                 @Override
-                                public void onSubscribe(@NotNull Disposable disposable) {
+                                public void onSubscribe(Disposable disposable) {
 
                                 }
 
                                 @Override
-                                public void onNext(@NotNull LCStatisticResult lcStatisticResult) {
+                                public void onNext(LCStatisticResult lcStatisticResult) {
                                     testSucceed = lcStatisticResult.getResults().size() < 1;
                                     latch.countDown();
                                 }
 
                                 @Override
-                                public void onError(@NotNull Throwable throwable) {
+                                public void onError(Throwable throwable) {
                                     System.out.println("failed to get user specified statistics. cause: " + throwable);
                                     latch.countDown();
                                 }
@@ -261,7 +261,7 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 System.out.println("failed to get user all statistics. cause: " + throwable);
                 testSucceed = true;
                 latch.countDown();
@@ -282,12 +282,12 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
         LCLeaderboard.updateStatistic(LCUser.currentUser(), scores).blockingFirst();
         LCLeaderboard.getUserStatistics(LCUser.currentUser()).subscribe(new Observer<LCStatisticResult>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull LCStatisticResult lcStatisticResult) {
+            public void onNext(LCStatisticResult lcStatisticResult) {
                 if (lcStatisticResult.getResults().size() < 1) {
                     System.out.println("failed to get user all statistics. cause: result list is incorrect.");
                     latch.countDown();
@@ -295,18 +295,18 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
                     LCLeaderboard.getUserStatistics(LCUser.currentUser(), Arrays.asList("leancloudgogo"))
                             .subscribe(new Observer<LCStatisticResult>() {
                                 @Override
-                                public void onSubscribe(@NotNull Disposable disposable) {
+                                public void onSubscribe(Disposable disposable) {
 
                                 }
 
                                 @Override
-                                public void onNext(@NotNull LCStatisticResult lcStatisticResult) {
+                                public void onNext(LCStatisticResult lcStatisticResult) {
                                     testSucceed = lcStatisticResult.getResults().size() > 0;
                                     latch.countDown();
                                 }
 
                                 @Override
-                                public void onError(@NotNull Throwable throwable) {
+                                public void onError(Throwable throwable) {
                                     System.out.println("failed to get user specified statistics. cause: " + throwable);
                                     latch.countDown();
                                 }
@@ -320,7 +320,7 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 System.out.println("failed to get user all statistics. cause: " + throwable);
                 latch.countDown();
             }
@@ -339,39 +339,39 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
         scores.put("leancloudgogo", (double)System.currentTimeMillis());
         LCLeaderboard.updateStatistic(LCUser.currentUser(), scores).subscribe(new Observer<LCStatisticResult>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull LCStatisticResult jsonObject) {
+            public void onNext(LCStatisticResult jsonObject) {
                 System.out.println("step 1: update statistic with scores: " + scores);
                 final List<String> selectUserKeys = new ArrayList<>();
                 selectUserKeys.add("sessionToken");
                 leaderboard.getResults(0, 100, selectUserKeys, null).subscribe(new Observer<LCLeaderboardResult>() {
                     @Override
-                    public void onSubscribe(@NotNull Disposable disposable) {
+                    public void onSubscribe(Disposable disposable) {
 
                     }
 
                     @Override
-                    public void onNext(@NotNull LCLeaderboardResult lcRankings) {
+                    public void onNext(LCLeaderboardResult lcRankings) {
                         System.out.println("step 2: get global statistic. results: " + lcRankings);
                         leaderboard.getAroundResults(LCUser.currentUser().getObjectId(), 0, 10, selectUserKeys, null).subscribe(new Observer<LCLeaderboardResult>() {
                             @Override
-                            public void onSubscribe(@NotNull Disposable disposable) {
+                            public void onSubscribe(Disposable disposable) {
 
                             }
 
                             @Override
-                            public void onNext(@NotNull LCLeaderboardResult lcLeaderboardResult) {
+                            public void onNext(LCLeaderboardResult lcLeaderboardResult) {
                                 System.out.println("step 3: get around statistic. results: " + lcLeaderboardResult);
                                 testSucceed = lcLeaderboardResult.getResults().size() > 0;
                                 latch.countDown();
                             }
 
                             @Override
-                            public void onError(@NotNull Throwable throwable) {
+                            public void onError(Throwable throwable) {
                                 System.out.println("failed to get around statistic. cause: " + throwable);
                                 latch.countDown();
                             }
@@ -385,7 +385,7 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
                     }
 
                     @Override
-                    public void onError(@NotNull Throwable throwable) {
+                    public void onError(Throwable throwable) {
                         System.out.println("failed to get global statistic. cause: " + throwable);
                         latch.countDown();
                     }
@@ -399,7 +399,7 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 System.out.println("failed to update statistic. cause: " + throwable);
                 latch.countDown();
             }
@@ -418,27 +418,27 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
         leaderboard.setVersion(leaderboard.getVersion() - 1);
         leaderboard.getResults(0, 100, null, new ArrayList<String>()).subscribe(new Observer<LCLeaderboardResult>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull LCLeaderboardResult lcLeaderboardResult) {
+            public void onNext(LCLeaderboardResult lcLeaderboardResult) {
                 leaderboard.setVersion(leaderboard.getVersion() - 1);
                 leaderboard.getResults(0, 0, new ArrayList<String>(), new ArrayList<String>())
                         .subscribe(new Observer<LCLeaderboardResult>() {
                     @Override
-                    public void onSubscribe(@NotNull Disposable disposable) {
+                    public void onSubscribe(Disposable disposable) {
 
                     }
 
                     @Override
-                    public void onNext(@NotNull LCLeaderboardResult lcLeaderboardResult) {
+                    public void onNext(LCLeaderboardResult lcLeaderboardResult) {
                         latch.countDown();
                     }
 
                     @Override
-                    public void onError(@NotNull Throwable throwable) {
+                    public void onError(Throwable throwable) {
                         testSucceed = true;
                         latch.countDown();
                     }
@@ -451,7 +451,7 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 System.out.println("failed to get older version leaderboard, cause: " + throwable);
                 latch.countDown();
             }
@@ -470,28 +470,28 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
         leaderboard.setVersion(-2);
         leaderboard.getResults(0, 100, null, new ArrayList<String>()).subscribe(new Observer<LCLeaderboardResult>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull LCLeaderboardResult lcLeaderboardResult) {
+            public void onNext(LCLeaderboardResult lcLeaderboardResult) {
                 leaderboard.setVersion(200000);
                 leaderboard.getAroundResults(LCUser.currentUser().getObjectId(), 0, 100, null,
                         null)
                         .subscribe(new Observer<LCLeaderboardResult>() {
                             @Override
-                            public void onSubscribe(@NotNull Disposable disposable) {
+                            public void onSubscribe(Disposable disposable) {
 
                             }
 
                             @Override
-                            public void onNext(@NotNull LCLeaderboardResult lcLeaderboardResult) {
+                            public void onNext(LCLeaderboardResult lcLeaderboardResult) {
                                 latch.countDown();
                             }
 
                             @Override
-                            public void onError(@NotNull Throwable throwable) {
+                            public void onError(Throwable throwable) {
                                 testSucceed = true;
                                 latch.countDown();
                             }
@@ -504,7 +504,7 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 latch.countDown();
             }
 

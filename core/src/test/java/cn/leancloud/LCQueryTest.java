@@ -8,7 +8,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -476,19 +476,19 @@ public class LCQueryTest extends TestCase {
         query.clearCachedResult();
         query.findInBackground().subscribe(new Observer<List<LCObject>>() {
           @Override
-          public void onSubscribe(@NotNull Disposable disposable) {
+          public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(@NotNull List<LCObject> o) {
+          public void onNext(List<LCObject> o) {
             System.out.println("succeed to query at second time, result size: " + o.size());
             testSucceed = true;
             latch.countDown();
           }
 
           @Override
-          public void onError(@NotNull Throwable throwable) {
+          public void onError(Throwable throwable) {
             System.out.println("failed to query at second time");
             throwable.printStackTrace();
             latch.countDown();
@@ -533,19 +533,19 @@ public class LCQueryTest extends TestCase {
         query.setCachePolicy(LCQuery.CachePolicy.CACHE_ELSE_NETWORK);
         query.getFirstInBackground().subscribe(new Observer<LCObject>() {
           @Override
-          public void onSubscribe(@NotNull Disposable disposable) {
+          public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(@NotNull LCObject o) {
+          public void onNext(LCObject o) {
             System.out.println("succeed to query at second time, result objectId: " + o.getObjectId());
             testSucceed = true;
             latch.countDown();
           }
 
           @Override
-          public void onError(@NotNull Throwable throwable) {
+          public void onError(Throwable throwable) {
             System.out.println("failed to query at second time");
             throwable.printStackTrace();
             latch.countDown();
@@ -590,19 +590,19 @@ public class LCQueryTest extends TestCase {
         query.setCachePolicy(LCQuery.CachePolicy.CACHE_ELSE_NETWORK);
         query.countInBackground().subscribe(new Observer<Integer>() {
           @Override
-          public void onSubscribe(@NotNull Disposable disposable) {
+          public void onSubscribe(Disposable disposable) {
 
           }
 
           @Override
-          public void onNext(@NotNull Integer o) {
+          public void onNext(Integer o) {
             System.out.println("succeed to query at second time, count: " + o);
             testSucceed = true;
             latch.countDown();
           }
 
           @Override
-          public void onError(@NotNull Throwable throwable) {
+          public void onError(Throwable throwable) {
             System.out.println("failed to query at second time");
             throwable.printStackTrace();
             latch.countDown();

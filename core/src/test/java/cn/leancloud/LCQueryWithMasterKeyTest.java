@@ -4,7 +4,7 @@ import cn.leancloud.auth.UserBasedTestCase;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.TestCase;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.concurrent.CountDownLatch;
 
@@ -35,17 +35,17 @@ public class LCQueryWithMasterKeyTest extends UserBasedTestCase {
     query.limit(10);
     query.findInBackground().subscribe(new Observer() {
       @Override
-      public void onSubscribe(@NotNull Disposable disposable) {
+      public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(@NotNull Object o) {
+      public void onNext(Object o) {
         latch.countDown();
       }
 
       @Override
-      public void onError(@NotNull Throwable throwable) {
+      public void onError(Throwable throwable) {
         latch.countDown();
       }
 

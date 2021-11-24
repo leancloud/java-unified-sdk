@@ -8,7 +8,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.jetbrains.annotations.NotNull;
+
 import cn.leancloud.query.QueryConditions;
 
 import java.util.HashMap;

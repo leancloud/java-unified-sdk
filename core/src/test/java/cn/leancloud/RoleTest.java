@@ -5,7 +5,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -36,19 +36,19 @@ public class RoleTest extends TestCase {
     target.getUsers().add(LCObject.createWithoutData(LCUser.class, "5dd7892143c2570074c96ca9"));
     target.saveInBackground().subscribe(new Observer<LCObject>() {
       @Override
-      public void onSubscribe(@NotNull Disposable disposable) {
+      public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(@NotNull LCObject LCObject) {
+      public void onNext(LCObject LCObject) {
         System.out.println(LCObject.toJSONString());
         testSucceed = true;
         latch.countDown();
       }
 
       @Override
-      public void onError(@NotNull Throwable throwable) {
+      public void onError(Throwable throwable) {
         if (throwable.getMessage().indexOf("Forbidden writing by object's ACL") >= 0) {
           testSucceed = true;
         } else {

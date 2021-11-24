@@ -3,7 +3,7 @@ package cn.leancloud;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.TestCase;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.concurrent.CountDownLatch;
 
@@ -33,12 +33,12 @@ public class LCCachedUserTest extends TestCase {
     final CountDownLatch latch = new CountDownLatch(1);
     LCUser.becomeWithSessionToken(userSessionToken).refreshInBackground().subscribe(new Observer<LCObject>() {
       @Override
-      public void onSubscribe(@NotNull Disposable disposable) {
+      public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(@NotNull LCObject lcObject) {
+      public void onNext(LCObject lcObject) {
         System.out.println("refresh result: "+ lcObject.toJSONString());
         LCFile iconFile = lcObject.getLCFile("icon");
         if (null != iconFile) {
@@ -50,7 +50,7 @@ public class LCCachedUserTest extends TestCase {
       }
 
       @Override
-      public void onError(@NotNull Throwable throwable) {
+      public void onError(Throwable throwable) {
         if (throwable.getMessage().indexOf("Could not find user.") >= 0) {
           operationSucceed = true;
         }

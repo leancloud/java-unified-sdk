@@ -6,7 +6,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -137,23 +137,23 @@ public class UserFriendTest extends TestCase {
                 .findInBackground()
                 .subscribe(new Observer<List<LCFriendshipRequest>>() {
                     @Override
-                    public void onSubscribe(@NotNull Disposable disposable) {
+                    public void onSubscribe(Disposable disposable) {
 
                     }
 
                     @Override
-                    public void onNext(@NotNull List<LCFriendshipRequest> lcFriendshipRequests) {
+                    public void onNext(List<LCFriendshipRequest> lcFriendshipRequests) {
                         for (LCFriendshipRequest req: lcFriendshipRequests) {
                             req.delete();
                         }
                         jerry.queryFriendship(0, 0, null).subscribe(new Observer<List<LCFriendship>>() {
                             @Override
-                            public void onSubscribe(@NotNull Disposable disposable) {
+                            public void onSubscribe(Disposable disposable) {
 
                             }
 
                             @Override
-                            public void onNext(@NotNull List<LCFriendship> lcFriendships) {
+                            public void onNext(List<LCFriendship> lcFriendships) {
                                 System.out.println("succeed to query friendship of jerry. result: " + lcFriendships.size());
                                 testSucceed = lcFriendships.size() == 1;
                                 lcFriendships.get(0).delete();
@@ -161,7 +161,7 @@ public class UserFriendTest extends TestCase {
                             }
 
                             @Override
-                            public void onError(@NotNull Throwable throwable) {
+                            public void onError(Throwable throwable) {
                                 System.out.println("failed to query friendship of jerry. cause: " + throwable.getMessage());
                                 latch.countDown();
                             }
@@ -174,7 +174,7 @@ public class UserFriendTest extends TestCase {
                     }
 
                     @Override
-                    public void onError(@NotNull Throwable throwable) {
+                    public void onError(Throwable throwable) {
                         System.out.println("failed to query friendship request. cause: " + throwable.getMessage());
                         latch.countDown();
                     }
@@ -243,12 +243,12 @@ public class UserFriendTest extends TestCase {
                         }
                         jerry.queryFriendship(0, 0, null).subscribe(new Observer<List<LCFriendship>>() {
                             @Override
-                            public void onSubscribe(@NotNull Disposable disposable) {
+                            public void onSubscribe(Disposable disposable) {
 
                             }
 
                             @Override
-                            public void onNext(@NotNull List<LCFriendship> lcFriendships) {
+                            public void onNext(List<LCFriendship> lcFriendships) {
                                 if (null == lcFriendships || lcFriendships.size() != 1) {
                                     System.out.println("friendship query of jerry is error!!!!!");
                                 } else {
@@ -260,7 +260,7 @@ public class UserFriendTest extends TestCase {
                             }
 
                             @Override
-                            public void onError(@NotNull Throwable throwable) {
+                            public void onError(Throwable throwable) {
                                 throwable.printStackTrace();
                                 latch.countDown();
                             }

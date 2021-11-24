@@ -16,7 +16,7 @@ import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -270,13 +270,13 @@ public class LCIMFileMessage extends LCIMTypedMessage {
       Call call = client.newCall(builder.url(url).get().build());
       call.enqueue(new Callback() {
         @Override
-        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+        public void onFailure(Call call, IOException e) {
           LOGGER.d("error encountered while accessing qiniu with url:" + url);
           callback.internalDone(null);
         }
 
         @Override
-        public void onResponse(@NotNull Call call, @NotNull Response rawResponse) throws IOException {
+        public void onResponse(Call call, Response rawResponse) throws IOException {
           String content = rawResponse.body().string();
           try {
             JSONObject response = JSON.parseObject(content);

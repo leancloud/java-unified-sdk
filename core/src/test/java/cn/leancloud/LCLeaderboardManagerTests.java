@@ -6,7 +6,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,12 +54,12 @@ public class LCLeaderboardManagerTests extends TestCase {
                 LCLeaderboard.LCLeaderboardUpdateStrategy.Last,
                 LCLeaderboard.LCLeaderboardVersionChangeInterval.Day).subscribe(new Observer<LCLeaderboard>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull final LCLeaderboard lcLeaderboard) {
+            public void onNext(final LCLeaderboard lcLeaderboard) {
                 System.out.println("step 1: create leaderboard");
                 if (!statisticName.equals(lcLeaderboard.getStatisticName())
                     || lcLeaderboard.getVersion() != 0 || lcLeaderboard.getNextResetAt() == null
@@ -73,12 +73,12 @@ public class LCLeaderboardManagerTests extends TestCase {
                 }
                 lcLeaderboard.updateUpdateStrategy(LCLeaderboard.LCLeaderboardUpdateStrategy.Better).subscribe(new Observer<Boolean>() {
                     @Override
-                    public void onSubscribe(@NotNull Disposable disposable) {
+                    public void onSubscribe(Disposable disposable) {
 
                     }
 
                     @Override
-                    public void onNext(@NotNull Boolean aBoolean) {
+                    public void onNext(Boolean aBoolean) {
                         System.out.println("step 2: update leaderboard update strategy.");
                         if (!aBoolean || lcLeaderboard.getUpdateStrategy() != LCLeaderboard.LCLeaderboardUpdateStrategy.Better) {
                             System.out.println("failed, leaderboard update strategy is not right");
@@ -88,12 +88,12 @@ public class LCLeaderboardManagerTests extends TestCase {
                         lcLeaderboard.updateVersionChangeInterval(LCLeaderboard.LCLeaderboardVersionChangeInterval.Week)
                                 .subscribe(new Observer<Boolean>() {
                                     @Override
-                                    public void onSubscribe(@NotNull Disposable disposable) {
+                                    public void onSubscribe(Disposable disposable) {
 
                                     }
 
                                     @Override
-                                    public void onNext(@NotNull Boolean aBoolean) {
+                                    public void onNext(Boolean aBoolean) {
                                         System.out.println("step 3: update leaderboard version change interval.");
                                         if (!aBoolean || lcLeaderboard.getVersionChangeInterval() != LCLeaderboard.LCLeaderboardVersionChangeInterval.Week) {
                                             System.out.println("failed, leaderboard version change interval is not right");
@@ -115,7 +115,7 @@ public class LCLeaderboardManagerTests extends TestCase {
                                     }
 
                                     @Override
-                                    public void onError(@NotNull Throwable throwable) {
+                                    public void onError(Throwable throwable) {
                                         System.out.println("failed to change version update interval. cause: " + throwable);
                                         latch.countDown();
                                     }
@@ -128,7 +128,7 @@ public class LCLeaderboardManagerTests extends TestCase {
                     }
 
                     @Override
-                    public void onError(@NotNull Throwable throwable) {
+                    public void onError(Throwable throwable) {
                         System.out.println("failed to change update strategy. cause: " + throwable);
                         latch.countDown();
                     }
@@ -141,7 +141,7 @@ public class LCLeaderboardManagerTests extends TestCase {
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 System.out.println("failed to create leaderboard. cause: " + throwable);
                 latch.countDown();
             }
@@ -159,17 +159,17 @@ public class LCLeaderboardManagerTests extends TestCase {
         LCLeaderboard leaderboard = LCLeaderboard.createWithoutData("unittest-" + System.currentTimeMillis());
         leaderboard.destroy().subscribe(new Observer<Boolean>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull Boolean aBoolean) {
+            public void onNext(Boolean aBoolean) {
                 latch.countDown();
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 testSucceed = true;
                 latch.countDown();
             }
@@ -188,19 +188,19 @@ public class LCLeaderboardManagerTests extends TestCase {
         leaderboard.getResults(0, 0, null, null, true)
                 .subscribe(new Observer<LCLeaderboardResult>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull LCLeaderboardResult lcLeaderboardResult) {
+            public void onNext(LCLeaderboardResult lcLeaderboardResult) {
                 System.out.println("succeed to get results.");
                 testSucceed = lcLeaderboardResult.getCount() > 0;
                 latch.countDown();
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 System.out.println("failed to get results. cause: " + throwable);
                 latch.countDown();
             }
@@ -220,19 +220,19 @@ public class LCLeaderboardManagerTests extends TestCase {
         scores.put("leancloudgogo", (double)System.currentTimeMillis());
         LCLeaderboard.updateStatistic(unauthUser, scores).subscribe(new Observer<LCStatisticResult>() {
             @Override
-            public void onSubscribe(@NotNull Disposable disposable) {
+            public void onSubscribe(Disposable disposable) {
 
             }
 
             @Override
-            public void onNext(@NotNull LCStatisticResult jsonObject) {
+            public void onNext(LCStatisticResult jsonObject) {
                 System.out.println("succeed to update user's statistic.");
                 testSucceed = true;
                 latch.countDown();
             }
 
             @Override
-            public void onError(@NotNull Throwable throwable) {
+            public void onError(Throwable throwable) {
                 System.out.println("failed to update user's statistic. cause: " + throwable);
                 latch.countDown();
             }

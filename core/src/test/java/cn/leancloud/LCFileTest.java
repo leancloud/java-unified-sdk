@@ -9,7 +9,7 @@ import io.reactivex.schedulers.Schedulers;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.io.File;
 import java.io.InputStream;
@@ -274,17 +274,17 @@ public class LCFileTest extends TestCase {
     file.setPathPrefix("abc");
     file.saveInBackground().subscribe(new Observer<LCFile>() {
       @Override
-      public void onSubscribe(@NotNull Disposable disposable) {
+      public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(@NotNull LCFile lcFile) {
+      public void onNext(LCFile lcFile) {
         latch.countDown();
       }
 
       @Override
-      public void onError(@NotNull Throwable throwable) {
+      public void onError(Throwable throwable) {
         testSucceed = true;
         latch.countDown();
       }

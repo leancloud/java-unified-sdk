@@ -6,7 +6,7 @@ import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.TestCase;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.concurrent.CountDownLatch;
 
@@ -47,17 +47,17 @@ public class UserBasedTestCase extends TestCase {
     final CountDownLatch latch = new CountDownLatch(1);
     LCUser.logIn(this.username, this.passwd).subscribe(new Observer<LCUser>() {
       @Override
-      public void onSubscribe(@NotNull Disposable disposable) {
+      public void onSubscribe(Disposable disposable) {
 
       }
 
       @Override
-      public void onNext(@NotNull LCUser lcUser) {
+      public void onNext(LCUser lcUser) {
         latch.countDown();
       }
 
       @Override
-      public void onError(@NotNull Throwable throwable) {
+      public void onError(Throwable throwable) {
         runningException = new Exception(throwable);
         latch.countDown();
       }
