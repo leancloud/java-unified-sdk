@@ -4,8 +4,11 @@ jdk:
 before_install:
   - pip install --user codecov
 after_success:
-  - codecov
+  - bash <(curl -s https://codecov.io/bash)
 install: mvn install -DskipTests -Dgpg.skip
 branches:
   except:
     - appveyor
+env:
+  global:
+    - CODECOV_TOKEN='a916478a-d4db-45b8-bd5d-f113299829f1'
