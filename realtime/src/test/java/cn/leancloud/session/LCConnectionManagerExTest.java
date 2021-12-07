@@ -53,8 +53,8 @@ public class LCConnectionManagerExTest extends TestCase {
       protected void internalDone0(Object o, LCException LCException) {
         if (null != LCException) {
           LCException.printStackTrace();
-          operationSucceed = true;
         }
+        operationSucceed = true;
         countDownLatch.countDown();
       }
     });
@@ -98,8 +98,8 @@ public class LCConnectionManagerExTest extends TestCase {
       protected void internalDone0(Object o, LCException LCException) {
         if (null != LCException) {
           LCException.printStackTrace();
-          operationSucceed = true;
         }
+        operationSucceed = true;
         countDownLatch.countDown();
       }
     });

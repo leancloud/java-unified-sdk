@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.core.LeanCloud;
 import cn.leancloud.types.LCNull;
 import cn.leancloud.utils.StringUtil;
 import io.reactivex.Observable;
@@ -21,6 +22,7 @@ public class LCFileTest extends TestCase {
   public LCFileTest(String name) {
     super(name);
     Configure.initializeRuntime();
+    LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
   }
 
   public static Test suite() {

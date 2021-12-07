@@ -11,11 +11,13 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class QueryUnitTest extends TestCase {
   private static String className = QueryUnitTest.class.getSimpleName();
   private List<LCObject> resultObjects = new ArrayList<>(10);
+  private boolean testSucceed = false;
 
   public QueryUnitTest(String name) {
     super(name);
@@ -29,6 +31,7 @@ public class QueryUnitTest extends TestCase {
   protected void setUp() throws Exception {
     LCQuery.clearAllCachedResults();
     setUpClass();
+    testSucceed = false;
   }
 
   @Override
@@ -68,15 +71,27 @@ public class QueryUnitTest extends TestCase {
   public void testBasicQuery() throws Exception {
     LCQuery<LCObject> query = new LCQuery<LCObject>(className);
     query.whereEqualTo("playerName", "player1");
+    final CountDownLatch latch = new CountDownLatch(1);
     FindCallback<LCObject> cb = new FindCallback<LCObject>() {
       public void done(List<LCObject> avObjects, LCException e) {
-        assertNull(e);
-        for (LCObject obj : avObjects) {
-          assertEquals("player1", obj.get("playerName"));
+        if (null != e) {
+          latch.countDown();
+          return;
         }
+        for (LCObject obj : avObjects) {
+          if (!"player1".equals(obj.get("playerName"))) {
+            testSucceed = false;
+            break;
+          } else {
+            testSucceed = true;
+          }
+        }
+        latch.countDown();
       }
     };
     query.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(cb));
+    latch.await();
+    assertTrue(testSucceed);
     List<LCObject> LCObjects = query.find();
     for (LCObject obj : LCObjects) {
       assertEquals("player1", obj.get("playerName"));
@@ -89,15 +104,20 @@ public class QueryUnitTest extends TestCase {
     LCQuery<LCObject> query = new LCQuery<LCObject>(className);
     query.whereNotEqualTo("playerName", "player1");
 
+    final CountDownLatch latch = new CountDownLatch(1);
+
     FindCallback<LCObject> cb = new FindCallback<LCObject>() {
       public void done(List<LCObject> avObjects, LCException e) {
-        assertNull(e);
-        for (LCObject obj : avObjects) {
-          assertFalse("player1".equals(obj.get("playerName")));
+        if (null != e) {
+          latch.countDown();
         }
+        testSucceed = true;
+        latch.countDown();
       }
     };
     query.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(cb));
+    latch.await();
+    assertTrue(testSucceed);
 
     // whereGreaterThan
     query = new LCQuery<LCObject>(className);
@@ -212,14 +232,18 @@ public class QueryUnitTest extends TestCase {
   public void testCountObjects() throws Exception {
     LCQuery query = new LCQuery(className);
     query.whereEqualTo("scores", 2);
+    final CountDownLatch latch = new CountDownLatch(1);
     CountCallback cb = new CountCallback() {
 
       @Override
       public void done(int count, LCException e) {
-        assertNull(e);
+        testSucceed = null == e;
+        latch.countDown();
       }
     };
     query.countInBackground().subscribe(ObserverBuilder.buildSingleObserver(cb));
+    latch.await();
+    assertTrue(testSucceed);
     assertTrue(query.count() > 0);
   }
 
@@ -230,19 +254,22 @@ public class QueryUnitTest extends TestCase {
     query = LCQuery.getQuery(className);
     query.whereEqualTo("player", player);
 
+    final CountDownLatch latch = new CountDownLatch(1);
     FindCallback<LCObject> cb = new FindCallback<LCObject>() {
 
       @Override
       public void done(List<LCObject> avObjects, LCException avException) {
-        assertNotNull(avObjects);
-        assertTrue(avObjects.size() > 0);
-        for (LCObject obj : avObjects) {
-          assertTrue(obj.get("player").equals(player));
+        if (null == avObjects || avObjects.size() < 1) {
+          latch.countDown();
+          return;
         }
+        testSucceed = true;
+        latch.countDown();
       }
-
     };
     query.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(cb));
+    latch.await();
+    assertTrue(testSucceed);
   }
 
   public void testWhereMatchesQuery() throws Exception {
@@ -252,16 +279,28 @@ public class QueryUnitTest extends TestCase {
     query.whereMatchesQuery("player", innerQuery);
     query.include("player");
 
+    final CountDownLatch latch = new CountDownLatch(1);
+
     FindCallback<LCObject> cb = new FindCallback<LCObject>() {
       public void done(List<LCObject> avObjects, LCException e) {
-        assertNotNull(avObjects);
-        assertTrue(avObjects.size() > 0);
-        for (LCObject obj : avObjects) {
-          assertTrue(obj.getLCObject("player").has("image"));
+        if (null != e || avObjects.size() < 1) {
+          latch.countDown();
+          return;
         }
+        for (LCObject obj : avObjects) {
+          if (obj.getLCObject("player").has("image")) {
+            testSucceed = true;
+          } else {
+            testSucceed = false;
+            break;
+          }
+        }
+        latch.countDown();
       }
     };
     query.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(cb));
+    latch.await();
+    assertTrue(testSucceed);
   }
 
   public void testWhereDoesNotMatchQuery() throws Exception {
@@ -341,21 +380,26 @@ public class QueryUnitTest extends TestCase {
     LCQuery<LCObject> query = LCQuery.getQuery(className);
     query.setCachePolicy(LCQuery.CachePolicy.CACHE_THEN_NETWORK);
     final AtomicInteger counter = new AtomicInteger(0);
+    final CountDownLatch latch = new CountDownLatch(1);
     FindCallback<LCObject> cb = new FindCallback<LCObject>() {
 
       @Override
       public void done(List<LCObject> avObjects, LCException avException) {
-        assertTrue((avObjects != null && avObjects.size() > 0) || avException != null);
+
         if (avException != null) {
-          assertEquals(LCException.CACHE_MISS, avException.getCode());
+          testSucceed = (LCException.CACHE_MISS == avException.getCode());
+          latch.countDown();
         }
+        testSucceed = (avObjects != null && avObjects.size() > 0);
         if (counter.incrementAndGet() < 2) {
-          fail();
+          testSucceed = false;
         }
+        latch.countDown();
       }
 
     };
     query.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(cb));
+    latch.await();
   }
 
   public void testCompondQuery() throws Exception {
@@ -370,12 +414,16 @@ public class QueryUnitTest extends TestCase {
     queries.add(fewWins);
 
     LCQuery<LCObject> mainQuery = LCQuery.or(queries);
+    final CountDownLatch latch = new CountDownLatch(1);
     FindCallback<LCObject> cb = new FindCallback<LCObject>() {
       public void done(List<LCObject> results, LCException e) {
-        assertTrue(results.size() > 0);
+        testSucceed = null != results && results.size() > 0;
+        latch.countDown();
       }
     };
     mainQuery.findInBackground().subscribe(ObserverBuilder.buildCollectionObserver(cb));
+    latch.await();
+    assertTrue(testSucceed);
   }
 
   public void testDeleteAll() throws Exception {
@@ -412,16 +460,17 @@ public class QueryUnitTest extends TestCase {
     List<LCObject> list = query.find();
     assertTrue(list.size() > 0);
 
+    final CountDownLatch latch = new CountDownLatch(1);
     DeleteCallback cb = new DeleteCallback() {
       @Override
       public void done(LCException e) {
-        if (null != e) {
-          fail();
-        }
-
+        testSucceed = null == e;
+        latch.countDown();
       }
     };
     query.deleteAllInBackground().subscribe(ObserverBuilder.buildSingleObserver(cb));
+    latch.await();
+    assertTrue(testSucceed);
 
     list = query.find();
     assertTrue(list.size() == 0);

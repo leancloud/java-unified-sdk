@@ -9,9 +9,8 @@ import java.util.concurrent.CountDownLatch;
 
 public class LCCachedUserTest extends TestCase {
   private boolean operationSucceed = false;
-  public static final String USERNAME = "jfeng20200618";
+  public static final String USERNAME = "jfeng";
   public static final String PASSWORD = "FER$@$@#Ffwe";
-  private static final String EMAIL = "jfeng20200618@test.com";
   private final LCUser targetUser;
   public LCCachedUserTest(String name) {
     super(name);
@@ -25,7 +24,7 @@ public class LCCachedUserTest extends TestCase {
 
   @Override
   protected void tearDown() throws Exception {
-    ;
+    LCUser.logOut();
   }
 
   public void testQueryUser() throws Exception {
@@ -65,16 +64,4 @@ public class LCCachedUserTest extends TestCase {
     latch.await();
     assertEquals(true, operationSucceed);
   }
-
-  public void testGetUserFromCache() throws Exception {
-    LCUser currentUser = LCUser.currentUser();
-    if (null == currentUser) {
-      return;
-    }
-    System.out.println("refresh result: "+ currentUser.toJSONString());
-    LCFile iconFile = currentUser.getLCFile("icon");
-    operationSucceed = null != currentUser;
-    assertEquals(true, operationSucceed);
-  }
-
 }

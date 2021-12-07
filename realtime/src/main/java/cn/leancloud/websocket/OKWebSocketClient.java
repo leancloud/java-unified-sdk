@@ -6,8 +6,9 @@ import cn.leancloud.utils.LogUtil;
 import okhttp3.*;
 import okio.ByteString;
 
-import javax.net.ssl.SSLContext;
+import javax.net.ssl.*;
 import java.io.IOException;
+import java.security.KeyStore;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -114,8 +115,16 @@ public class OKWebSocketClient {
             .readTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS);
     try {
-      SSLContext sslContext = SSLContext.getDefault();
-      builder.sslSocketFactory(sslContext.getSocketFactory());
+      TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+      trustManagerFactory.init((KeyStore) null);
+      TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+      if (trustManagers.length >= 1 && (trustManagers[0] instanceof X509TrustManager)) {
+        X509TrustManager trustManager = (X509TrustManager) trustManagers[0];
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+        sslContext.init(null, new TrustManager[] { trustManager }, null);
+        SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+        builder.sslSocketFactory(sslSocketFactory, trustManager);
+      }
     } catch (Exception ex) {
       gLogger.w(ex);
     }

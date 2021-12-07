@@ -15,9 +15,14 @@ import java.util.concurrent.CountDownLatch;
 
 public class UserFollowshipTest extends TestCase {
   private boolean operationSucceed = false;
-  public static final String JFENG_EMAIL = "jfeng@test.com";
-  public static final String DENNIS_EMAIL = "dennis@test.com";
-  public static final String JFENG_001_EMAIL = "jfeng001@test.com";
+  public static final String JFENG_EMAIL = "jfeng-followship@test.com";
+  public static final String DENNIS_EMAIL = "dennis-followship@test.com";
+  public static final String JFENG_001_EMAIL = "jfeng001-followship@test.com";
+
+  public static final String JFENG_NAME = "jfeng-followship";
+  public static final String DENNIS_NAME = "dennis-followship";
+  public static final String JFENG_001_NAME = "jfeng001-followship";
+
   public static String DEFAULT_PASSWD = "FER$@$@#Ffwe";
 
   private static String JFENG_OBJECT_ID = "5bff479067f3560066d00676";
@@ -35,9 +40,9 @@ public class UserFollowshipTest extends TestCase {
   @Override
   protected void setUp() throws Exception {
     try {
-      prepareUser("jfeng", JFENG_EMAIL, true);
-      prepareUser("dennis", DENNIS_EMAIL, true);
-      prepareUser("jfeng001", JFENG_001_EMAIL, false);
+      prepareUser(JFENG_NAME, JFENG_EMAIL, true);
+      prepareUser(DENNIS_NAME, DENNIS_EMAIL, true);
+      prepareUser(JFENG_001_NAME, JFENG_001_EMAIL, false);
     } catch (Exception ex) {
       ex.printStackTrace();
     }
@@ -46,7 +51,7 @@ public class UserFollowshipTest extends TestCase {
 
   @Override
   protected void tearDown() throws Exception {
-    ;
+    LCUser.logOut();
   }
 
   public static void prepareUser(String username, final String email, final boolean loginOnFailed) throws Exception {
@@ -99,7 +104,7 @@ public class UserFollowshipTest extends TestCase {
 
   public void testFolloweeQuery() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    LCUser.logIn("jfeng", DEFAULT_PASSWD).subscribe(new Observer<LCUser>() {
+    LCUser.logIn(JFENG_NAME, DEFAULT_PASSWD).subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
@@ -160,7 +165,7 @@ public class UserFollowshipTest extends TestCase {
 
   public void testFollowerQuery() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    LCUser.logIn("jfeng", DEFAULT_PASSWD).subscribe(new Observer<LCUser>() {
+    LCUser.logIn(JFENG_NAME, DEFAULT_PASSWD).subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }
@@ -199,7 +204,7 @@ public class UserFollowshipTest extends TestCase {
   public void testFollow() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
 
-    LCUser logginUser = LCUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
+    LCUser logginUser = LCUser.logIn(JFENG_001_NAME, DEFAULT_PASSWD).blockingFirst();
     logginUser.followInBackground(JFENG_OBJECT_ID).subscribe(new Observer<JSONObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
@@ -209,7 +214,7 @@ public class UserFollowshipTest extends TestCase {
       @Override
       public void onNext(JSONObject object) {
         System.out.println("succeed follow. " + object.toString());
-        LCUser jfeng = LCUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
+        LCUser jfeng = LCUser.logIn(JFENG_NAME, DEFAULT_PASSWD).blockingFirst();
 
         LCQuery query = jfeng.followerQuery();
         query.findInBackground().subscribe(new Observer<List<LCObject>>() {
@@ -222,7 +227,7 @@ public class UserFollowshipTest extends TestCase {
           public void onNext(List<LCObject> o) {
             for (LCObject tmp: o) {
               System.out.println("result User:" + tmp);
-              if ("jfeng001".equals(tmp.getLCObject("follower").getString("username"))) {
+              if (JFENG_001_NAME.equals(tmp.getLCObject("follower").getString("username"))) {
                 operationSucceed = true;
               }
             }
@@ -259,7 +264,7 @@ public class UserFollowshipTest extends TestCase {
 
   public void testUnfollow() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    LCUser logginUser = LCUser.logIn("jfeng001", DEFAULT_PASSWD).blockingFirst();
+    LCUser logginUser = LCUser.logIn(JFENG_001_NAME, DEFAULT_PASSWD).blockingFirst();
     logginUser.unfollowInBackground(JFENG_OBJECT_ID).subscribe(new Observer<JSONObject>() {
       @Override
       public void onSubscribe(Disposable disposable) {
@@ -270,7 +275,7 @@ public class UserFollowshipTest extends TestCase {
       public void onNext(JSONObject object) {
         System.out.println("succeed to unfollow. " + object.toString());
 
-        LCUser jfeng = LCUser.logIn("jfeng", DEFAULT_PASSWD).blockingFirst();
+        LCUser jfeng = LCUser.logIn(JFENG_NAME, DEFAULT_PASSWD).blockingFirst();
 
         LCQuery query = jfeng.followerQuery();
         query.findInBackground().subscribe(new Observer<List<LCObject>>() {
@@ -329,7 +334,7 @@ public class UserFollowshipTest extends TestCase {
       @Override
       public void onNext(List<? extends LCUser> avUsers) {
         LCUser target = avUsers.get(0);
-        target.followInBackground("5bff479067f3560066d00676").subscribe(new Observer<JSONObject>() {
+        target.followInBackground(DENNIS_OBJECT_ID).subscribe(new Observer<JSONObject>() {
           @Override
           public void onSubscribe(Disposable disposable) {
 
@@ -372,7 +377,7 @@ public class UserFollowshipTest extends TestCase {
 
   public void testFolloweeAndFollowerQuery() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
-    LCUser.logIn("jfeng", DEFAULT_PASSWD).subscribe(new Observer<LCUser>() {
+    LCUser.logIn(JFENG_NAME, DEFAULT_PASSWD).subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
         System.out.println("onSubscribe " + disposable.toString());
       }

@@ -69,7 +69,6 @@ public class ObjectUnitTest extends TestCase {
       LCObject.save();
       fail();
     } catch (Exception ex) {
-      ex.printStackTrace();
     }
   }
 

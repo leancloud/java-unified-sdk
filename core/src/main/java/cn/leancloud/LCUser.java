@@ -1655,6 +1655,7 @@ public class LCUser extends LCObject {
     LCUser.registerSubclass(clazz);
     subClazz = clazz;
   }
+
   private static Class internalUserClazz() {
     return subClazz == null ? LCUser.class: subClazz;
   }

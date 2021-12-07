@@ -1,8 +1,5 @@
 package cn.leancloud;
 
-import cn.leancloud.json.JSON;
-import cn.leancloud.json.JSONObject;
-import cn.leancloud.types.LCNull;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
@@ -11,9 +8,7 @@ import junit.framework.TestSuite;
 
 import cn.leancloud.query.QueryConditions;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class LCUserStrictTest extends TestCase {
@@ -77,7 +72,6 @@ public class LCUserStrictTest extends TestCase {
                         @Override
                         public void onError(Throwable throwable) {
                             System.out.println("Failed to strictlyQuery users");
-                            throwable.printStackTrace();
                             latch.countDown();
                         }
 
@@ -157,7 +151,6 @@ public class LCUserStrictTest extends TestCase {
                             @Override
                             public void onError(Throwable throwable) {
                                 System.out.println("Failed to strictlyQuery users");
-                                throwable.printStackTrace();
                                 operationSucceed = true;
                                 latch.countDown();
                             }
@@ -238,7 +231,6 @@ public class LCUserStrictTest extends TestCase {
                             @Override
                             public void onError(Throwable throwable) {
                                 System.out.println("Failed to strictlyQuery users");
-                                throwable.printStackTrace();
                                 operationSucceed = true;
                                 latch.countDown();
                             }

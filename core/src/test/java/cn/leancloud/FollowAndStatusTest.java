@@ -34,10 +34,6 @@ public class FollowAndStatusTest extends UserBasedTestCase {
   }
 
   private void userLogin(String username, String password) throws Exception {
-//    AVUser user = new AVUser();
-//    user.setEmail("jfeng@test.com");
-//    user.setUsername("jfeng");
-//    user.setPassword("FER$@$@#Ffwe");
     final CountDownLatch userLatch = new CountDownLatch(1);
     LCUser.logIn(username, password).subscribe(new Observer<LCUser>() {
       @Override
@@ -80,7 +76,6 @@ public class FollowAndStatusTest extends UserBasedTestCase {
 
       @Override
       public void onError(Throwable throwable) {
-        throwable.printStackTrace();
         testSucceed = true;
         latch.countDown();
       }
@@ -273,13 +268,14 @@ public class FollowAndStatusTest extends UserBasedTestCase {
       }
 
       @Override
-      public void onNext(Integer integer) {
+      public void onNext(Integer obj) {
         testSucceed = true;
         latch.countDown();
       }
 
       @Override
       public void onError(Throwable throwable) {
+        throwable.printStackTrace();
         latch.countDown();
       }
 

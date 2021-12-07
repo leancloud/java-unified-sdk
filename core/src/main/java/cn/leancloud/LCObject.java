@@ -1242,7 +1242,12 @@ public class LCObject {
 
         @Override
         public void onError(Throwable throwable) {
-          add2ArchivedRequest(true);
+          boolean notFound = throwable.getMessage().indexOf("not find object by id") > 0;
+          if (notFound) {
+            logger.d("not found object, equals that operation succeed.");
+          } else {
+            add2ArchivedRequest(true);
+          }
         }
 
         @Override

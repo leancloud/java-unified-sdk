@@ -30,6 +30,7 @@ public class SubUserTest extends UserBasedTestCase {
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
+    LCUser.logOut();
   }
 
   public void testSingupWithEmail() throws Exception {

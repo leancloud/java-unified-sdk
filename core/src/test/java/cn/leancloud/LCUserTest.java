@@ -8,9 +8,6 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.omg.PortableInterceptor.USER_EXCEPTION;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +34,7 @@ public class LCUserTest extends TestCase {
 
   @Override
   protected void tearDown() throws Exception {
-    ;
+    LCUser.logOut();
   }
 
   public static LCUser loginOrSignin(String username, String password, String email) {
@@ -310,7 +307,7 @@ public class LCUserTest extends TestCase {
   public void testCurrentUser() throws Exception {
     LCUser.disableAutomaticUser();
     LCUser currentUser = LCUser.getCurrentUser();
-    assertNotNull(currentUser);
+    assertNull(currentUser);
   }
 
   public void testQueryUser() throws Exception {

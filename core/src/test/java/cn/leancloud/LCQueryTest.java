@@ -326,7 +326,6 @@ public class LCQueryTest extends TestCase {
       }
 
       public void onError(Throwable throwable) {
-        throwable.printStackTrace();
         testSucceed = true;
         latch.countDown();
       }
@@ -345,9 +344,6 @@ public class LCQueryTest extends TestCase {
     query.getInBackground("thisisnotexistedObject").subscribe(ObserverBuilder.buildSingleObserver(new GetCallback() {
       @Override
       public void done(LCObject object, LCException e) {
-        if (null != e) {
-          e.printStackTrace();
-        }
         testSucceed = null != e;
         latch.countDown();
       }

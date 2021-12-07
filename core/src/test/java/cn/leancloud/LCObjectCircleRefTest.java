@@ -47,7 +47,6 @@ public class LCObjectCircleRefTest extends TestCase {
 
       @Override
       public void onError(Throwable throwable) {
-        throwable.printStackTrace();
         testSucceed = throwable.getMessage().indexOf("Found a circular dependency when saving") > -1;
         latch.countDown();
       }
@@ -84,7 +83,6 @@ public class LCObjectCircleRefTest extends TestCase {
 
       @Override
       public void onError(Throwable throwable) {
-        throwable.printStackTrace();
         testSucceed = throwable.getMessage().indexOf("Found a circular dependency when saving") > -1;
         latch.countDown();
       }
@@ -124,7 +122,6 @@ public class LCObjectCircleRefTest extends TestCase {
 
       @Override
       public void onError(Throwable throwable) {
-        throwable.printStackTrace();
         testSucceed = throwable.getMessage().indexOf("Found a circular dependency when saving") > -1;
         latch.countDown();
       }
@@ -171,7 +168,6 @@ public class LCObjectCircleRefTest extends TestCase {
 
       @Override
       public void onError(Throwable throwable) {
-        throwable.printStackTrace();
         testSucceed = throwable.getMessage().indexOf("Found a circular dependency when saving") > -1;
         latch.countDown();
       }
