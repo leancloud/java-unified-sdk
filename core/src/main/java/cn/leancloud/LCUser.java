@@ -628,11 +628,11 @@ public class LCUser extends LCObject {
       return Observable.error(new IllegalArgumentException(String.format(ILLEGALARGUMENT_MSG_FORMAT, "platform")));
     }
     Map<String, Object> authDataAttr = new HashMap<String, Object>();
-    authDataAttr.put(platform, authData);
     Object existedAuthData = this.get(AUTHDATA_TAG);
     if (existedAuthData instanceof Map) {
       authDataAttr.putAll((Map<String, Object>)existedAuthData);
     }
+    authDataAttr.put(platform, authData);
     this.put(AUTHDATA_TAG, authDataAttr);
     return (Observable<LCUser>) saveInBackground(new LCSaveOption().setFetchWhenSave(true));
   }
