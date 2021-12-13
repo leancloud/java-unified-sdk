@@ -2,6 +2,20 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.2.1 release
+
+#### Important Notice
+- Bump log4j-core from 2.13.3 to 2.15.0 in leanengine module, to fix [CVE-2021-44228](https://cve.mitre.org/cgi-bin/cvename.cgi?name=2021-44228).
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- fixed: #204;
+
 ## 8.2.0 release
 
 #### Break changes
