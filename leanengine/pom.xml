@@ -47,7 +47,7 @@
   </distributionManagement>
 
   <properties>
-    <log4j.version>2.15.0</log4j.version>
+    <log4j.version>2.16.0</log4j.version>
     <sonar.skip>true</sonar.skip>
   </properties>
 
