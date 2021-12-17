@@ -293,7 +293,7 @@ public class PushService extends Service {
       } else {
         PendingIntent restartServicePendingIntent =
             PendingIntent.getService(getApplicationContext(), 1, restartServiceIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         AlarmManager alarmService =
             (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);

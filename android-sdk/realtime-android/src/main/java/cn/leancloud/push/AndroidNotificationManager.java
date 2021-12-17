@@ -231,7 +231,7 @@ public class AndroidNotificationManager extends LCNotificationManager {
           intent.setComponent(cn);
           intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
           PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
-              PendingIntent.FLAG_UPDATE_CURRENT);
+              PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
           try {
             pendingIntent.send();
           } catch (PendingIntent.CanceledException e) {

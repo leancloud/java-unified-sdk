@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity {
                           public void done(LCIMRecalledMessage recalledMessage, LCException e) {
                             if (null != e) {
                               e.printStackTrace();
-                              Log.e("tag", "failed to send Audio Message, cause: " + ex.getMessage());
+                              Log.e("tag", "failed to send Audio Message, cause: " + e.getMessage());
                             } else {
                               Log.d("tag", "succeed to recall audio message.");
                             }
