@@ -2,6 +2,21 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.2.2 release
+
+#### Important Notice
+- Bump log4j-core from 2.15.0 to 2.17.0
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- compatible with Android 12;
+
+
 ## 8.2.1 release
 
 #### Important Notice
