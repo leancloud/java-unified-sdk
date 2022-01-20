@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.2.3 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- fixed: incorrectly parse leaderboard result with included statistics;
+- bump log4j-core from 2.17.0 to 2.17.1;
+
 ## 8.2.2 release
 
 #### Important Notice

@@ -8,7 +8,7 @@ public class LCRanking {
     private LCObject object;
     private String entityId;
     private double statisticValue;
-    private List<LCStatistic> includedStatistics;
+    private List<LCStatistic> statistics;
 
     public int getRank() {
         return rank;
@@ -50,11 +50,11 @@ public class LCRanking {
         this.entityId = entityId;
     }
 
-    public List<LCStatistic> getIncludedStatistics() {
-        return includedStatistics;
+    public List<LCStatistic> getStatistics() {
+        return statistics;
     }
 
-    public void setIncludedStatistics(List<LCStatistic> includedStatistics) {
-        this.includedStatistics = includedStatistics;
+    public void setStatistics(List<LCStatistic> statistics) {
+        this.statistics = statistics;
     }
 }
