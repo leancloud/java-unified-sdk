@@ -1,12 +1,12 @@
 package cn.leancloud;
 
 public class LCStatistic {
-    private String statisticName;
-    private double statisticValue;
-    private int version;
-    private LCUser user;
-    private LCObject object;
-    private String entity;
+    private String statisticName = null;
+    private double statisticValue = 0.0;
+    private int version = 0;
+    private LCUser user = null;
+    private LCObject object = null;
+    private String entity = null;
 
     /**
      * get name
@@ -105,5 +105,17 @@ public class LCStatistic {
 
     public void setEntity(String entity) {
         this.entity = entity;
+    }
+
+    @Override
+    public String toString() {
+        return "LCStatistic{" +
+                "statisticName='" + statisticName + '\'' +
+                ", statisticValue=" + statisticValue +
+                ", version=" + version +
+                ", user=" + user +
+                ", object=" + object +
+                ", entity='" + entity + '\'' +
+                '}';
     }
 }
