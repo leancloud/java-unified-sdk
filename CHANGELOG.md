@@ -2,6 +2,17 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.2.4 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- upgraded mixpush libraries: hms 5.3.0.304 -> 6.3.0.302, vivo 3.0.0.3_483 -> 3.0.0.4_484, xiaomi 4.8.2 -> 4.9.1;
+
 ## 8.2.3 release
 
 #### Break changes

@@ -1,5 +1,7 @@
 package cn.leancloud;
 
+import android.os.Bundle;
+
 import cn.leancloud.json.JSON;
 import com.huawei.hms.push.HmsMessageService;
 import com.huawei.hms.push.RemoteMessage;
@@ -63,12 +65,32 @@ public class LCHMSMessageService extends HmsMessageService {
   }
 
   /**
+   * 服务端更新token回调方法。
+   * @param token push token
+   * @param bundle resource bundle
+   */
+  @Override
+  public void onNewToken(String token, Bundle bundle) {
+    onNewToken(token);
+  }
+
+  /**
    * 申请token失败回调方法
    * @param exception exception
    */
   @Override
   public void onTokenError(Exception exception) {
     LOGGER.w("failed to apply token. cause: " + exception.getMessage());
+  }
+
+  /**
+   * 申请token失败回调方法
+   * @param exception exception
+   * @param bundle resource bundle
+   */
+  @Override
+  public void onTokenError(Exception exception, Bundle bundle) {
+    onTokenError(exception);
   }
 
   public static void updateAVInstallation(String hwToken) {
