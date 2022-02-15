@@ -82,7 +82,7 @@ public class LCMixPushManager {
   public static void turnOffVIVOPush(final LCCallback<Boolean> callback) {
     com.vivo.push.PushClient.getInstance(LeanCloud.getContext()).turnOffPush(new com.vivo.push.IPushActionListener() {
       public void onStateChanged(int state) {
-        if (null == callback) {
+        if (null != callback) {
           LCException exception = null;
           if (0 != state) {
             exception = new LCException(LCException.UNKNOWN, "VIVO server internal error, state=" + state);
@@ -100,7 +100,7 @@ public class LCMixPushManager {
   public static void turnOnVIVOPush(final LCCallback<Boolean> callback) {
     com.vivo.push.PushClient.getInstance(LeanCloud.getContext()).turnOnPush(new com.vivo.push.IPushActionListener() {
       public void onStateChanged(int state) {
-        if (null == callback) {
+        if (null != callback) {
           LCException exception = null;
           if (0 != state) {
             exception = new LCException(LCException.UNKNOWN, "VIVO server internal error, state=" + state);
