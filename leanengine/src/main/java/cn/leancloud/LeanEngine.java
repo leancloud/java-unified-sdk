@@ -45,7 +45,8 @@ public class LeanEngine {
 
   public static void initializeWithServerUrl(String applicationId, String clientKey, String masterKey, String hookKey,
                                 String serverUrl) {
-    initializeWithServerUrl(applicationId, clientKey, masterKey, hookKey, null, serverUrl);
+    String androidKey = EngineAppConfiguration.getEnvOrProperty(EngineAppConfiguration.SYSTEM_ATTR_ANDX_KEY);
+    initializeWithServerUrl(applicationId, clientKey, masterKey, hookKey, androidKey, serverUrl);
   }
 
   protected static void initializeWithServerUrl(String applicationId, String clientKey, String masterKey, String hookKey,
