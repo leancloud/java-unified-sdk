@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.2.5 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- support android key within leanengine initialization with serverUrl;
+- fixed typo: if (null == callback) within mixpush-vivo module;
+
 ## 8.2.4 release
 
 #### Break changes
