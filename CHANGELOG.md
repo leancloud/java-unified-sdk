@@ -2,6 +2,17 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.2.6 release
+
+#### Break changes
+- None
+
+#### New features
+- add new method: LCUser#createWithSessionToken(String objectId, String sessionToken);
+
+#### Optimization and fixed bugs
+- None
+
 ## 8.2.5 release
 
 #### Break changes

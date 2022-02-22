@@ -37,6 +37,24 @@ public class LCUserTest extends TestCase {
     LCUser.logOut();
   }
 
+  public void testCreateUserWithSessionToken() throws Exception {
+    SubUser target = LCUser.createWithSessionToken(SubUser.class, "objectId", "sessionToken");
+    assertTrue(null != target);
+    assertTrue(target.getSessionToken().equals("sessionToken"));
+  }
+
+//  public void testCachedUserAfterCreatedBySessionToken() throws Exception {
+//    LCUser target = LCUser.getCurrentUser();
+//    assertTrue(null != target);
+//    assertTrue(target.getSessionToken().equals("sessionToken"));
+//  }
+
+  public void testCreateSubUserWithSessionToken() throws Exception {
+    SubUser target = LCUser.createWithSessionToken(SubUser.class, "objectId", "sessionToken");
+    assertTrue(null != target);
+    assertTrue(target.getSessionToken().equals("sessionToken"));
+  }
+
   public static LCUser loginOrSignin(String username, String password, String email) {
     try {
       LCUser result = LCUser.logIn(username, password).blockingFirst();

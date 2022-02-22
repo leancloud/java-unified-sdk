@@ -834,6 +834,20 @@ public class LCUser extends LCObject {
     });
   }
 
+  public static LCUser createWithSessionToken(String objectId, String sessionToken) throws LCException {
+    return createWithSessionToken(LCUser.class, objectId, sessionToken);
+  }
+
+  public static <T extends LCUser> T createWithSessionToken(Class<T> clazz, String objectId, String sessionToken)
+          throws LCException {
+    T result = LCObject.createWithoutData(clazz, objectId);
+    if (null != result) {
+      result.internalChangeSessionToken(sessionToken);
+      LCUser.changeCurrentUser(result, true);
+    }
+    return result;
+  }
+
   /**
    * user logout.
    */
