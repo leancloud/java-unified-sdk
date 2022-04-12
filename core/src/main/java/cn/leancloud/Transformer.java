@@ -32,6 +32,8 @@ public class Transformer {
       return LCFile.CLASS_NAME;
     } else if (LCFriendship.class.isAssignableFrom(clazz)) {
       return LCFriendship.CLASS_NAME;
+    } else if (LCBlockRelation.class.isAssignableFrom(clazz)) {
+      return LCBlockRelation.CLASS_NAME;
     } else if (LCFriendshipRequest.class.isAssignableFrom(clazz)) {
       return LCFriendshipRequest.CLASS_NAME;
     } else {
@@ -83,6 +85,8 @@ public class Transformer {
       result = new LCFriendshipRequest();
     } else if (LCFriendship.class.isAssignableFrom(clazz)) {
       result = new LCFriendship();
+    } else if (LCBlockRelation.class.isAssignableFrom(clazz)) {
+      result = new LCBlockRelation();
     } else {
       result = new LCObject(clazz.getSimpleName());
     }
@@ -113,6 +117,8 @@ public class Transformer {
       result = new LCFriendshipRequest();
     } else if (LCFriendship.CLASS_NAME.equals(className)) {
       result = new LCFriendship();
+    } else if (LCBlockRelation.CLASS_NAME.equals(className)) {
+      result = new LCBlockRelation();
     } else if (subClassesMAP.containsKey(className)) {
       try {
         result = subClassesMAP.get(className).newInstance();

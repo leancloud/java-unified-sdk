@@ -2,22 +2,21 @@ package cn.leancloud;
 
 import cn.leancloud.annotation.LCClassName;
 import cn.leancloud.cache.PersistenceUtil;
-import cn.leancloud.callback.LCCallback;
 import cn.leancloud.callback.FollowersAndFolloweesCallback;
+import cn.leancloud.callback.LCCallback;
 import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.PaasClient;
-import cn.leancloud.core.StorageClient;
 import cn.leancloud.gson.ObjectDeserializer;
+import cn.leancloud.json.JSON;
+import cn.leancloud.json.JSONObject;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.query.QueryConditions;
 import cn.leancloud.sms.LCSMS;
 import cn.leancloud.sms.LCSMSOption;
 import cn.leancloud.types.LCNull;
-import cn.leancloud.utils.LCUtils;
 import cn.leancloud.utils.ErrorUtils;
+import cn.leancloud.utils.LCUtils;
 import cn.leancloud.utils.StringUtil;
-import cn.leancloud.json.JSON;
-import cn.leancloud.json.JSONObject;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
@@ -1337,6 +1336,8 @@ public class LCUser extends LCObject {
     } else {
       query.whereEqualTo(LCFriendship.ATTR_USER, LCUser.createWithoutData(CLASS_NAME, userObjectId));
       query.include(LCFriendship.ATTR_FOLLOWEE);
+      // filter blocked user
+      query.setEndPoint("users/self/friends");
     }
     query.whereEqualTo(LCFriendship.ATTR_FRIEND_STATUS, true);
     return query;
@@ -1368,6 +1369,7 @@ public class LCUser extends LCObject {
     if (!StringUtil.isEmpty(orderBy)) {
       conditions.setOrder(orderBy);
     }
+    conditions.include(LCFriendship.ATTR_FOLLOWEE);
     return PaasClient.getStorageClient().queryFriendship(this, conditions.assembleParameters());
   }
 
@@ -1454,6 +1456,65 @@ public class LCUser extends LCObject {
     return PaasClient.getStorageClient().updateFriendship(asAuthenticatedUser,
             getObjectId(), friendship.getFollowee().getObjectId(), param);
   }
+
+  /**
+   * block somebody in background.
+   * @param objectId  target user objectId.
+   * @return observable instance.
+   */
+  public Observable<JSONObject> blockFriendInBackground(String objectId){
+    if (!checkUserAuthentication(null)) {
+      return Observable.error(ErrorUtils.propagateException(LCException.SESSION_MISSING,
+              "No valid session token, make sure signUp or login has been called."));
+    }
+    if (StringUtil.isEmpty(objectId)) {
+      return Observable.error(ErrorUtils.propagateException(LCException.INVALID_PARAMETER,
+              "objectId is invalid."));
+    }
+
+    return PaasClient.getStorageClient().blockFriend(this, objectId);
+
+  }
+
+  /**
+   * unblock somebody in background.
+   * @param objectId  target user objectId.
+   * @return observable instance.
+   */
+  public Observable<JSONObject> unblockFriendInBackground(String objectId){
+    if (!checkUserAuthentication(null)) {
+      return Observable.error(ErrorUtils.propagateException(LCException.SESSION_MISSING,
+              "No valid session token, make sure signUp or login has been called."));
+    }
+    if (StringUtil.isEmpty(objectId)) {
+      return Observable.error(ErrorUtils.propagateException(LCException.INVALID_PARAMETER,
+              "objectId is invalid."));
+    }
+
+    return PaasClient.getStorageClient().unblockFriend(this, objectId);
+
+  }
+
+ /**
+  * get block query.
+  * @return query instance.
+  */
+  public LCQuery<LCObject> friendshipBlockQuery() {
+    return LCUser.friendshipBlockQuery(LCObject.class);
+  }
+
+  /**
+   * get block query.
+   * @param clazz result class.
+   * @param <T> template type.
+   * @return query instance.
+   */
+  public static <T extends LCObject> LCQuery<T> friendshipBlockQuery(Class<T> clazz){
+    LCQuery<T> query = new LCQuery<>(LCBlockRelation.CLASS_NAME, clazz);
+    query.include("blockedUser");
+    return query;
+  }
+
 
   /**
    * accept a friendship.
