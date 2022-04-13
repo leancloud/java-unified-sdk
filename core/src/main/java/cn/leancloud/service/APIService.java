@@ -31,6 +31,10 @@ public interface APIService {
   Observable<LCQueryResult> queryObjects(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
                                          @Path("className") String className, @QueryMap Map<String, String> query);
 
+  @GET("/1.1/{endPoint}")
+  Observable<LCQueryResult> queryObjectsByCustomEndPoint(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
+                                         @Path(value="endPoint", encoded = true) String endPoint, @QueryMap Map<String, String> query);
+
   @GET("/1.1/cloudQuery")
   Observable<LCQueryResult> cloudQuery(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
                                        @QueryMap Map<String, String> query);
@@ -225,9 +229,8 @@ public interface APIService {
                                         @Path("userId") String userId,
                                         @QueryMap Map<String, String> query);
 
-  @GET("/1.1/users/{userId}/followees")
-  Observable<LCQueryResult> getFollowees(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
-                                        @Path("userId") String userId,
+  @GET("/1.1/users/self/friends")
+  Observable<LCQueryResult> getFriends(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
                                         @QueryMap Map<String, String> query);
 
   @GET("/1.1/users/{userId}/followersAndFollowees")
@@ -351,4 +354,15 @@ public interface APIService {
   @GET("/1.1/users/strictlyQuery")
   Observable<LCQueryResult> strictlyQueryUsers(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
                                        @QueryMap Map<String, String> query);
+
+  @POST("/1.1/users/self/friendBlocklist/{objectId}")
+  Observable<JSONObject> blockFriendByObjectId(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken, @Path("objectId") String objectId);
+  
+  @DELETE("/1.1/users/self/friendBlocklist/{objectId}")
+  Observable<JSONObject> unblockFriendByObjectId(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken, @Path("objectId") String objectId);
+  
+  @GET("/1.1/users/self/friendBlocklist")
+  Observable<LCQueryResult> getBlockListOfFriend(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken, @QueryMap Map<String, String> query);
+
+
 }

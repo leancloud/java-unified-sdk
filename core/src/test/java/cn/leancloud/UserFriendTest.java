@@ -1,19 +1,19 @@
 package cn.leancloud;
 
+import cn.leancloud.json.JSONObject;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import static org.junit.Assert.assertTrue;
 
 public class UserFriendTest extends TestCase {
     private boolean testSucceed = false;
@@ -257,6 +257,278 @@ public class UserFriendTest extends TestCase {
                                     testSucceed = true;
                                 }
                                 latch.countDown();
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                throwable.printStackTrace();
+                                latch.countDown();
+                            }
+
+                            @Override
+                            public void onComplete() {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        System.out.println("failed to query friendship of jerry. cause: " + e.getMessage());
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+        latch.await();
+        assertTrue(testSucceed);
+    }
+
+    public void testBlockFriend() throws Exception{
+        jerryLogin();
+        LCUser.getCurrentUser().blockFriendInBackground(tomObjectId)
+        .subscribe(new Observer<JSONObject>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                
+            }
+
+            @Override
+            public void onNext(JSONObject t) {
+                System.out.println(" block tom success");
+                LCUser.getCurrentUser().blockFriendInBackground(tuffyObjectId)
+                .subscribe(new Consumer<JSONObject>() {
+                @Override
+                public void accept(JSONObject t) throws Exception {
+                    System.out.println(" block tuffy success");
+                   LCUser.getCurrentUser().unblockFriendInBackground(tomObjectId)
+                   .subscribe(new Consumer<JSONObject>() {
+
+                    @Override
+                    public void accept(JSONObject t) throws Exception {
+                        System.out.println(" unblock tom success");
+
+                        LCUser.getCurrentUser().friendshipBlockQuery(LCBlockRelation.class)
+                        .skip(0)
+                        .limit(10)
+                        .findInBackground()
+                        .subscribe(new Consumer<List<LCBlockRelation>>() {
+
+                            @Override
+                            public void accept(List<LCBlockRelation> t) throws Exception {
+                                System.out.println(" get blick list size = " + t.size());
+                                System.out.println(" data = " + t);
+                                if (t.size() != 1) {
+                                    latch.countDown();
+                                } else{
+                                    System.out.println(" first user id = " + t.get(0).getUser().getObjectId());
+                                LCUser.getCurrentUser().unblockFriendInBackground(tuffyObjectId)
+                                        .subscribe(new Consumer<JSONObject>() {
+
+                                            @Override
+                                            public void accept(JSONObject t) throws Exception {
+                                                System.out.println(" unblock tuffy success");
+                                                testSucceed = true;
+                                                latch.countDown();
+                                            }
+                                        }, new Consumer<Throwable>() {
+
+                                            @Override
+                                            public void accept(Throwable t) throws Exception {
+                                                t.printStackTrace();
+                                                latch.countDown();
+                                            }
+                                        });
+                                }
+                            }
+            
+                        }, new Consumer<Throwable>(){
+
+                            @Override
+                            public void accept(Throwable t) throws Exception {
+                                t.printStackTrace();
+                                latch.countDown();
+                            }
+
+                        });
+                        
+                    }
+                       
+                   }, new Consumer<Throwable>() {
+
+                    @Override
+                    public void accept(Throwable t) throws Exception {
+                        t.printStackTrace();
+                        latch.countDown();
+                        
+                    }
+                       
+                   });
+                    
+                }
+                }, new Consumer<Throwable>() {
+
+                    @Override
+                    public void accept(Throwable t) throws Exception {
+                       t.printStackTrace();
+                       latch.countDown();
+                        
+                    }
+                    
+                });
+                
+            }
+
+            @Override
+            public void onComplete() {
+                // TODO Auto-generated method stub
+                
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+                latch.countDown();
+                
+            }
+        });
+        latch.await();
+        assertTrue(testSucceed);
+    }
+
+
+
+
+    public void testQueryFriendship() throws Exception {
+        LCUser tom = tomLogin();
+        Map<String, Object> attr1 = new HashMap<String, Object>();
+        attr1.put("group", "cat");
+        final LCFriendshipRequest request1 = tom.applyFriendshipInBackground(
+                LCObject.createWithoutData(LCUser.class, jerryObjectId), attr1).blockingFirst();
+        System.out.println("tom succeed to apply friend request to jerry. objectId=" + request1.getObjectId());
+
+        List<LCFriendshipRequest> requests = tom.friendshipRequestQuery(LCFriendshipRequest.STATUS_PENDING,
+                false, false)
+                .findInBackground()
+                .blockingFirst();
+        System.out.println("request number sent from tom is: " + requests.size());
+
+        LCUser tuffy = tuffyLogin();
+        Map<String, Object> attr2 = new HashMap<String, Object>();
+        attr2.put("group", "league");
+        final LCFriendshipRequest request2 = tuffy.applyFriendshipInBackground(
+                LCObject.createWithoutData(LCUser.class, jerryObjectId), attr2).blockingFirst();
+        System.out.println("tuffy succeed to apply friend request to jerry. objectId=" + request2.getObjectId());
+
+        requests = tuffy.friendshipRequestQuery(LCFriendshipRequest.STATUS_PENDING,
+                false, false)
+                .findInBackground()
+                .blockingFirst();
+        System.out.println("request number sent from tuffy is: " + requests.size());
+
+        final LCUser jerry = jerryLogin();
+        LCFriendshipRequest requestTmp = jerry.acceptFriendshipRequest(request1, null).blockingFirst();
+        System.out.println("jerry accept request from tom. status="
+                + requestTmp.get(LCFriendshipRequest.ATTR_STATUS)
+                + ", updatedAt=" + requestTmp.getUpdatedAtString());
+
+        requestTmp = jerry.acceptFriendshipRequest(request2, null).blockingFirst();
+        System.out.println("jerry accepted request from tuffy. status="
+                + requestTmp.get(LCFriendshipRequest.ATTR_STATUS)
+                + ", updatedAt=" + requestTmp.getUpdatedAtString());
+
+        jerry.friendshipRequestQuery(LCFriendshipRequest.STATUS_ANY, false, true)
+                .findInBackground()
+                .subscribe(new Observer<List<LCFriendshipRequest>>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull List<LCFriendshipRequest> lcFriendshipRequests) {
+                        System.out.println("friendship requests number to jerry is: " + lcFriendshipRequests.size());
+                        for(LCFriendshipRequest request: lcFriendshipRequests) {
+                            System.out.println("try to delete friendshipRquest: " + request);
+                            request.delete();
+                        }
+                        jerry.friendshipQuery(false).limit(10).findInBackground().subscribe(new Observer<List<LCFriendship>>() {
+                            @Override
+                            public void onSubscribe(Disposable disposable) {
+
+                            }
+
+                            @Override
+                            public void onNext(List<LCFriendship> lcFriendships) {
+                                if (null == lcFriendships || lcFriendships.size() == 0) {
+                                    System.out.println("friendship query of jerry is error!!!!!");
+                                    latch.countDown();
+                                } else {
+                                    System.out.println("jerry's friend: size = " + lcFriendships.size() + " data = " + lcFriendships);
+                                    jerry.blockFriendInBackground(tomObjectId).subscribe(new Consumer<JSONObject>() {
+                                        @Override
+                                        public void accept(JSONObject jsonObject) throws Exception {
+                                            System.out.println(" block tom success");
+                                            jerry.queryFriendship(0,10,null)
+                                                    .subscribe(new Consumer<List<LCFriendship>>() {
+                                                        @Override
+                                                        public void accept(List<LCFriendship> lcFriendships) throws Exception {
+                                                            System.out.println("jerry's friend: size = " + lcFriendships.size() + " data = " + lcFriendships);
+                                                            if(lcFriendships.size() == 1) {
+                                                                jerry.unblockFriendInBackground(tomObjectId).subscribe(new Consumer<JSONObject>() {
+                                                                    @Override
+                                                                    public void accept(JSONObject jsonObject) throws Exception {
+                                                                        System.out.println(" unblock tom success");
+                                                                        jerry.queryFriendship(0,10,null)
+                                                                                .subscribe(new Consumer<List<LCFriendship>>() {
+                                                                                    @Override
+                                                                                    public void accept(List<LCFriendship> lcFriendships) throws Exception {
+                                                                                        System.out.println("jerry's friend: size = " + lcFriendships.size() + " data = " + lcFriendships);
+                                                                                        if (lcFriendships.size() == 2) {
+                                                                                            lcFriendships.get(0).delete();
+                                                                                            lcFriendships.get(1).delete();
+                                                                                            testSucceed = true;
+                                                                                        }
+                                                                                        latch.countDown();
+                                                                                    }
+                                                                                }, new Consumer<Throwable>() {
+                                                                                    @Override
+                                                                                    public void accept(Throwable throwable) throws Exception {
+                                                                                        throwable.printStackTrace();
+                                                                                        latch.countDown();
+                                                                                    }
+                                                                                });
+                                                                    }
+                                                                }, new Consumer<Throwable>() {
+                                                                    @Override
+                                                                    public void accept(Throwable throwable) throws Exception {
+                                                                        throwable.printStackTrace();
+                                                                        latch.countDown();
+                                                                    }
+                                                                });
+                                                            }else{
+                                                                latch.countDown();
+                                                            }
+                                                        }
+                                                    }, new Consumer<Throwable>() {
+                                                        @Override
+                                                        public void accept(Throwable throwable) throws Exception {
+                                                            throwable.printStackTrace();
+                                                            latch.countDown();
+                                                        }
+                                                    });
+                                        }
+                                    }, new Consumer<Throwable>() {
+                                        @Override
+                                        public void accept(Throwable throwable) throws Exception {
+                                            throwable.printStackTrace();
+                                            latch.countDown();
+                                        }
+                                    });
+                                }
                             }
 
                             @Override

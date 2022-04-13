@@ -2,7 +2,6 @@ package cn.leancloud;
 
 import cn.leancloud.cache.QueryResultCache;
 import cn.leancloud.core.PaasClient;
-import cn.leancloud.query.LCCloudQueryResult;
 import cn.leancloud.query.QueryConditions;
 import cn.leancloud.query.QueryOperation;
 import cn.leancloud.types.LCGeoPoint;
@@ -10,12 +9,11 @@ import cn.leancloud.types.LCNull;
 import cn.leancloud.utils.LCUtils;
 import cn.leancloud.utils.LogUtil;
 import cn.leancloud.utils.StringUtil;
-
-import java.util.*;
-
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.functions.Function;
+
+import java.util.*;
 
 public class LCQuery<T extends LCObject> implements Cloneable {
   private static final LCLogger LOGGER = LogUtil.getLogger(LCQuery.class);
@@ -27,6 +25,8 @@ public class LCQuery<T extends LCObject> implements Cloneable {
 
   private Class<T> clazz;
   private String className;
+  //custom endPoint , if set , query url will be changed to custom path by append the endPoint , else use common className
+  private String endPoint;
   private java.lang.Boolean isRunning;
   private CachePolicy cachePolicy = CachePolicy.IGNORE_CACHE;
   private long maxCacheAge = -1;
@@ -54,6 +54,7 @@ public class LCQuery<T extends LCObject> implements Cloneable {
     query.isRunning = false;
     query.cachePolicy = this.cachePolicy;
     query.maxCacheAge = this.maxCacheAge;
+    query.endPoint = this.endPoint;
     query.conditions = null != this.conditions? this.conditions.clone(): null;
     return query;
   }
@@ -63,6 +64,11 @@ public class LCQuery<T extends LCObject> implements Cloneable {
     this.className = theClassName;
     this.clazz = clazz;
     this.conditions = new QueryConditions();
+  }
+
+  LCQuery(String theClassName, Class<T> clazz, String endPoint) {
+    this(theClassName, clazz);
+    this.endPoint = endPoint;
   }
 
   /**
@@ -122,6 +128,10 @@ public class LCQuery<T extends LCObject> implements Cloneable {
 
   Map<String, List<QueryOperation>> getWhere() {
     return conditions.getWhere();
+  }
+
+  void setEndPoint(String endPoint) {
+    this.endPoint = endPoint;
   }
 
   /**
@@ -942,7 +952,7 @@ public class LCQuery<T extends LCObject> implements Cloneable {
       query.put("limit", Integer.toString(explicitLimit));
     }
     LOGGER.d("Query: " + query);
-    return PaasClient.getStorageClient().queryObjects(asAuthenticatedUser, getClassName(), query, this.cachePolicy, this.maxCacheAge)
+    return PaasClient.getStorageClient().queryObjects(asAuthenticatedUser, getClassName(), endPoint, query, this.cachePolicy, this.maxCacheAge)
             .map(new Function<List<LCObject>, List<T>>() {
               public List<T> apply(List<LCObject> var1) throws Exception {
                 LOGGER.d("invoke within AVQuery.findInBackground(). resultSize=" + var1.size());

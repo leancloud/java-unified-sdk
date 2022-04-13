@@ -29,6 +29,7 @@ import java.util.*;
 
 public class StorageClient {
   private static LCLogger LOGGER = LogUtil.getLogger(StorageClient.class);
+  private static final String CUSTOM_ENDPOINT_PREFIX = "CUSTOM_ENDPOINT_";
 
   private APIService apiService = null;
   private boolean asynchronized = false;
@@ -127,9 +128,15 @@ public class StorageClient {
     String authenticatedSession = getSessionToken(authenticatedUser);
     if (LCUser.CLASS_NAME.equalsIgnoreCase(className)) {
       return wrapObservable(apiService.queryUsers(authenticatedSession, query));
-    } else {
+    }else if(LCBlockRelation.CLASS_NAME.equalsIgnoreCase(className)){
+      return wrapObservable(apiService.getBlockListOfFriend(authenticatedSession, query));
+    } else if(className.startsWith(CUSTOM_ENDPOINT_PREFIX)){
+      String endPoint = className.substring(CUSTOM_ENDPOINT_PREFIX.length());
+      return wrapObservable(apiService.queryObjectsByCustomEndPoint(authenticatedSession, endPoint, query));
+    } else{
       return wrapObservable(apiService.queryObjects(authenticatedSession, className, query));
     }
+
   }
 
   public Observable<List<LCUser>> strictlyQueryUsers(final LCUser authenticatedUser,
@@ -161,11 +168,14 @@ public class StorageClient {
 
 
   public Observable<List<LCObject>> queryObjects(final LCUser authenticatedUser,
-                                                 final String className, final Map<String, String> query,
+                                                 final String className, final String endPoint, final Map<String, String> query,
                                                  LCQuery.CachePolicy cachePolicy, final long maxAgeInMilliseconds) {
     final String cacheKey = QueryResultCache.generateKeyForQueryCondition(className, query);
     Observable<List<LCObject>> result = null;
     Observable<LCQueryResult> queryResult = null;
+    //check whether use endPoint
+    final String validPath = (endPoint == null || endPoint.length() == 0) ? className : (CUSTOM_ENDPOINT_PREFIX+endPoint);
+
     switch (cachePolicy) {
       case CACHE_ONLY:
         result = wrapObservable(
@@ -178,8 +188,7 @@ public class StorageClient {
                   @Override
                   public ObservableSource<? extends List<LCObject>> apply(Throwable throwable) throws Exception {
                     LOGGER.d("failed to query local cache, cause: " + throwable.getMessage() + ", try to query networking");
-
-                    return queryRemoteServer(authenticatedUser, className, query)
+                    return queryRemoteServer(authenticatedUser, validPath, query)
                             .map(new Function<LCQueryResult, List<LCObject>>() {
                               public List<LCObject> apply(LCQueryResult o) throws Exception {
                                 o.setClassName(className);
@@ -196,7 +205,7 @@ public class StorageClient {
                 });
         break;
       case NETWORK_ELSE_CACHE:
-        queryResult =  queryRemoteServer(authenticatedUser, className, query);
+        queryResult =  queryRemoteServer(authenticatedUser, validPath, query);
         if (null != queryResult) {
           result = queryResult.map(new Function<LCQueryResult, List<LCObject>>() {
             public List<LCObject> apply(LCQueryResult o) throws Exception {
@@ -221,7 +230,7 @@ public class StorageClient {
         break;
       case IGNORE_CACHE:
       default:
-        queryResult = queryRemoteServer(authenticatedUser, className, query);
+        queryResult = queryRemoteServer(authenticatedUser, validPath, query);
         if (null != queryResult) {
           result = queryResult.map(new Function<LCQueryResult, List<LCObject>>() {
             public List<LCObject> apply(LCQueryResult o) throws Exception {
@@ -616,7 +625,7 @@ public class StorageClient {
   public Observable<List<LCFriendship>> queryFriendship(final LCUser authenticatedUser, Map<String, String> conditions) {
     String authenticatedSession = getSessionToken(authenticatedUser);
     return wrapObservable(
-            apiService.getFollowees(authenticatedSession, authenticatedUser.getObjectId(), conditions)
+            apiService.getFriends(authenticatedSession, conditions)
                     .map(new Function<LCQueryResult, List<LCFriendship>>() {
       @Override
       public List<LCFriendship> apply(LCQueryResult result) throws Exception {
@@ -631,6 +640,16 @@ public class StorageClient {
         return convertedResult;
       }
     }));
+  }
+
+  public Observable<JSONObject> blockFriend(final LCUser authenticatedUser, String objectId) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.blockFriendByObjectId(authenticatedSession, objectId));
+  }
+
+  public Observable<JSONObject> unblockFriend(final LCUser authenticatedUser, String objectId) {
+    String authenticatedSession = getSessionToken(authenticatedUser);
+    return wrapObservable(apiService.unblockFriendByObjectId(authenticatedSession, objectId));
   }
 
   public Observable<LCStatus> postStatus(final LCUser authenticatedUser, Map<String, Object> param) {
