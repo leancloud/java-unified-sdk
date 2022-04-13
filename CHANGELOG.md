@@ -2,6 +2,20 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.2.7 release
+
+#### Break changes
+- None
+
+#### New features
+- add new method: LCUser#blockFriendInBackground(String objectId);
+- add new method: LCUser#unblockFriendInBackground(String objectId);
+- add new method: LCUser#friendshipBlockQuery();
+- add new method: LCUser#friendshipBlockQuery(Class<T> clazz);
+
+#### Optimization and fixed bugs
+- filter blocked user in friendship list when query friendship
+
 ## 8.2.6 release
 
 #### Break changes
