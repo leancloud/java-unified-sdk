@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.2.8 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- fixed: Object#refreshInBackground doesn't work for attributes which have been deleted in remote.
+
+
 ## 8.2.7 release
 
 #### Break changes
