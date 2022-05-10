@@ -8,6 +8,7 @@ import io.reactivex.disposables.Disposable;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -58,6 +59,202 @@ public class LCObjectTest extends TestCase {
       }
 
       @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testFetchRemovedAttr() throws Exception {
+    final LCObject object = new LCObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 18);
+    object.put("grade", 9);
+    object.saveInBackground().subscribe(new Observer<LCObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(LCObject lcObject) {
+        System.out.println("try to remove grade field.");
+        LCObject tmpObj = LCObject.createWithoutData("Student", object.getObjectId());
+        tmpObj.remove("grade");
+        tmpObj.saveInBackground().subscribe(new Observer<LCObject>() {
+          public void onSubscribe(Disposable disposable) {
+          }
+
+          public void onNext(LCObject lcObject) {
+            System.out.println("remove field finished.");
+            object.fetchInBackground("grade").subscribe(new Observer<LCObject>() {
+              @Override
+              public void onSubscribe(@NotNull Disposable disposable) {
+
+              }
+
+              @Override
+              public void onNext(@NotNull LCObject aObject) {
+                testSucceed = aObject.get("grade") == null;
+                if (!testSucceed) {
+                  latch.countDown();
+                  return;
+                }
+                object.deleteInBackground().subscribe(new Observer<LCNull>() {
+                  @Override
+                  public void onSubscribe(Disposable disposable) {
+
+                  }
+
+                  @Override
+                  public void onNext(LCNull LCNull) {
+                    testSucceed = true;
+                    latch.countDown();
+                  }
+
+                  @Override
+                  public void onError(Throwable throwable) {
+                    latch.countDown();
+                  }
+
+                  @Override
+                  public void onComplete() {
+
+                  }
+                });
+              }
+
+              @Override
+              public void onError(@NotNull Throwable throwable) {
+                latch.countDown();
+              }
+
+              @Override
+              public void onComplete() {
+
+              }
+            });
+          }
+
+          public void onError(Throwable throwable) {
+            latch.countDown();
+          }
+
+          public void onComplete() {
+          }
+        });
+
+      }
+
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
+  }
+
+  public void testFetchRemovedPointerAttr() throws Exception {
+    final LCObject object = new LCObject("Student");
+    object.put("name", "Automatic Tester");
+    object.put("age", 18);
+    object.put("grade", 9);
+    final LCObject friend = new LCObject("Student");
+    friend.put("name", "tom");
+    object.put("friend", friend);
+    object.saveInBackground().subscribe(new Observer<LCObject>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(LCObject lcObject) {
+        System.out.println("try to remove grade field.");
+        LCObject tmpObj = LCObject.createWithoutData("Student", object.getObjectId());
+        tmpObj.remove("grade");
+        tmpObj.remove("friend");
+        tmpObj.saveInBackground().subscribe(new Observer<LCObject>() {
+          public void onSubscribe(Disposable disposable) {
+          }
+
+          public void onNext(LCObject lcObject) {
+            System.out.println("remove field finished.");
+            object.fetchInBackground("grade,friend.name").subscribe(new Observer<LCObject>() {
+              @Override
+              public void onSubscribe(@NotNull Disposable disposable) {
+
+              }
+
+              @Override
+              public void onNext(@NotNull LCObject aObject) {
+                testSucceed = aObject.get("grade") == null;
+                if (!testSucceed) {
+                  System.out.println("failed to remote grade attr");
+                  latch.countDown();
+                  return;
+                }
+                testSucceed = aObject.get("friend") == null;
+                if (!testSucceed) {
+                  System.out.println("failed to remote friend attr");
+                  latch.countDown();
+                  return;
+                }
+                System.out.println("succeed to remote grade/friend attr");
+                object.deleteInBackground().subscribe(new Observer<LCNull>() {
+                  @Override
+                  public void onSubscribe(Disposable disposable) {
+
+                  }
+
+                  @Override
+                  public void onNext(LCNull LCNull) {
+                    System.out.println("succeed to delete origin student object");
+                    friend.deleteInBackground().blockingFirst();
+                    testSucceed = true;
+                    latch.countDown();
+                  }
+
+                  @Override
+                  public void onError(Throwable throwable) {
+                    latch.countDown();
+                  }
+
+                  @Override
+                  public void onComplete() {
+
+                  }
+                });
+              }
+
+              @Override
+              public void onError(@NotNull Throwable throwable) {
+                latch.countDown();
+              }
+
+              @Override
+              public void onComplete() {
+
+              }
+            });
+          }
+
+          public void onError(Throwable throwable) {
+            latch.countDown();
+          }
+
+          public void onComplete() {
+          }
+        });
+
+      }
+
+      public void onError(Throwable throwable) {
+        latch.countDown();
+      }
+
       public void onComplete() {
 
       }

@@ -1454,6 +1454,19 @@ public class LCObject {
                   } else {
                     LCObject.this.serverData.clear();
                   }
+                } else {
+                  // remove cached attribute-value.
+                  String[] includedAttrs = includeKeys.split(",");
+                  for(String attr: includedAttrs) {
+                    if (StringUtil.isEmpty(attr)) {
+                      continue;
+                    } else if (attr.indexOf(".") > 0) {
+                      String firstAttr = attr.substring(0, attr.indexOf("."));
+                      LCObject.this.serverData.remove(firstAttr);
+                    } else {
+                      LCObject.this.serverData.remove(attr);
+                    }
+                  }
                 }
                 LCObject.this.serverData.putAll(LCObject.serverData);
                 LCObject.this.onDataSynchronized();
