@@ -338,6 +338,11 @@ public interface APIService {
   @GET("/1.1/leaderboard/objects/{objectId}/statistics")
   Observable<LCStatisticResult> getObjectStatistics(@Path("objectId") String objectId, @Query("statistics") String statistics);
 
+  @POST("/1.1/leaderboard/{memberType}/statistics/{statisticName}")
+  Observable<LCStatisticResult> queryGroupStatistics(@Path("memberType") String memberType,
+                                                     @Path("statisticName") String statisticName,
+                                                     @Body Map<String, Object> param);
+
   @GET("/1.1/leaderboard/leaderboards/{memberType}/{statisticName}/ranks")
   Observable<LCLeaderboardResult> getLeaderboardResults(@Path("memberType") String memberType,
                                                @Path("statisticName") String statisticName,

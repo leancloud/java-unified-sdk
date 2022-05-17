@@ -1065,6 +1065,22 @@ public class StorageClient {
     return wrapObservable(apiService.getObjectStatistics(objectId, statistics));
   }
 
+  public Observable<LCStatisticResult> getGroupStatistics(final String leaderboardType, final String statisticName,
+                                                          List<String> targetKeys) {
+    if (StringUtil.isEmpty(leaderboardType)) {
+      return Observable.error(new IllegalArgumentException("leaderboard type is null"));
+    }
+    if (StringUtil.isEmpty(statisticName)) {
+      return Observable.error(new IllegalArgumentException("statistic name is null"));
+    }
+    if (null == targetKeys || targetKeys.size() < 1) {
+      return Observable.just(new LCStatisticResult());
+    }
+    Map<String, Object> param = new HashMap<>();
+    param.put("ids", targetKeys);
+    return wrapObservable(apiService.queryGroupStatistics(leaderboardType, statisticName, param));
+  }
+
   public Observable<LCLeaderboardResult> getLeaderboardResults(String leaderboardType, String statisticName, int skip, int limit,
                                                       List<String> selectUserKeys,
                                                       List<String> includeUserKeys,
