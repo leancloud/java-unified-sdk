@@ -356,7 +356,15 @@ public interface APIService {
   @POST("/1.1/leaderboard/leaderboards/{memberType}/{statisticName}/group/ranks")
   Observable<LCLeaderboardResult> queryLeaderboardGroupResults(@Path("memberType") String memberType,
                                                         @Path("statisticName") String statisticName,
-                                                        @Body Map<String, Object> query);
+                                                        @QueryMap Map<String, Object> query,
+                                                        @Body Map<String, Object> data);
+
+  @POST("/1.1/leaderboard/leaderboards/{memberType}/{statisticName}/group/ranks/{targetId}")
+  Observable<LCLeaderboardResult> queryLeaderboardAroundInGroupResults(@Path("memberType") String memberType,
+                                                               @Path("statisticName") String statisticName,
+                                                               @Path("targetId") String targetId,
+                                                               @QueryMap Map<String, Object> query,
+                                                               @Body Map<String, Object> data);
 
   @GET("/1.1/leaderboard/users/self/statistics")
   Observable<LCStatisticResult> getAuthenticatedUserStatistics(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken);

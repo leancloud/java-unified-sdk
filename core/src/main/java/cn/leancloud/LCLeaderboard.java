@@ -406,6 +406,26 @@ public class LCLeaderboard {
     }
 
     /**
+     * get leaderboard results around target id within specified group.
+     * @param groupUserIds user id list.
+     * @param targetId target user id.
+     * @param limit query limit.
+     * @param selectMemberKeys select object keys(optional)
+     * @param includeStatistics include other statistics(optional)
+     * @return observable instance.
+     */
+    public Observable<LCLeaderboardResult> getAroundInGroupResults(List<String> groupUserIds, String targetId, int limit,
+                                                            List<String> selectMemberKeys,
+                                                            List<String> includeStatistics) {
+        if (StringUtil.isEmpty(this.statisticName)) {
+            return Observable.error(new IllegalArgumentException("name is empty"));
+        }
+        String leaderboardType = convertLeaderboardType4Rank(this.memberType);
+        return PaasClient.getStorageClient().getLeaderboardAroundInGroupResults(leaderboardType, this.statisticName,
+                groupUserIds, targetId, limit, selectMemberKeys, null, includeStatistics, this.version);
+    }
+
+    /**
      * query multiple users/objects/entities statistic results.
      * @param targetKeys target id list.
      * @return observable instance.

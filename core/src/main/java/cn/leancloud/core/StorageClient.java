@@ -1154,8 +1154,9 @@ public class StorageClient {
     if (version > LCLeaderboard.INVALID_VERSION) {
       params.put("version", version);
     }
-    params.put("ids", groupUserIds);
-    return wrapObservable(apiService.queryLeaderboardGroupResults(leaderboardType, statisticName, params));
+    Map<String, Object> data = new HashMap<>();
+    data.put("ids", groupUserIds);
+    return wrapObservable(apiService.queryLeaderboardGroupResults(leaderboardType, statisticName, params, data));
   }
 
   public Observable<LCLeaderboardResult> getLeaderboardAroundResults(String leaderboardType, String statisticName, String targetId,
@@ -1188,5 +1189,45 @@ public class StorageClient {
       params.put("version", version);
     }
     return wrapObservable(apiService.getLeaderboardAroundResults(leaderboardType, statisticName, targetId, params));
+  }
+
+  public Observable<LCLeaderboardResult> getLeaderboardAroundInGroupResults(String leaderboardType, String statisticName,
+                                                                            List<String> groupUserIds, String targetId,
+                                                                            int limit, List<String> selectUserKeys,
+                                                                            List<String> includeUserKeys,
+                                                                            List<String> includeStatisticNames,
+                                                                            int version) {
+    if (StringUtil.isEmpty(leaderboardType) || StringUtil.isEmpty(statisticName)) {
+      return Observable.error(new IllegalArgumentException("memberType or statisticName is null"));
+    }
+    if (!"user".equalsIgnoreCase(leaderboardType)) {
+      return Observable.error(new IllegalArgumentException("only memberType of user is supported."));
+    }
+    if (null == groupUserIds || groupUserIds.isEmpty()) {
+      return Observable.error(new IllegalArgumentException("group user id is empty."));
+    }
+    String selectKeys = StringUtil.join(",", selectUserKeys);
+    String includeKeys = StringUtil.join(",", includeUserKeys);
+    String includeStatistics = StringUtil.join(",", includeStatisticNames);
+    Map<String, Object> params = new HashMap<>();
+    if (limit > 0) {
+      params.put("maxResultsCount", limit);
+    }
+    if (!StringUtil.isEmpty(selectKeys)) {
+      params.put("selectKeys", selectKeys);
+    }
+    if (!StringUtil.isEmpty(includeKeys)) {
+      params.put("includeKeys", includeKeys);
+    }
+    if (!StringUtil.isEmpty(includeStatistics)) {
+      params.put("includeStatistics", includeStatistics);
+    }
+    if (version > LCLeaderboard.INVALID_VERSION) {
+      params.put("version", version);
+    }
+    Map<String, Object> data = new HashMap<>();
+    data.put("ids", groupUserIds);
+    return wrapObservable(apiService.queryLeaderboardAroundInGroupResults(leaderboardType, statisticName, targetId,
+            params, data));
   }
 }

@@ -63,7 +63,58 @@ public class LCLeaderboardUserTests extends UserBasedTestCase {
             scores.put("leancloudgogo", random.nextDouble());
             LCLeaderboard.updateStatistic(result, scores).blockingFirst();
         }
-        leaderboard.getGroupResults(testObjectIds, 0, 20, null, null)
+        leaderboard.getGroupResults(testObjectIds, 0, 5, null, null)
+                .subscribe(new Observer<LCLeaderboardResult>() {
+                    @Override
+                    public void onSubscribe(@NotNull Disposable disposable) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NotNull LCLeaderboardResult lcLeaderboardResult) {
+                        for (LCRanking ranking: lcLeaderboardResult.getResults()) {
+                            System.out.println(JSON.toJSONString(ranking));
+                        }
+                        testSucceed = true;
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable throwable) {
+                        testSucceed = false;
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+        latch.await();
+        assertTrue(testSucceed);
+    }
+
+    public void testUserGroupAroundLeaderboard() throws Exception {
+        LCLeaderboard leaderboard = LCLeaderboard.fetchByName(LEADERBOARD_NAME).blockingFirst();
+
+        final String USER_PREFIX = "DeletedUserTest";
+        List<String> testObjectIds = new ArrayList<>(10);
+        String username = null;
+        String userEmail = null;
+        Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            username = USER_PREFIX + i;
+            userEmail = username + "@abc.com";
+            LCUser result = UserFollowshipTest.prepareUser(username, userEmail, true);
+            testObjectIds.add(result.getObjectId());
+            if (!result.isAuthenticated()) {
+                result = LCUser.logIn(username, passwd).blockingFirst();
+            }
+            Map<String, Double> scores = new HashMap<>();
+            scores.put("leancloudgogo", random.nextDouble());
+            LCLeaderboard.updateStatistic(result, scores).blockingFirst();
+        }
+        leaderboard.getAroundInGroupResults(testObjectIds, testObjectIds.get(4), 3, null, null)
                 .subscribe(new Observer<LCLeaderboardResult>() {
                     @Override
                     public void onSubscribe(@NotNull Disposable disposable) {
