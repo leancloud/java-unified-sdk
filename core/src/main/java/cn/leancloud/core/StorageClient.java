@@ -1065,6 +1065,22 @@ public class StorageClient {
     return wrapObservable(apiService.getObjectStatistics(objectId, statistics));
   }
 
+  public Observable<LCStatisticResult> getGroupStatistics(final String leaderboardType, final String statisticName,
+                                                          List<String> targetKeys) {
+    if (StringUtil.isEmpty(leaderboardType)) {
+      return Observable.error(new IllegalArgumentException("leaderboard type is null"));
+    }
+    if (StringUtil.isEmpty(statisticName)) {
+      return Observable.error(new IllegalArgumentException("statistic name is null"));
+    }
+    if (null == targetKeys || targetKeys.size() < 1) {
+      return Observable.just(new LCStatisticResult());
+    }
+    Map<String, Object> param = new HashMap<>();
+    param.put("ids", targetKeys);
+    return wrapObservable(apiService.queryGroupStatistics(leaderboardType, statisticName, param));
+  }
+
   public Observable<LCLeaderboardResult> getLeaderboardResults(String leaderboardType, String statisticName, int skip, int limit,
                                                       List<String> selectUserKeys,
                                                       List<String> includeUserKeys,
@@ -1101,6 +1117,48 @@ public class StorageClient {
     return wrapObservable(apiService.getLeaderboardResults(leaderboardType, statisticName, params));
   }
 
+  public Observable<LCLeaderboardResult> getLeaderboardGroupResults(String leaderboardType, String statisticName,
+                                                                    List<String> groupUserIds,
+                                                                    int skip, int limit, List<String> selectUserKeys,
+                                                                    List<String> includeUserKeys,
+                                                                    List<String> includeStatisticNames,
+                                                                    int version) {
+    if (StringUtil.isEmpty(leaderboardType) || StringUtil.isEmpty(statisticName)) {
+      return Observable.error(new IllegalArgumentException("memberType or statisticName is null"));
+    }
+    if (!"user".equalsIgnoreCase(leaderboardType)) {
+      return Observable.error(new IllegalArgumentException("only memberType of user is supported."));
+    }
+    if (null == groupUserIds || groupUserIds.isEmpty()) {
+      return Observable.error(new IllegalArgumentException("group user id is empty."));
+    }
+    String selectKeys = StringUtil.join(",", selectUserKeys);
+    String includeKeys = StringUtil.join(",", includeUserKeys);
+    String includeStatistics = StringUtil.join(",", includeStatisticNames);
+    Map<String, Object> params = new HashMap<>();
+    if (skip > 0) {
+      params.put("startPosition", skip);
+    }
+    if (limit > 0) {
+      params.put("maxResultsCount", limit);
+    }
+    if (!StringUtil.isEmpty(selectKeys)) {
+      params.put("selectKeys", selectKeys);
+    }
+    if (!StringUtil.isEmpty(includeKeys)) {
+      params.put("includeKeys", includeKeys);
+    }
+    if (!StringUtil.isEmpty(includeStatistics)) {
+      params.put("includeStatistics", includeStatistics);
+    }
+    if (version > LCLeaderboard.INVALID_VERSION) {
+      params.put("version", version);
+    }
+    Map<String, Object> data = new HashMap<>();
+    data.put("ids", groupUserIds);
+    return wrapObservable(apiService.queryLeaderboardGroupResults(leaderboardType, statisticName, params, data));
+  }
+
   public Observable<LCLeaderboardResult> getLeaderboardAroundResults(String leaderboardType, String statisticName, String targetId,
                                                             int skip, int limit, List<String> selectUserKeys,
                                                             List<String> includeUserKeys,
@@ -1131,5 +1189,45 @@ public class StorageClient {
       params.put("version", version);
     }
     return wrapObservable(apiService.getLeaderboardAroundResults(leaderboardType, statisticName, targetId, params));
+  }
+
+  public Observable<LCLeaderboardResult> getLeaderboardAroundInGroupResults(String leaderboardType, String statisticName,
+                                                                            List<String> groupUserIds, String targetId,
+                                                                            int limit, List<String> selectUserKeys,
+                                                                            List<String> includeUserKeys,
+                                                                            List<String> includeStatisticNames,
+                                                                            int version) {
+    if (StringUtil.isEmpty(leaderboardType) || StringUtil.isEmpty(statisticName)) {
+      return Observable.error(new IllegalArgumentException("memberType or statisticName is null"));
+    }
+    if (!"user".equalsIgnoreCase(leaderboardType)) {
+      return Observable.error(new IllegalArgumentException("only memberType of user is supported."));
+    }
+    if (null == groupUserIds || groupUserIds.isEmpty()) {
+      return Observable.error(new IllegalArgumentException("group user id is empty."));
+    }
+    String selectKeys = StringUtil.join(",", selectUserKeys);
+    String includeKeys = StringUtil.join(",", includeUserKeys);
+    String includeStatistics = StringUtil.join(",", includeStatisticNames);
+    Map<String, Object> params = new HashMap<>();
+    if (limit > 0) {
+      params.put("maxResultsCount", limit);
+    }
+    if (!StringUtil.isEmpty(selectKeys)) {
+      params.put("selectKeys", selectKeys);
+    }
+    if (!StringUtil.isEmpty(includeKeys)) {
+      params.put("includeKeys", includeKeys);
+    }
+    if (!StringUtil.isEmpty(includeStatistics)) {
+      params.put("includeStatistics", includeStatistics);
+    }
+    if (version > LCLeaderboard.INVALID_VERSION) {
+      params.put("version", version);
+    }
+    Map<String, Object> data = new HashMap<>();
+    data.put("ids", groupUserIds);
+    return wrapObservable(apiService.queryLeaderboardAroundInGroupResults(leaderboardType, statisticName, targetId,
+            params, data));
   }
 }

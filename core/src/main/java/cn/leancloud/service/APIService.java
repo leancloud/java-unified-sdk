@@ -338,6 +338,11 @@ public interface APIService {
   @GET("/1.1/leaderboard/objects/{objectId}/statistics")
   Observable<LCStatisticResult> getObjectStatistics(@Path("objectId") String objectId, @Query("statistics") String statistics);
 
+  @POST("/1.1/leaderboard/{memberType}/statistics/{statisticName}")
+  Observable<LCStatisticResult> queryGroupStatistics(@Path("memberType") String memberType,
+                                                     @Path("statisticName") String statisticName,
+                                                     @Body Map<String, Object> param);
+
   @GET("/1.1/leaderboard/leaderboards/{memberType}/{statisticName}/ranks")
   Observable<LCLeaderboardResult> getLeaderboardResults(@Path("memberType") String memberType,
                                                @Path("statisticName") String statisticName,
@@ -347,6 +352,19 @@ public interface APIService {
                                                      @Path("statisticName") String statisticName,
                                                      @Path("entityId") String entityId,
                                                      @QueryMap Map<String, Object> query);
+
+  @POST("/1.1/leaderboard/leaderboards/{memberType}/{statisticName}/group/ranks")
+  Observable<LCLeaderboardResult> queryLeaderboardGroupResults(@Path("memberType") String memberType,
+                                                        @Path("statisticName") String statisticName,
+                                                        @QueryMap Map<String, Object> query,
+                                                        @Body Map<String, Object> data);
+
+  @POST("/1.1/leaderboard/leaderboards/{memberType}/{statisticName}/group/ranks/{targetId}")
+  Observable<LCLeaderboardResult> queryLeaderboardAroundInGroupResults(@Path("memberType") String memberType,
+                                                               @Path("statisticName") String statisticName,
+                                                               @Path("targetId") String targetId,
+                                                               @QueryMap Map<String, Object> query,
+                                                               @Body Map<String, Object> data);
 
   @GET("/1.1/leaderboard/users/self/statistics")
   Observable<LCStatisticResult> getAuthenticatedUserStatistics(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken);

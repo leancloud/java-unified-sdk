@@ -1,9 +1,10 @@
 package cn.leancloud;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LCStatisticResult {
-    private List<LCStatistic> results;
+    private List<LCStatistic> results = new ArrayList<>();
 
     /**
      * getter

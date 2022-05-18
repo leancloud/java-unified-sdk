@@ -11,6 +11,7 @@ public class LCLeaderboard {
     public static final int INVALID_VERSION = -1;
     public static final String MEMBER_TYPE_USER = "_User";
     public static final String MEMBER_TYPE_ENTITY = "_Entity";
+    public static final String MEMBER_TYPE_OBJECT = "_Object";
 
     static final String ATTR_STATISTIC_NAME = "statisticName";
     static final String ATTR_MEMBER_TYPE = "memberType";
@@ -288,7 +289,26 @@ public class LCLeaderboard {
         }
     }
 
-    static String convertLeaderboardType(String memberType) {
+    /**
+     * query a group of users/objects/entities statistic results.
+     * @param memberType member type.
+     *                   MEMBER_TYPE_USER("_User"): leaderboard target is LCUser
+     *                   MEMBER_TYPE_ENTITY("_Entity"): leaderboard target is any entity
+     *                   MEMBER_TYPE_ENTITY("_Object"): leaderboard target is LCObject
+     * @param statisticName statistic names.
+     * @param targetKeys target ids.
+     * @return observable instance.
+     */
+    public static Observable<LCStatisticResult> queryGroupStatistics(String memberType, String statisticName,
+                                                                     List<String> targetKeys) {
+        if (StringUtil.isEmpty(statisticName)) {
+            return Observable.error(new IllegalArgumentException("name is empty"));
+        }
+        String leaderboardType = convertLeaderboardType4Stats(memberType);
+        return PaasClient.getStorageClient().getGroupStatistics(leaderboardType, statisticName, targetKeys);
+    }
+
+    static String convertLeaderboardType4Rank(String memberType) {
         String leaderboardType = null;
         if (MEMBER_TYPE_USER.equalsIgnoreCase(memberType)) {
             leaderboardType = "user";
@@ -296,6 +316,18 @@ public class LCLeaderboard {
             leaderboardType = "entity";
         } else {
             leaderboardType = "object";
+        }
+        return leaderboardType;
+    }
+
+    static String convertLeaderboardType4Stats(String memberType) {
+        String leaderboardType = null;
+        if (MEMBER_TYPE_USER.equalsIgnoreCase(memberType)) {
+            leaderboardType = "users";
+        } else if (MEMBER_TYPE_ENTITY.equalsIgnoreCase(memberType)) {
+            leaderboardType = "entities";
+        } else {
+            leaderboardType = "objects";
         }
         return leaderboardType;
     }
@@ -328,9 +360,29 @@ public class LCLeaderboard {
         if (StringUtil.isEmpty(this.statisticName)) {
             return Observable.error(new IllegalArgumentException("name is empty"));
         }
-        String leaderboardType = convertLeaderboardType(this.memberType);
+        String leaderboardType = convertLeaderboardType4Rank(this.memberType);
         return PaasClient.getStorageClient().getLeaderboardResults(leaderboardType, this.statisticName,
                 skip, limit, selectMemberKeys, null, includeStatistics, this.version, withCount);
+    }
+
+    /**
+     * get group user's ranking.
+     * @param groupUserIds user id list.
+     * @param skip skip number.
+     * @param limit max result limitation.
+     * @param selectMemberKeys select member(user) keys(optional)
+     * @param includeStatistics include other statistics(optional)
+     * @return observable instance.
+     */
+    public Observable<LCLeaderboardResult> getGroupResults(List<String> groupUserIds,
+                                                           int skip, int limit, List<String> selectMemberKeys,
+                                                           List<String> includeStatistics) {
+        if (StringUtil.isEmpty(this.statisticName)) {
+            return Observable.error(new IllegalArgumentException("name is empty"));
+        }
+        String leaderboardType = convertLeaderboardType4Rank(this.memberType);
+        return PaasClient.getStorageClient().getLeaderboardGroupResults(leaderboardType, this.statisticName,
+                groupUserIds, skip, limit, selectMemberKeys, null, includeStatistics, this.version);
     }
 
     /**
@@ -348,9 +400,38 @@ public class LCLeaderboard {
         if (StringUtil.isEmpty(this.statisticName)) {
             return Observable.error(new IllegalArgumentException("name is empty"));
         }
-        String leaderboardType = convertLeaderboardType(this.memberType);
+        String leaderboardType = convertLeaderboardType4Rank(this.memberType);
         return PaasClient.getStorageClient().getLeaderboardAroundResults(leaderboardType, this.statisticName, targetId,
                 skip, limit, selectMemberKeys, null, includeStatistics, this.version);
+    }
+
+    /**
+     * get leaderboard results around target id within specified group.
+     * @param groupUserIds user id list.
+     * @param targetId target user id.
+     * @param limit query limit.
+     * @param selectMemberKeys select object keys(optional)
+     * @param includeStatistics include other statistics(optional)
+     * @return observable instance.
+     */
+    public Observable<LCLeaderboardResult> getAroundInGroupResults(List<String> groupUserIds, String targetId, int limit,
+                                                            List<String> selectMemberKeys,
+                                                            List<String> includeStatistics) {
+        if (StringUtil.isEmpty(this.statisticName)) {
+            return Observable.error(new IllegalArgumentException("name is empty"));
+        }
+        String leaderboardType = convertLeaderboardType4Rank(this.memberType);
+        return PaasClient.getStorageClient().getLeaderboardAroundInGroupResults(leaderboardType, this.statisticName,
+                groupUserIds, targetId, limit, selectMemberKeys, null, includeStatistics, this.version);
+    }
+
+    /**
+     * query multiple users/objects/entities statistic results.
+     * @param targetKeys target id list.
+     * @return observable instance.
+     */
+    public Observable<LCStatisticResult> queryGroupStatistics(List<String> targetKeys) {
+        return queryGroupStatistics(this.memberType, this.statisticName, targetKeys);
     }
 
     /**

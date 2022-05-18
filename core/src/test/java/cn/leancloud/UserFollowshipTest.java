@@ -54,13 +54,13 @@ public class UserFollowshipTest extends TestCase {
     LCUser.logOut();
   }
 
-  public static void prepareUser(String username, final String email, final boolean loginOnFailed) throws Exception {
-    LCUser user = new LCUser();
-    user.setEmail(email);
-    user.setUsername(username);
-    user.setPassword(DEFAULT_PASSWD);
+  public static LCUser prepareUser(String username, final String email, final boolean loginOnFailed) throws Exception {
+    final LCUser[] user = {new LCUser()};
+    user[0].setEmail(email);
+    user[0].setUsername(username);
+    user[0].setPassword(DEFAULT_PASSWD);
     final CountDownLatch latch = new CountDownLatch(1);
-    user.signUpInBackground().subscribe(new Observer<LCUser>() {
+    user[0].signUpInBackground().subscribe(new Observer<LCUser>() {
       public void onSubscribe(Disposable disposable) {
 
       }
@@ -87,6 +87,7 @@ public class UserFollowshipTest extends TestCase {
             } else if (email.startsWith("dennis")) {
               DENNIS_OBJECT_ID = tmp.getObjectId();
             }
+            user[0] = tmp;
           } catch (Exception ex) {
             System.out.println("failed to loginWithEmail. cause: " + ex.getMessage());
           }
@@ -100,6 +101,7 @@ public class UserFollowshipTest extends TestCase {
       }
     });
     latch.await();
+    return user[0];
   }
 
   public void testFolloweeQuery() throws Exception {
