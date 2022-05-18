@@ -2,6 +2,21 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.2.9 release
+
+#### Break changes
+- None
+
+#### New features
+add some functions to LCLeaderboard:
+- LCLeaderboard#queryGroupStatistics(String memberType, String statisticName, List<String> targetKeys), for querying multiple entities' statistics.
+- LCLeaderboard#getGroupResults(List<String> groupUserIds, int skip, int limit, List<String> selectMemberKeys, List<String> includeStatistics), for querying multiple users' rankings.
+- LCLeaderboard#getAroundInGroupResults(List<String> groupUserIds, String targetId, int limit, List<String> selectMemberKeys, List<String> includeStatistics), for querying around rankings within multiple users.
+
+#### Optimization and fixed bugs
+- None.
+
+
 ## 8.2.8 release
 
 #### Break changes
