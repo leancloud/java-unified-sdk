@@ -353,6 +353,11 @@ public interface APIService {
                                                      @Path("entityId") String entityId,
                                                      @QueryMap Map<String, Object> query);
 
+  @POST("/1.1/leaderboard/leaderboards/{memberType}/{statisticName}/group/ranks")
+  Observable<LCLeaderboardResult> queryLeaderboardGroupResults(@Path("memberType") String memberType,
+                                                        @Path("statisticName") String statisticName,
+                                                        @Body Map<String, Object> query);
+
   @GET("/1.1/leaderboard/users/self/statistics")
   Observable<LCStatisticResult> getAuthenticatedUserStatistics(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken);
 

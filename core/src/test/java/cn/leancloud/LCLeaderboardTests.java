@@ -128,6 +128,48 @@ public class LCLeaderboardTests extends TestCase {
         assertTrue(testSucceed);
     }
 
+    public void testUserGroupLeaderboardResult() throws Exception {
+        LCLeaderboard leaderboard = LCLeaderboard.createWithoutData("LearderBoard_Test");
+        List<String> userIds=new ArrayList<>();
+        userIds.add("LeaderBoard_Test_1");
+        userIds.add("LeaderBoard_Test_Also");
+
+        leaderboard.getGroupResults(userIds, 0, 10, null, null)
+                .subscribe(new Observer<LCLeaderboardResult>() {
+                    @Override
+                    public void onSubscribe(Disposable disposable) {
+                    }
+                    @Override
+                    public void onNext(LCLeaderboardResult leaderboardResult) {
+                        // X获取的结果为Null
+                        List<LCRanking> X = leaderboardResult.getResults();
+                        // process rankings
+                        // 调用获取成功处理...
+                        if (null != X) {
+                            for (LCRanking rank: X) {
+                                System.out.println(rank.toString());
+                            }
+                        }
+
+                        // ...
+                        testSucceed = true;
+                        latch.countDown();
+                    }
+                    @Override
+                    public void onError(Throwable throwable) {
+                        // handle error
+                        // 调用获取失败处理...
+                        // ...
+                        latch.countDown();
+                    }
+                    @Override
+                    public void onComplete() {
+                    }
+                });
+        latch.await();
+        assertTrue(testSucceed);
+    }
+
     public void testObjectGroupResultParse() throws Exception {
         LCLeaderboard leaderboard = LCLeaderboard.createWithoutData("LearderBoard_Test", LCLeaderboard.MEMBER_TYPE_OBJECT);
         List<String> targetIds=new ArrayList<>();
@@ -160,6 +202,39 @@ public class LCLeaderboardTests extends TestCase {
                         // handle error
                         // 调用获取失败处理...
                         // ...
+                        latch.countDown();
+                    }
+                    @Override
+                    public void onComplete() {
+                    }
+                });
+        latch.await();
+        assertTrue(testSucceed);
+    }
+
+    public void testObjectGroupLeaderboardResult() throws Exception {
+        LCLeaderboard leaderboard = LCLeaderboard.createWithoutData("LearderBoard_Test", LCLeaderboard.MEMBER_TYPE_OBJECT);
+        List<String> targetIds=new ArrayList<>();
+        targetIds.add("LeaderBoard_Test_1");
+        targetIds.add("LeaderBoard_Test_Also");
+
+        leaderboard.getGroupResults(targetIds, 0, 10, null, null)
+                .subscribe(new Observer<LCLeaderboardResult>() {
+                    @Override
+                    public void onSubscribe(Disposable disposable) {
+                    }
+                    @Override
+                    public void onNext(LCLeaderboardResult leaderboardResult) {
+                        // ...
+                        testSucceed = false;
+                        latch.countDown();
+                    }
+                    @Override
+                    public void onError(Throwable throwable) {
+                        // handle error
+                        // 调用获取失败处理...
+                        throwable.printStackTrace();
+                        testSucceed = true;
                         latch.countDown();
                     }
                     @Override

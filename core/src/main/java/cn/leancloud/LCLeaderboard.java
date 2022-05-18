@@ -366,6 +366,26 @@ public class LCLeaderboard {
     }
 
     /**
+     * get group user's ranking.
+     * @param groupUserIds user id list.
+     * @param skip skip number.
+     * @param limit max result limitation.
+     * @param selectMemberKeys select member(user) keys(optional)
+     * @param includeStatistics include other statistics(optional)
+     * @return observable instance.
+     */
+    public Observable<LCLeaderboardResult> getGroupResults(List<String> groupUserIds,
+                                                           int skip, int limit, List<String> selectMemberKeys,
+                                                           List<String> includeStatistics) {
+        if (StringUtil.isEmpty(this.statisticName)) {
+            return Observable.error(new IllegalArgumentException("name is empty"));
+        }
+        String leaderboardType = convertLeaderboardType4Rank(this.memberType);
+        return PaasClient.getStorageClient().getLeaderboardGroupResults(leaderboardType, this.statisticName,
+                groupUserIds, skip, limit, selectMemberKeys, null, includeStatistics, this.version);
+    }
+
+    /**
      * get leaderboard results around target id(user, object or entity).
      * @param targetId target objectId
      * @param skip query offset
