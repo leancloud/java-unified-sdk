@@ -94,7 +94,8 @@ public class AndroidNotificationManager extends LCNotificationManager {
       ComponentName cn = new ComponentName(context, clsName);
       resultIntent.setComponent(cn);
       PendingIntent contentIntent =
-          PendingIntent.getActivity(context, notificationId, resultIntent, 0);
+          PendingIntent.getActivity(context, notificationId, resultIntent,
+                  PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
       String sound = getSound(msg);
       String title = getTitle(msg);
       String notificationChannel = getNotificationChannel(msg);

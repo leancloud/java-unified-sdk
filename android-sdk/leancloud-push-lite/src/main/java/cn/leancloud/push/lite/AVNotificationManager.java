@@ -283,7 +283,8 @@ public class AVNotificationManager {
       ComponentName cn = new ComponentName(context, clsName);
       resultIntent.setComponent(cn);
       PendingIntent contentIntent =
-          PendingIntent.getActivity(context, notificationId, resultIntent, 0);
+          PendingIntent.getActivity(context, notificationId, resultIntent,
+                                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
       String sound = getSound(msg);
       Notification notification = null;
       if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
