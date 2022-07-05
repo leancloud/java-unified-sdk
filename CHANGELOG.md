@@ -13,7 +13,8 @@ Following is change logs for recently release versions, you can refer to [releas
 #### Optimization and fixed bugs
 - add date format("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") to GsonBuilder(local variable).
 - compatible for android 12 within leancloud push notification(released as 8.2.9.1)
-
+- bumps protobuf-java from 3.14.0 to 3.16.1.
+- bumps gson from 2.8.6 to 2.8.9.
 
 ## 8.2.9 release
 
