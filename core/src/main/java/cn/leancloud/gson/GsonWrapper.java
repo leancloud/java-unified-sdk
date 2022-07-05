@@ -7,6 +7,7 @@ import cn.leancloud.service.AppAccessEndpoint;
 import cn.leancloud.sms.LCCaptchaDigest;
 import cn.leancloud.sms.LCCaptchaValidateResult;
 import cn.leancloud.upload.FileUploadToken;
+import cn.leancloud.utils.StringUtil;
 import com.google.gson.*;
 import com.google.gson.internal.Primitives;
 import com.google.gson.reflect.TypeToken;
@@ -25,6 +26,7 @@ public class GsonWrapper {
   static final JSONArrayAdapter jsonArrayAdapter = new JSONArrayAdapter();
   static final Gson gson = new GsonBuilder().serializeNulls()
           .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE)
+          .setDateFormat(StringUtil.dateFormat)
           .registerTypeAdapter(LCObject.class, objectDeserializer)
           .registerTypeAdapter(LCUser.class, objectDeserializer)
           .registerTypeAdapter(LCFile.class, objectDeserializer)
