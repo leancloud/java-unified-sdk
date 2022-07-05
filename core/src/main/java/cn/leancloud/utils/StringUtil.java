@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringUtil {
-  private static final String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+  public static final String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
   public static boolean isEmpty(String str) {
     return null == str || str.trim().length() == 0;
