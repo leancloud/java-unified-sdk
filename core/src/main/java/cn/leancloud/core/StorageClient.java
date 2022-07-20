@@ -977,18 +977,48 @@ public class StorageClient {
    * Leaderboard API
    */
 
+  /**
+   * create leaderboard.
+   * @param params parameters.
+   * @return observer instance.
+   */
   public Observable<LCObject> createLeaderboard(Map<String, Object> params) {
     return wrapObservable(apiService.createLeaderboard(params));
   }
+
+  /**
+   * fetch leaderboard with name.
+   * @param name leaderboard name
+   * @return observer instance.
+   */
   public Observable<LCObject> fetchLeaderboard(String name) {
     return wrapObservable(apiService.fetchLeaderboard(name));
   }
+
+  /**
+   * update leaderboard with attributes.
+   * @param name leaderboard name
+   * @param params attributes.
+   * @return observer instance.
+   */
   public Observable<LCObject> updateLeaderboard(String name, Map<String, Object> params) {
     return wrapObservable(apiService.updateLeaderboard(name, params));
   }
+
+  /**
+   * reset leaderboard
+   * @param name leaderboard name
+   * @return observer instance.
+   */
   public Observable<LCObject> resetLeaderboard(String name) {
     return wrapObservable(apiService.resetLeaderboard(name));
   }
+
+  /**
+   * destroy leaderboard
+   * @param name leaderboard name
+   * @return observer instance.
+   */
   public Observable<Boolean> destroyLeaderboard(String name) {
     return wrapObservable(apiService.destroyLeaderboard(name)).map(new Function<LCObject, Boolean>() {
       @Override
@@ -997,6 +1027,14 @@ public class StorageClient {
       }
     });
   }
+
+  /**
+   * update user statistics.
+   * @param user user object
+   * @param params attributes.
+   * @param overwrite overwrite flag.
+   * @return observer instance.
+   */
   public Observable<LCStatisticResult> updateUserStatistics(final LCUser user,
                                                      List<Map<String, Object>> params,
                                                      boolean overwrite) {

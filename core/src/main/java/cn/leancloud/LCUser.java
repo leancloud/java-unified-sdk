@@ -771,6 +771,7 @@ public class LCUser extends LCObject {
    * instantiate AVUser object with sessionToken(synchronized)
    * @param sessionToken session token
    * @param clazz class name.
+   * @param <T> template.
    * @return AVUser instance.
    *
    * this method DOES NOT change AVUser#currentUser, it makes sense for being called in lean engine.
@@ -874,7 +875,7 @@ public class LCUser extends LCObject {
 
   /**
    * Get User list by query with conditions
-   * @param queryConditions
+   * @param queryConditions query conditions.
    * @return query result
    */
   public static Observable<List<LCUser>> strictlyFind(QueryConditions queryConditions){
@@ -1355,6 +1356,7 @@ public class LCUser extends LCObject {
    * query current user's friendship.
    * @param offset result offset.
    * @param limit result size limit.
+   * @param orderBy order attribute.
    * @return Observable instance to monitor operation result.
    */
   public Observable<List<LCFriendship>> queryFriendship(int offset, int limit, String orderBy) {
