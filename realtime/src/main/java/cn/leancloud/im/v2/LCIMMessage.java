@@ -171,16 +171,34 @@ public class LCIMMessage {
   /**
    * set the update time of the message
    * @param updateAt message updated timestamp
+   * @deprecated please use setUpdatedAt instead of.
    */
   public void setUpdateAt(long updateAt) {
     this.updateAt = updateAt;
   }
 
   /**
+   * set the update time of the message
+   * @param updateAt message updated timestamp
+   */
+  public void setUpdatedAt(long updateAt) {
+    this.updateAt = updateAt;
+  }
+
+  /**
+   * get the update time of the message
+   * @return message updated timestamp
+   * @deprecated please use getUpdatedAt instead of.
+   */
+  public long getUpdateAt() {
+    return updateAt;
+  }
+
+  /**
    * get the update time of the message
    * @return message updated timestamp
    */
-  public long getUpdateAt() {
+  public long getUpdatedAt() {
     return updateAt;
   }
 

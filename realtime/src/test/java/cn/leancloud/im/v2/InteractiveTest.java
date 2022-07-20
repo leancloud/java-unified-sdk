@@ -750,7 +750,7 @@ public class InteractiveTest extends TestCase {
                       return;
                     }
                     System.out.println("☑️☑️☑️☑️️ " + clientId + " already updated message. updatedAt(origin)="
-                            + originMsg.getUpdateAt() + ", updatedAt(new)=" + newMsg.getUpdateAt());
+                            + originMsg.getUpdateAt() + ", updatedAt(new)=" + newMsg.getUpdatedAt());
                     conversation.queryMessages(10, new LCIMMessagesQueryCallback() {
                       @Override
                       public void done(List<LCIMMessage> messages, LCIMException e) {
@@ -762,7 +762,7 @@ public class InteractiveTest extends TestCase {
                         }
                         System.out.println("☑️☑️☑️☑️️☑️ " + clientId + " already query messages");
                         for (LCIMMessage msg: messages) {
-                          System.out.println("message updatedAt=" + msg.getUpdateAt());
+                          System.out.println("message updatedAt=" + msg.getUpdatedAt());
                         }
                         testSucceed = true;
                         latch.countDown();
