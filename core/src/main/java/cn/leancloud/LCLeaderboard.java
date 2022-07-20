@@ -190,7 +190,7 @@ public class LCLeaderboard {
      *                   MEMBER_TYPE_USER("_User"): leaderboard target is LCUser
      *                   MEMBER_TYPE_ENTITY("_Entity"): leaderboard target is any entity
      *                   LCObject Name: leaderboard target is LCObject
-     * @return
+     * @return instance
      */
     public static LCLeaderboard createWithoutData(String name, String memberType) {
         return new LCLeaderboard(name, memberType);

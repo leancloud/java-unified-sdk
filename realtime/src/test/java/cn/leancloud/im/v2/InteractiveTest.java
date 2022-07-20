@@ -1,10 +1,12 @@
 package cn.leancloud.im.v2;
 
+import cn.leancloud.LCException;
 import cn.leancloud.LCLogger;
 import cn.leancloud.Configure;
 import cn.leancloud.core.LeanCloud;
 import cn.leancloud.im.LCIMOptions;
 import cn.leancloud.im.v2.callback.*;
+import cn.leancloud.im.v2.messages.LCIMTextMessage;
 import cn.leancloud.session.LCConnectionManager;
 import cn.leancloud.utils.StringUtil;
 import cn.leancloud.json.JSONObject;
@@ -683,6 +685,99 @@ public class InteractiveTest extends TestCase {
 
   public void testSendBinaryMessage() throws Exception {
 
+  }
+  public void testPatchTimestampWhileUpdatingMessage() throws Exception {
+    final String thirdMember = StringUtil.getRandomString(8);
+    final String clientId = "TestUserA";
+    final String customAttr = StringUtil.getRandomString(16);
+    final Date now = new Date();
+    LCIMClient currentClient = LCIMClient.getInstance(clientId);
+    final CountDownLatch latch = new CountDownLatch(1);
+    currentClient.open(new LCIMClientCallback() {
+      @Override
+      public void done(LCIMClient client, LCIMException e) {
+        if (null != e) {
+          System.out.println("failed to open client:" + clientId);
+          e.printStackTrace();
+          latch.countDown();
+          return;
+        }
+        System.out.println("☑️ " + clientId + " try to create conversation...");
+        Map<String, Object> attr = new HashMap<>();
+        attr.put("attr1", customAttr);
+        attr.put("attr2", now);
+        List<String> members = new ArrayList<>();
+        members.add(thirdMember);
+
+        client.createConversation(members, "testAttributesWithSingleClient", attr, new LCIMConversationCreatedCallback() {
+          @Override
+          public void done(final LCIMConversation conversation, LCIMException e) {
+            if (null != e) {
+              System.out.println(clientId + " failed to create conversation: testAttributesWithSingleClient");
+              e.printStackTrace();
+              latch.countDown();
+              return;
+            }
+            System.out.println("☑️☑️ " + clientId + " succeed to create conversation, data=" + conversation.toJSONString());
+            System.out.println("☑️☑️ " + clientId + " continue to send message...");
+
+            final LCIMTextMessage originMsg = new LCIMTextMessage();
+            originMsg.setText("a");
+            conversation.sendMessage(originMsg, new LCIMConversationCallback() {
+              @Override
+              public void done(LCIMException e) {
+                if (null != e) {
+                  System.out.println(clientId + " failed to send message.");
+                  e.printStackTrace();
+                  latch.countDown();
+                  return;
+                }
+                System.out.println("☑️☑️☑️ " + clientId + " already sent message. updatedAt=" + originMsg.getUpdateAt());
+                final LCIMTextMessage newMsg = new LCIMTextMessage();
+                newMsg.setText("b");
+                try {
+                  Thread.sleep(1000);
+                } catch (Exception ex) {
+                  ex.printStackTrace();
+                }
+                conversation.updateMessage(originMsg, newMsg, new LCIMMessageUpdatedCallback() {
+                  @Override
+                  public void done(LCIMMessage message, LCException e) {
+                    if (null != e) {
+                      System.out.println(clientId + " failed to update message.");
+                      e.printStackTrace();
+                      latch.countDown();
+                      return;
+                    }
+                    System.out.println("☑️☑️☑️☑️️ " + clientId + " already updated message. updatedAt(origin)="
+                            + originMsg.getUpdateAt() + ", updatedAt(new)=" + newMsg.getUpdatedAt());
+                    conversation.queryMessages(10, new LCIMMessagesQueryCallback() {
+                      @Override
+                      public void done(List<LCIMMessage> messages, LCIMException e) {
+                        if (null != e) {
+                          System.out.println(clientId + " failed to update message.");
+                          e.printStackTrace();
+                          latch.countDown();
+                          return;
+                        }
+                        System.out.println("☑️☑️☑️☑️️☑️ " + clientId + " already query messages");
+                        for (LCIMMessage msg: messages) {
+                          System.out.println("message updatedAt=" + msg.getUpdatedAt());
+                        }
+                        testSucceed = true;
+                        latch.countDown();
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+    latch.await();
+    assertTrue(testSucceed);
   }
   public void testCorrectLastMessageNotification() throws Exception {
     ;

@@ -724,6 +724,7 @@ public class LCConversationHolder {
       String data = item.getData();
       long timestamp = item.getTimestamp();
       String msgId = item.getMsgId();
+      long updatedTime = item.hasPatchTimestamp()? item.getPatchTimestamp() : 0l;
       boolean mentionAll = item.hasMentionAll() && item.getMentionAll();
       List<String> mentionList = item.getMentionPidsList();
       boolean isBinaryMsg = item.hasBin() && item.getBin();
@@ -739,6 +740,9 @@ public class LCConversationHolder {
       message.setMessageId(msgId);
       message.setMentionAll(mentionAll);
       message.setMentionList(mentionList);
+      if (updatedTime > 0l) {
+        message.setUpdateAt(updatedTime);
+      }
 
       message = LCIMMessageManagerHelper.parseTypedMessage(message);
       messageList.add(message);

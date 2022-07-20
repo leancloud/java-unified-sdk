@@ -215,6 +215,7 @@ public class LCIMMessageManager {
         typedMessage.setFrom(message.getFrom());
         typedMessage.setDeliveredAt(message.getDeliveredAt());
         typedMessage.setTimestamp(message.getTimestamp());
+        typedMessage.setUpdateAt(message.getUpdateAt());
         typedMessage.setContent(message.getContent());
         typedMessage.setMessageId(message.getMessageId());
         typedMessage.setMessageStatus(message.getMessageStatus());
