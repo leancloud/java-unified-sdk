@@ -26,7 +26,7 @@ public class GsonWrapper {
   static final JSONArrayAdapter jsonArrayAdapter = new JSONArrayAdapter();
   static final Gson gson = new GsonBuilder().serializeNulls()
           .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE)
-          .setDateFormat(StringUtil.dateFormat)
+//          .setDateFormat(StringUtil.dateFormat)
           .registerTypeAdapter(LCObject.class, objectDeserializer)
           .registerTypeAdapter(LCUser.class, objectDeserializer)
           .registerTypeAdapter(LCFile.class, objectDeserializer)
@@ -53,6 +53,7 @@ public class GsonWrapper {
           .registerTypeAdapter(GsonObject.class, jsonObjectAdapter)
           .registerTypeAdapter(JSONObject.class, jsonObjectAdapter)
           .registerTypeAdapter(GsonArray.class, jsonArrayAdapter)
+          .registerTypeAdapter(Date.class, new GsonUTCDateAdapter())
           .registerTypeAdapter(FileUploadToken.class, new FileUploadTokenAdapter())
           .registerTypeAdapter(AppAccessEndpoint.class,
                   new GeneralObjectAdapter<>(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES,
