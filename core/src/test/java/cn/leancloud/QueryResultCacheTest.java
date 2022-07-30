@@ -25,7 +25,7 @@ public class QueryResultCacheTest extends TestCase {
     Configure.initializeRuntime();
     LeanCloud.setLogLevel(LCLogger.Level.DEBUG);
   }
-  
+
   public static Test suite() {
     return new TestSuite(QueryResultCacheTest.class);
   }
@@ -106,13 +106,13 @@ public class QueryResultCacheTest extends TestCase {
     qr.setClassName(className);
     for (LCObject obj : qr.getResults()) {
       obj.setClassName(className);
-      System.out.println(obj.getDate("legStartDate"));
+      System.out.println("legStartDate(first) is: " + obj.getDate("legStartDate"));
     }
     String jsonStr = qr.toJSONString();
     System.out.println(jsonStr);
     LCQueryResult qr2 = JSON.parseObject(jsonStr, LCQueryResult.class);
     for (LCObject obj : qr2.getResults()) {
-      System.out.println(obj.getDate("legStartDate"));
+      System.out.println("legStartDate(second) is: " + obj.getDate("legStartDate"));
     }
   }
 }
