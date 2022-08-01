@@ -2,6 +2,18 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+## 8.2.12 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- fixed: add timezone support for Gson Adapter(for correcting date serialization/deserialization issue).
+
+
 ## 8.2.11 release
 
 #### Break changes
