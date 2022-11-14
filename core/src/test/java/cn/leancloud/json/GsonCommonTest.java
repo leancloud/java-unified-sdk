@@ -149,6 +149,14 @@ public class GsonCommonTest extends TestCase {
     System.out.println(responses.toString());
   }
 
+  public void testNumberParser() {
+    Number numbers[] = {3, 4.5, 5.0, -0, 0.0, 0.0002, -0.0002, -5, -6.5};
+    for (Number num: numbers) {
+      System.out.println("original: " + num + ", floor: " + Math.floor(num.doubleValue()) + ", ceil: " + Math.ceil(num.doubleValue())
+              + ", parsed: " + NumberDeserializerDoubleAsIntFix.parsePrecisionNumber(num));
+    }
+  }
+
   public void testAppAccessEndpoint() {
     String text = "{\"ttl\":3600,\"stats_server\":\"https://stats_server\", \"push_server\": \"https://push_server\"," +
             " \"rtm_router_server\": \"https://rtm_router_server\", \"api_server\": \"https://api_server\"," +
