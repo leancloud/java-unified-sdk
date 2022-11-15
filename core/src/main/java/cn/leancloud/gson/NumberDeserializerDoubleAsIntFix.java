@@ -18,7 +18,7 @@ public class NumberDeserializerDoubleAsIntFix implements JsonDeserializer<Number
     // and return any type you want
     // this solution will transform 3.0 float to long values
     if (Math.floor(num.doubleValue()) != Math.ceil(num.doubleValue())) {
-      return num;
+      return num.doubleValue();
     }
     double doubleValue = Math.ceil(num.doubleValue());
     if (doubleValue == num.intValue()) {

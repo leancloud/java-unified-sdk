@@ -1,5 +1,6 @@
 package cn.leancloud;
 
+import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.core.LeanCloud;
 import cn.leancloud.types.LCNull;
 import cn.leancloud.utils.StringUtil;
@@ -172,6 +173,7 @@ public class LCFileTest extends TestCase {
   }
 
   public void testBase64Data() throws Exception {
+    AppConfiguration.setEnableLocalCache(false);
     String contents = StringUtil.getRandomString(640);
     LCFile file = new LCFile("testfilename", contents.getBytes());
 //    Map<String, Object> metaData = new HashMap<>();
