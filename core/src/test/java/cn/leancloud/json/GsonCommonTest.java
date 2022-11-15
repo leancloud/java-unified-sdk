@@ -9,6 +9,7 @@ import cn.leancloud.service.AppAccessEndpoint;
 import cn.leancloud.sms.LCCaptchaDigest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import junit.framework.TestCase;
 
@@ -147,6 +148,26 @@ public class GsonCommonTest extends TestCase {
     Type ResponseList = new TypeToken<ArrayList<Map<String, Object>>>() {}.getType();
     responses = GsonWrapper.getGsonInstance().fromJson(draft, ResponseList);
     System.out.println(responses.toString());
+  }
+
+  public void testObjectDeserialization() {
+    String input = "{\"result\":{\"objectId\":\"637233023f103a0cf936caf8\",\"billId\":\"202211142022269827\"," +
+            "\"state\":-1,\"size\":5,\"price\":10.6,\"payPrice\":0,\"isPaid\":false," +
+            "\"createdAt\":\"2022-11-14T12:22:26.122Z\",\"isCommented\":false,\"purpose\":\"用于小说配音\"," +
+            "\"user\":{\"objectId\":\"5e5462617796d9006a09c795\",\"name\":\"方冶（全天接单主页加微）\"," +
+            "\"iconUrl\":\"http://file2.i7play.com/j6ptbHjPSAaBurvOYMPRgevtTzbwXYNF/CROP_20221112164622689.jpg\"," +
+            "\"id\":2230377,\"wx\":\"ZmZxy-18\",\"qq\":\"\",\"isVip\":true,\"is18\":true},\"isBu\":false}} ";
+    Type ResponseMap = new TypeToken<Map<String, Object>>() {}.getType();
+    Map<String, Object> result = GsonWrapper.getGsonInstance().fromJson(input, ResponseMap);
+    Object data = result.get("result");
+    JsonElement jsonElement = GsonWrapper.getGsonInstance().toJsonTree(data);
+    System.out.println(jsonElement);
+    if (data instanceof Map) {
+      Map<String,Object> dataMap = (Map<String,Object>)data;
+      Object priceObj = dataMap.get("price");
+      System.out.println(priceObj);
+    }
+    System.out.println(result.toString());
   }
 
   public void testNumberParser() {

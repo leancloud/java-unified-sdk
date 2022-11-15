@@ -54,6 +54,10 @@ class QiniuSlicingUploader extends HttpClientUploader {
 
     try {
       is = this.avFile.getDataStream();
+      if (null == is) {
+        return new LCException(LCException.FILE_UPLOAD_FAILURE,
+                "failed to upload file to qiniu bcz current file has not data stream.");
+      }
       LOGGER.d("begin to upload qiniu. chunkSize=" + uploadChunkSize + ", blockCount=" + blockCount + ", is=" + is);
       // loop for read, upload block to qiniu.
       for (int i = 0; i< blockCount; i++) {

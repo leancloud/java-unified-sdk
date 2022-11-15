@@ -568,7 +568,7 @@ public final class LCFile extends LCObject {
                   try {
                     PaasClient.getStorageClient().fileCallback(asAuthenticatedUser, completeResult);
                     if (null != exception) {
-                      logger.w("failed to invoke fileCallback. cause:", exception);
+                      logger.w("failed to upload file. cause: " + exception.getMessage());
                       throw exception;
                     } else {
                       return LCFile.this;
@@ -720,7 +720,7 @@ public final class LCFile extends LCObject {
       filePath = localPath;
     } else if (!StringUtil.isEmpty(cachePath)) {
       filePath = cachePath;
-    } else if (!StringUtil.isEmpty(getUrl())) {
+    } else if (!FileCache.getIntance().isDisableLocalCache() && !StringUtil.isEmpty(getUrl())) {
       File cacheFile = FileCache.getIntance().getCacheFile(getUrl());
       if (null == cacheFile || !cacheFile.exists()) {
         FileDownloader downloader = new FileDownloader();

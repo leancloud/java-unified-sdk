@@ -86,6 +86,9 @@ public class LocalStorage {
     return new File(this.baseDir + key);
   }
 
+  public boolean isDisableLocalCache() {
+    return disableLocalCache;
+  }
   public InputStream getInputStreamFromFile(File file) throws FileNotFoundException {
     if (disableLocalCache) {
       return null;
