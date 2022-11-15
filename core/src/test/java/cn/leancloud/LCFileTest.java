@@ -204,6 +204,7 @@ public class LCFileTest extends TestCase {
       }
     });
     latch.await();
+    AppConfiguration.setEnableLocalCache(true);
     assertTrue(file.getObjectId().length() > 0);
   }
 
