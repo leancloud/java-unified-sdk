@@ -2,6 +2,9 @@
 
 Following is change logs for recently release versions, you can refer to [releases page](https://github.com/leancloud/java-unified-sdk/releases) for more details.
 
+> Warning:
+> DONOT upgrade java-websocket to 1.15.0(or above), bcz it doesn't work on Android 5.1 or earlier version.
+
 ## 8.2.15 release
 
 #### Break changes
