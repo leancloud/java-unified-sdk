@@ -15,7 +15,7 @@ import org.java_websocket.protocols.IProtocol;
 import org.java_websocket.protocols.Protocol;
 
 import javax.net.SocketFactory;
-import javax.net.ssl.*;
+import javax.net.ssl.SSLSocketFactory;
 import java.net.Socket;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -88,15 +88,19 @@ public class StandardWebSocketClient extends WebSocketClient {
             try {
               Class sniHostnameClazz = Class.forName("javax.net.ssl.SNIHostName");
               Class sslSocketClazz = Class.forName("javax.net.ssl.SSLSocket");
-              if (null != sniHostnameClazz && null != sslSocketClazz && (socket instanceof javax.net.ssl.SSLSocket)) {
+              Class sniServernameClazz = Class.forName("javax.net.ssl.SNIServerName");
+              if (null != sniHostnameClazz && null != sslSocketClazz && null != sniServernameClazz
+                      && (socket instanceof javax.net.ssl.SSLSocket)) {
                 javax.net.ssl.SNIHostName serverName = new javax.net.ssl.SNIHostName(getURI().getHost());
-                List<SNIServerName> serverNames = new ArrayList<SNIServerName>(1);
+                List<javax.net.ssl.SNIServerName> serverNames = new ArrayList<javax.net.ssl.SNIServerName>(1);
                 serverNames.add(serverName);
 
-                SSLParameters params = ((javax.net.ssl.SSLSocket)socket).getSSLParameters();
+                javax.net.ssl.SSLParameters params = ((javax.net.ssl.SSLSocket) socket).getSSLParameters();
                 params.setServerNames(serverNames);
-                ((javax.net.ssl.SSLSocket)socket).setSSLParameters(params);
+                ((javax.net.ssl.SSLSocket) socket).setSSLParameters(params);
               }
+            } catch (NoClassDefFoundError error) {
+              gLogger.w("failed to init SSLSocket. cause: " + error.getMessage());
             } catch (Exception ex) {
               // for Android OS before Build.VERSION_CODES.N, we can't find out javax.net.ssl.SNIHostName.
               gLogger.w("failed to init SSLSocket. cause: " + ex.getMessage());
@@ -108,7 +112,7 @@ public class StandardWebSocketClient extends WebSocketClient {
           setSocket(socketFactory.createSocket());
         }
       }
-    } catch (Exception e) {
+    } catch (Throwable e) {
       gLogger.e("Socket Initializer Error", e);
     }
   }
