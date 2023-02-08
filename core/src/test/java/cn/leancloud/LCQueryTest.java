@@ -457,6 +457,40 @@ public class LCQueryTest extends TestCase {
     assertTrue(testSucceed);
   }
 
+  public void testQueryCacheThenNetworking() throws Exception {
+    final CountDownLatch tmpLatch = new CountDownLatch(2);
+    LCQuery query = new LCQuery("Student");
+    query.orderByDescending(LCObject.KEY_CREATED_AT);
+    query.limit(5);
+    query.skip(1);
+    query.setCachePolicy(LCQuery.CachePolicy.CACHE_THEN_NETWORK);
+    query.findInBackground().subscribe(new Observer<List<LCObject>>() {
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      public void onNext(List<LCObject> o) {
+        System.out.println("+++++++++++++++++");
+        for (LCObject j: o) {
+          System.out.println("found result: " + j.toString());
+        }
+        testSucceed = true;
+        tmpLatch.countDown();
+      }
+
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        tmpLatch.countDown();
+      }
+
+      public void onComplete() {
+
+      }
+    });
+    tmpLatch.await();
+    assertTrue(testSucceed);
+  }
+
   public void testQueryAllAfterClearCache() throws Exception {
     final LCQuery query = new LCQuery("Student");
     query.orderByDescending(LCObject.KEY_CREATED_AT);
