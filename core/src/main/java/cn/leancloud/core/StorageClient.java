@@ -529,6 +529,10 @@ public class StorageClient {
     }));
   }
 
+  public Observable<JSONObject> retrieveShortToken(String sessionToken) {
+    return wrapObservable(apiService.retrieveShortToken(sessionToken));
+  }
+
   public Observable<LCNull> requestResetPassword(String email) {
     Map<String, String> map = new HashMap<String, String>();
     map.put("email", email);

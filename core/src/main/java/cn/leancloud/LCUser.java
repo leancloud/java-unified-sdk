@@ -718,6 +718,16 @@ public class LCUser extends LCObject {
   }
 
   /**
+   * 获取用户的临时 JWT token，用于其他系统认证（例如 TDS 客服系统）
+   * @param sessionToken session token
+   * @return observable instance
+   * @notice 该接口仅在 TDS 产品线内有效。
+   */
+  public static Observable<JSONObject> retrieveShortTokenInBackground(String sessionToken) {
+    return PaasClient.getStorageClient().retrieveShortToken(sessionToken);
+  }
+
+  /**
    * instantiate AVUser object with sessionToken(synchronized)
    * @param sessionToken session token
    * @return AVUser instance.
