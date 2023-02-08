@@ -2,8 +2,8 @@ package cn.leancloud.gson;
 
 import cn.leancloud.utils.StringUtil;
 import com.google.gson.*;
-import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class GeneralFieldMappingObjectAdapter<T> extends TypeAdapter<T> {
 
   @Override
   public void write(JsonWriter jsonWriter, T t) throws IOException {
-    JsonObject jsonObject = new JsonObject();
+    jsonWriter.beginObject();
     Field[] fields = t.getClass().getDeclaredFields();
     for(Field field : fields) {
       field.setAccessible(true);
@@ -43,68 +43,104 @@ public class GeneralFieldMappingObjectAdapter<T> extends TypeAdapter<T> {
       try {
         if (valueType.equals(Character.class)) {
           char value = field.getChar(t);
-          jsonObject.addProperty(outputName, value);
+          jsonWriter.name(outputName).value(value);
         } else if (valueType.equals(Boolean.class)) {
           boolean value = field.getBoolean(t);
-          jsonObject.addProperty(outputName, value);
+          jsonWriter.name(outputName).value(value);
         } else if (valueType.equals(String.class)) {
           String value = (String)field.get(t);
-          jsonObject.addProperty(outputName, value);
+          jsonWriter.name(outputName).value(value);
         } else if (valueType.equals(Integer.class)) {
           Integer value = (Integer) field.get(t);
-          jsonObject.addProperty(outputName, value);
+          jsonWriter.name(outputName).value(value);
         } else if (valueType.equals(Long.class)) {
           Long value = (Long) field.get(t);
-          jsonObject.addProperty(outputName, value);
+          jsonWriter.name(outputName).value(value);
         } else if (valueType.equals(Float.class)) {
           Float value = (Float) field.get(t);
-          jsonObject.addProperty(outputName, value);
+          jsonWriter.name(outputName).value(value);
         } else if (valueType.equals(Double.class)) {
           Double value = (Double) field.get(t);
-          jsonObject.addProperty(outputName, value);
+          jsonWriter.name(outputName).value(value);
         }
       } catch (Exception ex) {
         ;
       }
     }
-    TypeAdapters.JSON_ELEMENT.write(jsonWriter, jsonObject);
+    jsonWriter.endObject();
+    jsonWriter.flush();
   }
 
   @Override
   public T read(JsonReader jsonReader) throws IOException {
-    JsonElement elem = TypeAdapters.JSON_ELEMENT.read(jsonReader);
-    JsonObject jsonObject = elem.getAsJsonObject();
     try {
       T result = (T)this.targetClazz.newInstance();
-      for (Map.Entry<String, Type> entry: this.displayFields.entrySet()) {
-        String fieldName = entry.getKey();
-        Type valueType = entry.getValue();
-        JsonElement value = jsonObject.get(fieldName);
+      jsonReader.beginObject();
+      String fieldName = null;
+      while(jsonReader.hasNext()) {
+        JsonToken token = jsonReader.peek();
+        if (token.equals(JsonToken.NAME)) {
+          // get current token.
+          fieldName = jsonReader.nextName();
+        }
+        Type valueType = this.displayFields.get(fieldName);
         String identifyFieldName = toCanonicalName(fieldName, this.fieldNamingPolicy);
+        // move to next token
+        jsonReader.peek();
         try {
           Field field = result.getClass().getDeclaredField(identifyFieldName);
           field.setAccessible(true);
+          Object value = null;
           if (valueType.equals(String.class)) {
-            field.set(result, value.getAsString());
+            value = jsonReader.nextString();
           } else if (valueType.equals(Integer.class)) {
-            field.set(result, value.getAsInt());
+            value = jsonReader.nextInt();
           } else if (valueType.equals(Boolean.class)) {
-            field.set(result, value.getAsBoolean());
+            value = jsonReader.nextBoolean();
           } else if (valueType.equals(Character.class)) {
-            field.set(result, value.getAsByte());
+            value = jsonReader.nextString();
           } else if (valueType.equals(Long.class)) {
-            field.set(result, value.getAsLong());
+            value = jsonReader.nextLong();
           } else if (valueType.equals(Float.class)) {
-            field.set(result, value.getAsFloat());
+            value = jsonReader.nextDouble();
           } else if (valueType.equals(Double.class)) {
-            field.set(result, value.getAsDouble());
-          } else {
-            field.set(result, value);
+            value = jsonReader.nextDouble();
           }
+          field.set(result, value);
         } catch (Exception ex) {
           ex.printStackTrace();
         }
       }
+//      for (Map.Entry<String, Type> entry: this.displayFields.entrySet()) {
+//        String fieldName = entry.getKey();
+//        Type valueType = entry.getValue();
+//        JsonElement value = jsonObject.get(fieldName);
+//        String identifyFieldName = toCanonicalName(fieldName, this.fieldNamingPolicy);
+//        try {
+//          Field field = result.getClass().getDeclaredField(identifyFieldName);
+//          field.setAccessible(true);
+//          if (valueType.equals(String.class)) {
+//            field.set(result, value.getAsString());
+//          } else if (valueType.equals(Integer.class)) {
+//            field.set(result, value.getAsInt());
+//          } else if (valueType.equals(Boolean.class)) {
+//            field.set(result, value.getAsBoolean());
+//          } else if (valueType.equals(Character.class)) {
+//            field.set(result, value.getAsByte());
+//          } else if (valueType.equals(Long.class)) {
+//            field.set(result, value.getAsLong());
+//          } else if (valueType.equals(Float.class)) {
+//            field.set(result, value.getAsFloat());
+//          } else if (valueType.equals(Double.class)) {
+//            field.set(result, value.getAsDouble());
+//          } else {
+//            field.set(result, value);
+//          }
+//        } catch (Exception ex) {
+//          ex.printStackTrace();
+//        }
+//      }
+      jsonReader.endObject();
       return result;
     } catch (InstantiationException e) {
       throw new RuntimeException(e);

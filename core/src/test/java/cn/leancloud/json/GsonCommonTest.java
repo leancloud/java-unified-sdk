@@ -7,6 +7,8 @@ import cn.leancloud.gson.MapDeserializerDoubleAsIntFix;
 import cn.leancloud.gson.NumberDeserializerDoubleAsIntFix;
 import cn.leancloud.service.AppAccessEndpoint;
 import cn.leancloud.sms.LCCaptchaDigest;
+import cn.leancloud.sms.LCCaptchaValidateResult;
+import cn.leancloud.upload.FileUploadToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -192,10 +194,36 @@ public class GsonCommonTest extends TestCase {
     assertTrue(endpoint.getStatsServer().endsWith("stats_server"));
   }
 
+  public void testFileUploadToken() {
+    String text = "{}";
+    FileUploadToken token = JSON.parseObject(text, FileUploadToken.class);
+    System.out.println(JSON.toJSONString(token));
+    assertTrue(null != token);
+
+    text = "{\"bucket\":\"value_bucket\",\"objectId\":\"value_objectId\",\"upload_url\":\"value_upload_url\",\"provider\":\"value_provider\",\"token\":\"value_token\",\"url\":\"value_url\",\"key\":\"value_key\"}";
+    token = JSON.parseObject(text, FileUploadToken.class);
+    System.out.println(JSON.toJSONString(token));
+    assertTrue(null != token);
+    assertTrue(token.getToken().endsWith("token"));
+    assertTrue(token.getKey().endsWith("key"));
+    assertTrue(token.getObjectId().endsWith("objectId"));
+    assertTrue(token.getBucket().endsWith("bucket"));
+    assertTrue(token.getUploadUrl().endsWith("upload_url"));
+    assertTrue(token.getUrl().endsWith("url"));
+    assertTrue(token.getProvider().endsWith("provider"));
+  }
+
   public void testAVCaptchaDigest() {
     String text = "{\"captcha_token\":\"fhaeifhepfewifh\", \"captcha_url\": \"https://captcha_url\"}";
     LCCaptchaDigest digest = JSON.parseObject(text, LCCaptchaDigest.class);
     System.out.println(JSON.toJSONString(digest));
     assertTrue(digest.getCaptchaUrl().startsWith("https"));
+  }
+
+  public void testCaptchaValidateResult() {
+    String text = "{\"validateToken\":\"value_bucket\"}";
+    LCCaptchaValidateResult result = JSON.parseObject(text, LCCaptchaValidateResult.class);
+    System.out.println(JSON.toJSONString(result));
+    assertTrue(result.getValidateToken().equals("value_bucket"));
   }
 }
