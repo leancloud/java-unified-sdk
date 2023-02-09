@@ -1,0 +1,76 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 29
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    tasks.withType(Javadoc) {
+        failOnError false
+        options.addStringOption('Xdoclint:none', '-quiet')
+        options.addStringOption('encoding', 'UTF-8')
+        options.addStringOption('charSet', 'UTF-8')
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+android.libraryVariants.all { variant ->
+    def javadoc = task("generate${variant.name}Javadoc", type: Javadoc) {
+        description "Generates Javadoc for $variant.name."
+        def compileTask = variant.hasProperty('javaCompileProvider')? variant.javaCompileProvider.get() : variant.javaCompile
+        source = compileTask.source
+        ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+        options.links("http://docs.oracle.com/javase/8/docs/api/");
+        options.links("http://d.android.com/reference/");
+        exclude '**/BuildConfig.java'
+        exclude '**/R.java'
+        failOnError false
+    }
+    def name = variant.buildType.name
+    def task = project.tasks.create "jar${name.capitalize()}", Jar
+    def compileTask = variant.hasProperty('javaCompileProvider')? variant.javaCompileProvider.get() : variant.javaCompile
+    task.dependsOn compileTask
+    task.dependsOn javadoc
+    task.from compileTask.destinationDir
+    task.exclude '**/BuildConfig.class'
+    task.exclude '**/R.class'
+    task.exclude '**/R$*.class'
+    artifacts.add('archives', task)
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.7.0'
+
+    implementation project(':realtime-android')
+    implementation project(':storage-android')
+
+    implementation("cn.leancloud:realtime-core:${rootProject.ext.sdkVersion}")
+
+    implementation 'com.hihonor.mcs:push:7.0.39.303'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}
