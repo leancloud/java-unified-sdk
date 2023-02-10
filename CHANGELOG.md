@@ -5,6 +5,17 @@ Following is change logs for recently release versions, you can refer to [releas
 > Warning:
 > DONOT upgrade java-websocket to 1.15.0(or above), bcz it doesn't work on Android 5.1 or earlier version.
 
+## 8.2.17 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- fixed: let query callback run in main thread for CACHE_THEN_NETWORK policy.
+
 ## 8.2.16 release
 
 #### Break changes
