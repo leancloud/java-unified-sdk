@@ -105,6 +105,23 @@ public class LCMixPushManager {
   }
 
   /**
+   * 注册荣耀推送
+   * @param application 应用上下文
+   */
+  public static void registerHonorPush(Context application) {
+    cn.leancloud.honor.LCMixPushManager.registerHonorPush(application);
+  }
+
+  /**
+   * 注册荣耀推送
+   * @param application 应用上下文
+   * @param profile 推送配置
+   */
+  public static void registerHonorPush(Context application, String profile) {
+    cn.leancloud.honor.LCMixPushManager.registerHonorPush(application, profile);
+  }
+
+  /**
    * 初始化方法，建议在 Application onCreate 里面调用
    *
    * @param application 应用实例

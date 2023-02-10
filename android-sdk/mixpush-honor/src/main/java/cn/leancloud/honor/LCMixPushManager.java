@@ -1,6 +1,6 @@
 package cn.leancloud.honor;
 
-import android.app.Application;
+import android.content.Context;
 
 import com.hihonor.push.sdk.HonorPushClient;
 
@@ -13,14 +13,24 @@ public class LCMixPushManager {
      * 华为推送的 deviceProfile
      */
     public static String deviceProfile = "";
-    static Class hwMessageServiceClazz = LCHonorMessageService.class;
+    static Class messageServiceClazz = LCHonorMessageService.class;
 
     /**
      * 初始化方法，建议在 Application onCreate 里面调用
      *
      * @param application 应用实例
      */
-    public static void registerHonorPush(Application application) {
+    public static void registerHonorPush(Context application) {
         HonorPushClient.getInstance().init(application, true);
+    }
+
+    /**
+     * 初始化方法，建议在 Application onCreate 里面调用
+     * @param application 应用实例
+     * @param profile 推送配置
+     */
+    public static void registerHonorPush(Context application, String profile) {
+        registerHonorPush(application);
+        deviceProfile = profile;
     }
 }

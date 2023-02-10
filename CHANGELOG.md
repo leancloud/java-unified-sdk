@@ -27,7 +27,7 @@ Following is change logs for recently release versions, you can refer to [releas
 - None
 
 #### Optimization and fixed bugs
-- fixed: revert java-websocket version to 1.14.1, for websocketclient crashed on part of old android versions(before 6.0);
+- fixed: revert java-websocket version to 1.4.1, for websocketclient crashed on part of old android versions(before 6.0);
 
 
 ## 8.2.14 release
