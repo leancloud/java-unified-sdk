@@ -70,6 +70,19 @@ public class StorageClient {
     return observable;
   }
 
+  public Observable wrapObservableNoResume(Observable observable) {
+    if (null == observable) {
+      return null;
+    }
+    if (asynchronized) {
+      observable = observable.subscribeOn(Schedulers.io());
+    }
+    if (null != defaultCreator) {
+      observable = observable.observeOn(defaultCreator.create());
+    }
+    return observable;
+  }
+
   private Observable wrapObservableInBackground(Observable observable) {
     if (null == observable) {
       return null;
@@ -78,9 +91,7 @@ public class StorageClient {
     if (asynchronized) {
       observable = observable.subscribeOn(scheduler);
     }
-    if (null != defaultCreator) {
-      observable = observable.observeOn(scheduler);
-    }
+    observable = observable.observeOn(scheduler);
     return observable;
   }
 
@@ -221,7 +232,7 @@ public class StorageClient {
             return o.getResults();
           }
         });
-        result = wrapObservableInBackground(Observable.concat(cacheResult, networkResult));
+        result = wrapObservableNoResume(Observable.concat(cacheResult, networkResult));
         break;
       case NETWORK_ELSE_CACHE:
         queryResult =  queryRemoteServer(authenticatedUser, validPath, query);
