@@ -13,7 +13,7 @@ import cn.leancloud.utils.StringUtil;
 public class LCHonorMessageService extends HonorMessageService {
     static final LCLogger LOGGER = LogUtil.getLogger(LCHonorMessageService.class);
 
-    static final String MIXPUSH_PRIFILE = "deviceProfile";
+    static final String PUSH_PROFILE = "deviceProfile";
     static final String VENDOR = "honor";
 
     @Override
@@ -48,7 +48,7 @@ public class LCHonorMessageService extends HonorMessageService {
         if (!hwToken.equals(installation.getString(LCInstallation.REGISTRATION_ID))) {
             installation.put(LCInstallation.REGISTRATION_ID, hwToken);
         }
-        String localProfile = installation.getString(MIXPUSH_PRIFILE);
+        String localProfile = installation.getString(PUSH_PROFILE);
         if (null == localProfile) {
             localProfile = "";
         }
@@ -62,7 +62,7 @@ public class LCHonorMessageService extends HonorMessageService {
                 if (null != e) {
                     LOGGER.e("update installation error!", e);
                 } else {
-                    LOGGER.d("Huawei push registration successful!");
+                    LOGGER.d("Honor push registration successful!");
                 }
             }
         }));

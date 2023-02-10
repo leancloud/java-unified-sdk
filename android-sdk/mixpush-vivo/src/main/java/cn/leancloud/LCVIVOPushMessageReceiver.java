@@ -12,7 +12,7 @@ import cn.leancloud.vivo.LCMixPushManager;
 
 public abstract class LCVIVOPushMessageReceiver extends com.vivo.push.sdk.OpenClientPushMessageReceiver {
   private static final LCLogger LOGGER = LogUtil.getLogger(LCVIVOPushMessageReceiver.class);
-  private final String VIVO_VERDOR = "vivo";
+  private final String VIVO_VENDOR = "vivo";
 
   /**
    * 通知被点击后的结果返回。
@@ -42,8 +42,8 @@ public abstract class LCVIVOPushMessageReceiver extends com.vivo.push.sdk.OpenCl
     } else {
       LCInstallation installation = LCInstallation.getCurrentInstallation();
 
-      if (!VIVO_VERDOR.equals(installation.getString(LCInstallation.VENDOR))) {
-        installation.put(LCInstallation.VENDOR, VIVO_VERDOR);
+      if (!VIVO_VENDOR.equals(installation.getString(LCInstallation.VENDOR))) {
+        installation.put(LCInstallation.VENDOR, VIVO_VENDOR);
       }
       if (!regId.equals(installation.getString(LCInstallation.REGISTRATION_ID))) {
         installation.put(LCInstallation.REGISTRATION_ID, regId);
