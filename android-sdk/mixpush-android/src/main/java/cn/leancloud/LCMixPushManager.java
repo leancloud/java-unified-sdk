@@ -122,6 +122,55 @@ public class LCMixPushManager {
   }
 
   /**
+   * 打开通知栏状态
+   * @param callback 回调函数
+   */
+  public static void turnOnHonorPush(LCCallback<Void> callback) {
+    cn.leancloud.honor.LCMixPushManager.turnOnHonorPush(callback);
+  }
+
+  /**
+   * 关闭通知栏状态
+   * @param callback 回调函数
+   */
+  public static void turnOffHonorPush(LCCallback<Void> callback) {
+    cn.leancloud.honor.LCMixPushManager.turnOffHonorPush(callback);
+  }
+
+  /**
+   * 校验当前系统是否支持 Honor PUSH
+   * @return true or false.
+   */
+  public static boolean isSupportHonorPush() {
+    return cn.leancloud.honor.LCMixPushManager.isSupportHonorPush();
+  }
+
+  /**
+   * 查询应用是否允许显示通知栏消息，可以通过 getHonorPushStatus 查询当前应用通知栏状态。
+   * @param callback 回调函数
+   */
+  public static void getHonorPushStatus(LCCallback<Boolean> callback) {
+    cn.leancloud.honor.LCMixPushManager.getHonorPushStatus(callback);
+  }
+
+  /**
+   * 获取 PushToken
+   * @param callback 回调函数
+   */
+  public static void getHonorPushToken(LCCallback<String> callback) {
+    cn.leancloud.honor.LCMixPushManager.getHonorPushToken(callback);
+  }
+
+  /**
+   * 注销 PushToken
+   * 用户拒绝接受您应用的使用协议和隐私声明后，可以调用deletePushToken方法注销PushToken，注销成功后，客户端将不再接收到消息。
+   * @param callback 回调函数
+   */
+  public static void deleteHonorPushToken(LCCallback<Void> callback) {
+    cn.leancloud.honor.LCMixPushManager.deleteHonorPushToken(callback);
+  }
+
+  /**
    * 初始化方法，建议在 Application onCreate 里面调用
    *
    * @param application 应用实例
