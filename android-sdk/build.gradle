@@ -6,6 +6,7 @@ buildscript {
         google()
         jcenter()
         maven {url 'http://developer.huawei.com/repo/'}
+        maven { url 'https://developer.hihonor.com/repo/' }
         mavenLocal()
     }
     dependencies {
@@ -25,12 +26,13 @@ allprojects {
         google()
         jcenter()
         maven {url 'http://developer.huawei.com/repo/'}
+        maven { url 'https://developer.hihonor.com/repo/' }
         mavenLocal()
     }
 }
 
 ext {
-    sdkVersion = "8.2.15"
+    sdkVersion = "8.2.16"
     supportLibVersion = "26.1.0"
     converterVersion = "2.1.0"
     rxandroidVersion = "2.1.1"

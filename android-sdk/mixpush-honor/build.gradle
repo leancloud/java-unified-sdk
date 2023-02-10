@@ -1,25 +1,23 @@
-apply plugin: 'com.android.library'
-apply plugin: 'com.huawei.agconnect'
+plugins {
+    id 'com.android.library'
+}
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion "28.0.3"
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
 
     defaultConfig {
-        minSdkVersion 17
-        targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion 19
+        targetSdkVersion 29
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
+        consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            consumerProguardFiles 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -35,7 +33,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
-
 
 android.libraryVariants.all { variant ->
     def javadoc = task("generate${variant.name}Javadoc", type: Javadoc) {
@@ -62,23 +59,16 @@ android.libraryVariants.all { variant ->
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     implementation project(':realtime-android')
     implementation project(':storage-android')
 
-    implementation project(':mixpush-hms')
-    implementation project(':mixpush-meizu')
-    implementation project(':mixpush-oppo')
-    implementation project(':mixpush-vivo')
-    implementation project(':mixpush-xiaomi')
-    implementation project(':mixpush-honor')
-
     implementation("cn.leancloud:realtime-core:${rootProject.ext.sdkVersion}")
 
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    implementation 'com.hihonor.mcs:push:7.0.39.303'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
 apply from: '../maven_push.gradle'

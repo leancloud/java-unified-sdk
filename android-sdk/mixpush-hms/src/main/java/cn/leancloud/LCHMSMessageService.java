@@ -16,7 +16,7 @@ import cn.leancloud.utils.StringUtil;
 public class LCHMSMessageService extends HmsMessageService {
   static final LCLogger LOGGER = LogUtil.getLogger(LCHMSMessageService.class);
 
-  static final String MIXPUSH_PRIFILE = "deviceProfile";
+  static final String MIXPUSH_PROFILE = "deviceProfile";
   static final String VENDOR = "HMS";
 
   public LCHMSMessageService() {
@@ -104,7 +104,7 @@ public class LCHMSMessageService extends HmsMessageService {
     if (!hwToken.equals(installation.getString(LCInstallation.REGISTRATION_ID))) {
       installation.put(LCInstallation.REGISTRATION_ID, hwToken);
     }
-    String localProfile = installation.getString(MIXPUSH_PRIFILE);
+    String localProfile = installation.getString(MIXPUSH_PROFILE);
     if (null == localProfile) {
       localProfile = "";
     }

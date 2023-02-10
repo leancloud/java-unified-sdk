@@ -141,6 +141,61 @@ public class LCUserTest extends TestCase {
     assertTrue(operationSucceed);
   }
 
+  public void testShortToken() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    LCUser.logIn(USERNAME, PASSWORD).subscribe(new Observer<LCUser>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(LCUser lcUser) {
+        String sessionToken = lcUser.getSessionToken();
+        System.out.println("login succeed. sessionToken: " + sessionToken);
+        LCUser.retrieveShortTokenInBackground(sessionToken).subscribe(new Observer<JSONObject>() {
+          @Override
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(JSONObject jsonObject) {
+            System.out.println("succeed to retrieve jwt token: " + jsonObject);
+            operationSucceed = true;
+            latch.countDown();
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            System.out.println("failed to retrieve jwt token. cause: " + throwable.getMessage());
+            operationSucceed = false;
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        System.out.println("failed to login. cause: " + throwable.getMessage());
+        operationSucceed = false;
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(operationSucceed);
+  }
+
   public void testSignupWithAuthDataAndFailFlag() throws Exception {
     final CountDownLatch latch = new CountDownLatch(1);
     Map<String, Object> authData = new HashMap<String, Object>();

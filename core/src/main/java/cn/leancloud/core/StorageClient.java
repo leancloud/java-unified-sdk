@@ -204,6 +204,25 @@ public class StorageClient {
                   }
                 });
         break;
+      case CACHE_THEN_NETWORK:
+        Observable<List<LCObject>> cacheResult = QueryResultCache.getInstance()
+                .getCacheResult(className, query, maxAgeInMilliseconds, true);
+        Observable<List<LCObject>> networkResult = queryRemoteServer(authenticatedUser, validPath, query)
+                .map(new Function<LCQueryResult, List<LCObject>>() {
+          @Override
+          public List<LCObject> apply(LCQueryResult o) throws Exception {
+            o.setClassName(className);
+            for (LCObject obj : o.getResults()) {
+              obj.setClassName(className);
+            }
+            QueryResultCache.getInstance().cacheResult(cacheKey, o.toJSONString());
+            LOGGER.d("invoke within StorageClient.queryObjects(). resultSize:"
+                    + ((null != o.getResults()) ? o.getResults().size() : 0));
+            return o.getResults();
+          }
+        });
+        result = wrapObservableInBackground(Observable.concat(cacheResult, networkResult));
+        break;
       case NETWORK_ELSE_CACHE:
         queryResult =  queryRemoteServer(authenticatedUser, validPath, query);
         if (null != queryResult) {
@@ -527,6 +546,10 @@ public class StorageClient {
         return false;
       }
     }));
+  }
+
+  public Observable<JSONObject> retrieveShortToken(String sessionToken) {
+    return wrapObservable(apiService.retrieveShortToken(sessionToken));
   }
 
   public Observable<LCNull> requestResetPassword(String email) {

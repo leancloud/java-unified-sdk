@@ -189,6 +189,9 @@ public interface APIService {
   Observable<LCUser> refreshSessionToken(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken,
                                          @Path("objectId") String objectId);
 
+  @GET("/storage/1.1/users/tap-support/identity")
+  Observable<JSONObject> retrieveShortToken(@Header(HEADER_KEY_LC_SESSIONTOKEN) String sessionToken);
+
   @POST("/1.1/requestPasswordReset")
   Observable<LCNull> requestResetPassword(@Body Map<String, String> param);
 

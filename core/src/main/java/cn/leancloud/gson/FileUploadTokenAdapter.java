@@ -1,11 +1,9 @@
 package cn.leancloud.gson;
 
 import cn.leancloud.upload.FileUploadToken;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.TypeAdapter;
-import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
@@ -20,45 +18,53 @@ public class FileUploadTokenAdapter extends TypeAdapter<FileUploadToken> {
   private static final String FIELD_KEY = "key";
 
   public void write(JsonWriter writer, FileUploadToken token) throws IOException {
-    JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty(FIELD_BUCKET, token.getBucket());
-    jsonObject.addProperty(FIELD_OBJECTID, token.getObjectId());
-    jsonObject.addProperty(FIELD_UPLOAD_URL, token.getUploadUrl());
-    jsonObject.addProperty(FIELD_PROVIDER, token.getProvider());
-    jsonObject.addProperty(FIELD_TOKEN, token.getToken());
-    jsonObject.addProperty(FIELD_URL, token.getUrl());
-    jsonObject.addProperty(FIELD_KEY, token.getKey());
-    TypeAdapters.JSON_ELEMENT.write(writer, jsonObject);
+    writer.beginObject();
+    writer.name(FIELD_BUCKET).value(token.getBucket());
+    writer.name(FIELD_OBJECTID).value(token.getObjectId());
+    writer.name(FIELD_UPLOAD_URL).value(token.getUploadUrl());
+    writer.name(FIELD_PROVIDER).value(token.getProvider());
+    writer.name(FIELD_TOKEN).value(token.getToken());
+    writer.name(FIELD_URL).value(token.getUrl());
+    writer.name(FIELD_KEY).value(token.getKey());
+    writer.endObject();
+    writer.flush();
   }
 
   public FileUploadToken read(JsonReader reader) throws IOException {
-    JsonElement elem = TypeAdapters.JSON_ELEMENT.read(reader);
-    if (null != elem && elem.isJsonObject()) {
-      JsonObject jsonObject = elem.getAsJsonObject();
-      FileUploadToken token = new FileUploadToken();
-      if (jsonObject.has(FIELD_BUCKET)) {
-        token.setBucket(jsonObject.get(FIELD_BUCKET).getAsString());
+    FileUploadToken fileUploadToken = new FileUploadToken();
+    reader.beginObject();
+    String fieldName = null;
+    JsonToken jsonToken = null;
+    while (reader.hasNext()) {
+      jsonToken = reader.peek();
+      if (jsonToken.equals(JsonToken.NAME)) {
+        fieldName = reader.nextName();
       }
-      if (jsonObject.has(FIELD_OBJECTID)) {
-        token.setObjectId(jsonObject.get(FIELD_OBJECTID).getAsString());
+      reader.peek();
+      String value = reader.nextString();
+      if (FIELD_BUCKET.equals(fieldName)) {
+        fileUploadToken.setBucket(value);
       }
-      if (jsonObject.has(FIELD_UPLOAD_URL)) {
-        token.setUploadUrl(jsonObject.get(FIELD_UPLOAD_URL).getAsString());
+      if (FIELD_OBJECTID.equals(fieldName)) {
+        fileUploadToken.setObjectId(value);
       }
-      if (jsonObject.has(FIELD_PROVIDER)) {
-        token.setProvider(jsonObject.get(FIELD_PROVIDER).getAsString());
+      if (FIELD_UPLOAD_URL.equals(fieldName)) {
+        fileUploadToken.setUploadUrl(value);
       }
-      if (jsonObject.has(FIELD_TOKEN)) {
-        token.setToken(jsonObject.get(FIELD_TOKEN).getAsString());
+      if (FIELD_PROVIDER.equals(fieldName)) {
+        fileUploadToken.setProvider(value);
       }
-      if (jsonObject.has(FIELD_URL)) {
-        token.setUrl(jsonObject.get(FIELD_URL).getAsString());
+      if (FIELD_TOKEN.equals(fieldName)) {
+        fileUploadToken.setToken(value);
       }
-      if (jsonObject.has(FIELD_KEY)) {
-        token.setKey(jsonObject.get(FIELD_KEY).getAsString());
+      if (FIELD_URL.equals(fieldName)) {
+        fileUploadToken.setUrl(value);
       }
-      return token;
+      if (FIELD_KEY.equals(fieldName)) {
+        fileUploadToken.setKey(value);
+      }
     }
-    return null;
+    reader.endObject();
+    return fileUploadToken;
   }
 }
