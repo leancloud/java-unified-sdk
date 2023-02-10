@@ -17,13 +17,13 @@ public class GeneralFieldMappingObjectAdapter<T> extends TypeAdapter<T> {
   private Map<String, Type> canonicalFields;
   private FieldNamingPolicy fieldNamingPolicy;
 
-  public GeneralFieldMappingObjectAdapter(Class clazz, Map<String, Type> fields, FieldNamingPolicy policy) {
+  public GeneralFieldMappingObjectAdapter(Class clazz, Map<String, Type> jsonFields, FieldNamingPolicy policy) {
     this.targetClazz = clazz;
-    this.displayFields = fields;
+    this.displayFields = jsonFields;
     this.fieldNamingPolicy = policy;
     this.canonicalFields = new HashMap<>();
-    if (null != fields) {
-      for(Map.Entry<String, Type> entry : fields.entrySet()) {
+    if (null != jsonFields) {
+      for(Map.Entry<String, Type> entry : jsonFields.entrySet()) {
         String displayName = entry.getKey();
         String identifyName = toCanonicalName(displayName, policy);
         this.canonicalFields.put(identifyName, entry.getValue());
@@ -64,7 +64,7 @@ public class GeneralFieldMappingObjectAdapter<T> extends TypeAdapter<T> {
           jsonWriter.name(outputName).value(value);
         }
       } catch (Exception ex) {
-        ;
+        ex.printStackTrace();
       }
     }
     jsonWriter.endObject();
@@ -111,35 +111,6 @@ public class GeneralFieldMappingObjectAdapter<T> extends TypeAdapter<T> {
           ex.printStackTrace();
         }
       }
-//      for (Map.Entry<String, Type> entry: this.displayFields.entrySet()) {
-//        String fieldName = entry.getKey();
-//        Type valueType = entry.getValue();
-//        JsonElement value = jsonObject.get(fieldName);
-//        String identifyFieldName = toCanonicalName(fieldName, this.fieldNamingPolicy);
-//        try {
-//          Field field = result.getClass().getDeclaredField(identifyFieldName);
-//          field.setAccessible(true);
-//          if (valueType.equals(String.class)) {
-//            field.set(result, value.getAsString());
-//          } else if (valueType.equals(Integer.class)) {
-//            field.set(result, value.getAsInt());
-//          } else if (valueType.equals(Boolean.class)) {
-//            field.set(result, value.getAsBoolean());
-//          } else if (valueType.equals(Character.class)) {
-//            field.set(result, value.getAsByte());
-//          } else if (valueType.equals(Long.class)) {
-//            field.set(result, value.getAsLong());
-//          } else if (valueType.equals(Float.class)) {
-//            field.set(result, value.getAsFloat());
-//          } else if (valueType.equals(Double.class)) {
-//            field.set(result, value.getAsDouble());
-//          } else {
-//            field.set(result, value);
-//          }
-//        } catch (Exception ex) {
-//          ex.printStackTrace();
-//        }
-//      }
       jsonReader.endObject();
       return result;
     } catch (InstantiationException e) {
