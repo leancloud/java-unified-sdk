@@ -59,9 +59,8 @@ android.libraryVariants.all { variant ->
 }
 
 dependencies {
-
-    implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.7.0'
+//    implementation 'androidx.appcompat:appcompat:1.5.1'
+//    implementation 'com.google.android.material:material:1.7.0'
 
     implementation project(':realtime-android')
     implementation project(':storage-android')
