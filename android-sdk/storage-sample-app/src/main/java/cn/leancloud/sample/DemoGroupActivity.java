@@ -109,6 +109,8 @@ public class DemoGroupActivity extends ListActivity {
     array.add("Other");
     array.add("UserAuthData");
     array.add("ObjectTransfer");
+    // add for automation test.
+    array.add("--END--");
     return array;
   }
 
@@ -125,8 +127,13 @@ public class DemoGroupActivity extends ListActivity {
     }
   }
 
-  protected void onListItemClick(android.widget.ListView l, android.view.View v, int position, long id) {
+  protected void onListItemClick(android.widget.ListView l, android.view.View v, int position,
+                                 long id) {
     List<String> array = myDemoArray();
+    if (position >= array.size() - 1) {
+      System.out.println("click --END-- element");
+      return;
+    }
     String name = array.get(position);
     String value = getActivityClassName(name);
     startActivityByName(value);

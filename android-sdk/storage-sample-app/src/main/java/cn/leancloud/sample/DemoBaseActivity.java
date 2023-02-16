@@ -78,6 +78,8 @@ public class DemoBaseActivity extends ListActivity {
     for (String method : methods) {
       displayNames.add(method.substring(4));
     }
+    // add for automation test.
+    displayNames.add("--END--");
   }
   public List<String> methodsWithPrefix(final String prefix) {
     List<String> methods = new ArrayList<String>();
@@ -258,6 +260,10 @@ public class DemoBaseActivity extends ListActivity {
 
   @Override
   protected void onListItemClick(android.widget.ListView l, android.view.View v, int position, long id) {
+    if (position >= codeSnippetList.size()) {
+      System.out.println("click -end- element.");
+      return;
+    }
     Intent intent = new Intent(this, DemoRunActivity.class);
     DemoRunActivity.demoActivity = this;
     String name = codeSnippetList.get(position);
