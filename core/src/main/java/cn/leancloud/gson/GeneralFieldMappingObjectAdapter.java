@@ -89,6 +89,9 @@ public class GeneralFieldMappingObjectAdapter<T> extends TypeAdapter<T> {
         jsonReader.peek();
         try {
           Field field = result.getClass().getDeclaredField(identifyFieldName);
+          if (null == valueType || null == field) {
+            continue;
+          }
           field.setAccessible(true);
           Object value = null;
           if (valueType.equals(String.class)) {

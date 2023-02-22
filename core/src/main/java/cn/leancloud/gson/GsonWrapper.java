@@ -36,7 +36,7 @@ public class GsonWrapper {
     put("captcha_url", String.class);
   }};
   static final Map<String, Type> captchaValidateResultFields = new HashMap<String, Type>() {{
-    put("validateToken", String.class);
+    put("validate_token", String.class);
   }};
 
   static final Gson gson = new GsonBuilder().serializeNulls()

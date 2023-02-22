@@ -1,9 +1,12 @@
 package cn.leancloud.sms;
 
 import cn.leancloud.Configure;
+import cn.leancloud.LCLogger;
+import cn.leancloud.core.LeanCloud;
 import cn.leancloud.types.LCNull;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -193,5 +196,61 @@ public class LCSMSTest extends TestCase {
 
       }
     });
+  }
+
+  public void testCaptcha() throws Exception {
+    final CountDownLatch latch = new CountDownLatch(1);
+    testSuccess = false;
+    LCCaptchaOption option = new LCCaptchaOption();
+    option.setWidth(85);
+    option.setHeight(40);
+    LCCaptcha.requestCaptchaInBackground(option).subscribe(new Observer<LCCaptchaDigest>() {
+      @Override
+      public void onSubscribe(Disposable disposable) {
+
+      }
+
+      @Override
+      public void onNext(LCCaptchaDigest lcCaptchaDigest) {
+        System.out.println("Succeed to got digest: " + lcCaptchaDigest.getCaptchaUrl());
+        LCCaptcha.verifyCaptchaCodeInBackground("znca", lcCaptchaDigest).subscribe(new Observer<LCCaptchaValidateResult>() {
+          @Override
+          public void onSubscribe(Disposable disposable) {
+
+          }
+
+          @Override
+          public void onNext(LCCaptchaValidateResult lcCaptchaValidateResult) {
+            System.out.println("Succeed to got validateResult: " + lcCaptchaValidateResult);
+            testSuccess = true;
+            latch.countDown();
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            throwable.printStackTrace();
+            latch.countDown();
+          }
+
+          @Override
+          public void onComplete() {
+
+          }
+        });
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        throwable.printStackTrace();
+        latch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+    latch.await();
+    assertTrue(testSuccess);
   }
 }
