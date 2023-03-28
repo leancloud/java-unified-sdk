@@ -1,20 +1,43 @@
 package cn.leancloud.sample.testcase;
 
 import cn.leancloud.LCException;
+import cn.leancloud.LCQuery;
 import cn.leancloud.LeanCloud;
 import cn.leancloud.sample.DemoBaseActivity;
 import cn.leancloud.sample.Student;
 import cn.leancloud.core.AppConfiguration;
+import cn.leancloud.types.LCDate;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by fengjunwen on 2018/5/10.
  */
 
 public class OtherDemoActivity extends DemoBaseActivity {
-//  public void testGetSereverDate() throws LCException {
-//    Date date = AVOSCloud.getServerDate();
-//    log("服务器时间：" + date);
-//  }
+  public void testGetSereverDate() throws LCException {
+    LeanCloud.getServerDateInBackground().subscribe(new Observer<LCDate>() {
+      @Override
+      public void onSubscribe(Disposable d) {
+
+      }
+
+      @Override
+      public void onNext(LCDate lcDate) {
+        log("服务器时间：" + lcDate);
+      }
+
+      @Override
+      public void onError(Throwable e) {
+
+      }
+
+      @Override
+      public void onComplete() {
+
+      }
+    });
+  }
 
   public void testConfigNetworkTimeout() throws LCException {
     // 得放到 Application 里
