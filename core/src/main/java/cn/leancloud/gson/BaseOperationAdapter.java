@@ -10,7 +10,6 @@ import cn.leancloud.ops.OperationBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.TypeAdapter;
-import com.google.gson.internal.bind.TypeAdapters;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
@@ -36,11 +35,13 @@ public class BaseOperationAdapter extends TypeAdapter<BaseOperation> {
       List<ObjectFieldOperation> subOps = ((CompoundOperation)op).getSubOperations();
       jsonObject.add(ATTR_SUBOPS, GsonWrapper.toJsonElement(subOps));
     }
-    TypeAdapters.JSON_ELEMENT.write(writer, jsonObject);
+    TypeAdapter<JsonElement> elementAdapter = GsonWrapper.getAdapter(JsonElement.class);
+    elementAdapter.write(writer, jsonObject);
   }
 
   public BaseOperation read(JsonReader reader) throws IOException {
-    JsonElement elem = TypeAdapters.JSON_ELEMENT.read(reader);
+    TypeAdapter<JsonElement> elementAdapter = GsonWrapper.getAdapter(JsonElement.class);
+    JsonElement elem = elementAdapter.read(reader);
     if (elem.isJsonObject()) {
       JsonObject jsonObject = elem.getAsJsonObject();
       return parseJSONObject(new GsonObject(jsonObject));

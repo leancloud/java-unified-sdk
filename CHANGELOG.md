@@ -5,6 +5,18 @@ Following is change logs for recently release versions, you can refer to [releas
 > Warning:
 > DONOT upgrade java-websocket to 1.15.0(or above), bcz it doesn't work on Android 5.1 or earlier version.
 
+## 8.2.19 release
+
+#### Break changes
+- None
+
+#### New features
+- None
+
+#### Optimization and fixed bugs
+- fixed: correct json parser for LCFile#save with prefix path(GameSave doesn't work in version 8.2.16-18).
+
+
 ## 8.2.18 release
 
 #### Break changes
@@ -16,6 +28,7 @@ Following is change logs for recently release versions, you can refer to [releas
 #### Optimization and fixed bugs
 - fixed: correct json field name for captcha validation result.
 
+
 ## 8.2.17 release
 
 #### Break changes
@@ -26,6 +39,7 @@ Following is change logs for recently release versions, you can refer to [releas
 
 #### Optimization and fixed bugs
 - fixed: let query callback run in main thread for CACHE_THEN_NETWORK policy.
+
 
 ## 8.2.16 release
 
@@ -39,6 +53,7 @@ Following is change logs for recently release versions, you can refer to [releas
 #### Optimization and fixed bugs
 - change Gson type adapter for some classes, avoid to use internal tools;
 - other optimizations.
+
 
 ## 8.2.15 release
 

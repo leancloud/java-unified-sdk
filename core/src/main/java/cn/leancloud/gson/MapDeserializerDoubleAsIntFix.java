@@ -1,13 +1,9 @@
 package cn.leancloud.gson;
 
 import com.google.gson.*;
-import com.google.gson.internal.LinkedTreeMap;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MapDeserializerDoubleAsIntFix implements JsonDeserializer<Map<String, Object>> {
 
@@ -26,7 +22,7 @@ public class MapDeserializerDoubleAsIntFix implements JsonDeserializer<Map<Strin
       }
       return list;
     }else if(in.isJsonObject()){
-      Map<String, Object> map = new LinkedTreeMap<String, Object>();
+      Map<String, Object> map = new HashMap<>();
       JsonObject obj = in.getAsJsonObject();
       Set<Map.Entry<String, JsonElement>> entitySet = obj.entrySet();
       for(Map.Entry<String, JsonElement> entry: entitySet){

@@ -7,7 +7,7 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
-
+@Deprecated
 public class FileUploadTokenAdapter extends TypeAdapter<FileUploadToken> {
   private static final String FIELD_BUCKET = "bucket";
   private static final String FIELD_OBJECTID = "objectId";

@@ -7,8 +7,8 @@ import cn.leancloud.service.AppAccessEndpoint;
 import cn.leancloud.sms.LCCaptchaDigest;
 import cn.leancloud.sms.LCCaptchaValidateResult;
 import cn.leancloud.upload.FileUploadToken;
+import cn.leancloud.utils.LCUtils;
 import com.google.gson.*;
-import com.google.gson.internal.Primitives;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Modifier;
@@ -23,21 +23,6 @@ public class GsonWrapper {
   static final BaseOperationAdapter baseOperationAdapter = new BaseOperationAdapter();
   static final JSONObjectAdapter jsonObjectAdapter = new JSONObjectAdapter();
   static final JSONArrayAdapter jsonArrayAdapter = new JSONArrayAdapter();
-  static final Map<String, Type> appAccessEndpointFields = new HashMap<String, Type>() {{
-    put("ttl", Long.class);
-    put("stats_server", String.class);
-    put("push_server", String.class);
-    put("rtm_router_server", String.class);
-    put("api_server", String.class);
-    put("engine_server", String.class);
-  }};
-  static final Map<String, Type> captchaDigestFields = new HashMap<String, Type>() {{
-    put("captcha_token", String.class);
-    put("captcha_url", String.class);
-  }};
-  static final Map<String, Type> captchaValidateResultFields = new HashMap<String, Type>() {{
-    put("validate_token", String.class);
-  }};
 
   static final Gson gson = new GsonBuilder().serializeNulls()
           .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE)
@@ -68,16 +53,14 @@ public class GsonWrapper {
           .registerTypeAdapter(JSONObject.class, jsonObjectAdapter)
           .registerTypeAdapter(GsonArray.class, jsonArrayAdapter)
           .registerTypeAdapter(Date.class, new GsonUTCDateAdapter())
-          .registerTypeAdapter(FileUploadToken.class, new FileUploadTokenAdapter())
+          .registerTypeAdapter(FileUploadToken.class,
+                  new GeneralSimpleObjectAdapter<FileUploadToken>(FileUploadToken.class))
           .registerTypeAdapter(AppAccessEndpoint.class,
-                  new GeneralFieldMappingObjectAdapter<AppAccessEndpoint>(AppAccessEndpoint.class,
-                          appAccessEndpointFields, FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES ))
+                  new GeneralSimpleObjectAdapter<AppAccessEndpoint>(AppAccessEndpoint.class))
           .registerTypeAdapter(LCCaptchaDigest.class,
-                  new GeneralFieldMappingObjectAdapter<LCCaptchaDigest>(LCCaptchaDigest.class,
-                          captchaDigestFields, FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES))
+                  new GeneralSimpleObjectAdapter<LCCaptchaDigest>(LCCaptchaDigest.class))
           .registerTypeAdapter(LCCaptchaValidateResult.class,
-                  new GeneralFieldMappingObjectAdapter<LCCaptchaValidateResult>(LCCaptchaValidateResult.class,
-                          captchaValidateResultFields, FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES))
+                  new GeneralSimpleObjectAdapter<LCCaptchaValidateResult>(LCCaptchaValidateResult.class))
           .registerTypeAdapter(new TypeToken<Map<String, Object>>(){}.getType(),  new MapDeserializerDoubleAsIntFix())
           .registerTypeAdapter(Map.class,  new MapDeserializerDoubleAsIntFix())
           .setLenient()
@@ -92,6 +75,10 @@ public class GsonWrapper {
       return null;
     }
     return gson.toJson(map);
+  }
+
+  public static <T> TypeAdapter<T> getAdapter(Class<T> clazz) {
+    return gson.getAdapter(clazz);
   }
 
   public static JsonElement toJsonElement(Object object) {
@@ -143,7 +130,7 @@ public class GsonWrapper {
   }
 
   public static <T> T parseObject(String jsonString, Type typeOfT) {
-    if (Primitives.isPrimitive(typeOfT)
+    if (LCUtils.isPrimitive(typeOfT)
             || (typeOfT instanceof Class && String.class.isAssignableFrom((Class)typeOfT))) {
       JsonElement element = gson.toJsonTree(jsonString, typeOfT);
       return gson.fromJson(element, typeOfT);
