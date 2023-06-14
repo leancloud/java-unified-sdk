@@ -109,8 +109,12 @@ public class GeneralSimpleObjectAdapter<T> extends TypeAdapter<T> {
             value = jsonReader.nextDouble();
           } else if (valueType.equals(Double.class) || valueType.equals(double.class)) {
             value = jsonReader.nextDouble();
+          } else {
+            jsonReader.skipValue();
           }
-          targetField.set(result, value);
+          if (null != value) {
+            targetField.set(result, value);
+          }
         } catch (Exception ex) {
           ex.printStackTrace();
         }

@@ -10,7 +10,6 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 
 public class JSONObjectAdapter extends TypeAdapter<JSONObject> {
-  private MapDeserializerDoubleAsIntFix mapDeserializerDoubleAsIntFix = new MapDeserializerDoubleAsIntFix();
   public void write(JsonWriter writer, JSONObject object) throws IOException {
     if (!(object instanceof GsonObject)) {
       writer.nullValue();
