@@ -5,7 +5,6 @@ import cn.leancloud.json.JSONObject;
 import cn.leancloud.json.JSONParser;
 import cn.leancloud.json.TypeReference;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;

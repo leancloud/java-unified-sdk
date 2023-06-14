@@ -220,8 +220,16 @@ public class GsonCommonTest extends TestCase {
     assertTrue(digest.getCaptchaUrl().startsWith("https"));
   }
 
+  public void testFileUploadTokenWithMetaData() {
+    String text = "{\"bucket\":\"gzx1fl2o\",\"createdAt\":\"2023-05-30T08:31:18.398Z\",\"key\":\"gamesaves/sJxbh9G4nFoGuwwoY8gpyd6dj9vbeAwM/logo.png\",\"metaData\":{\"_checksum\":\"ce80d83f138fd1c805f59d0b0dbb6405\",\"_name\":\"logo.png\",\"prefix\":\"gamesaves\",\"size\":38651},\"mime_type\":\"image/png\",\"name\":\"logo.png\",\"objectId\":\"6475b4568bcc5a2a1dc23aab\",\"provider\":\"qiniu\",\"token\":\"bOJAZVDET_Z11xes0ufp39ao_Tie7mrGqecKRkUf:FrRYGS9OZbrylDbN7kXEPo8s_ts=:eyJzY29wZSI6Imd6eDFmbDJvOmdhbWVzYXZlcy9zSnhiaDlHNG5Gb0d1d3dvWThncHlkNmRqOXZiZUF3TS9sb2dvLnBuZyIsImRlYWRsaW5lIjoxNjg1NDM5MDc4LCJpbnNlcnRPbmx5IjoxfQ==\",\"upload_url\":\"https://upload.qiniup.com\",\"url\":\"https://gzx1fl2o.tds1.tapfiles.cn/gamesaves/sJxbh9G4nFoGuwwoY8gpyd6dj9vbeAwM/logo.png\"}";
+    FileUploadToken fileUploadToken = JSON.parseObject(text, FileUploadToken.class);
+    assertTrue(null != fileUploadToken);
+    System.out.println(fileUploadToken.toString());
+    System.out.println(JSON.toJSONString(fileUploadToken));
+  }
+
   public void testCaptchaValidateResult() {
-    String text = "{\"validateToken\":\"value_bucket\"}";
+    String text = "{\"validate_token\":\"value_bucket\"}";
     LCCaptchaValidateResult result = JSON.parseObject(text, LCCaptchaValidateResult.class);
     System.out.println(JSON.toJSONString(result));
     assertTrue(result.getValidateToken().equals("value_bucket"));

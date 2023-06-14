@@ -1,19 +1,25 @@
 package cn.leancloud.service;
 
+import cn.leancloud.annotation.JsonField;
 import cn.leancloud.core.LeanService;
 import cn.leancloud.utils.StringUtil;
 
 public class AppAccessEndpoint {
   private long ttl;
 
+  @JsonField("stats_server")
   private String statsServer;
 
+  @JsonField("push_server")
   private String pushServer;
 
+  @JsonField("rtm_router_server")
   private String rtmRouterServer;
 
+  @JsonField("api_server")
   private String apiServer;
 
+  @JsonField("engine_server")
   private String engineServer;
 
   public long getTtl() {

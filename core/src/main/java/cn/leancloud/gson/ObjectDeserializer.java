@@ -5,7 +5,6 @@ import cn.leancloud.json.JSONObject;
 import cn.leancloud.ops.Utils;
 import cn.leancloud.utils.StringUtil;
 import com.google.gson.*;
-import com.google.gson.internal.LinkedTreeMap;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -37,7 +36,7 @@ public class ObjectDeserializer implements JsonDeserializer<LCObject> {
       className = (String) objectMap.get(LCObject.KEY_CLASSNAME);
       objectMap.remove(LCObject.KEY_CLASSNAME);
       if (objectMap.containsKey(KEY_SERVERDATA)) {
-        LinkedTreeMap<String, Object> serverData = (LinkedTreeMap<String, Object>) objectMap.get(KEY_SERVERDATA);//
+        Map<String, Object> serverData = (Map<String, Object>) objectMap.get(KEY_SERVERDATA);//
         objectMap.remove(KEY_SERVERDATA);
         objectMap.putAll(serverData);
       }

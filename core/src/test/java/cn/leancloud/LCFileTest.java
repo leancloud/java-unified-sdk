@@ -90,6 +90,7 @@ public class LCFileTest extends TestCase {
   public void testCreateWithExtension() throws Exception {
     File localFile = new File("./20160704174809.jpeg");
     LCFile file = new LCFile("test.jpeg", localFile);
+    file.setPathPrefix("gamesaves");
     Observable<LCFile> result = file.saveInBackground();
     result.subscribe(new Observer<LCFile>() {
       public void onSubscribe(Disposable disposable) {

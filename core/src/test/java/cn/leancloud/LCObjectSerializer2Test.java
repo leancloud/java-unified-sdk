@@ -116,4 +116,30 @@ public class LCObjectSerializer2Test extends TestCase {
     assertTrue(null != user);
   }
 
+  public void testUnsavedObject() throws Exception {
+    LCObject todo = new LCObject("Todo"); // 构建对象
+    todo.put("title", "马拉松报名"); // 设置名称
+    todo.put("priority", 2); // 设置优先级
+    todo.put("owner", LCUser.getCurrentUser()); // 这里就是一个 Pointer 类型，指向当前登录的用户
+    String serializedString = todo.toString();
+    System.out.println(serializedString);
+
+    LCObject deserializedObject = LCObject.parseLCObject(serializedString);
+    System.out.println(deserializedObject);
+
+    serializedString = ArchivedRequests.getArchiveContent(todo, false);
+    System.out.println(serializedString);
+    deserializedObject = LCObject.parseLCObject(serializedString);
+    System.out.println(deserializedObject.getString("title"));
+    deserializedObject = ArchivedRequests.parseAVObject(serializedString);
+    System.out.println(deserializedObject.getString("title"));
+  }
+
+  public void testArchivedObject() throws Exception {
+    String content = "{ \"@type\":\"com.avos.avoscloud.AVObject\",\"objectId\":\"\",\"updatedAt\":null,\"createdAt\":null,\"className\":\"search_item\",\"serverData\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\"},\"operationQueue\":{\"@type\":\"java.util.concurrent.ConcurrentHashMap\",\"taobao_title\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"taobao_title\",\"type\":\"Set\",\"values\":\"海峡红茶叶小青柑茶柑普茶桔普茶独立包装礼盒装12颗/盒*2盒\"},\"image\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"image\",\"type\":\"Set\",\"values\":\"https://img.alicdn.com/bao/uploaded/i1/3527879058/O1CN01I75nAf2GmcE1GoBoQ_!!0-item_pic.jpg\"},\"taobao_cid\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"taobao_cid\",\"type\":\"Set\",\"values\":\"124458005\"},\"quan_end_time\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"quan_end_time\",\"type\":\"Set\",\"values\":1678291199000},\"item_id\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"item_id\",\"type\":\"Set\",\"values\":\"9GGBak3hBtZNyQWSnn4SQt6-OwJxwkcxnQe7rvMt9\"},\"discount_price\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"discount_price\",\"type\":\"Set\",\"values\":128.0D},\"tkRate\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"tkRate\",\"type\":\"Set\",\"values\":20.03D},\"title\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"title\",\"type\":\"Set\",\"values\":\"海峡红茶叶小青柑茶柑普茶桔普茶独立包装礼盒装12颗/盒*2盒\"},\"shop_name\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"shop_name\",\"type\":\"Set\",\"values\":\"海峡红旗舰店\"},\"shop_id\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"shop_id\",\"type\":\"Set\",\"values\":\"117095248441659929\"},\"taobao_pics\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"taobao_pics\",\"type\":\"Set\",\"values\":\"https://img.alicdn.com/bao/uploaded/i1/3527879058/O1CN01I75nAf2GmcE1GoBoQ_!!0-item_pic.jpg,https://img.alicdn.com/i3/3527879058/O1CN014aWQrh2GmcDtHeXL5_!!3527879058.jpg,https://img.alicdn.com/i3/3527879058/O1CN01iL8XHm2GmcDvFVNBE_!!3527879058.jpg,https://img.alicdn.com/i3/3527879058/O1CN01Cval6h2GmcE1nUJCT_!!3527879058.jpg,https://img.alicdn.com/i3/3527879058/O1CN01SvXMeS2GmcDwUlDzs_!!3527879058.jpg\"},\"shop_icon\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"shop_icon\",\"type\":\"Set\",\"values\":\"http://logo.taobaocdn.com/shop-logo/3d/7c/TB1xQ9clL6H8KJjSspmSuv2WXXa.jpg\"},\"price\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"price\",\"type\":\"Set\",\"values\":198.0D},\"shop_url\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"shop_url\",\"type\":\"Set\",\"values\":\"http://shop507219890.taobao.com\"},\"quan_price\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"quan_price\",\"type\":\"Set\",\"values\":70},\"item_url\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"item_url\",\"type\":\"Set\",\"values\":\"https://detail.tmall.com/item.htm?id=X42a345iGt3r6pkFmmOSBtg-OwJxwkcxnQe7rvMt9\"},\"shop_type\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"shop_type\",\"type\":\"Set\",\"values\":\"B\"},\"sell_num\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"sell_num\",\"type\":\"Set\",\"values\":1},\"item_id2\":{\"@type\":\"com.avos.avoscloud.ops.SetOp\",\"key\":\"item_id2\",\"type\":\"Set\",\"values\":\"X42a345iGt3r6pkFmmOSBtg-OwJxwkcxnQe7rvMt9\"}}}";
+    LCObject deserializedObject = LCObject.parseLCObject(content);
+    System.out.println(deserializedObject);
+    deserializedObject = ArchivedRequests.parseAVObject(content);
+    System.out.println(deserializedObject);
+  }
 }

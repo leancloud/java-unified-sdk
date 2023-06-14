@@ -1,12 +1,15 @@
 package cn.leancloud.upload;
 
+import cn.leancloud.annotation.JsonField;
 import cn.leancloud.utils.LCUtils;
 
 public class FileUploadToken {
+  @JsonField("bucket")
   private String bucket = null;
 
   private String objectId = null;
 
+  @JsonField("upload_url")
   private String uploadUrl = null;
 
   private String provider = null;

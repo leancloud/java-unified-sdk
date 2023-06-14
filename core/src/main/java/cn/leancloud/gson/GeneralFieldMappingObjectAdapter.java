@@ -11,6 +11,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.*;
 
+/**
+ * deprecated since 8.2.19.
+ * @param <T> generic type.
+ */
+
+@Deprecated
 public class GeneralFieldMappingObjectAdapter<T> extends TypeAdapter<T> {
   private Class targetClazz;
   private Map<String, Type> displayFields;
@@ -90,6 +96,7 @@ public class GeneralFieldMappingObjectAdapter<T> extends TypeAdapter<T> {
         try {
           Field field = result.getClass().getDeclaredField(identifyFieldName);
           if (null == valueType || null == field) {
+            jsonReader.skipValue();
             continue;
           }
           field.setAccessible(true);
