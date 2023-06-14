@@ -7,8 +7,8 @@ import cn.leancloud.service.AppAccessEndpoint;
 import cn.leancloud.sms.LCCaptchaDigest;
 import cn.leancloud.sms.LCCaptchaValidateResult;
 import cn.leancloud.upload.FileUploadToken;
+import cn.leancloud.utils.LCUtils;
 import com.google.gson.*;
-import com.google.gson.internal.Primitives;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Modifier;
@@ -77,6 +77,10 @@ public class GsonWrapper {
     return gson.toJson(map);
   }
 
+  public static <T> TypeAdapter<T> getAdapter(Class<T> clazz) {
+    return gson.getAdapter(clazz);
+  }
+
   public static JsonElement toJsonElement(Object object) {
     if (null == object) {
       return null;
@@ -126,7 +130,7 @@ public class GsonWrapper {
   }
 
   public static <T> T parseObject(String jsonString, Type typeOfT) {
-    if (Primitives.isPrimitive(typeOfT)
+    if (LCUtils.isPrimitive(typeOfT)
             || (typeOfT instanceof Class && String.class.isAssignableFrom((Class)typeOfT))) {
       JsonElement element = gson.toJsonTree(jsonString, typeOfT);
       return gson.fromJson(element, typeOfT);

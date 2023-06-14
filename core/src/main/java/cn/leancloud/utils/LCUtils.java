@@ -4,6 +4,7 @@ import cn.leancloud.core.AppConfiguration;
 import cn.leancloud.json.JSON;
 import cn.leancloud.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
@@ -107,6 +108,10 @@ public class LCUtils {
       }
       left.put(entry.getKey(), entry.getValue());
     }
+  }
+
+  public static boolean isPrimitive(Type type) {
+    return type instanceof Class && ((Class)type).isPrimitive();
   }
 
   public static void putAllWithNullFilter(Map<String, Object> source, Map<String, Object> dest) {
