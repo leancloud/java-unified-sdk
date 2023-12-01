@@ -76,6 +76,7 @@
         <configuration>
           <failOnError>false</failOnError>
           <additionalparam>-Xdoclint:none</additionalparam>
+          <doclint>none</doclint>
           <author>eng@leancloud.rocks</author>
           <bottom><![CDATA[Copyright © 2020, <a href="https://leancloud.cn">美味书签（北京）信息技术有限公司<a> All rights reserved.]]></bottom>
           <sourceFileExcludes>
