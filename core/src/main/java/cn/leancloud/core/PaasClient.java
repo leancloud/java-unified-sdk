@@ -26,9 +26,9 @@ public class PaasClient {
   public static OkHttpClient getGlobalOkHttpClient() {
     if (null == globalHttpClient) {
       globalHttpClient = new OkHttpClient.Builder()
-              .connectTimeout(15, TimeUnit.SECONDS)
-              .readTimeout(10, TimeUnit.SECONDS)
-              .writeTimeout(10, TimeUnit.SECONDS)
+              .connectTimeout(AppConfiguration.getNetworkTimeout(), TimeUnit.SECONDS)
+              .readTimeout(AppConfiguration.getNetworkTimeout(), TimeUnit.SECONDS)
+              .writeTimeout(AppConfiguration.getNetworkTimeout(), TimeUnit.SECONDS)
               .addInterceptor(new RequestPaddingInterceptor())
               .addInterceptor(new LoggingInterceptor())
               .dns(new DNSDetoxicant())
@@ -90,5 +90,14 @@ public class PaasClient {
       pushClient = new PushClient(pushService, AppConfiguration.isAsynchronized(), AppConfiguration.getDefaultScheduler());
     }
     return pushClient;
+  }
+
+  // add method for unit tests in LeanCloudTest.java
+  static void cleanup() {
+	  apiService = null;
+	  storageClient = null;
+	  pushService = null;
+	  pushClient = null;
+	  globalHttpClient = null;
   }
 }

@@ -20,7 +20,7 @@ public class AppConfiguration {
   public interface SchedulerCreator{
     Scheduler create();
   }
-  public static final int DEFAULT_NETWORK_TIMEOUT = 30;
+  public static final int DEFAULT_NETWORK_TIMEOUT = 10;
 
   private static LCACL defaultACL;
   private static int networkTimeout = DEFAULT_NETWORK_TIMEOUT;
@@ -49,8 +49,11 @@ public class AppConfiguration {
   private static final String DEFAULT_USER_AGENT = "LeanCloud-Java-SDK/" + SDK_VERSION;
 
   public static void setNetworkTimeout(int seconds) {
-    networkTimeout = seconds;
+    if (seconds > 0) {
+      networkTimeout = seconds;
+    }
   }
+
   public static int getNetworkTimeout() {
     return networkTimeout;
   }
