@@ -14,7 +14,7 @@ sed -i '' "s/SDK_VERSION = .*;/SDK_VERSION = \"$version\";/" core/src/main/java/
 
 git add core/src/main/java/cn/leancloud/core/AppConfiguration.java
 
-git ci -m "version bump"
+git commit -m "version bump"
 
 git push origin master
 
