@@ -9,9 +9,12 @@
 **/file/**
 **/proguard-rules.pro
 **/gradle/**
+**/.gradle/**
 **/release/**
 **/gradlew.bat
 **/local.properties
 release-test/**
+android-sdk/build
 android-sdk/build-sdk-noup.sh
 android-sdk/storage-sample-app/src/main/assets/**
+*.releaseBackup

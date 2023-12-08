@@ -27,7 +27,7 @@ java-unified-sdk(root directory)
 
 ### 准备工作
 在发布过程中，需要做如下准备：
-1. 在本地 maven 全局设置文件（路径：$HOME/.m2/settings.xml） 中增加 maven 中央仓库的账号信息（目前是统一使用一套账户）。
+1. 在本地 maven 全局设置文件（路径：$HOME/.m2/settings.xml）中增加 maven 中央仓库的账号信息（目前是统一使用一套账户）。
 ```
 <settings>
   <servers>
@@ -38,6 +38,15 @@ java-unified-sdk(root directory)
     </server>
   </servers>
 </settings>
+```
+在本地 gradle 全局设置文件（路径：$HOME/.gradle/gradle.properties）中增加 maven 中央仓库的账号信息与 GPG 签名配置。
+```
+NEXUS_USERNAME=jfeng
+NEXUS_PASSWORD={place-with-correct-password}
+
+signing.keyId=
+signing.password=
+signing.secretKeyRingFile=
 ```
 2. 修改 root directory 下的 `CHANGELOG.md` 文件，增加新版本说明。
 3. 修改 android-sdk 目录下的 build.gradle 文件，将 `sdkVersion = "8.2.19"` 改为要发布的新版本（修改 Android SDK 依赖的基础 SDK 版本号）。
@@ -50,7 +59,7 @@ java-unified-sdk(root directory)
 1. 进入 root directory，切换到 master 分支，将本地所有代码提交并与云端同步。
 2. 执行命令：`./build-sdk.sh 10.0.0`。
 
-等脚本执行成功，那么新版本 SDK 应该就已上传到 maven 中央仓库，并且以及走完 publish 流程了。与此同时，github 上也多了一个 10.0.0 的 release 分支。
+等脚本执行成功，那么新版本 SDK 应该就已上传到 maven 中央仓库，并且以及走完 publish 流程了。与此同时，github 上也多了一个 10.0.0 的 release tag。
 
 ### 发布 Android 版 SDK
 在 JVM 版发布完成之后，进入 android-sdk 目录，执行如下命令：`./build-sdk.sh 10.0.0`。
