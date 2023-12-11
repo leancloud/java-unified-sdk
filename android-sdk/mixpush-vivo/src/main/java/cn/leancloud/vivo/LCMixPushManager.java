@@ -3,6 +3,9 @@ package cn.leancloud.vivo;
 import android.app.Application;
 import android.content.Context;
 
+import com.vivo.push.PushConfig;
+import com.vivo.push.listener.IPushQueryActionListener;
+
 import java.util.List;
 
 import cn.leancloud.LCException;
@@ -32,19 +35,21 @@ public class LCMixPushManager {
   /**
    * 初始化方法，建议在 Application onCreate 里面调用
    * @param application application
+   * @param agreePrivacyStatement boolean. true：用户同意了隐私声明；false:未同意隐私声明。
    * @return true - succeed, false - failed.
    */
-  public static boolean registerVIVOPush(Application application) {
-    return LCMixPushManager.registerVIVOPush(application, "");
+  public static boolean registerVIVOPush(Application application, boolean agreePrivacyStatement) {
+    return LCMixPushManager.registerVIVOPush(application, "", agreePrivacyStatement);
   }
 
   /**
    * 初始化方法，建议在 Application onCreate 里面调用
    * @param application application
    * @param profile profile
+   * @param agreePrivacyStatement boolean. true：用户同意了隐私声明；false:未同意隐私声明。
    * @return true - succeed, false - failed.
    */
-  public static boolean registerVIVOPush(Application application, String profile) {
+  public static boolean registerVIVOPush(Application application, String profile, boolean agreePrivacyStatement) {
     vivoDeviceProfile = profile;
     if (null == application) {
       return false;
@@ -56,7 +61,10 @@ public class LCMixPushManager {
         printErrorLog("current device doesn't support VIVO Push.");
         return false;
       }
-      client.initialize();
+      PushConfig config = new PushConfig.Builder()
+              .agreePrivacyStatement(agreePrivacyStatement)
+              .build();
+      client.initialize(config);
       return true;
     } catch (com.vivo.push.util.VivoPushException ex) {
       printErrorLog("register error, mainifest is incomplete! details=" + ex.getMessage());
@@ -69,11 +77,28 @@ public class LCMixPushManager {
    * @param context context.
    * @return registration id.
    */
-  public static String getRegistrationId(Context context) {
+  public static void getRegistrationId(Context context, final LCCallback<String> callback) {
     if (null == context) {
-      return null;
+      if (null != callback) {
+        callback.internalDone(new LCException(LCException.INVALID_PARAMETER, "context is invalid."));
+      }
+      return;
     }
-    return com.vivo.push.PushClient.getInstance(context).getRegId();
+    com.vivo.push.PushClient.getInstance(context).getRegId(new IPushQueryActionListener() {
+      @Override
+      public void onSuccess(String s) {
+        if (null != callback) {
+          callback.internalDone(s, null);
+        }
+      }
+
+      @Override
+      public void onFail(Integer integer) {
+        if (null != callback) {
+          callback.internalDone(new LCException(LCException.UNKNOWN, "PushClient error. code:" + integer));
+        }
+      }
+    });
   }
   /**
    * turn off VIVO push.

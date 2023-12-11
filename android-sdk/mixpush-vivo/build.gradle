@@ -67,7 +67,7 @@ dependencies {
 
     implementation("cn.leancloud:realtime-core:${rootProject.ext.sdkVersion}")
 
-    implementation files("libs/vivo_pushSDK_v3.0.0.4_484.aar")
+    implementation files("libs/vivo_pushSDK_v3.0.0.7_488.aar")
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0'
