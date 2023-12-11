@@ -91,8 +91,8 @@ public class LCMixPushManager {
      * 校验当前系统是否支持 PUSH
      * @return true or false.
      */
-    public static boolean isSupportHonorPush() {
-        return HonorPushClient.getInstance().checkSupportHonorPush();
+    public static boolean isSupportHonorPush(Context application) {
+        return HonorPushClient.getInstance().checkSupportHonorPush(application);
     }
 
     /**
