@@ -594,7 +594,13 @@ public class StorageClient {
   }
 
   public Observable<LCNull> verifyMobilePhone(String verifyCode) {
-    return wrapObservable(apiService.verifyMobilePhone(verifyCode));
+    return this.verifyMobilePhone(verifyCode, null);
+  }
+
+  public Observable<LCNull> verifyMobilePhone(String verifyCode, String phoneNumber) {
+    Map<String, String> map = new HashMap<String, String>();
+    map.put("mobilePhoneNumber", phoneNumber);
+    return wrapObservable(apiService.verifyMobilePhone(verifyCode, map));
   }
 
   public Observable<LCNull> requestLoginSmsCode(String phoneNumber, String validateToken) {
@@ -607,8 +613,13 @@ public class StorageClient {
   }
 
   public Observable<LCNull> resetPasswordBySmsCode(String smsCode, String newPass) {
+    return this.resetPasswordBySmsCode(smsCode, newPass, null);
+  }
+
+  public Observable<LCNull> resetPasswordBySmsCode(String smsCode, String newPass, String phoneNumber) {
     Map<String, String> map = new HashMap<String, String>();
     map.put("password", newPass);
+    map.put("mobilePhoneNumber", phoneNumber);
     return wrapObservable(apiService.resetPasswordBySmsCode(smsCode, map));
   }
 
