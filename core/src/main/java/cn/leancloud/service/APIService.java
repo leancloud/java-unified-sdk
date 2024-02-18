@@ -208,7 +208,7 @@ public interface APIService {
   Observable<LCNull> requestMobilePhoneVerify(@Body Map<String, String> param);
 
   @POST("/1.1/verifyMobilePhone/{verifyCode}")
-  Observable<LCNull> verifyMobilePhone(@Path("verifyCode") String verifyCode);
+  Observable<LCNull> verifyMobilePhone(@Path("verifyCode") String verifyCode, @Body Map<String, String> param);
 
   @POST("/1.1/requestLoginSmsCode")
   Observable<LCNull> requestLoginSmsCode(@Body Map<String, String> param);
