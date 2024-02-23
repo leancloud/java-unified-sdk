@@ -139,10 +139,11 @@ public class LCMixPushManager {
 
   /**
    * 校验当前系统是否支持 Honor PUSH
+   * @param app application
    * @return true or false.
    */
-  public static boolean isSupportHonorPush() {
-    return cn.leancloud.honor.LCMixPushManager.isSupportHonorPush();
+  public static boolean isSupportHonorPush(Context app) {
+    return cn.leancloud.honor.LCMixPushManager.isSupportHonorPush(app);
   }
 
   /**
