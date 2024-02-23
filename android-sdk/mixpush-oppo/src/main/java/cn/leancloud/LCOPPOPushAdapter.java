@@ -42,7 +42,7 @@ public class LCOPPOPushAdapter implements com.heytap.msp.push.callback.ICallBack
     }
   }
 
-  public void onRegister(int responseCode, String registerID) {
+  public void onRegister(int responseCode, String registerID, String packageName, String miniProgramPkg) {
     if (responseCode != 0) {
       LOGGER.e("failed to register device. errorCode: " + responseCode);
       return;
@@ -54,7 +54,7 @@ public class LCOPPOPushAdapter implements com.heytap.msp.push.callback.ICallBack
     updateLCInstallation(registerID);
   }
 
-  public void onUnRegister(int responseCode) {
+  public void onUnRegister(int responseCode, String packageName, String miniProgramPkg) {
     if (responseCode != 0) {
       LOGGER.e("failed to unregister device. errorCode: " + responseCode);
     } else {
@@ -86,8 +86,12 @@ public class LCOPPOPushAdapter implements com.heytap.msp.push.callback.ICallBack
     }
   }
 
-  @Override
-  public void onError(int i, String s) {
-    LOGGER.w("error occurred. code: " + i + ", cause: " + s);
+  public void onError(int errorCode, String message, String packageName, String miniProgramPkg) {
+    LOGGER.w("error occurred. code:" + errorCode + ", message:" + message
+            + ", package:" + packageName + ", miniPkg:" + miniProgramPkg);
   }
+
+//  public void onError(int i, String s) {
+//    LOGGER.w("error occurred. code: " + i + ", cause: " + s);
+//  }
 }
