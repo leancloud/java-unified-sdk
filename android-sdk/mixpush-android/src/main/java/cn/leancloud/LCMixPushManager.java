@@ -313,17 +313,21 @@ public class LCMixPushManager {
   /**
    * 初始化方法，建议在 Application onCreate 里面调用
    * @param application application
+   * @param agreePrivacyStatement boolean. true：用户同意了隐私声明；false:未同意隐私声明。
    */
-  public static boolean registerVIVOPush(Application application) {
-    return cn.leancloud.vivo.LCMixPushManager.registerVIVOPush(application);
+  public static boolean registerVIVOPush(Application application, boolean agreePrivacyStatement) {
+    return cn.leancloud.vivo.LCMixPushManager.registerVIVOPush(application, agreePrivacyStatement);
   }
 
   /**
    * 初始化方法，建议在 Application onCreate 里面调用
    * @param application application
+   * @param profile user profile.
+   * @param agreePrivacyStatement boolean. true：用户同意了隐私声明；false:未同意隐私声明。
    */
-  public static boolean registerVIVOPush(Application application, String profile) {
-    return cn.leancloud.vivo.LCMixPushManager.registerVIVOPush(application, profile);
+  public static boolean registerVIVOPush(Application application, String profile,
+                                         boolean agreePrivacyStatement) {
+    return cn.leancloud.vivo.LCMixPushManager.registerVIVOPush(application, profile, agreePrivacyStatement);
   }
 
   /**
