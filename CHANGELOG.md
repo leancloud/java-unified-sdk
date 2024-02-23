@@ -5,6 +5,25 @@ Following is change logs for recently release versions, you can refer to [releas
 > Warning:
 > DONOT upgrade java-websocket to 1.15.0(or above), bcz it doesn't work on Android 5.1 or earlier version.
 
+
+## 8.2.21 release
+
+#### Break changes
+- None
+
+#### New features
+- SMS: add new parameter `phoneNumber` for `verifyMobilePhone` and `resetPasswordBySmsCode`.
+
+#### Optimization and fixed bugs
+- Push: upgrafe mixpush SDK versions
+  - hms: `6.11.0.300`
+  - honor: `7.0.41`
+  - oppo: `3.4.0`
+  - vivo: `3.0.0.7`
+  - flyme: `4.3.0`
+  - xiaomi: `5.9.9`
+
+
 ## 8.2.20 release
 
 #### Break changes
