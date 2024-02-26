@@ -6,6 +6,18 @@ Following is change logs for recently release versions, you can refer to [releas
 > DONOT upgrade java-websocket to 1.15.0(or above), bcz it doesn't work on Android 5.1 or earlier version.
 
 
+## 8.2.22 release
+
+#### Break changes
+- None
+
+#### New features
+- User: add new parameter `phoneNumber` to `LCUser.verifyMobilePhone` and `resetPasswordBySmsCode` 
+
+#### Optimization and fixed bugs
+- None
+
+
 ## 8.2.21 release
 
 #### Break changes
