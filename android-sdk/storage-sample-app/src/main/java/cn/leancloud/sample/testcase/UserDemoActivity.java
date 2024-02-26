@@ -132,7 +132,7 @@ public class UserDemoActivity extends DemoBaseActivity {
               showSimpleInputDialog("验证短信已发送，请输入验证码", new SimpleInputDialogListner() {
                 @Override
                 public void onConfirm(String code) {
-                  LCUser.verifyMobilePhoneInBackground(code)
+                  LCUser.verifyMobilePhoneInBackground(code, text)
                       .subscribe(ObserverBuilder.buildSingleObserver(new MobilePhoneVerifyCallback() {
                         @Override
                         public void done(LCException e) {
@@ -210,7 +210,7 @@ public class UserDemoActivity extends DemoBaseActivity {
                 @Override
                 public void onConfirm(String smsCode) {
                   final String newPassword = "abcdefg";
-                  LCUser.resetPasswordBySmsCodeInBackground(smsCode, newPassword)
+                  LCUser.resetPasswordBySmsCodeInBackground(smsCode, newPassword, phone)
                       .subscribe(ObserverBuilder.buildSingleObserver(new UpdatePasswordCallback() {
                         @Override
                         public void done(LCException e) {
