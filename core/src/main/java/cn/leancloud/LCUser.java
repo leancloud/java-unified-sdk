@@ -1054,8 +1054,8 @@ public class LCUser extends LCObject {
    * @param newPassword new password
    * @return observable instance
    */
-  public static Observable<LCNull> resetPasswordBySmsCodeInBackground(String smsCode, String newPassword) {
-    return PaasClient.getStorageClient().resetPasswordBySmsCode(smsCode, newPassword);
+  public static Observable<LCNull> resetPasswordBySmsCodeInBackground(String smsCode, String newPassword, String phoneNumber) {
+    return PaasClient.getStorageClient().resetPasswordBySmsCode(smsCode, newPassword, phoneNumber);
   }
 
   /**
@@ -1132,8 +1132,8 @@ public class LCUser extends LCObject {
    * @param verifyCode sms code
    * @return observable instance.
    */
-  public static Observable<LCNull> verifyMobilePhoneInBackground(String verifyCode) {
-    return PaasClient.getStorageClient().verifyMobilePhone(verifyCode);
+  public static Observable<LCNull> verifyMobilePhoneInBackground(String verifyCode, String phoneNumber) {
+    return PaasClient.getStorageClient().verifyMobilePhone(verifyCode, phoneNumber);
   }
 
   /**
