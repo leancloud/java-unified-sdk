@@ -6,7 +6,7 @@ Following is change logs for recently release versions, you can refer to [releas
 > DONOT upgrade java-websocket to 1.15.0(or above), bcz it doesn't work on Android 5.1 or earlier version.
 
 
-## 8.2.22 release
+## 8.2.23 release
 
 #### Break changes
 - None
@@ -16,6 +16,8 @@ Following is change logs for recently release versions, you can refer to [releas
 
 #### Optimization and fixed bugs
 - None
+
+8.2.23 is identical to 8.2.22
 
 
 ## 8.2.21 release
