@@ -49,7 +49,7 @@ public class FileDownloader {
       response = client.newCall(requestBuilder.build()).execute();
       int statusCode = response.code();
       if (null == response.body()) {
-        errors = new LCException(statusCode, "response body is invalid");
+        errors = new LCException(statusCode, "response body is invalid", statusCode);
         gLogger.w(errors);
       } else {
         InputStream data = response.body().byteStream();
@@ -87,7 +87,7 @@ public class FileDownloader {
             gLogger.w("failed to lock writeLocker, skip to save network streaming to local cache.");
           }
         } else {
-          errors = new LCException(statusCode, "status code is invalid");
+          errors = new LCException(statusCode, "status code is invalid", statusCode);
           gLogger.w(errors);
         }
       }

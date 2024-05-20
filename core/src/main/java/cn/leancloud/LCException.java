@@ -3,6 +3,7 @@ package cn.leancloud;
 public class LCException extends Exception {
   private static final long serialVersionUID = 1L;
   protected final int code;
+  private final int httpStatus;
   public static final int OTHER_CAUSE = -1;
   /**
    * Error code indicating that something has gone wrong with the server. If you get this error
@@ -246,8 +247,9 @@ public class LCException extends Exception {
   public static final int INVALID_PARAMETER = 9304;
 
   public static final int CIRCLE_REFERENCE = 100001;
+
   /**
-   * Construct a new AVException with a particular error code.
+   * Construct a new LCException with a particular error code.
    *
    * @param theCode The error code to identify the type of exception.
    * @param theMessage A message describing the error in more detail.
@@ -255,10 +257,24 @@ public class LCException extends Exception {
   public LCException(int theCode, String theMessage) {
     super(theMessage);
     this.code = theCode;
+    this.httpStatus = 0;
   }
 
   /**
-   * Construct a new AVException with an external cause.
+   * Construct a new LCException with a particular error code.
+   *
+   * @param theCode The error code to identify the type of exception.
+   * @param theMessage A message describing the error in more detail.
+   * @param httpStatus The http status code of the response.
+   */
+  public LCException(int theCode, String theMessage, int httpStatus) {
+    super(theMessage);
+    this.code = theCode;
+    this.httpStatus = httpStatus;
+  }
+
+  /**
+   * Construct a new LCException with an external cause.
    *
    * @param message A message describing the error in more detail.
    * @param cause The cause of the error.
@@ -267,14 +283,15 @@ public class LCException extends Exception {
     super(message, cause);
     if (cause instanceof LCException) {
       this.code = ((LCException) cause).getCode();
+      this.httpStatus = ((LCException) cause).httpStatus;
     } else {
       this.code = UNKNOWN;
+      this.httpStatus = 0;
     }
   }
 
-
   /**
-   * Construct a new AVException with an external cause.
+   * Construct a new LCException with an external cause.
    *
    * @param cause The cause of the error.
    */
@@ -282,8 +299,10 @@ public class LCException extends Exception {
     super(cause);
     if (cause instanceof LCException) {
       this.code = ((LCException) cause).getCode();
+      this.httpStatus = ((LCException) cause).httpStatus;
     } else {
       this.code = UNKNOWN;
+      this.httpStatus = 0;
     }
   }
 
@@ -294,5 +313,14 @@ public class LCException extends Exception {
    */
   public int getCode() {
     return code;
+  }
+
+  /**
+   * Access the http status code for this error.
+   *
+   * @return The http status code for this error.
+   */
+  public int getHttpStatus() {
+    return httpStatus;
   }
 }

@@ -5,6 +5,16 @@ Following is change logs for recently release versions, you can refer to [releas
 > Warning:
 > DONOT upgrade java-websocket to 1.15.0(or above), bcz it doesn't work on Android 5.1 or earlier version.
 
+## 8.2.24 release
+
+#### Break changes
+- None
+
+#### New features
+- LCException: add new data member `httpStatus` to `LCException`
+
+#### Optimization and fixed bugs
+- None
 
 ## 8.2.23 release
 

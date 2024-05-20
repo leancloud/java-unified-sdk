@@ -9,14 +9,14 @@ import retrofit2.Response;
 import java.io.IOException;
 
 public class ErrorUtils {
-  public static LCException propagateException(String content) {
+  public static LCException propagateException(String content, int httpStatus) {
     try {
       JSONObject object = JSON.parseObject(content);
       String errorMessage = object.getString("error");
       int code = object.getIntValue("code");
-      return new LCException(code, errorMessage);
+      return new LCException(code, errorMessage, httpStatus);
     } catch (Exception exception) {
-      return new LCException(LCException.UNKNOWN, content);
+      return new LCException(LCException.UNKNOWN, content, httpStatus);
     }
   }
 
@@ -26,17 +26,16 @@ public class ErrorUtils {
     }
     if (throwable instanceof HttpException) {
       HttpException httpException = (HttpException) throwable;
-      if (null != httpException.response()) {
-        Response response = httpException.response();
-        if (null != response && null != response.errorBody()) {
-          try {
-            String content = response.errorBody().string();
-            LCException exception = ErrorUtils.propagateException(content);
-            return exception;
-          } catch (IOException ex) {
-            ;
-          }
+      Response response = httpException.response();
+      if (null != response && null != response.errorBody()) {
+        try {
+          String content = response.errorBody().string();
+          LCException exception = ErrorUtils.propagateException(content, httpException.code());
+          return exception;
+        } catch (IOException ex) {
         }
+      } else {
+        return new LCException(LCException.UNKNOWN, throwable.getMessage(), httpException.code());
       }
     }
     return new LCException(LCException.UNKNOWN, throwable.getMessage());

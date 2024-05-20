@@ -122,10 +122,9 @@ public class QCloudUploader extends HttpClientUploader {
       Response response = executeWithRetry(request, RETRY_TIMES);
       if (response.code() != 200) {
         throw new LCException(LCException.OTHER_CAUSE,
-                StringUtil.stringFromBytes(response.body().bytes()));
+                StringUtil.stringFromBytes(response.body().bytes()), response.code());
       }
     } catch (Exception e) {
-
       throw new LCException("Exception during file upload", e);
     }
   }
