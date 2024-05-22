@@ -4,7 +4,7 @@
   <groupId>cn.leancloud</groupId>
   <artifactId>leancloud-sdk</artifactId>
   <packaging>pom</packaging>
-  <version>8.2.28</version>
+  <version>8.2.29-SNAPSHOT</version>
   <name>leancloud sdk</name>
   <url>http://maven.apache.org</url>
   <description>LeanCloud Java Unified SDK</description>
@@ -36,7 +36,7 @@
     <connection>scm:git:git@github.com:leancloud/java-unified-sdk.git</connection>
     <developerConnection>scm:git:git@github.com:leancloud/java-unified-sdk.git</developerConnection>
     <url>http://github.com/leancloud/java-unified-sdk/tree/master</url>
-    <tag>leancloud-sdk-8.2.28</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <distributionManagement>
