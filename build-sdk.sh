@@ -20,4 +20,4 @@ git push origin master
 
 mvn clean
 
-MAVEN_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED" mvn --batch-mode  release:clean release:prepare release:perform -Darguments="-DskipTests"
+MAVEN_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED" mvn -e --batch-mode  release:clean release:prepare release:perform -Darguments="-DskipTests"
