@@ -131,6 +131,12 @@
             <goals>
               <goal>sign</goal>
             </goals>
+            <configuration>
+              <gpgArguments>
+                <arg>--batch</arg>
+              </gpgArguments>
+              <passphrase>${env.GPG_PASSPHRASE}</passphrase>
+            </configuration>
           </execution>
         </executions>
       </plugin>
