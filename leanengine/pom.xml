@@ -2,13 +2,13 @@
   <parent>
     <groupId>cn.leancloud</groupId>
     <artifactId>leancloud-sdk</artifactId>
-    <version>8.2.24</version>
+    <version>8.2.25-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>cn.leancloud</groupId>
   <artifactId>engine-core</artifactId>
   <packaging>jar</packaging>
-  <version>8.2.24</version>
+  <version>8.2.25-SNAPSHOT</version>
   <name>leanengine library</name>
   <url>http://maven.apache.org</url>
 
@@ -32,7 +32,7 @@
     <connection>scm:git:git@github.com:leancloud/java-unified-sdk.git</connection>
     <developerConnection>scm:git:git@github.com:leancloud/java-unified-sdk.git</developerConnection>
     <url>http://github.com/leancloud/java-unified-sdk/tree/master</url>
-    <tag>leancloud-sdk-8.2.24</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <distributionManagement>
@@ -60,7 +60,7 @@
     <dependency>
       <groupId>cn.leancloud</groupId>
       <artifactId>storage-core</artifactId>
-      <version>8.2.24</version>
+      <version>8.2.25-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
