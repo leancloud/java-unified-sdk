@@ -48,6 +48,10 @@ signing.keyId=
 signing.password=
 signing.secretKeyRingFile=
 ```
+增加环境变量
+```
+export GPG_PASSPHRASE={signing.password}
+```
 2. 修改 root directory 下的 `CHANGELOG.md` 文件，增加新版本说明。
 3. 修改 android-sdk 目录下的 build.gradle 文件，将 `sdkVersion = "8.2.19"` 改为要发布的新版本（修改 Android SDK 依赖的基础 SDK 版本号）。
 4. 修改 android-sdk 目录下的 gradle.properties 文件，将 `VERSION_NAME=8.2.19` 改为要发布的新版本（修改 Android SDK 自己的版本号）。

@@ -1184,7 +1184,15 @@ public class LCObject {
 
         @Override
         public void onError(Throwable throwable) {
-          // failed, save data to local file first;
+          if (throwable instanceof LCException) {
+            LCException lcException = (LCException) throwable;
+            int status = lcException.getHttpStatus();
+            logger.w("failed to save object. cause: " + lcException.getMessage() + ", code: " + lcException.getCode() + ", status: " + status);
+            if (status != 0 && status != 429 && status < 499) {
+              return;
+            }
+          }
+          // failed, save data to local file and retry later
           add2ArchivedRequest(false);
         }
 
