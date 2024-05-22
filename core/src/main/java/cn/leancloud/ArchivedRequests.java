@@ -130,6 +130,14 @@ public class ArchivedRequests {
           @Override
           public void onError(Throwable throwable) {
             logger.w("failed to save archived request. cause: ", throwable);
+            if (throwable instanceof LCException) {
+              LCException lcException = (LCException) throwable;
+              int status = lcException.getHttpStatus();
+              if (status == 0 || status == 429 || status >= 499) {
+                return;
+              }
+              onNext(null);
+            }
           }
 
           @Override
