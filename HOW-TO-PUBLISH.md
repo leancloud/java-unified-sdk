@@ -52,6 +52,10 @@ signing.secretKeyRingFile=
 ```
 export GPG_PASSPHRASE={signing.password}
 ```
+导入 GPG 私钥
+```
+gpg --allow-secret-key-import --import /path/to/secring.gpg
+```
 2. 修改 root directory 下的 `CHANGELOG.md` 文件，增加新版本说明。
 3. 修改 android-sdk 目录下的 build.gradle 文件，将 `sdkVersion = "8.2.19"` 改为要发布的新版本（修改 Android SDK 依赖的基础 SDK 版本号）。
 4. 修改 android-sdk 目录下的 gradle.properties 文件，将 `VERSION_NAME=8.2.19` 改为要发布的新版本（修改 Android SDK 自己的版本号）。
@@ -67,5 +71,8 @@ export GPG_PASSPHRASE={signing.password}
 
 ### 发布 Android 版 SDK
 在 JVM 版发布完成之后，进入 android-sdk 目录，执行如下命令：`./build-sdk.sh 10.0.0`。
+
+- JDK 版本需要为 1.8
+- android-sdk 下创建文件 local.properties，内容为 `sdk.dir={path-to-android-sdk}`
 
 等执行成功之后，需要使用同样的账户+密码登录[maven 中央仓库](https://oss.sonatype.org/#stagingRepositories)，手动把刚才上传的 package 执行 close 和 release 两步操作，成功之后 Android SDK 就最终发布了。不过由于 maven 源由 stage 同步到 public 可能还需要一些时间，开发者可能延后 15 分钟左右才能拉取到最新版本。
